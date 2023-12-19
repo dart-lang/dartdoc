@@ -1,6 +1,80 @@
+## 8.0.3
+
+* Remove `--format` flag that allows for generating Markdown-formatted docs.
+  (#3535)
+* Generate docs for extension type constructors.
+
+## 8.0.2
+
+* Remove @hideConstantImplementations fully. (#3593)
+* Remove Class assert for ClassTypedef. (#3595)
+
+## 8.0.1
+
+* The deprecated public APIs will be removed in the next major release.
+* Deprecate options.dart. (#3591)
+* Deprecate public exports in lib/dartdoc.dart. (#3589)
+
+## 8.0.0
+
+* Apply @hideConstantImplementations by default. (#3576)
+* Remove unused parameter in zone thing (#3581)
+* Add some progress bars for time-intensive tasks (#3579)
+* Privatize almost all elements in package_builder. (#3580)
+* Privatize several members on PackageGraph (#3578)
+* Correct looping bug in library discovery (#3574)
+* Remove @image directive. (#3568)
+* Privatize `packageName`, `name`, `libraryName`, and
+  `specialFileUri` in `SpecialClass`. (#3569)
+* Privatize `PackageMeta.pathContext`. (#3572)
+* Remove @samples directive. (#3567)
+* Remove @api directive. (#3566)
+* Improve display text for libraries. (#3552)
+* Remove `ElementType.canHaveParameters`. (#3563)
+* Privatize `ElementType`` subclass constructors (#3560)
+* InheritingContainer: `hasPublicInheritedMethods`, `inheritedFields`,
+  `publicInheritedFields`, `publicInheritedMethods` are only visible
+  for testing. (#3559)
+* Display inherited elements for extension types. (#3556)
+* Remove `DefinedElementType.element` and
+  `DefinedElementType.isParameterType`. (#3558)
+* Make `TypeImplementing.directInterfaces` private. (#3555)
+* Display extension type super interfaces. (#3554)
+* Display extension type constructors. (#3550)
+
+## 7.0.2
+
+* Remove support for the deprecated `new ` prefix in comment references.
+  (#3529)
+* Remove ModelComment.staticElement, ModelNode.commentRefs,
+  PackageWarningDefinition, packageWarningsByName, packageWarningDefinitions,
+  AliasedElementType.aliasedParameters, and GenericTypeAliasElementType.
+* Privatize ModelNode.element, ModelNode.resourceProvider,
+  `PackageWarning.template, PackageWarning.warnablePrefix, and
+  PackageWarning.referredFromPrefix.
+* The `missingExampleFile` and `unknownHtmlFragment` flags can now be
+  included or ignored with options.
+* Fix canonicalization scoring when library shares package name. (#3551)
+
+## 7.0.1
+
+* Add back missing search bar to left sidenav on narrow screens.
+* Remove unused warning: noDefiningLibraryFound
+* Canonicalization.scoreCanonicalCandidates is now calculateCanonicalCandidate,
+  and returns one Library. (#3520)
+* Print errors without associated elements; in particular this is errors
+  generated during the final validation stage. (#3532)
+* Reduce logging when documenting multiple packages. (#3522)
+* ScoredCandidate is made private. (#3520)
+* Canonicalization now implements Warnable; Warnable no longer implements
+  Canonicalization; Warnable now implements Documentable and Locatable;
+  Documentable is now a mixin; DocumentationComment now subtypes
+  Canonicalization.
+* Library.inheritanceManager is now static. (#3516)
+
 ## 7.0.0
 
-* Require `analyzer: ^6.2.0`.
+* Require `analyzer: ^6.3.0`.
 * Remove all `@deprecated` elements.
 * Fix sidebar links in leaf pages. (#3510)
 * Do not hide stack trace of DartdocFailures. (#3505)

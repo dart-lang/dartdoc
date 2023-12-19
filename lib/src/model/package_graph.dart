@@ -4,8 +4,12 @@
 
 import 'dart:collection';
 
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/element/inheritance_manager3.dart'
+    show InheritanceManager3;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk, SdkLibrary;
 // ignore: implementation_imports
@@ -32,15 +36,22 @@ import 'package:meta/meta.dart';
 class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   PackageGraph.uninitialized(
     this.config,
-    this.sdk,
+    DartSdk sdk,
     this.hasEmbedderSdk,
     this.rendererFactory,
     this.packageMetaProvider,
-  ) : packageMeta = config.topLevelPackageMeta {
+  )   : packageMeta = config.topLevelPackageMeta,
+        sdkLibrarySources = {
+          for (var lib in sdk.sdkLibraries) sdk.mapDartUri(lib.shortName): lib
+        } {
     // Make sure the default package exists, even if it has no libraries.
     // This can happen for packages that only contain embedder SDKs.
     Package.fromPackageMeta(packageMeta, this);
   }
+
+  final InheritanceManager3 inheritanceManager = InheritanceManager3();
+
+  final Map<Source?, SdkLibrary> sdkLibrarySources;
 
   void dispose() {
     // Clear out any cached tool snapshots and temporary directories.
@@ -52,6 +63,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   @override
   String get name => '';
+
+  @override
+  String get displayName => throw UnimplementedError();
+
+  @override
+  String get breadcrumbName => throw UnimplementedError();
 
   /// Adds [resolvedLibrary] to the package graph, adding it to [allLibraries],
   /// and to the [Package] which is created from the [PackageMeta] for the
@@ -68,8 +85,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     var packageMeta =
         packageMetaProvider.fromElement(libraryElement, config.sdkDir);
     if (packageMeta == null) {
-      throw DartdocFailure(packageMetaProvider.getMessageForMissingPackageMeta(
-          libraryElement, config));
+      var libraryPath = libraryElement.librarySource.fullName;
+      var dartOrFlutter = config.flutterRoot == null ? 'dart' : 'flutter';
+      throw DartdocFailure(
+          "Unknown package for library: '$libraryPath'.  Consider "
+          '`$dartOrFlutter pub get` and/or '
+          '`$dartOrFlutter pub global deactivate dartdoc` followed by '
+          '`$dartOrFlutter pub global activate dartdoc` to fix. Also, be sure '
+          'that `$dartOrFlutter analyze` completes without errors.');
     }
     var package = Package.fromPackageMeta(packageMeta, this);
     var lib = Library.fromLibraryResult(resolvedLibrary, this, package);
@@ -87,16 +110,23 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   void addSpecialLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
     allLibrariesAdded = true;
     assert(!_localDocumentationBuilt);
-    findOrCreateLibraryFor(resolvedLibrary);
+    final libraryElement = resolvedLibrary.element.library;
+    allLibraries.putIfAbsent(
+      libraryElement.source.fullName,
+      () => Library.fromLibraryResult(
+        resolvedLibrary,
+        this,
+        Package.fromPackageMeta(
+            packageMetaProvider.fromElement(libraryElement, config.sdkDir)!,
+            packageGraph),
+      ),
+    );
   }
 
   /// Call after all libraries are added.
   Future<void> initializePackageGraph() async {
     assert(!_localDocumentationBuilt);
     allLibrariesAdded = true;
-    // From here on in, we might find special objects.  Initialize the
-    // specialClasses handler so when we find them, they get added.
-    specialClasses = SpecialClasses();
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
     await Future.wait(_precacheLocalDocs());
@@ -107,7 +137,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // Emit warnings for any local package that has no libraries.
     // This must be done after the [allModelElements] traversal to be sure that
     // all packages are picked up.
-    for (var package in documentedPackages) {
+    for (var package in _documentedPackages) {
       for (var library in package.libraries) {
         _addToImplementors(library.allClasses);
         _addToImplementors(library.mixins);
@@ -125,11 +155,19 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }
 
   /// Generate a list of futures for any docs that actually require precaching.
-  Iterable<Future<void>> _precacheLocalDocs() sync* {
+  Iterable<Future<void>> _precacheLocalDocs() {
     // Prevent reentrancy.
     var precachedElements = <ModelElement>{};
+    var futures = <Future<void>>[];
 
-    for (var element in _allModelElements) {
+    logInfo('Linking elements...');
+    // This is awkward, but initializing this late final field is a sizeable
+    // chunk of work. Several seconds for a small package.
+    var allModelElements = _gatherModelElements();
+    logInfo('Precaching local docs for ${allModelElements.length} elements...');
+    progressBarStart(allModelElements.length);
+    for (var element in allModelElements) {
+      progressBarTick();
       // Only precache elements which are canonical, have a canonical element
       // somewhere, or have a canonical enclosing element. Not the same as
       // `allCanonicalModelElements` since we need to run for any [ModelElement]
@@ -141,22 +179,22 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
             .where((d) => d.hasDocumentationComment)) {
           if (d.needsPrecache && !precachedElements.contains(d)) {
             precachedElements.add(d as ModelElement);
-            yield d.precacheLocalDocs();
-            logProgress(d.name);
+            futures.add(d.precacheLocalDocs());
             // [TopLevelVariable]s get their documentation from getters and
             // setters, so should be precached if either has a template.
             if (element is TopLevelVariable &&
                 !precachedElements.contains(element)) {
               precachedElements.add(element);
-              yield element.precacheLocalDocs();
-              logProgress(d.name);
+              futures.add(element.precacheLocalDocs());
             }
           }
         }
       }
     }
+    progressBarComplete();
     // Now wait for any of the tasks still running to complete.
-    yield config.tools.runner.wait();
+    futures.add(config.tools.runner.wait());
+    return futures;
   }
 
   /// Initializes the category mappings in all [packages].
@@ -166,21 +204,83 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     }
   }
 
-  // Many ModelElements have the same ModelNode; don't build/cache this data more
-  // than once for them.
+  // Many ModelElements have the same ModelNode; don't build/cache this data
+  // more than once for them.
   final Map<Element, ModelNode> _modelNodes = {};
 
-  void populateModelNodeFor(
-      Element element, DartDocResolvedLibrary resolvedLibrary) {
-    _modelNodes.putIfAbsent(
-        element,
-        () => ModelNode(
-            resolvedLibrary.getAstNode(element), element, resourceProvider));
+  /// The collection of "special" classes for which we need some special access.
+  final specialClasses = SpecialClasses();
+
+  /// Populate's [_modelNodes] with elements in [resolvedLibrary].
+  ///
+  /// This is done as [Library] model objects are created, while we are holding
+  /// onto [resolvedLibrary] objects.
+  // TODO(srawlins): I suspect we populate this mapping with way too many
+  // objects, too eagerly. They are only needed when writing the source code of
+  // an element to HTML, and maybe for resolving doc comments. We should find a
+  // way to get this data only when needed. But it's not immediately obvious to
+  // me how, because the data is on AST nodes, not the element model.
+  void gatherModelNodes(DartDocResolvedLibrary resolvedLibrary) {
+    for (var unit in resolvedLibrary.units) {
+      for (var declaration in unit.declarations) {
+        _populateModelNodeFor(declaration);
+        switch (declaration) {
+          case ClassDeclaration():
+            for (var member in declaration.members) {
+              _populateModelNodeFor(member);
+            }
+          case EnumDeclaration():
+            if (declaration.declaredElement?.isPublic ?? false) {
+              for (var member in declaration.members) {
+                _populateModelNodeFor(member);
+              }
+            }
+          case MixinDeclaration():
+            for (var member in declaration.members) {
+              _populateModelNodeFor(member);
+            }
+          case ExtensionDeclaration():
+            if (declaration.declaredElement?.isPublic ?? false) {
+              for (var member in declaration.members) {
+                _populateModelNodeFor(member);
+              }
+            }
+          case ExtensionTypeDeclaration():
+            if (declaration.declaredElement?.isPublic ?? false) {
+              for (var member in declaration.members) {
+                _populateModelNodeFor(member);
+              }
+            }
+        }
+      }
+    }
   }
 
-  ModelNode? getModelNodeFor(Element? element) => _modelNodes[element!];
+  void _populateModelNodeFor(Declaration declaration) {
+    if (declaration is FieldDeclaration) {
+      var fields = declaration.fields.variables;
+      for (var field in fields) {
+        var element = field.declaredElement!;
+        _modelNodes.putIfAbsent(
+            element, () => ModelNode(field, element, resourceProvider));
+      }
+      return;
+    }
+    if (declaration is TopLevelVariableDeclaration) {
+      var fields = declaration.variables.variables;
+      for (var field in fields) {
+        var element = field.declaredElement!;
+        _modelNodes.putIfAbsent(
+            element, () => ModelNode(field, element, resourceProvider));
+      }
+      return;
+    }
+    var element = declaration.declaredElement!;
+    _modelNodes.putIfAbsent(
+        element, () => ModelNode(declaration, element, resourceProvider));
+  }
 
-  late SpecialClasses specialClasses;
+  ModelNode? getModelNodeFor(Element element) => _modelNodes[element];
 
   /// It is safe to cache values derived from the [_implementors] table if this
   /// is true.
@@ -195,7 +295,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return _implementors;
   }
 
-  late final Iterable<Extension> documentedExtensions =
+  Iterable<Extension> get documentedExtensions =>
       utils.filterNonDocumented(extensions).toList(growable: false);
 
   Iterable<Extension> get extensions {
@@ -217,9 +317,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   final Map<String, Library> allLibraries = {};
 
   /// All [ModelElement]s constructed for this package; a superset of
-  /// [_allModelElements].
-  final Map<(Element element, Library? library, Container? enclosingElement),
-      ModelElement?> allConstructedModelElements = {};
+  /// the elements gathered in [_gatherModelElements].
+  final Map<(Element element, Library library, Container? enclosingElement),
+      ModelElement> allConstructedModelElements = {};
 
   /// Anything that might be inheritable, place here for later lookup.
   final Map<(Element, Library), Set<ModelElement>> allInheritableElements = {};
@@ -266,12 +366,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   final Map<String, Package> packageMap = {};
 
   ResourceProvider get resourceProvider => config.resourceProvider;
-
-  final DartSdk sdk;
-
-  late final Map<Source?, SdkLibrary> sdkLibrarySources = {
-    for (var lib in sdk.sdkLibraries) sdk.mapDartUri(lib.shortName): lib
-  };
 
   final Map<String, String> _macros = {};
   final Map<String, String> _htmlFragments = {};
@@ -344,9 +438,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     var warningMessage = switch (kind) {
       PackageWarning.ambiguousReexport =>
         kind.messageFor([warnableName, message]),
-      PackageWarning.noCanonicalFound ||
-      PackageWarning.noDefiningLibraryFound =>
-        kind.messageFor([warnableName]),
+      PackageWarning.noCanonicalFound => kind.messageFor([warnableName]),
       PackageWarning.noLibraryLevelDocs ||
       PackageWarning.noDocumentableLibrariesInPackage =>
         kind.messageFor([warnable!.fullyQualifiedName]),
@@ -354,9 +446,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       PackageWarning.ignoredCanonicalFor ||
       PackageWarning.packageOrderGivesMissingPackageName ||
       PackageWarning.reexportedPrivateApiAcrossPackages ||
-      PackageWarning.notImplemented ||
       PackageWarning.unresolvedDocReference ||
-      PackageWarning.unknownDirective ||
       PackageWarning.unknownMacro ||
       PackageWarning.unknownHtmlFragment ||
       PackageWarning.brokenLink ||
@@ -406,7 +496,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       publicPackages.where((p) => p.isLocal).toList(growable: false);
 
   /// Documented packages are documented somewhere (local or remote).
-  Iterable<Package> get documentedPackages =>
+  Iterable<Package> get _documentedPackages =>
       packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
   /// A mapping of all the [Library]s that export a given [LibraryElement].
@@ -475,7 +565,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       if (modelElement is Dynamic) continue;
       // TODO: see [Accessor.enclosingCombo]
       if (modelElement is Accessor) continue;
-      if (modelElement == null) continue;
       final href = modelElement.href;
       if (href == null) continue;
 
@@ -545,8 +634,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   late final Iterable<Library> libraries =
       packages.expand((p) => p.libraries).toList(growable: false)..sort();
 
-  /// The number of libraries.
-  late final int libraryCount = libraries.length;
+  int get libraryCount => libraries.length;
 
   late final Set<Library> publicLibraries = () {
     assert(allLibrariesAdded);
@@ -572,11 +660,11 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           ?.linkedName ??
       'Object';
 
-  /// Return the set of [Class]es objects should inherit through if they
-  /// show up in the inheritance chain.  Do not call before interceptorElement is
-  /// found.  Add classes here if they are similar to Interceptor in that they
-  /// are to be ignored even when they are the implementors of [Inheritable]s,
-  /// and the class these inherit from should instead claim implementation.
+  /// The set of [Class]es which should _not_ be presented as implementors.
+  ///
+  /// Add classes here if they are similar to Interceptor in that they are to be
+  /// ignored even when they are the implementors of [Inheritable]s, and the
+  /// class these inherit from should instead claim implementation.
   late final Set<Class> inheritThrough = () {
     var interceptorSpecialClass = specialClasses[SpecialClass.interceptor];
     if (interceptorSpecialClass == null) {
@@ -586,9 +674,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return {interceptorSpecialClass};
   }();
 
-  /// The set of [Class] objects that are similar to pragma
-  /// in that we should never count them as documentable annotations.
-  late final Set<Class> invisibleAnnotations = () {
+  /// The set of [Class] objects that are similar to 'pragma' in that we should
+  /// never count them as documentable annotations.
+  late final Set<Class> _invisibleAnnotations = () {
     var pragmaSpecialClass = specialClasses[SpecialClass.pragma];
     if (pragmaSpecialClass == null) {
       return const <Class>{};
@@ -596,8 +684,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return {pragmaSpecialClass};
   }();
 
-  bool isAnnotationVisible(Class clazz) =>
-      !invisibleAnnotations.contains(clazz);
+  bool isAnnotationVisible(Class class_) =>
+      !_invisibleAnnotations.contains(class_);
 
   @override
   String toString() {
@@ -617,7 +705,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return buffer.toString();
   }
 
-  final Map<Element?, Library?> _canonicalLibraryFor = {};
+  final Map<Element, Library?> _canonicalLibraryFor = {};
 
   /// Tries to find a top level library that references this element.
   Library? _findCanonicalLibraryFor(Element e) {
@@ -670,8 +758,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       lib ??= modelBuilder.fromElement(enclosingElement.library) as Library?;
       // TODO(keertip): Find a better way to exclude members of extensions
       // when libraries are specified using the "--include" flag.
-      if (lib?.isDocumented == true) {
-        return modelBuilder.from(e, lib!);
+      if (lib != null && lib.isDocumented) {
+        return modelBuilder.from(e, lib);
       }
     }
     // TODO(jcollins-g): The data structures should be changed to eliminate
@@ -710,20 +798,22 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   ModelElement? _findCanonicalModelElementForAmbiguous(Element e, Library? lib,
       {InheritingContainer? preferredClass}) {
-    var candidates = <ModelElement?>{};
-    var constructedWithKey = allConstructedModelElements[(e, lib, null)];
-    if (constructedWithKey != null) {
-      candidates.add(constructedWithKey);
-    }
-    var constructedWithKeyWithClass =
-        allConstructedModelElements[(e, lib, preferredClass)];
-    if (constructedWithKeyWithClass != null) {
-      candidates.add(constructedWithKeyWithClass);
-    }
-    if (candidates.isEmpty) {
-      candidates = {
-        ...?allInheritableElements[(e, lib)]?.where((me) => me.isCanonical),
-      };
+    var candidates = <ModelElement>{};
+    if (lib != null) {
+      var constructedWithKey = allConstructedModelElements[(e, lib, null)];
+      if (constructedWithKey != null) {
+        candidates.add(constructedWithKey);
+      }
+      var constructedWithKeyWithClass =
+          allConstructedModelElements[(e, lib, preferredClass)];
+      if (constructedWithKeyWithClass != null) {
+        candidates.add(constructedWithKeyWithClass);
+      }
+      if (candidates.isEmpty) {
+        candidates = {
+          ...?allInheritableElements[(e, lib)]?.where((me) => me.isCanonical),
+        };
+      }
     }
 
     var canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
@@ -732,7 +822,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           .where((m) => m.element == e));
     }
 
-    var matches = {...candidates.whereNotNull().where((me) => me.isCanonical)};
+    var matches = {...candidates.where((me) => me.isCanonical)};
 
     // It's possible to find [Accessor]s but no combos.  Be sure that if we
     // have accessors, we find their combos too.
@@ -786,34 +876,22 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return allLibraries[e.library?.source.fullName];
   }
 
-  /// This is used when we might need a [Library] that isn't actually a
-  /// documentation entry point (for elements that have no [Library] within the
-  /// set of canonical libraries).
-  Library findOrCreateLibraryFor(DartDocResolvedLibrary resolvedLibrary) {
-    final libraryElement = resolvedLibrary.element.library;
-    var foundLibrary = findButDoNotCreateLibraryFor(libraryElement);
-    if (foundLibrary != null) return foundLibrary;
-
-    foundLibrary = Library.fromLibraryResult(
-        resolvedLibrary,
-        this,
-        Package.fromPackageMeta(
-            packageMetaProvider.fromElement(libraryElement, config.sdkDir)!,
-            packageGraph));
-    allLibraries[libraryElement.source.fullName] = foundLibrary;
-    return foundLibrary;
-  }
-
-  late final Iterable<ModelElement> _allModelElements = () {
+  /// Gathers all of the model elements found in all of the libraries of all
+  /// of the packages.
+  Iterable<ModelElement> _gatherModelElements() {
     assert(allLibrariesAdded);
     var allElements = <ModelElement>[];
     var completedPackages = <Package>{};
+    var libraryCount = packages.fold(
+        0, (previous, package) => previous + package.allLibraries.length);
+    progressBarStart(libraryCount);
     for (var package in packages) {
       if (completedPackages.contains(package)) {
         continue;
       }
       var completedLibraries = <Library>{};
       for (var library in package.allLibraries) {
+        progressBarTick();
         if (completedLibraries.contains(library)) {
           continue;
         }
@@ -822,16 +900,14 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       }
       completedPackages.add(package);
     }
+    progressBarComplete();
 
     return allElements;
-  }();
+  }
 
   late final Iterable<ModelElement> allLocalModelElements = [
     for (var library in _localLibraries) ...library.allModelElements
   ];
-
-  Iterable<ModelElement> get allCanonicalModelElements =>
-      allLocalModelElements.where((e) => e.isCanonical);
 
   /// Glob lookups can be expensive.  Cache per filename.
   final _configSetsNodocFor = HashMap<String, bool>();
@@ -891,7 +967,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // on ambiguous resolution (see below) will change where they
     // resolve based on internal implementation details.
     var sortedPackages = packages.toList(growable: false)..sort(byName);
-    var sortedDocumentedPackages = documentedPackages.toList(growable: false)
+    var sortedDocumentedPackages = _documentedPackages.toList(growable: false)
       ..sort(byName);
     // Packages are the top priority.
     children.addEntries(sortedPackages.generateEntries());

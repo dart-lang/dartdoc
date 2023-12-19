@@ -11,7 +11,6 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk;
-import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
@@ -23,9 +22,13 @@ class PackageMetaFailure extends DartdocFailure {
   PackageMetaFailure(super.message);
 }
 
-/// For each list in this list, at least one of the given paths must exist
-/// for this to be detected as an SDK.  Update `_writeMockSdkBinFiles` in
-/// `test/src/utils.dart` if removing any entries here.
+/// Various relative paths that indicate that a root direoctory is an SDK (Dart
+/// or Flutter).
+///
+/// For a given directory to be detected as an SDK, at least one of the given
+/// paths must exist, for each list of paths.
+// Update `_writeMockSdkBinFiles` in `test/src/utils.dart` if removing any
+// entries here.
 const List<List<String>> _sdkDirFilePathsPosix = [
   ['bin/dart.bat', 'bin/dart.exe', 'bin/dart'],
   ['include/dart_version.h'],
@@ -43,7 +46,6 @@ final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
       .parent
       .parent,
   Platform.environment,
-  messageForMissingPackageMeta: PubPackageMeta.messageForMissingPackageMeta,
 );
 
 /// Sets the supported way of constructing [PackageMeta] objects.
@@ -65,9 +67,6 @@ class PackageMetaProvider {
   final DartSdk? defaultSdk;
   final Map<String, String> environmentProvider;
 
-  final String Function(LibraryElement, DartdocOptionContext)
-      _messageForMissingPackageMeta;
-
   PackageMetaProvider(
     this._fromElement,
     this._fromFilename,
@@ -76,24 +75,12 @@ class PackageMetaProvider {
     this.defaultSdkDir,
     this.environmentProvider, {
     this.defaultSdk,
-    String Function(LibraryElement, DartdocOptionContext)?
-        messageForMissingPackageMeta,
-  }) : _messageForMissingPackageMeta = messageForMissingPackageMeta ??
-            _defaultMessageForMissingPackageMeta;
+  });
 
   PackageMeta? fromElement(LibraryElement library, String s) =>
       _fromElement(library, s, resourceProvider);
   PackageMeta? fromFilename(String s) => _fromFilename(s, resourceProvider);
   PackageMeta? fromDir(Folder dir) => _fromDir(dir, resourceProvider);
-
-  String getMessageForMissingPackageMeta(
-          LibraryElement library, DartdocOptionContext optionContext) =>
-      _messageForMissingPackageMeta(library, optionContext);
-
-  static String _defaultMessageForMissingPackageMeta(
-      LibraryElement library, DartdocOptionContext optionContext) {
-    return 'Unknown package for library: ${library.source.fullName}';
-  }
 }
 
 /// Describes a single package in the context of `dartdoc`.
@@ -104,6 +91,8 @@ class PackageMetaProvider {
 ///
 /// Overriding this is typically done by overriding factories as rest of
 /// `dartdoc` creates this object by calling these static factories.
+// This class has a single direct subclass in this package, [PubPackageMeta],
+// but has other subclasses in google3.
 abstract class PackageMeta {
   final Folder dir;
 
@@ -112,25 +101,22 @@ abstract class PackageMeta {
   PackageMeta(this.dir, this.resourceProvider);
 
   @override
-  bool operator ==(Object other) {
-    if (other is! PackageMeta) return false;
-    var otherMeta = other;
-    return resourceProvider.pathContext.equals(dir.path, otherMeta.dir.path);
-  }
+  bool operator ==(Object other) =>
+      other is PackageMeta && _pathContext.equals(dir.path, other.dir.path);
 
   @override
-  int get hashCode => pathContext.hash(pathContext.absolute(dir.path));
+  int get hashCode => _pathContext.hash(_pathContext.absolute(dir.path));
 
-  path.Context get pathContext => resourceProvider.pathContext;
+  path.Context get _pathContext => resourceProvider.pathContext;
 
-  /// Returns true if this represents a 'Dart' SDK.
+  /// Whether this represents a 'Dart' SDK.
   ///
-  /// A package can be part of Dart and Flutter at the same time, but if we are
+  /// A package can be part of Dart and Flutter at the same time, but if this is
   /// part of a Dart SDK, [sdkType] should never return null.
   bool get isSdk;
 
   /// Returns 'Dart' or 'Flutter' (preferentially, 'Flutter' when the answer is
-  /// "both"), or null if this package is not part of a SDK.
+  /// "both"), or `null` if this package is not part of an SDK.
   String? sdkType(String? flutterRootPath);
 
   bool get requiresFlutter;
@@ -147,14 +133,12 @@ abstract class PackageMeta {
 
   File? getReadmeContents();
 
-  /// Returns true if we are a valid package, valid enough to generate docs.
+  /// Whether this is a valid package (valid enough to generate docs).
   bool get isValid => getInvalidReasons().isEmpty;
 
-  /// Returns resolved directory.
   String get resolvedDir;
 
-  /// Returns a list of reasons this package is invalid, or an
-  /// empty list if no reasons found.
+  /// The list of reasons this package is invalid.
   ///
   /// If the list is empty, this package is valid.
   List<String> getInvalidReasons();
@@ -179,8 +163,8 @@ abstract class PubPackageMeta extends PackageMeta {
 
   static final _sdkDirParent = <String, Folder?>{};
 
-  /// If [folder] is inside a Dart SDK, returns the directory of the SDK, and `null`
-  /// otherwise.
+  /// If [folder] is inside a Dart SDK, returns the directory of the SDK, and
+  /// `null` otherwise.
   static Folder? sdkDirParent(
       Folder folder, ResourceProvider resourceProvider) {
     var pathContext = resourceProvider.pathContext;
@@ -200,7 +184,7 @@ abstract class PubPackageMeta extends PackageMeta {
     return _sdkDirParent[dirPathCanonical];
   }
 
-  /// Use this instead of fromDir where possible.
+  /// Use this instead of [fromDir] where possible.
   static PackageMeta? fromElement(LibraryElement libraryElement, String sdkDir,
       ResourceProvider resourceProvider) {
     if (libraryElement.isInSdk) {
@@ -223,64 +207,49 @@ abstract class PubPackageMeta extends PackageMeta {
 
   /// This factory is guaranteed to return the same object for any given
   /// `dir.absolute.path`.  Multiple `dir.absolute.path`s will resolve to the
-  /// same object if they are part of the same package.  Returns null
-  /// if the directory is not part of a known package.
+  /// same object if they are part of the same package.  Returns `null` if the
+  /// directory is not part of a known package.
   static PackageMeta? fromDir(
       Folder folder, ResourceProvider resourceProvider) {
     var pathContext = resourceProvider.pathContext;
-    var original =
-        resourceProvider.getFolder(pathContext.absolute(folder.path));
-    folder = original;
-    if (!original.exists) {
+    folder = resourceProvider.getFolder(pathContext.absolute(folder.path));
+    if (!folder.exists) {
       throw PackageMetaFailure(
-          'fatal error: unable to locate the input directory at '
-          "'${original.path}'.");
+        'fatal error: unable to locate the input directory at '
+        "'${folder.path}'.",
+      );
     }
 
-    if (!_packageMetaCache.containsKey(folder.path)) {
-      PackageMeta? packageMeta;
+    return _packageMetaCache.putIfAbsent(pathContext.absolute(folder.path), () {
       // There are pubspec.yaml files inside the SDK.  Ignore them.
       var parentSdkDir = sdkDirParent(folder, resourceProvider);
       if (parentSdkDir != null) {
-        packageMeta = _SdkMeta(parentSdkDir, resourceProvider);
+        return _SdkMeta(parentSdkDir, resourceProvider);
       } else {
         for (var dir in folder.withAncestors) {
           var pubspec = resourceProvider
               .getFile(pathContext.join(dir.path, 'pubspec.yaml'));
           if (pubspec.exists) {
-            packageMeta = _FilePackageMeta(dir, resourceProvider);
-            break;
+            return _FilePackageMeta(dir, resourceProvider);
           }
         }
       }
-      _packageMetaCache[pathContext.absolute(folder.path)] = packageMeta;
-    }
-    return _packageMetaCache[pathContext.absolute(folder.path)];
-  }
-
-  /// Create a helpful user error message for a case where a package can not
-  /// be found.
-  static String messageForMissingPackageMeta(
-      LibraryElement library, DartdocOptionContext optionContext) {
-    var libraryString = library.librarySource.fullName;
-    var dartOrFlutter = optionContext.flutterRoot == null ? 'dart' : 'flutter';
-    return 'Unknown package for library: $libraryString.  Consider `$dartOrFlutter pub get` and/or '
-        '`$dartOrFlutter pub global deactivate dartdoc` followed by `$dartOrFlutter pub global activate dartdoc` to fix. '
-        'Also, be sure that `$dartOrFlutter analyze` completes without errors.';
+      return null;
+    });
   }
 
   @override
   String? sdkType(String? flutterRootPath) {
     if (flutterRootPath != null) {
-      var flutterPackages = pathContext.join(flutterRootPath, 'packages');
-      var flutterBinCache = pathContext.join(flutterRootPath, 'bin', 'cache');
+      var flutterPackages = _pathContext.join(flutterRootPath, 'packages');
+      var flutterBinCache = _pathContext.join(flutterRootPath, 'bin', 'cache');
 
       /// Don't include examples or other non-SDK components as being the
       /// "Flutter SDK".
-      var canonicalizedDir = pathContext
+      var canonicalizedDir = _pathContext
           .canonicalize(resourceProvider.pathContext.absolute(dir.path));
-      if (pathContext.isWithin(flutterPackages, canonicalizedDir) ||
-          pathContext.isWithin(flutterBinCache, canonicalizedDir)) {
+      if (_pathContext.isWithin(flutterPackages, canonicalizedDir) ||
+          _pathContext.isWithin(flutterBinCache, canonicalizedDir)) {
         return 'Flutter';
       }
     }
@@ -294,13 +263,12 @@ abstract class PubPackageMeta extends PackageMeta {
 class _FilePackageMeta extends PubPackageMeta {
   File? _readme;
 
-  late final Map<dynamic, dynamic> _pubspec = () {
-    var pubspec = dir.getChildAssumingFile('pubspec.yaml');
-    assert(pubspec.exists);
-    return loadYaml(pubspec.readAsStringSync()) as YamlMap;
-  }();
+  final Map<dynamic, dynamic> _pubspec;
 
-  _FilePackageMeta(super.dir, super.resourceProvider);
+  _FilePackageMeta(super.dir, super.resourceProvider)
+      : _pubspec = loadYaml(
+                dir.getChildAssumingFile('pubspec.yaml').readAsStringSync())
+            as YamlMap;
 
   @override
   late final String? hostedAt = () {
@@ -314,17 +282,17 @@ class _FilePackageMeta extends PubPackageMeta {
     // possibly by calculating hosting directly from pubspec.yaml or importing
     // a pub library to do this.
     // People could have a pub cache at root with Windows drive mappings.
-    if (pathContext.split(pathContext.canonicalize(dir.path)).length >= 3) {
+    if (_pathContext.split(_pathContext.canonicalize(dir.path)).length >= 3) {
       var pubCacheRoot = dir.parent.parent.parent.path;
       // Check for directory structure too close to root.
       if (pubCacheRoot != dir.parent.parent.path) {
-        var hosted = pathContext.canonicalize(dir.parent.parent.path);
-        var hostname = pathContext.canonicalize(dir.parent.path);
-        if (pathContext.basename(hosted) == 'hosted' &&
+        var hosted = _pathContext.canonicalize(dir.parent.parent.path);
+        var hostname = _pathContext.canonicalize(dir.parent.path);
+        if (_pathContext.basename(hosted) == 'hosted' &&
             resourceProvider
-                .getFolder(pathContext.join(pubCacheRoot, '_temp'))
+                .getFolder(_pathContext.join(pubCacheRoot, '_temp'))
                 .exists) {
-          hostedAt = pathContext.basename(hostname);
+          hostedAt = _pathContext.basename(hostname);
         }
       }
     }
@@ -361,13 +329,10 @@ class _FilePackageMeta extends PubPackageMeta {
   /// empty list if no reasons found.
   @override
   List<String> getInvalidReasons() {
-    var reasons = <String>[];
-    if (_pubspec.isEmpty) {
-      reasons.add('no pubspec.yaml found');
-    } else if (!_pubspec.containsKey('name')) {
-      reasons.add('no name found in pubspec.yaml');
-    }
-    return reasons;
+    return [
+      if (_pubspec.isEmpty) 'no pubspec.yaml found',
+      if (!_pubspec.containsKey('name')) "no 'name' field found in pubspec.yaml"
+    ];
   }
 }
 

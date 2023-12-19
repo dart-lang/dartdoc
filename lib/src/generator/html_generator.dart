@@ -4,7 +4,7 @@
 
 library dartdoc.html_generator;
 
-import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
@@ -62,6 +62,17 @@ class HtmlGeneratorBackend extends GeneratorBackendBase {
     var data = ExtensionTemplateData(options, packageGraph, library, extension);
     var sidebarContent = templates.renderSidebarForContainer(data);
     write(writer, extension.sidebarPath, data, sidebarContent, isSidebar: true);
+    runtimeStats.incrementAccumulator('writtenSidebarFileCount');
+  }
+
+  @override
+  void generateExtensionType(
+      PackageGraph packageGraph, Library library, ExtensionType extensionType) {
+    super.generateExtensionType(packageGraph, library, extensionType);
+    var data = ExtensionTypeTemplateData(
+        options, packageGraph, library, extensionType);
+    var sidebarContent = templates.renderSidebarForContainer(data);
+    write(writer, extensionType.sidebarPath, data, sidebarContent);
     runtimeStats.incrementAccumulator('writtenSidebarFileCount');
   }
 

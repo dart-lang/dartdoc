@@ -111,7 +111,7 @@ class SubprocessLauncher {
     if (Platform.environment.containsKey('DRY_RUN')) return {};
 
     if (withStats) {
-      (executable, arguments) = _wrapWithTime(executable, arguments);
+      (executable, arguments) = wrapWithTime(executable, arguments);
     }
     if (Platform.isLinux) {
       (executable, arguments) = _wrapWithStdbuf(executable, arguments);
@@ -152,7 +152,8 @@ class SubprocessLauncher {
       );
 
   /// Wraps [command] and [args] with a command to `time`.
-  (String, List<String>) _wrapWithTime(String command, List<String> args) =>
+  static (String, List<String>) wrapWithTime(
+          String command, List<String> args) =>
       ('/usr/bin/time', ['-l', command, ...args]);
 
   Future<Iterable<Map<String, Object?>>> runStreamedDartCommand(

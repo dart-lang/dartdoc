@@ -31,7 +31,8 @@ class ModelElementRendererHtml extends ModelElementRenderer {
   @override
   String renderLinkedName(ModelElement modelElement) {
     var cssClass = modelElement.isDeprecated ? ' class="deprecated"' : '';
-    return '<a$cssClass href="${modelElement.href}">${modelElement.name}</a>';
+    return '<a$cssClass href="${modelElement.href}">'
+        '${modelElement.displayName}</a>';
   }
 
   @override
@@ -99,17 +100,5 @@ class ModelElementRendererHtml extends ModelElementRenderer {
 </div>
 
 '''; // Must end at start of line, or following inline text will be indented.
-  }
-}
-
-class ModelElementRendererMd extends ModelElementRendererHtml {
-  const ModelElementRendererMd();
-
-  @override
-  String renderLinkedName(ModelElement modelElement) {
-    if (modelElement.isDeprecated) {
-      return '[~~${modelElement.name}~~](${modelElement.href})';
-    }
-    return '[${modelElement.name}](${modelElement.href})';
   }
 }

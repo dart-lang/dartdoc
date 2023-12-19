@@ -5,7 +5,6 @@
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/documentation_renderer.dart';
-import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
 
 class Documentation {
@@ -74,10 +73,8 @@ class Documentation {
     if (text == null || text.isEmpty) {
       return const [];
     }
-    showWarningsForGenericsOutsideSquareBracketsBlocks(
-        text, _element as Warnable);
-    var document =
-        MarkdownDocument.withElementLinkResolver(_element as Warnable);
+    showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
+    var document = MarkdownDocument.withElementLinkResolver(_element);
     return document.parseMarkdownText(text, processFullText: processFullText);
   }
 

@@ -6,8 +6,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/model/canonicalization.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
@@ -34,7 +36,7 @@ class Validator {
   /// Don't call this method more than once, and only after you've
   /// generated all docs for the Package.
   void validateLinks() {
-    logInfo('Validating...');
+    logInfo('Validating links...');
     runtimeStats.resetAccumulators({
       'readCountForLinkValidation',
       'readCountForIndexValidation',
@@ -212,11 +214,7 @@ class Validator {
     String origin, {
     String? referredFrom,
   }) {
-    // Ordinarily this would go in [Package.warn], but we don't actually know
-    // what [ModelElement] to warn on yet.
-    Warnable? warnOnElement;
-    final referredFromElements = <Warnable>{};
-    Set<Warnable>? warnOnElements;
+    final referredFromElements = <Canonicalization>{};
 
     // Make all paths relative to origin.
     if (path.isWithin(origin, warnOn)) {
@@ -232,19 +230,12 @@ class Validator {
         referredFromElements.addAll(hrefReferredFrom);
       }
     }
-    warnOnElements = _hrefs[warnOn];
+    var warnOnElements = _hrefs[warnOn];
 
     if (referredFromElements.any((e) => e.isCanonical)) {
       referredFromElements.removeWhere((e) => !e.isCanonical);
     }
-    if (warnOnElements != null) {
-      for (final e in warnOnElements) {
-        if (e.isCanonical) {
-          warnOnElement = e;
-          break;
-        }
-      }
-    }
+    var warnOnElement = warnOnElements?.firstWhereOrNull((e) => e.isCanonical);
 
     if (referredFromElements.isEmpty && referredFrom == 'index.html') {
       referredFromElements.add(_packageGraph.defaultPackage);

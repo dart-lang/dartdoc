@@ -194,7 +194,7 @@ Future<void> runBuildbot() async {
 
 Future<void> runClean() async {
   // This involves deleting things, so be careful.
-  if (!File(path.join('tool', 'grind.dart')).existsSync()) {
+  if (!File(path.join('tool', 'task.dart')).existsSync()) {
     throw FileSystemException('Wrong CWD, run from root of dartdoc package');
   }
   const pubDataFileNames = {'.dart_tool', '.packages', 'pubspec.lock'};
@@ -391,42 +391,53 @@ Future<String> docPackage({
   var pubPackageDir = Directory.systemTemp.createTempSync(name);
   io_utils.copy(pubPackageDirOrig, pubPackageDir);
 
+  var executable = Platform.executable;
+  var arguments = [
+    '--enable-asserts',
+    path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+    '--link-to-remote',
+    '--show-progress',
+    '--show-stats',
+    '--no-validate-links',
+  ];
+  Map<String, String>? environment;
+
   if (pubPackageMetaProvider
       .fromDir(PhysicalResourceProvider.INSTANCE.getFolder(pubPackageDir.path))!
       .requiresFlutter) {
     var flutterRepo =
         await FlutterRepo.fromExistingFlutterRepo(await cleanFlutterRepo);
-    await launcher.runStreamed(flutterRepo.cacheDart, ['pub', 'get'],
-        environment: flutterRepo.env,
-        workingDirectory: pubPackageDir.absolute.path);
-    await launcher.runStreamed(
-      flutterRepo.cacheDart,
-      [
-        '--enable-asserts',
-        path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
-        '--json',
-        '--link-to-remote',
-        '--show-progress',
-      ],
-      environment: flutterRepo.env,
-      workingDirectory: pubPackageDir.absolute.path,
-      withStats: withStats,
-    );
-  } else {
-    await launcher.runStreamedDartCommand(['pub', 'get'],
-        workingDirectory: pubPackageDir.absolute.path);
-    await launcher.runStreamedDartCommand(
-      [
-        '--enable-asserts',
-        path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
-        '--json',
-        '--link-to-remote',
-        '--show-progress',
-      ],
-      workingDirectory: pubPackageDir.absolute.path,
-      withStats: withStats,
-    );
+    executable = flutterRepo.cacheDart;
+    environment = flutterRepo.env;
   }
+  await launcher.runStreamed(
+    executable,
+    ['pub', 'get'],
+    environment: environment,
+    workingDirectory: pubPackageDir.absolute.path,
+  );
+  await launcher.runStreamed(
+    executable,
+    // Add the `--json` flag for the support in `runStreamed` to tease out
+    // data and messages. This flag allows the [runCompare] tasks to interpret
+    // data from stdout as structured data, in order to compare the dartdoc
+    // outputs of two commands. We add it here, but exclude it from the
+    // "Quickly re-run" text below, as that command is for human consumption.
+    [...arguments, '--json'],
+    workingDirectory: pubPackageDir.absolute.path,
+    environment: environment,
+    withStats: withStats,
+  );
+  if (withStats) {
+    (executable, arguments) =
+        SubprocessLauncher.wrapWithTime(executable, arguments);
+  }
+  print('Quickly re-run doc generation with:');
+  print(
+    '    pushd ${pubPackageDir.absolute.path} ;'
+    ' "$executable" ${arguments.map((a) => '"$a"').join(' ')} ;'
+    ' popd',
+  );
   return path.join(pubPackageDir.absolute.path, 'doc', 'api');
 }
 
@@ -731,7 +742,6 @@ final _generatedFilesList = [
   '../dartdoc_options.yaml',
   'src/generator/html_resources.g.dart',
   'src/generator/templates.aot_renderers_for_html.dart',
-  'src/generator/templates.aot_renderers_for_md.dart',
   'src/generator/templates.runtime_renderers.dart',
   'src/version.dart',
   '../test/mustachio/foo.dart',

@@ -7,7 +7,6 @@ import 'dart:collection';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/dart/element/type_system.dart';
-import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show SdkLibrary;
@@ -16,116 +15,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/warnings.dart';
 
-/// Finds all hashable children of a given element that are defined in the
-/// [LibraryElement] given at initialization.
-// TODO(srawlins): Do we not need to visit the parameters in
-// [ConstructorElement], [FunctionElement], [MethodElement],
-// [PropertyAccessorElement], [TypeAliasElement]?
-class _HashableChildLibraryElementVisitor
-    extends RecursiveElementVisitor<void> {
-  final DartDocResolvedLibrary resolvedLibrary;
-  final PackageGraph packageGraph;
-
-  _HashableChildLibraryElementVisitor(this.resolvedLibrary, this.packageGraph);
-
-  @override
-  void visitClassElement(ClassElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitClassElement(element);
-  }
-
-  @override
-  void visitConstructorElement(ConstructorElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitEnumElement(EnumElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitEnumElement(element);
-  }
-
-  @override
-  void visitExtensionElement(ExtensionElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitExtensionElement(element);
-  }
-
-  @override
-  void visitFieldElement(FieldElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitFieldFormalParameterElement(FieldFormalParameterElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitFunctionElement(FunctionElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitLibraryElement(LibraryElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitLibraryElement(element);
-  }
-
-  @override
-  void visitMixinElement(MixinElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitMixinElement(element);
-  }
-
-  @override
-  void visitMultiplyDefinedElement(MultiplyDefinedElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-    super.visitMultiplyDefinedElement(element);
-  }
-
-  @override
-  void visitMethodElement(MethodElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitParameterElement(ParameterElement element) {
-    // [ParameterElement]s without names do not provide sufficiently distinct
-    // hashes / comparison, so just skip them all. (dart-lang/sdk#30146)
-  }
-
-  @override
-  void visitPrefixElement(PrefixElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitPropertyAccessorElement(PropertyAccessorElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitSuperFormalParameterElement(SuperFormalParameterElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitTopLevelVariableElement(TopLevelVariableElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitTypeAliasElement(TypeAliasElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-
-  @override
-  void visitTypeParameterElement(TypeParameterElement element) {
-    packageGraph.populateModelNodeFor(element, resolvedLibrary);
-  }
-}
-
 class _LibrarySentinel implements Library {
   @override
   dynamic noSuchMethod(Invocation invocation) =>
@@ -133,11 +22,7 @@ class _LibrarySentinel implements Library {
 }
 
 class Library extends ModelElement
-    with
-        Categorization,
-        TopLevelContainer,
-        CanonicalFor,
-        HideConstantImplementations {
+    with Categorization, TopLevelContainer, CanonicalFor {
   @override
   final LibraryElement element;
 
@@ -165,10 +50,9 @@ class Library extends ModelElement
 
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, Package package) {
-    var element = resolvedLibrary.element;
+    packageGraph.gatherModelNodes(resolvedLibrary);
 
-    _HashableChildLibraryElementVisitor(resolvedLibrary, packageGraph)
-        .visitLibraryElement(element);
+    var element = resolvedLibrary.element;
 
     var exportedAndLocalElements = {
       // Initialize the list of elements defined in this library and
@@ -294,7 +178,7 @@ class Library extends ModelElement
 
   /// Map of each import prefix ('import "foo" as prefix;') to the set of
   /// libraries which are imported via that prefix.
-  Map<String, Set<Library>> get prefixToLibrary {
+  Map<String, Set<Library>> get _prefixToLibrary {
     var prefixToLibrary = <String, Set<Library>>{};
     // It is possible to have overlapping prefixes.
     for (var i in element.libraryImports) {
@@ -309,9 +193,39 @@ class Library extends ModelElement
     return prefixToLibrary;
   }
 
-  late final String dirName = (isAnonymous ? nameFromPath : name)
-      .replaceAll(':', '-')
-      .replaceAll('/', '_');
+  /// An identifier for this library based on its location.
+  ///
+  /// This provides filename collision-proofing for anonymous libraries by
+  /// incorporating more from the location of the anonymous library into the
+  /// name calculation. Simple cases (such as an anonymous library in 'lib/')
+  /// are the same, but this will include slashes and possibly colons
+  /// for anonymous libraries in subdirectories or other packages.
+  late final String dirName = () {
+    String nameFromPath;
+    if (isAnonymous) {
+      assert(!_restoredUri.startsWith('file:'),
+          '"$_restoredUri" must not start with "file:"');
+      // Strip the package prefix if the library is part of the default package
+      // or if it is being documented remotely.
+      var packageToHide = package.documentedWhere == DocumentLocation.remote
+          ? package.packageMeta
+          : package.packageGraph.packageMeta;
+      var schemaToHide = 'package:$packageToHide/';
+
+      nameFromPath = _restoredUri;
+      if (nameFromPath.startsWith(schemaToHide)) {
+        nameFromPath = nameFromPath.substring(schemaToHide.length);
+      }
+      if (nameFromPath.endsWith('.dart')) {
+        const dartExtensionLength = '.dart'.length;
+        nameFromPath = nameFromPath.substring(
+            0, nameFromPath.length - dartExtensionLength);
+      }
+    } else {
+      nameFromPath = name;
+    }
+    return nameFromPath.replaceAll(':', '-').replaceAll('/', '_');
+  }();
 
   /// Libraries are not enclosed by anything.
   @override
@@ -336,8 +250,7 @@ class Library extends ModelElement
   @override
   String get filePath => '${library.dirName}/${fileStructure.fileName}';
 
-  String get sidebarPath =>
-      '${library.dirName}/$dirName-library-sidebar.${fileStructure.fileType}';
+  String get sidebarPath => '${library.dirName}/$dirName-library-sidebar.html';
 
   /// The library template manually includes 'packages' in the left/above
   /// sidebar.
@@ -393,15 +306,36 @@ class Library extends ModelElement
     return baseName;
   }
 
-  /// Generate a name for this library based on its location.
-  ///
-  /// nameFromPath provides filename collision-proofing for anonymous libraries
-  /// by incorporating more from the location of the anonymous library into
-  /// the name calculation.  Simple cases (such as an anonymous library in
-  /// 'lib') are the same, but this will include slashes and possibly colons
-  /// for anonymous libraries in subdirectories or other packages.
-  late final String nameFromPath =
-      _getNameFromPath(element, package, _restoredUri);
+  @override
+  String get displayName {
+    var fullName = breadcrumbName;
+    if (fullName.endsWith('.dart')) {
+      const dartExtensionLength = '.dart'.length;
+      return fullName.substring(0, fullName.length - dartExtensionLength);
+    }
+    return fullName;
+  }
+
+  @override
+  String get breadcrumbName {
+    var source = element.source;
+    if (source.uri.isScheme('dart')) {
+      return name;
+    }
+
+    return _importPath;
+  }
+
+  /// The path portion of this library's import URI as a 'package:' URI.
+  String get _importPath {
+    // This code should not be used for Dart SDK libraries.
+    assert(!element.source.uri.isScheme('dart'));
+    var relativePath = pathContext.relative(element.source.fullName,
+        from: package.packagePath);
+    assert(relativePath.startsWith('lib${pathContext.separator}'));
+    const libDirectoryLength = 'lib/'.length;
+    return relativePath.substring(libDirectoryLength);
+  }
 
   /// The name of the package we were defined in.
   String get packageName => packageMeta?.name ?? '';
@@ -454,32 +388,6 @@ class Library extends ModelElement
     return variables;
   }
 
-  /// Reverses URIs if needed to get a package URI.
-  ///
-  /// Not the same as [PackageGraph.name] because there we always strip all
-  /// path components; this function only strips the package prefix if the
-  /// library is part of the default package or if it is being documented
-  /// remotely.
-  static String _getNameFromPath(
-      LibraryElement element, Package package, String restoredUri) {
-    assert(!restoredUri.startsWith('file:'),
-        '"$restoredUri" must not start with "file:"');
-    var hidePackage = package.documentedWhere == DocumentLocation.remote
-        ? package.packageMeta
-        : package.packageGraph.packageMeta;
-    var defaultPackagePrefix = 'package:$hidePackage/';
-
-    var name = restoredUri;
-    if (name.startsWith(defaultPackagePrefix)) {
-      name = name.substring(defaultPackagePrefix.length, name.length);
-    }
-    if (name.endsWith('.dart')) {
-      name = name.substring(0, name.length - '.dart'.length);
-    }
-    assert(!name.startsWith('file:'));
-    return name;
-  }
-
   /// A mapping of all [Element]s in this library to the [ModelElement]s which
   /// represent them in dartdoc.
   // Note: Keep this a late final field; converting to a getter (without further
@@ -521,7 +429,7 @@ class Library extends ModelElement
     // refer to hidden members via the prefix, because that can be
     // ambiguous.  dart-lang/dartdoc#2683.
     for (var MapEntry(key: prefix, value: libraries)
-        in prefixToLibrary.entries) {
+        in _prefixToLibrary.entries) {
       referenceChildrenBuilder.putIfAbsent(prefix, () => libraries.first);
     }
     return referenceChildrenBuilder;

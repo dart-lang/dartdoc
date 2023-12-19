@@ -7,8 +7,7 @@ library dartdoc.dartdoc_test;
 import 'dart:async';
 
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/dartdoc.dart' show Dartdoc, DartdocResults;
-import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/dartdoc.dart' show Dartdoc, DartdocResults;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/io_utils.dart';
@@ -50,10 +49,7 @@ void main() {
           [createDartdocProgramOptions, createLoggingOptions],
           pubPackageMetaProvider);
       optionSet.parseArguments([]);
-      startLogging(DartdocLoggingOptionContext(
-          optionSet,
-          _resourceProvider.getFolder(_pathContext.current),
-          _resourceProvider));
+      startLogging(isJson: false, isQuiet: true, showProgress: false);
 
       // Set up the pub metadata for our test packages.
       runPubGet(testPackageToolError.path);

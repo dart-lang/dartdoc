@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library test_utils;
-
 import 'dart:io';
 
 import 'package:analyzer/file_system/file_system.dart';
@@ -11,11 +9,11 @@ import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
-import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model_element.dart';
@@ -59,12 +57,15 @@ Future<DartdocOptionContext> contextFromArgv(
 Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
     List<String> argv, PackageMetaProvider packageMetaProvider) async {
   var optionSet = DartdocOptionRoot.fromOptionGenerators(
-      'dartdoc',
-      [
-        createDartdocOptions,
-        createGeneratorOptions,
-      ],
-      packageMetaProvider);
+    'dartdoc',
+    [
+      createDartdocProgramOptions,
+      createLoggingOptions,
+      createDartdocOptions,
+      createGeneratorOptions,
+    ],
+    packageMetaProvider,
+  );
   optionSet.parseArguments(argv);
   return DartdocGeneratorOptionContext.fromDefaultContextLocation(
       optionSet, packageMetaProvider.resourceProvider);
@@ -153,7 +154,6 @@ PackageMetaProvider get testPackageMetaProvider {
     sdkRoot,
     {},
     defaultSdk: FolderBasedDartSdk(resourceProvider, sdkRoot),
-    messageForMissingPackageMeta: PubPackageMeta.messageForMissingPackageMeta,
   );
 }
 
@@ -215,13 +215,13 @@ two:lib/
       "name": "one",
       "rootUri": "../../one",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "3.0"
     },
     {
       "name": "two",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "3.0"
     }
   ],
   "generated": "2020-07-07T15:25:30.566271Z",

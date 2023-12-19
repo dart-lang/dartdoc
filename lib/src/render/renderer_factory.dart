@@ -19,15 +19,6 @@ import 'package:dartdoc/src/render/typedef_renderer.dart';
 abstract class RendererFactory {
   const RendererFactory();
 
-  /// Retrieves the appropriate [RendererFactory] according to the
-  /// specified [format]. Currently supports `html` or `md` otherwise
-  /// throws an [ArgumentError].
-  factory RendererFactory.forFormat(String format) => switch (format) {
-        'html' => const HtmlRenderFactory(),
-        'md' => MdRenderFactory(),
-        _ => throw ArgumentError('Unsupported renderer format: $format'),
-      };
-
   LayoutRenderer get templateRenderer;
 
   CategoryRenderer get categoryRenderer;
@@ -138,77 +129,4 @@ class HtmlRenderFactory extends RendererFactory {
   ElementTypeRenderer<AliasedUndefinedElementType>
       get aliasedUndefinedElementTypeRenderer =>
           const AliasedUndefinedElementTypeRendererHtml();
-}
-
-class MdRenderFactory extends RendererFactory {
-  const MdRenderFactory();
-
-  @override
-  LayoutRenderer get templateRenderer => const MdLayoutRenderer();
-
-  @override
-  CategoryRenderer get categoryRenderer => const CategoryRendererMd();
-
-  // We render documentation as HTML for now.
-  // TODO(jdkoren): explore using documentation directly in the output file.
-  @override
-  DocumentationRenderer get documentationRenderer =>
-      const DocumentationRendererHtml();
-
-  @override
-  ElementTypeRenderer<CallableElementType> get callableElementTypeRenderer =>
-      const CallableElementTypeRendererMd();
-
-  @override
-  ElementTypeRenderer<FunctionTypeElementType>
-      get functionTypeElementTypeRenderer =>
-          const FunctionTypeElementTypeRendererMd();
-
-  @override
-  ElementTypeRenderer<ParameterizedElementType>
-      get parameterizedElementTypeRenderer =>
-          const ParameterizedElementTypeRendererMd();
-
-  @override
-  ElementTypeRenderer<RecordElementType> get recordElementTypeRenderer =>
-      const RecordElementTypeRendererMd();
-
-  @override
-  ElementTypeRenderer<AliasedElementType> get aliasedElementTypeRenderer =>
-      const AliasedElementTypeRendererMd();
-
-  @override
-  EnumFieldRenderer get enumFieldRenderer => const EnumFieldRendererMd();
-
-  @override
-  ModelElementRenderer get modelElementRenderer =>
-      const ModelElementRendererMd();
-
-  @override
-  ParameterRenderer get parameterRenderer => const ParameterRendererMd();
-
-  @override
-  ParameterRenderer get parameterRendererDetailed => parameterRenderer;
-
-  @override
-  TypeParametersRenderer get typeParametersRenderer =>
-      const TypeParametersRendererMd();
-
-  @override
-  TypedefRenderer get typedefRenderer => const TypedefRendererMd();
-
-  @override
-  LanguageFeatureRenderer get languageFeatureRenderer =>
-      const LanguageFeatureRendererMd();
-
-  @override
-  SourceCodeRenderer get sourceCodeRenderer => const SourceCodeRendererNoop();
-
-  @override
-  AttributeRenderer get attributeRenderer => const AttributeRendererMd();
-
-  @override
-  ElementTypeRenderer<AliasedUndefinedElementType>
-      get aliasedUndefinedElementTypeRenderer =>
-          const AliasedUndefinedElementTypeRendererMd();
 }

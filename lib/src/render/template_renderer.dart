@@ -3,31 +3,19 @@
 // BSD-style license that can be found in the LICENSE file.
 
 abstract class LayoutRenderer {
-  String composeLayoutTitle(String name, String kind, bool isDeprecated);
+  String composeLayoutTitle(String name, String? kind, bool isDeprecated);
 }
 
 class HtmlLayoutRenderer implements LayoutRenderer {
   const HtmlLayoutRenderer();
 
   @override
-  String composeLayoutTitle(String name, String kind, bool isDeprecated) {
+  String composeLayoutTitle(String name, String? kind, bool isDeprecated) {
+    var kindText = kind == null ? '' : ' $kind';
     if (isDeprecated) {
-      return '<span class="deprecated">$name</span> $kind';
+      return '<span class="deprecated">$name</span>$kindText';
     } else {
-      return '$name $kind';
-    }
-  }
-}
-
-class MdLayoutRenderer implements LayoutRenderer {
-  const MdLayoutRenderer();
-
-  @override
-  String composeLayoutTitle(String name, String kind, bool isDeprecated) {
-    if (isDeprecated) {
-      return '~~$name~~ $kind';
-    } else {
-      return '$name $kind';
+      return '$name$kindText';
     }
   }
 }

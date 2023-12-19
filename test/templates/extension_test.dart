@@ -3,8 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
@@ -23,9 +23,7 @@ void main() async {
   late List<String> eLines;
   late List<String> eRightSidebarLines;
 
-  Future<PubPackageBuilder> createPackageBuilder({
-    List<String> additionalOptions = const [],
-  }) async {
+  Future<PubPackageBuilder> createPackageBuilder() async {
     context = await generatorContextFromArgv([
       '--input',
       packagePath,
@@ -34,7 +32,6 @@ void main() async {
       '--sdk-dir',
       packageMetaProvider.defaultSdkDir.path,
       '--no-link-to-remote',
-      ...additionalOptions,
     ], packageMetaProvider);
 
     var packageConfigProvider =
@@ -49,16 +46,9 @@ void main() async {
     );
   }
 
-  Future<Dartdoc> buildDartdoc({
-    List<String> additionalOptions = const [],
-  }) async {
-    final packageBuilder = await createPackageBuilder(
-      additionalOptions: additionalOptions,
-    );
-    return await Dartdoc.fromContext(
-      context,
-      packageBuilder,
-    );
+  Future<Dartdoc> buildDartdoc() async {
+    final packageBuilder = await createPackageBuilder();
+    return await Dartdoc.fromContext(context, packageBuilder);
   }
 
   group('extensions', () {

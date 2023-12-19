@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_utils.dart' as generator_util;
 import 'package:dartdoc/src/generator/template_data.dart';
@@ -58,7 +58,7 @@ class DartdocGeneratorBackendOptions implements TemplateOptions {
 
 /// An interface for classes which are responsible for outputing the generated
 /// documentation.
-abstract class GeneratorBackend {
+abstract interface class GeneratorBackend {
   FileWriter get writer;
 
   /// Emits JSON describing the [categories] defined by the package.
@@ -82,6 +82,14 @@ abstract class GeneratorBackend {
   /// Emits documentation content for the [eNum].
   void generateEnum(PackageGraph packageGraph, Library library, Enum eNum);
 
+  /// Emits documentation content for the [extension].
+  void generateExtension(
+      PackageGraph packageGraph, Library library, Extension extension);
+
+  /// Emits documentation content for the [extensionType].
+  void generateExtensionType(
+      PackageGraph packageGraph, Library library, ExtensionType extensionType);
+
   /// Emits documentation content for the [mixin].
   void generateMixin(PackageGraph packageGraph, Library library, Mixin mixin);
 
@@ -100,10 +108,6 @@ abstract class GeneratorBackend {
   /// Emits documentation content for the [method].
   void generateMethod(PackageGraph packageGraph, Library library,
       Container clazz, Method method);
-
-  /// Emits documentation content for the [extension].
-  void generateExtension(
-      PackageGraph packageGraph, Library library, Extension extension);
 
   /// Emits documentation content for the [function].
   void generateFunction(
@@ -233,6 +237,16 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     var content = templates.renderExtension(data);
     write(writer, extension.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenExtensionFileCount');
+  }
+
+  @override
+  void generateExtensionType(
+      PackageGraph packageGraph, Library library, ExtensionType extensionType) {
+    var data = ExtensionTypeTemplateData(
+        options, packageGraph, library, extensionType);
+    var content = templates.renderExtensionType(data);
+    write(writer, extensionType.filePath, data, content);
+    runtimeStats.incrementAccumulator('writtenExtensionTypeFileCount');
   }
 
   @override

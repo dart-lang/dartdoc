@@ -36,7 +36,7 @@ class Package extends LibraryContainer
         Warnable,
         CommentReferable,
         ModelBuilder
-    implements Privacy, Documentable {
+    implements Privacy {
   @override
   final String name;
 
@@ -88,7 +88,6 @@ class Package extends LibraryContainer
   // object that contains them.
   Map<String?, Set<String>> usedAnimationIdsByHref = {};
 
-  /// Pieces of the location, split to remove 'package:' and slashes.
   @override
   Set<String> get locationPieces => const {};
 
@@ -103,6 +102,12 @@ class Package extends LibraryContainer
 
   @override
   Kind get kind => isSdk ? Kind.sdk : Kind.package;
+
+  @override
+  String? get aboveSidebarPath => null;
+
+  @override
+  String? get belowSidebarPath => null;
 
   @override
   List<Locatable> get documentationFrom => [this];
@@ -186,16 +191,7 @@ class Package extends LibraryContainer
   @override
   String get enclosingName => packageGraph.defaultPackageName;
 
-  String get filePath => 'index.$fileType';
-
-  // TODO(jdkoren): Provide a way to determine file type of a remote package's
-  // docs. Perhaps make this configurable through dartdoc options.
-  // In theory, a remote package could be documented in any supported format.
-  // In practice, devs depend on Dart, Flutter, and/or packages fetched
-  // from pub.dev, and we know that all of those use html docs.
-  String get fileType => package.documentedWhere == DocumentLocation.remote
-      ? 'html'
-      : config.format;
+  String get filePath => 'index.html';
 
   @override
   String get fullyQualifiedName => 'package:$name';
@@ -248,14 +244,6 @@ class Package extends LibraryContainer
 
   @override
   Package get package => this;
-
-  // Workaround for mustache4dart issue where templates do not recognize
-  // inherited properties as being in-context.
-  @override
-  Iterable<Library> get publicLibraries {
-    assert(libraries.every((l) => l.packageMeta == packageMeta));
-    return super.publicLibraries;
-  }
 
   /// The default, unnamed category.
   ///

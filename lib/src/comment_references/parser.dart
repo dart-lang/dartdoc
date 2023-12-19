@@ -157,29 +157,20 @@ class CommentReferenceParser {
     return children;
   }
 
-  static const _constructorHintPrefix = 'new';
   static const _ignorePrefixes = ['const', 'final', 'var'];
 
   /// Implement parsing a prefix to a comment reference.
   ///
   /// ```text
-  /// <prefix> ::= <constructorPrefixHint>
-  ///    | <leadingJunk>
+  /// <prefix> ::= <leadingModifiers>
   ///
-  /// <constructorPrefixHint> ::= 'new '
-  ///
-  /// <leadingJunk> ::= ('const' | 'final' | 'var')(' '+)
+  /// <leadingModifiers> ::= ('const' | 'final' | 'var')(' '+)
   /// ```
   _PrefixParseResult _parsePrefix() {
     if (_atEnd) {
       return _PrefixParseResult.endOfFile;
     }
     _walkPastWhitespace();
-    if (_tryMatchLiteral(_constructorHintPrefix,
-        requireTrailingNonidentifier: true)) {
-      return _PrefixParseResult.ok(
-          ConstructorHintStartNode(_constructorHintPrefix));
-    }
     if (_ignorePrefixes
         .any((p) => _tryMatchLiteral(p, requireTrailingNonidentifier: true))) {
       return _PrefixParseResult.junk;
@@ -387,9 +378,6 @@ class _PrefixParseResult {
 
   const _PrefixParseResult._(this.type, this.node);
 
-  factory _PrefixParseResult.ok(ConstructorHintStartNode node) =>
-      _PrefixParseResult._(_PrefixResultType.parsedConstructorHint, node);
-
   static const _PrefixParseResult endOfFile =
       _PrefixParseResult._(_PrefixResultType.endOfFile, null);
 
@@ -482,16 +470,6 @@ class _SuffixParseResult {
 // TODO(jcollins-g): add SourceSpans?
 sealed class CommentReferenceNode {
   String get text;
-}
-
-class ConstructorHintStartNode extends CommentReferenceNode {
-  @override
-  final String text;
-
-  ConstructorHintStartNode(this.text);
-
-  @override
-  String toString() => 'ConstructorHintStartNode["$text"]';
 }
 
 class CallableHintEndNode extends CommentReferenceNode {

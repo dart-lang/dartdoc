@@ -101,30 +101,6 @@ Text.
 More text.'''));
   }
 
-  void test_unknownDirective() async {
-    await libraryModel.processComment('''
-/// Text.
-///
-/// {@marco name}
-''');
-    expect(
-        packageGraph.packageWarningCounter.hasWarning(
-            libraryModel, PackageWarning.unknownDirective, "'marco'"),
-        isTrue);
-  }
-
-  void test_directiveWithWrongCase() async {
-    await libraryModel.processComment('''
-/// Text.
-///
-/// {@youTube url}
-''');
-    expect(
-        packageGraph.packageWarningCounter.hasWarning(libraryModel,
-            PackageWarning.unknownDirective, "'youTube' (use lowercase)"),
-        isTrue);
-  }
-
   void test_processesAanimationDirective() async {
     var doc = await libraryModel.processComment('''
 /// Text.

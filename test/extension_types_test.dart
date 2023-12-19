@@ -81,7 +81,25 @@ class C {}
     expect(
       library.classes.named('C').documentationAsHtml,
       '<p>Doc referring to '
-      '<a href="${placeholder}extension_types/ET.html">ET</a>.</p>',
+      '<a href="${placeholder}extension_types/ET-extension-type.html">ET</a>.</p>',
+    );
+  }
+
+  @FailingTest(reason: 'Not implemented yet')
+  void test_referenceToExtensionTypeConstructor() async {
+    var library = await bootPackageWithLibrary('''
+extension type ET(int it) {
+  ET.named(int it);
+}
+
+/// Doc referring to [ET.new] and [Et.named].
+class C {}
+''');
+
+    expect(
+      library.classes.named('C').documentationAsHtml,
+      '<p>Doc referring to '
+      '<a href="${placeholder}extension_types/ET/named.html">ET.named</a>.</p>',
     );
   }
 

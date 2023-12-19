@@ -8,11 +8,12 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
 
-class ExtensionType extends InheritingContainer with Constructable {
+class ExtensionType extends InheritingContainer
+    with Constructable, TypeImplementing {
   @override
   final ExtensionTypeElement element;
 
-  late final ElementType extendedType =
+  late final ElementType representationType =
       modelBuilder.typeFrom(element.typeErasure, library);
 
   ExtensionType(this.element, super.library, super.packageGraph);
@@ -56,38 +57,28 @@ class ExtensionType extends InheritingContainer with Constructable {
   @override
   late final List<ModelElement> allModelElements = [
     ...super.allModelElements,
-    ...typeParameters,
+    ...constructors,
   ];
 
   @override
-  // TODO(srawlins): Implement.
-  List<Field> get allFields => [];
-
-  @override
-  // TODO(srawlins): Implement.
-  Iterable<Method> get inheritedMethods => [];
-
-  @override
-  // TODO(srawlins): Implement.
-  List<Operator> get inheritedOperators => [];
-
-  @override
-  // TODO(srawlins): Implement. It might just be empty...
-  List<InheritingContainer> get inheritanceChain => [];
+  late final List<InheritingContainer> inheritanceChain = [
+    this,
+    ...interfaces.expandInheritanceChain,
+  ];
 
   @override
   String get filePath => '${library.dirName}/${fileStructure.fileName}';
 
   @override
   String get sidebarPath =>
-      '${library.dirName}/$name-extensiontype-sidebar.${fileStructure.fileType}';
+      '${library.dirName}/$name-extension-type-sidebar.html';
 
   Map<String, CommentReferable>? _referenceChildren;
   @override
   Map<String, CommentReferable> get referenceChildren {
     return _referenceChildren ??= {
-      ...extendedType.referenceChildren,
-      // Override extendedType entries with local items.
+      ...representationType.referenceChildren,
+      // Override `representationType` entries with local items.
       ...super.referenceChildren,
     };
   }

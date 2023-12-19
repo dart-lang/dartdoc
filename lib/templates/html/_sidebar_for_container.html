@@ -19,6 +19,7 @@
       {{ /hasPublicEnumValues }}
     {{ /isEnum }}
 
+    {{!-- Instance members which may or may not be inherited. --}}
     {{ #isClassOrEnum }}
       {{ #hasPublicInstanceFields }}
         <li class="section-title{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}">
@@ -44,6 +45,7 @@
       {{ /hasPublicInstanceOperators }}
     {{ /isClassOrEnum }}
 
+    {{!-- Instance members with no inheritance concept. --}}
     {{ #isExtension }}
       {{ #hasPublicInstanceFields }}
         <li class="section-title"> <a href="{{{ href }}}#instance-properties">Properties</a></li>
@@ -67,7 +69,8 @@
       {{ /hasPublicInstanceOperators }}
     {{ /isExtension }}
 
-    {{ #isClassOrEnumOrExtension }}
+    {{!-- Static members. --}}
+    {{ #isInterfaceOrExtension }}
       {{ #hasPublicVariableStaticFields }}
         <li class="section-title"><a href="{{{ href }}}#static-properties">Static properties</a></li>
         {{ #publicVariableStaticFieldsSorted }}
@@ -88,6 +91,6 @@
           <li>{{{ linkedName }}}</li>
         {{ /publicConstantFieldsSorted }}
       {{ /hasPublicConstantFields }}
-    {{ /isClassOrEnumOrExtension }}
+    {{ /isInterfaceOrExtension }}
   {{ /container }}
 </ol>

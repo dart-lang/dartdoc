@@ -27,6 +27,7 @@ import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
+import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/type_utils.dart';
@@ -287,11 +288,12 @@ abstract class ModelElement extends Canonicalization
   /// Caches a newly-created [ModelElement] from [ModelElement._from] or
   /// [ModelElement._fromPropertyInducingElement].
   static void _cacheNewModelElement(
-      Element e, ModelElement? newModelElement, Library library,
+      Element e, ModelElement newModelElement, Library library,
       {Container? enclosingContainer}) {
     // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
     //                   is fixed?
     if (library != Library.sentinel && newModelElement is! Parameter) {
+      runtimeStats.incrementAccumulator('modelElementCacheInsertion');
       var key = (e, library, enclosingContainer);
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
@@ -355,8 +357,8 @@ abstract class ModelElement extends Canonicalization
     PropertyAccessorElement e,
     Library library,
     PackageGraph packageGraph, {
-    Container? enclosingContainer,
-    Member? originalMember,
+    required Container? enclosingContainer,
+    required Member? originalMember,
   }) {
     // Accessors can be part of a [Container], or a part of a [Library].
     if (e.enclosingElement is ExtensionElement ||
@@ -384,12 +386,8 @@ abstract class ModelElement extends Canonicalization
   // Stub for mustache.
   Iterable<Category?> get displayedCategories => const [];
 
-  Set<Library>? get _exportedInLibraries {
-    return library.packageGraph.libraryExports[element.library!];
-  }
-
   @override
-  late final ModelNode? modelNode = packageGraph.getModelNodeFor(element);
+  ModelNode? get modelNode => packageGraph.getModelNodeFor(element);
 
   /// This element's [Annotation]s.
   ///
@@ -463,13 +461,15 @@ abstract class ModelElement extends Canonicalization
   // The canonical ModelElement for this ModelElement,
   // or null if there isn't one.
   late final ModelElement? canonicalModelElement = () {
-    Container? preferredClass;
-    // TODO(srawlins): Add mixin.
-    if (enclosingElement is Class ||
-        enclosingElement is Enum ||
-        enclosingElement is Extension) {
-      preferredClass = enclosingElement as Container?;
-    }
+    final enclosingElement = this.enclosingElement;
+    var preferredClass = switch (enclosingElement) {
+      // TODO(srawlins): Add mixin.
+      Class() => enclosingElement,
+      Enum() => enclosingElement,
+      Extension() => enclosingElement,
+      ExtensionType() => enclosingElement,
+      _ => null,
+    };
     return packageGraph.findCanonicalModelElementFor(element,
         preferredClass: preferredClass);
   }();
@@ -487,7 +487,7 @@ abstract class ModelElement extends Canonicalization
       return null;
     }
 
-    // This is not accurate if we are constructing the Package.
+    // This is not accurate if we are still constructing the Package.
     assert(packageGraph.allLibrariesAdded);
 
     var definingLibraryIsLocalPublic =
@@ -512,8 +512,7 @@ abstract class ModelElement extends Canonicalization
   }();
 
   Library? _searchForCanonicalLibrary() {
-    var thisAndExported = definingLibrary._exportedInLibraries;
-
+    var thisAndExported = packageGraph.libraryExports[definingLibrary.element];
     if (thisAndExported == null) {
       return null;
     }
@@ -533,10 +532,10 @@ abstract class ModelElement extends Canonicalization
         .where((l) {
       var lookup =
           l.element.exportNamespace.definedNames[topLevelElement.name!];
-      if (lookup is PropertyAccessorElement) {
-        lookup = lookup.variable;
-      }
-      return topLevelElement == lookup;
+      return switch (lookup) {
+        PropertyAccessorElement() => topLevelElement == lookup.variable,
+        _ => topLevelElement == lookup,
+      };
     }).toList(growable: true);
 
     // Avoid claiming canonicalization for elements outside of this element's
@@ -559,29 +558,9 @@ abstract class ModelElement extends Canonicalization
       return candidateLibraries.single;
     }
 
-    // Start with our top-level element.
-    var warnable = ModelElement._fromElement(topLevelElement, packageGraph);
-    // Heuristic scoring to determine which library a human likely
-    // considers this element to be primarily 'from', and therefore,
-    // canonical.  Still warn if the heuristic isn't that confident.
-    var scoredCandidates =
-        warnable.scoreCanonicalCandidates(candidateLibraries);
-    final librariesByScore = scoredCandidates.map((s) => s.library).toList();
-    var secondHighestScore =
-        scoredCandidates[scoredCandidates.length - 2].score;
-    var highestScore = scoredCandidates.last.score;
-    var confidence = highestScore - secondHighestScore;
-    final canonicalLibrary = librariesByScore.last;
-
-    if (confidence < config.ambiguousReexportScorerMinConfidence) {
-      var libraryNames = librariesByScore.map((l) => l.name);
-      var message = '$libraryNames -> ${canonicalLibrary.name} '
-          '(confidence ${confidence.toStringAsPrecision(4)})';
-      warnable.warn(PackageWarning.ambiguousReexport,
-          message: message, extendedDebug: scoredCandidates.map((s) => '$s'));
-    }
-
-    return canonicalLibrary;
+    var topLevelModelElement =
+        ModelElement._fromElement(topLevelElement, packageGraph);
+    return topLevelModelElement.calculateCanonicalCandidate(candidateLibraries);
   }
 
   @override
@@ -621,22 +600,9 @@ abstract class ModelElement extends Canonicalization
   @Deprecated('replace with fileStructure.fileName')
   String get fileName => fileStructure.fileName;
 
-  @Deprecated('replace with fileStructure.fileType')
-  String get fileType => fileStructure.fileType;
-
   /// The full path of the output file in which this element will be primarily
   /// documented.
   String get filePath;
-
-  /// The full path of the sidebar for elements "above" this element.
-  ///
-  /// A `null` value indicates no content is displayed in the "above" sidebar.
-  String? get aboveSidebarPath;
-
-  /// The full path of the sidebar for elements "below" this element.
-  ///
-  /// A `null` value indicates no content is displayed in the "below" sidebar.
-  String? get belowSidebarPath;
 
   /// Returns the fully qualified name.
   ///
@@ -684,7 +650,6 @@ abstract class ModelElement extends Canonicalization
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
     var packageBaseHref = package.baseHref;
     return '$packageBaseHref$filePath';

@@ -7,13 +7,11 @@ import 'dart:convert';
 import 'dart:io' show Platform, exitCode, stderr;
 
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/empty_generator.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
-import 'package:dartdoc/src/generator/markdown_generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -174,15 +172,10 @@ class Dartdoc {
       maxFileCount: context.maxFileCount,
       maxTotalSize: context.maxTotalSize,
     );
-    var generator = await switch (context.format) {
-      'html' => initHtmlGenerator(context, writer: writer),
-      'md' => initMarkdownGenerator(context, writer: writer),
-      _ => throw DartdocFailure('Unsupported output format: ${context.format}')
-    };
     return Dartdoc._(
       context,
       outputDir,
-      generator,
+      await initHtmlGenerator(context, writer: writer),
       packageBuilder,
     );
   }
@@ -213,12 +206,8 @@ class Dartdoc {
 
     var warnings = packageGraph.packageWarningCounter.warningCount;
     var errors = packageGraph.packageWarningCounter.errorCount;
-    if (warnings == 0 && errors == 0) {
-      logInfo('no issues found');
-    } else {
-      logWarning("Found $warnings ${pluralize('warning', warnings)} "
-          "and $errors ${pluralize('error', errors)}.");
-    }
+    logWarning("Found $warnings ${pluralize('warning', warnings)} "
+        "and $errors ${pluralize('error', errors)}.");
 
     var seconds = stopwatch.elapsedMilliseconds / 1000.0;
     libs = packageGraph.localPublicLibraries.length;
@@ -264,9 +253,7 @@ class Dartdoc {
   ///
   /// Passing in a [postProcessCallback] to do additional processing after
   /// the documentation is generated.
-  void executeGuarded([
-    Future<void> Function(DartdocOptionContext)? postProcessCallback,
-  ]) {
+  void executeGuarded() {
     onCheckProgress.listen(logProgress);
     // This function should *never* `await runZonedGuarded` because the errors
     // thrown in [generateDocs] are uncaught. We want this because uncaught
@@ -274,21 +261,19 @@ class Dartdoc {
     //
     // If you await the zone, the code that comes after the await is not
     // executed if the zone dies due to an uncaught error. To avoid this,
-    // confusion, never `await runZonedGuarded` and never change the return
-    // value of [executeGuarded].
+    // confusion, never `await runZonedGuarded`.
     runZonedGuarded(
       () async {
         runtimeStats.startPerfTask('generateDocs');
         await generateDocs();
         runtimeStats.endPerfTask();
-        await postProcessCallback?.call(config);
       },
       (e, stackTrace) {
         stderr.writeln('\n$_dartdocFailedMessage: $e\n$stackTrace');
         exitCode = e is DartdocFailure ? 1 : 255;
       },
       zoneSpecification: ZoneSpecification(
-        print: (_, __, ___, String line) => logPrint(line),
+        print: (_, __, ___, String line) => logInfo(line),
       ),
     );
   }

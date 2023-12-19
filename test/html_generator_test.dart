@@ -4,8 +4,7 @@
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/dartdoc.dart' show DartdocFileWriter;
-import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/dartdoc.dart' show DartdocFileWriter;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';

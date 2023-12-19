@@ -43,31 +43,3 @@ class TypeParametersRendererHtml implements TypeParametersRenderer {
     return '<span class="signature">&lt;<wbr><span class="type-parameter">$joined</span>&gt;</span>';
   }
 }
-
-class TypeParametersRendererMd implements TypeParametersRenderer {
-  const TypeParametersRendererMd();
-
-  @override
-  String renderGenericParameters(TypeParameters typeParameters) => _compose(
-      typeParameters.typeParameters,
-      (t) => [...t.annotations.map((a) => a.linkedNameWithParameters), t.name]
-          .join(' '));
-
-  @override
-  String renderLinkedGenericParameters(TypeParameters typeParameters) =>
-      _compose(
-          typeParameters.typeParameters,
-          (t) => [
-                ...t.annotations.map((a) => a.linkedNameWithParameters),
-                t.linkedName
-              ].join(' '));
-
-  String _compose(List<TypeParameter> typeParameters,
-      String Function(TypeParameter) mapfn) {
-    if (typeParameters.isEmpty) {
-      return '';
-    }
-    var joined = typeParameters.map(mapfn).join(', ');
-    return '&lt;$joined>';
-  }
-}

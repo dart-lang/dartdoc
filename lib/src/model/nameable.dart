@@ -16,6 +16,12 @@ abstract mixin class Nameable {
     ...name.split(locationSplitter).where((s) => s.isNotEmpty)
   };
 
+  /// The name to use as text in the rendered documentation.
+  String get displayName => name;
+
+  /// The name to use in breadcrumbs in the rendered documentation.
+  String get breadcrumbName => name;
+
   /// Utility getter/cache for `_MarkdownCommentReference._getResultsForClass`.
   // TODO(jcollins-g): This should really be the same as 'name', but isn't
   // because of accessors and operators.

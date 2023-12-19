@@ -141,8 +141,7 @@ class Field extends ModelElement
   }
 
   @override
-  String get fileName =>
-      '${isConst ? '$name-constant' : name}.${fileStructure.fileType}';
+  String get fileName => '${isConst ? '$name-constant' : name}.html';
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;
@@ -181,8 +180,4 @@ class Field extends ModelElement
 
   @override
   Inheritable? get overriddenElement => null;
-
-  @override
-  bool get hasHideConstantImplementation =>
-      definingEnclosingContainer.hasHideConstantImplementations;
 }

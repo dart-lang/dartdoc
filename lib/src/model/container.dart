@@ -28,7 +28,7 @@ import 'package:meta/meta.dart';
 /// * **has** : boolean getters indicating whether the underlying collections
 ///   are empty.  These are available mostly for the templating system.
 abstract class Container extends ModelElement
-    with Categorization, TypeParameters, HideConstantImplementations {
+    with Categorization, TypeParameters {
   Container(super.library, super.packageGraph);
 
   // TODO(jcollins-g): Implement a ContainerScope that flattens supertypes?
@@ -38,16 +38,14 @@ abstract class Container extends ModelElement
   @override
   bool get hasParameters => false;
 
-  /// Whether this a class or mixin, but not an enum.
-  bool get isClass => element is InterfaceElement;
   bool get isExtension => element is ExtensionElement;
 
-  /// Whether this is a class, an enum, or an extension.
+  /// Whether this is an interface type (class, enum, mixin, extension type) or
+  /// an extension.
   ///
-  /// For templates, classes and extensions have much in common despite
+  /// For templates, interfaces and extensions have much in common despite
   /// differing underlying implementations in the analyzer.
-  bool get isClassOrEnumOrExtension =>
-      element is InterfaceElement || isExtension;
+  bool get isInterfaceOrExtension => element is InterfaceElement || isExtension;
 
   /// Whether this is an enum.
   bool get isEnum => element is EnumElement;
