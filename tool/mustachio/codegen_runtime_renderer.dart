@@ -523,7 +523,7 @@ renderVariable:
       if (getterType.nullabilitySuffix != NullabilitySuffix.none) {
         _buffer.writeln(' == true,');
       } else {
-        _buffer.writeln('');
+        _buffer.writeln(',');
       }
     } else if (_typeSystem.isAssignableTo(
         getterType, _typeProvider.iterableDynamicType)) {
