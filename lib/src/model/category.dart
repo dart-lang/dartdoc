@@ -8,7 +8,6 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
-import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 /// A subcategory of a package, containing elements tagged with `{@category}`.
@@ -118,9 +117,9 @@ class Category extends Nameable
   @override
   String? get belowSidebarPath => null;
 
-  String get categoryLabel => _categoryRenderer.renderCategoryLabel(this);
+  String get categoryLabel => _renderCategoryLabel(this);
 
-  String get linkedName => _categoryRenderer.renderLinkedName(this);
+  String get linkedName => _renderLinkedName(this);
 
   /// The position in the container order for this category.
   int get categoryIndex => package.categories.indexOf(this);
@@ -147,14 +146,47 @@ class Category extends Nameable
   @override
   Iterable<Class> get exceptions => _exceptions;
 
-  CategoryRenderer get _categoryRenderer =>
-      packageGraph.rendererFactory.categoryRenderer;
-
   @override
   Map<String, CommentReferable> get referenceChildren => const {};
 
   @override
   Iterable<CommentReferable> get referenceParents => const [];
+
+  /// Render the label of this [category].
+  String _renderCategoryLabel(Category category) {
+    final buffer = StringBuffer('<span class="category ');
+    final name = category.name;
+    buffer.writeAll(name.toLowerCase().split(' '), '-');
+    buffer.write(' cp-');
+    buffer.write(category.categoryIndex);
+
+    if (category.isDocumented) {
+      buffer.write(' linked');
+    }
+
+    buffer.write('"'); // Wrap up the class list and begin title
+    buffer.write(' title="This is part of the ');
+    buffer.write(name);
+    buffer.write(' ');
+    buffer.write(category.kind);
+    buffer.write('.">'); // Wrap up the title
+
+    buffer.write(_renderLinkedName(category));
+    buffer.write('</span>');
+
+    return buffer.toString();
+  }
+
+  /// Render the name of this [category] with a link to its specified
+  /// [Category.href] if it is documented.
+  String _renderLinkedName(Category category) {
+    final unbrokenName = category.name.replaceAll(' ', '&nbsp;');
+    if (category.isDocumented) {
+      return '<a href="${category.href}">$unbrokenName</a>';
+    } else {
+      return unbrokenName;
+    }
+  }
 }
 
 extension on String? {

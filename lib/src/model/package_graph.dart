@@ -344,8 +344,8 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   /// Dartdoc's configuration flags.
   final DartdocOptionContext config;
 
-  /// Factory for renderers
-  final RendererFactory rendererFactory;
+  /// Factory for HTML rendering.
+  final HtmlRenderFactory rendererFactory;
 
   /// PackageMeta Provider for building [PackageMeta]s.
   final PackageMetaProvider packageMetaProvider;
