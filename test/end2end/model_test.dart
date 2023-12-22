@@ -779,7 +779,7 @@ void main() {
 
     test('CategoryRendererHtml renders linkedName', () {
       var category = packageGraph.publicPackages.first.categories.first;
-      expect(category.categoryLabel,
+      expect(category.linkedName,
           '<a href="${htmlBasePlaceholder}topics/Superb-topic.html">Superb</a>');
     });
   });
