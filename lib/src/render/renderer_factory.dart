@@ -10,14 +10,11 @@ import 'package:dartdoc/src/render/language_feature_renderer.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
-import 'package:dartdoc/src/render/template_renderer.dart';
 import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
 class HtmlRenderFactory {
   const HtmlRenderFactory();
-
-  LayoutRenderer get templateRenderer => const HtmlLayoutRenderer();
 
   DocumentationRenderer get documentationRenderer =>
       const DocumentationRendererHtml();
