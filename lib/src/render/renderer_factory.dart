@@ -13,6 +13,8 @@ import 'package:dartdoc/src/render/source_code_renderer.dart';
 import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
+// TODO(kallentu): Inline and remove all the renderers in this renderer factory.
+// Then remove the factory itself.
 class HtmlRenderFactory {
   const HtmlRenderFactory();
 
