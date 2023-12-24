@@ -191,7 +191,7 @@ class _Snapshot {
   /// Will return true precisely once, unless [snapshotFile] was already a
   /// snapshot.  In that case, will always return false.
   bool get needsSnapshot {
-    if (_needsSnapshot == true) {
+    if (_needsSnapshot) {
       _needsSnapshot = false;
       return true;
     }

@@ -103,7 +103,7 @@ class Baz {}
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.b1 == true,
+                  getBool: (CT_ c) => c.b1,
                 ),
 '''));
     });

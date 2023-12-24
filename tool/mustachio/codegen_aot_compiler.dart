@@ -501,14 +501,16 @@ class _BlockCompiler {
 
   /// Compiles a conditional section containing [block] into a renderer's Dart
   /// source.
+  ///
+  /// Assumes that [variableLookup] references a non-nullable [bool].
   Future<void> _compileConditionalSection(
       _VariableLookup variableLookup, List<MustachioNode> block,
       {bool invert = false}) async {
     var variableAccess = variableLookup.name;
     if (invert) {
-      writeln('if ($variableAccess != true) {');
+      writeln('if (!$variableAccess) {');
     } else {
-      writeln('if ($variableAccess == true) {');
+      writeln('if ($variableAccess) {');
     }
     await _compile(block);
     writeln('}');
