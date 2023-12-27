@@ -215,16 +215,14 @@ library my_library;
 
 A file `categories.json` will be generated at the top level of the documentation tree with
 information about categories collected from objects in the source tree.  The directives
-`@category`, `@subCategory`, `@image`, and `@samples` are understood and saved into this json.
-Future versions of dartdoc may make direct use of the image and samples tags.
+`@category`, and `@subCategory` are understood and saved into this json.
 
 As an example, if we document the class Icon in flutter using the following:
 
 ```dart
 /// {@category Basics}
-/// {@category Assets, Images, and Icons}
+/// {@category Assets and Icons}
 /// {@subCategory Information displays}
-/// {@image <image alt='' src='/images/catalog-widget-placeholder.png'>}
 class Icon extends StatelessWidget {}
 ```
 
@@ -237,13 +235,12 @@ that will result in the following json:
     "href": "widgets/Icon-class.html",
     "type": "class",
     "categories": [
-      "Assets, Images, and Icons",
+      "Assets and Icons",
       "Basics"
     ],
     "subcategories": [
       "Information displays"
     ],
-    "image": "<image alt='' src='/images/catalog-widget-placeholder.png'>"
   }
 ```
 
@@ -411,47 +408,12 @@ markdown link isn't linked).
 It's best to only inject HTML that is self-contained and doesn't depend upon
 other elements on the page, since those may change in future versions of Dartdoc.
 
-### Skipping constant rendering with one-line docs
-
-For some classes or libraries full of well-documented constants, showing the
-implementation on the enclosing `class` or `library` page can be distracting
-or even misleading.  To prevent the rendering of constant implementations,
-place the `{@hideConstantImplementations}` in the documentation comment for
-the enclosing context where the constant is defined.   For members of a class,
-place the directive in the class documentation where the constants are defined.
-For top level constants, place the directive in the library where the constants
-are defined.
-
-For example:
-
-```dart
-/// This is truly an amazing library.
-/// {@hideConstantImplementations}
-library my_library;
-
-/// This top level constant will not show its implementation.
-const a = 7;
-
-/// {@hideConstantImplementations}
-class A {
-  /// This constant will not show its implementation.
-  static const aConst = 12;
-}
-
-class B {
-  /// Despite the library directive, because this is a class
-  /// member and there is no hideConstantImplementations
-  /// directive on the class, we will show this implementation.
-  static const bConst = 27; 
-}
-```
-
 ### Auto including dependencies
 
 If `--auto-include-dependencies` flag is provided, dartdoc tries to automatically add
 all the used libraries, even from other packages, to the list of the documented libraries.
 
-### Using link-to-source
+### Using linkToSource
 
 The source linking feature in dartdoc is a little tricky to use, since pub packages do not actually
 include enough information to link back to source code and that's the context in which documentation
@@ -464,14 +426,14 @@ but generated docs will generate locations that may start drifting with further 
 
 Example dartdoc_options.yaml:
 ```yaml
-link-to-source:
+linkToSource:
   root: '.'
   uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/v0.28.0/%f%#L%l%'
 ```
 
 Example staging command line:
 ```bash
-dart pub global run dartdoc --link-to-source-root '.' --link-to-source-revision 6fac6f770d271312c88e8ae881861702a9a605be --link-to-source-uri-template 'https://github.com/dart-lang/dartdoc/blob/%r%/%f#L%l%'
+dart pub global run dartdoc --link-to-source-root '.' --link-to-source-revision 6fac6f770d271312c88e8ae881861702a9a605be --link-to-source-uri-template 'https://github.com/dart-lang/dartdoc/blob/%r%/%f%#L%l%'
 ```
 
 This gets more complicated with `--auto-include-dependencies` as these command line flags

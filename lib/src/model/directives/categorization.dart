@@ -4,10 +4,10 @@
 
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:meta/meta.dart';
 
-final RegExp _categoryRegExp = RegExp(
-    r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
-    multiLine: true);
+final RegExp _categoryRegExp =
+    RegExp(r'[ ]*{@(category|subCategory) (.+?)}[ ]*\n?', multiLine: true);
 
 /// Mixin parsing the `@category` directive for ModelElements.
 mixin Categorization on DocumentationComment implements Indexable {
@@ -27,26 +27,15 @@ mixin Categorization on DocumentationComment implements Indexable {
       _hasCategorization = true;
       switch (match[1]) {
         case 'category':
-        case 'api':
           categorySet.add(match[2]!.trim());
-          break;
         case 'subCategory':
           subCategorySet.add(match[2]!.trim());
-          break;
-        case 'image':
-          _image = match[2]!.trim();
-          break;
-        case 'samples':
-          _samples = match[2]!.trim();
-          break;
       }
       return '';
     });
 
     _categoryNames = categorySet.toList(growable: false)..sort();
     _subCategoryNames = subCategorySet.toList(growable: false)..sort();
-    _image ??= '';
-    _samples ??= '';
     return rawDocs;
   }
 
@@ -72,31 +61,10 @@ mixin Categorization on DocumentationComment implements Indexable {
     return _categoryNames;
   }
 
-  bool get hasImage => image!.isNotEmpty;
-  String? _image;
-
-  /// Either a URI to a defined image,
-  /// or 'null' if one was not declared.
-  String? get image {
-    // TODO(jcollins-g): avoid side-effect dependency
-    if (_image == null) documentationLocal;
-    return _image;
-  }
-
-  bool get hasSamples => samples?.isNotEmpty ?? false;
-  String? _samples;
-
-  /// Either a URI to documentation with samples,
-  /// or 'null' if one was not declared.
-  String? get samples {
-    // TODO(jcollins-g): avoid side-effect dependency
-    if (_samples == null) documentationLocal;
-    return _samples;
-  }
-
-  late final Iterable<Category> categories = [
-    ...?categoryNames?.map((n) => package.nameToCategory[n]).whereNotNull()
-  ]..sort();
+  @visibleForTesting
+  List<Category> get categories => [
+        ...?categoryNames?.map((n) => package.nameToCategory[n]).whereNotNull()
+      ]..sort();
 
   Iterable<Category> get displayedCategories {
     if (config.showUndocumentedCategories) return categories;
@@ -105,7 +73,7 @@ mixin Categorization on DocumentationComment implements Indexable {
 
   bool? _hasCategorization;
 
-  /// True if categories, subcategories, a documentation icon, or samples were
+  /// True if categories, subcategories, or a documentation icon were
   /// declared.
   late final bool hasCategorization = () {
     if (_hasCategorization == null) documentationLocal;

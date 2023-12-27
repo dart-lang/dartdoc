@@ -4,19 +4,20 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:dartdoc/src/model/feature.dart';
+import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 
-/// Mixin for subclasses of ModelElement representing Elements that can be
+/// Mixin for subclasses of [ModelElement] representing elements that can be
 /// inherited from one class to another.
 ///
 /// We can search the inheritance chain between this instance and
 /// [definingEnclosingContainer] in [Inheritable.canonicalEnclosingContainer],
 /// for the canonical [Class] closest to where this member was defined.  We
-/// can then know that when we find [Inheritable.modelElement] inside that [Class]'s
-/// namespace, that's the one we should treat as canonical and implementors
-/// of this class can use that knowledge to determine canonicalization.
+/// can then know that when we find [Inheritable.modelElement] inside that
+/// [Class]'s namespace, that's the one we should treat as canonical and
+/// implementors of this class can use that knowledge to determine
+/// canonicalization.
 ///
 /// We pick the class closest to the [definingEnclosingContainer] so that all
 /// children of that class inheriting the same member will point to the same
@@ -31,11 +32,11 @@ mixin Inheritable on ContainerMember {
   bool get isCovariant;
 
   @override
-  Set<Feature> get features => {
-        ...super.features,
-        if (isOverride) Feature.overrideFeature,
-        if (isInherited) Feature.inherited,
-        if (isCovariant) Feature.covariant,
+  Set<Attribute> get attributes => {
+        ...super.attributes,
+        if (isOverride) Attribute.override_,
+        if (isInherited) Attribute.inherited,
+        if (isCovariant) Attribute.covariant,
       };
 
   @override
@@ -43,16 +44,11 @@ mixin Inheritable on ContainerMember {
       canonicalEnclosingContainer?.canonicalLibrary;
 
   @override
-  late final ModelElement? canonicalModelElement = () {
-    final canonicalEnclosingContainer = this.canonicalEnclosingContainer;
-    if (canonicalEnclosingContainer == null) {
-      return null;
-    }
-    return canonicalEnclosingContainer.allCanonicalModelElements
-        .firstWhereOrNull((m) =>
-            m.name == name &&
-            m is PropertyAccessorElement == this is PropertyAccessorElement);
-  }();
+  late final ModelElement? canonicalModelElement = canonicalEnclosingContainer
+      ?.allCanonicalModelElements
+      .firstWhereOrNull((m) =>
+          m.name == name &&
+          m is PropertyAccessorElement == this is PropertyAccessorElement);
 
   @override
   Container? computeCanonicalEnclosingContainer() {
@@ -94,7 +90,10 @@ mixin Inheritable on ContainerMember {
       // classes.
       if (definingEnclosingContainer.isCanonical &&
           definingEnclosingContainer.isPublic) {
-        assert(definingEnclosingContainer == found);
+        assert(
+            definingEnclosingContainer == found,
+            'For $element, expected $definingEnclosingContainer to be Object '
+            'or $found, but was neither.');
       }
       if (found != null) {
         return found;
@@ -111,13 +110,13 @@ mixin Inheritable on ContainerMember {
     var inheritance = [
       ...(enclosingElement as InheritingContainer).inheritanceChain,
     ];
-    var object = packageGraph.specialClasses[SpecialClass.object];
+    var object = packageGraph.specialClasses[SpecialClass.object]!;
+
     assert(definingEnclosingContainer == object ||
         inheritance.contains(definingEnclosingContainer));
-
-    // Unless the code explicitly extends dart-core's Object, we won't get
+    // Unless the code explicitly extends dart:core's Object, we won't get
     // an entry here.  So add it.
-    if (inheritance.last != object && object != null) {
+    if (inheritance.last != object) {
       inheritance.add(object);
     }
     assert(inheritance.where((e) => e == object).length == 1);
@@ -171,7 +170,7 @@ mixin Inheritable on ContainerMember {
   }();
 
   @override
-  late final int overriddenDepth = () {
+  int get overriddenDepth {
     var depth = 0;
     var e = this;
     while (e.overriddenElement != null) {
@@ -179,5 +178,5 @@ mixin Inheritable on ContainerMember {
       e = e.overriddenElement!;
     }
     return depth;
-  }();
+  }
 }

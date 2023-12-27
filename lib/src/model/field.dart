@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:dartdoc/src/model/feature.dart';
+import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
 
@@ -113,36 +113,35 @@ class Field extends ModelElement
       element.isAbstract ? 'abstract $kind' : kind.toString();
 
   @override
-  Set<Feature> get features {
-    var allFeatures = {...super.features, ...comboFeatures};
-    // Combo features can indicate 'inherited' and 'override' if
-    // either the getter or setter has one of those properties, but that's not
-    // really specific enough for [Field]s that have public getter/setters.
+  Set<Attribute> get attributes {
+    var allAttributes = {...super.attributes, ...comboAttributes};
+    // Combo attributes can indicate 'inherited' and 'override' if either the
+    // getter or setter has one of those properties, but that's not really
+    // specific enough for [Field]s that have public getter/setters.
     if (hasPublicGetter && hasPublicSetter) {
       if (getter!.isInherited && setter!.isInherited) {
-        allFeatures.add(Feature.inherited);
+        allAttributes.add(Attribute.inherited);
       } else {
-        allFeatures.remove(Feature.inherited);
-        if (getter!.isInherited) allFeatures.add(Feature.inheritedGetter);
-        if (setter!.isInherited) allFeatures.add(Feature.inheritedSetter);
+        allAttributes.remove(Attribute.inherited);
+        if (getter!.isInherited) allAttributes.add(Attribute.inheritedGetter);
+        if (setter!.isInherited) allAttributes.add(Attribute.inheritedSetter);
       }
       if (getter!.isOverride && setter!.isOverride) {
-        allFeatures.add(Feature.overrideFeature);
+        allAttributes.add(Attribute.override_);
       } else {
-        allFeatures.remove(Feature.overrideFeature);
-        if (getter!.isOverride) allFeatures.add(Feature.overrideGetter);
-        if (setter!.isOverride) allFeatures.add(Feature.overrideSetter);
+        allAttributes.remove(Attribute.override_);
+        if (getter!.isOverride) allAttributes.add(Attribute.overrideGetter);
+        if (setter!.isOverride) allAttributes.add(Attribute.overrideSetter);
       }
     } else {
-      if (isInherited) allFeatures.add(Feature.inherited);
-      if (isOverride) allFeatures.add(Feature.overrideFeature);
+      if (isInherited) allAttributes.add(Attribute.inherited);
+      if (isOverride) allAttributes.add(Attribute.override_);
     }
-    return allFeatures;
+    return allAttributes;
   }
 
   @override
-  String get fileName =>
-      '${isConst ? '$name-constant' : name}.${fileStructure.fileType}';
+  String get fileName => '${isConst ? '$name-constant' : name}.html';
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;
@@ -181,8 +180,4 @@ class Field extends ModelElement
 
   @override
   Inheritable? get overriddenElement => null;
-
-  @override
-  bool get hasHideConstantImplementation =>
-      definingEnclosingContainer.hasHideConstantImplementations;
 }

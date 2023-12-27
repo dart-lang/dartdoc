@@ -8,7 +8,6 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
-import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 /// A subcategory of a package, containing elements tagged with `{@category}`.
@@ -25,29 +24,48 @@ class Category extends Nameable
         ModelBuilder
     implements Documentable {
   /// All libraries in [libraries] must come from [_package].
-  final Package _package;
-
   @override
-  Package get package => _package;
+  final Package package;
 
   final String? _name;
 
-  final DartdocOptionContext _config;
-
   @override
-  DartdocOptionContext get config => _config;
+  final DartdocOptionContext config;
 
   final List<Class> _classes = [];
-  final List<Extension> _extensions = [];
-  final List<Enum> _enums = [];
-  final List<Mixin> _mixins = [];
-  final List<Class> _exceptions = [];
-  final List<TopLevelVariable> _constants = [];
-  final List<TopLevelVariable> _properties = [];
-  final List<ModelFunction> _functions = [];
-  final List<Typedef> _typedefs = [];
 
-  Category(this._name, this._package, this._config);
+  final List<Class> _exceptions = [];
+
+  @override
+  final List<TopLevelVariable> constants = [];
+
+  @override
+  final List<Extension> extensions = [];
+
+  @override
+  final List<ExtensionType> extensionTypes = [];
+
+  @override
+  final List<Enum> enums = [];
+
+  @override
+  final List<ModelFunction> functions = [];
+
+  @override
+  final List<Mixin> mixins = [];
+
+  @override
+  final List<TopLevelVariable> properties = [];
+
+  @override
+  final List<Typedef> typedefs = [];
+
+  final CategoryDefinition _categoryDefinition;
+
+  Category(this._name, this.package, this.config)
+      : _categoryDefinition =
+            config.categories.categoryDefinitions[_name.orDefault] ??
+                CategoryDefinition(_name, null, null);
 
   void addClass(Class class_) {
     if (class_.isErrorOrException) {
@@ -61,10 +79,10 @@ class Category extends Nameable
   Element? get element => null;
 
   @override
-  String get name => categoryDefinition.displayName;
+  String get name => _categoryDefinition.displayName;
 
   @override
-  String get sortKey => _name ?? '<default>';
+  String get sortKey => _name.orDefault;
 
   @override
   List<String> get containerOrder => config.categoryOrder;
@@ -74,10 +92,6 @@ class Category extends Nameable
 
   @override
   PackageGraph get packageGraph => package.packageGraph;
-
-  @override
-  Library get canonicalLibrary =>
-      throw UnimplementedError('Categories can not have associated libraries.');
 
   @override
   List<Locatable> get documentationFrom => [this];
@@ -97,16 +111,46 @@ class Category extends Nameable
   @override
   String? get href => isCanonical ? '${package.baseHref}$filePath' : null;
 
-  String get categoryLabel => _categoryRenderer.renderCategoryLabel(this);
+  @override
+  String? get aboveSidebarPath => null;
 
-  String get linkedName => _categoryRenderer.renderLinkedName(this);
+  @override
+  String? get belowSidebarPath => null;
+
+  String get categoryLabel {
+    final buffer = StringBuffer('<span class="category ');
+    buffer.writeAll(name.toLowerCase().split(' '), '-');
+    buffer.write(' cp-');
+    buffer.write(categoryIndex);
+
+    if (isDocumented) {
+      buffer.write(' linked');
+    }
+
+    buffer.write('"'); // Wrap up the class list and begin title
+    buffer.write(' title="This is part of the ');
+    buffer.write(name);
+    buffer.write(' ');
+    buffer.write(kind);
+    buffer.write('.">'); // Wrap up the title
+
+    buffer.write(linkedName);
+    buffer.write('</span>');
+
+    return buffer.toString();
+  }
+
+  String get linkedName {
+    final unbrokenName = name.replaceAll(' ', '&nbsp;');
+    if (isDocumented) {
+      return '<a href="$href">$unbrokenName</a>';
+    } else {
+      return unbrokenName;
+    }
+  }
 
   /// The position in the container order for this category.
-  late final int categoryIndex = package.categories.indexOf(this);
-
-  late final CategoryDefinition categoryDefinition =
-      config.categories.categoryDefinitions[sortKey] ??
-          CategoryDefinition(_name, null, null);
+  int get categoryIndex => package.categories.indexOf(this);
 
   @override
   bool get isCanonical =>
@@ -116,47 +160,27 @@ class Category extends Nameable
   Kind get kind => Kind.topic;
 
   @override
-  late final File? documentationFile = () {
-    var documentationMarkdown = categoryDefinition.documentationMarkdown;
+  File? get documentationFile {
+    var documentationMarkdown = _categoryDefinition.documentationMarkdown;
     if (documentationMarkdown != null) {
-      return _config.resourceProvider.getFile(documentationMarkdown);
+      return config.resourceProvider.getFile(documentationMarkdown);
     }
     return null;
-  }();
+  }
 
   @override
   Iterable<Class> get classes => _classes;
 
   @override
-  List<TopLevelVariable> get constants => _constants;
-
-  @override
-  List<Enum> get enums => _enums;
-
-  @override
   Iterable<Class> get exceptions => _exceptions;
-
-  @override
-  List<Extension> get extensions => _extensions;
-
-  @override
-  List<ModelFunction> get functions => _functions;
-
-  @override
-  List<Mixin> get mixins => _mixins;
-
-  @override
-  List<TopLevelVariable> get properties => _properties;
-
-  @override
-  List<Typedef> get typedefs => _typedefs;
-
-  CategoryRenderer get _categoryRenderer =>
-      packageGraph.rendererFactory.categoryRenderer;
 
   @override
   Map<String, CommentReferable> get referenceChildren => const {};
 
   @override
   Iterable<CommentReferable> get referenceParents => const [];
+}
+
+extension on String? {
+  String get orDefault => this ?? '<default>';
 }

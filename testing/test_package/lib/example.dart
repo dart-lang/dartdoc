@@ -600,7 +600,7 @@ extension FancyList<Z> on List<Z> {
   List<Z> operator -() => this.reversed.toList();
   List<List<Z>> split(int at) =>
       <List<Z>>[this.sublist(0, at), this.sublist(at)];
-  static List<Z?> big() => List.filled(100, null);
+  static List big() => List.filled(100, null);
 }
 
 extension SymDiff<Q> on Set<Q> {
@@ -635,6 +635,7 @@ class ExtensionReferencer {}
 class ToolPrintingMacroWhichInjectsHtml {
   /// Text.
   /// {@template html-macro}
+  // ignore: doc_directive_missing_closing_tag
   /// {@inject-html}<div class="title">Title</div>{@end-inject-html}
   /// {@endtemplate}
   int a = 1;

@@ -104,10 +104,9 @@ abstract class BaseThingy2 implements BaseThingy {
 /// This function has a link to a renamed library class member.
 ///
 /// Link to library: [renamedLib]
-/// Link to constructor (implied): [new renamedLib.YetAnotherHelper()]
 /// Link to constructor (implied, no new): [renamedLib.YetAnotherHelper()]
 /// Link to class: [renamedLib.YetAnotherHelper]
-/// Link to constructor (direct): [renamedLib.YetAnotherHelper.YetAnotherHelper]
+/// Link to constructor (direct): [renamedLib.YetAnotherHelper.new]
 /// Link to class member: [renamedLib.YetAnotherHelper.getMoreContents]
 /// Link to function: [renamedLib.helperFunction]
 /// Link to overlapping prefix: [renamedLib2.theOnlyThingInTheLibrary]
@@ -243,7 +242,7 @@ class AClassWithFancyProperties {
   /// This property is quite fancy, and requires sample code to understand.
   ///
   /// ```dart
-  /// AClassWithFancyProperties x = new AClassWithFancyProperties();
+  /// AClassWithFancyProperties x = AClassWithFancyProperties();
   ///
   /// if (x.aProperty.contains('Hello')) {
   ///   print("I am indented!");
@@ -897,8 +896,6 @@ class ExtraSpecialList<E> extends SpecialList {}
 /// {@category Unreal}
 /// {@category More Excellence}
 /// {@subCategory Things and Such}
-/// {@image https://flutter.io/images/catalog-widget-placeholder.png}
-/// {@samples https://flutter.io}
 ///
 class BaseForDocComments {
   /// Takes a [value] and returns a String.
@@ -1032,7 +1029,7 @@ void paintImage2(String fooParam,
 /// This is to test referring to a constructor.
 ///
 /// This should refer to a class: [ReferToADefaultConstructor].
-/// This should refer to the constructor: [ReferToADefaultConstructor.ReferToADefaultConstructor].
+/// This should refer to the constructor: [ReferToADefaultConstructor.new].
 class ReferToADefaultConstructor {
   /// A default constructor.
   ReferToADefaultConstructor();
@@ -1285,7 +1282,8 @@ class FactoryConstructorThings {
 
 DTypeParam?
     aTopLevelTypeParameterFunction<DTypeParam extends TypeParameterThings>(
-        DTypeParam typedParam) => typedParam;
+            DTypeParam typedParam) =>
+        typedParam;
 
 abstract class TypeParameterThings<ATypeParam,
     BTypeParam extends FactoryConstructorThings> {

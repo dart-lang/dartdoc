@@ -11,7 +11,8 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/type_utils.dart';
 import 'package:meta/meta.dart';
 
-/// Extension methods
+/// Static extension on a given type, containing methods (including getters,
+/// setters, operators).
 class Extension extends Container implements EnclosedElement {
   @override
   final ExtensionElement element;
@@ -41,8 +42,8 @@ class Extension extends Container implements EnclosedElement {
     if (typeInstantiated == extendedInstantiated) {
       return true;
     }
-    if (DartTypeExtension(typeInstantiated).element ==
-            DartTypeExtension(extendedInstantiated).element &&
+    if (typeInstantiated.documentableElement ==
+            extendedInstantiated.documentableElement &&
         extendedType.isSubtypeOf(type)) {
       return true;
     }
@@ -96,8 +97,7 @@ class Extension extends Container implements EnclosedElement {
   String get filePath => '${library.dirName}/${fileStructure.fileName}';
 
   @override
-  String get sidebarPath =>
-      '${library.dirName}/$name-extension-sidebar.${fileStructure.fileType}';
+  String get sidebarPath => '${library.dirName}/$name-extension-sidebar.html';
 
   Map<String, CommentReferable>? _referenceChildren;
   @override

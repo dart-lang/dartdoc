@@ -14,21 +14,17 @@ if [ "$DARTDOC_BOT" = "sdk-docs" ]; then
   # silence stdout but echo stderr
   echo ""
   echo "Building and validating SDK docs..."
-  dart run grinder validate-sdk-docs
+  dart run tool/task.dart validate sdk-docs
   echo "SDK docs process finished"
 elif [ "$DARTDOC_BOT" = "flutter" ]; then
   echo "Running flutter dartdoc bot"
-  dart run grinder validate-flutter-docs
+  dart run tool/task.dart doc flutter
 elif [ "$DARTDOC_BOT" = "packages" ]; then
   echo "Running packages dartdoc bot"
-  PACKAGE_NAME=angular PACKAGE_VERSION=">=7.0.0" DARTDOC_PARAMS="--include=angular" dart run grinder build-pub-package
-  PACKAGE_NAME=access PACKAGE_VERSION=">=1.0.1+2" dart run grinder build-pub-package
+  dart run tool/task.dart doc package --name=access --version=">=3.0.0"
   # Negative test for flutter_plugin_tools, make sure right error message is displayed.
-  PACKAGE_NAME=flutter_plugin_tools PACKAGE_VERSION=">=0.0.14+1" dart run grinder build-pub-package 2>&1 | grep "warning: package:flutter_plugin_tools has no documentable libraries"
-elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
-  echo "Running all tests against the SDK analyzer"
-  dart run grinder test-with-analyzer-sdk
+  dart run tool/task.dart doc package --name=flutter_plugin_tools --version=">=0.0.14+1" 2>&1 | grep "warning: package:flutter_plugin_tools has no documentable libraries"
 else
   echo "Running main dartdoc bot"
-  dart run grinder buildbot
+  dart run tool/task.dart buildbot
 fi

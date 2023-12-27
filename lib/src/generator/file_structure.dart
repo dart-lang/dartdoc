@@ -3,12 +3,9 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:dartdoc/src/comment_references/parser.dart';
-import 'package:dartdoc/src/failure.dart';
 import 'package:meta/meta.dart';
 
 import '../model/model.dart';
-
-const _validFormats = {'html', 'md'};
 
 /// This class defines an interface to allow [ModelElement]s and [Generator]s
 /// to get information about the desired on-disk representation of a single
@@ -19,60 +16,40 @@ const _validFormats = {'html', 'md'};
 /// together.
 abstract class FileStructure {
   factory FileStructure.fromDocumentable(Documentable documentable) {
-    /// This assumes all remote packages are HTML.
-    /// Add configurability for remote formats in dartdoc_options if changing
-    /// that becomes desireable.
-    var format = documentable.config.format;
-    if (documentable.package.documentedWhere == DocumentLocation.remote) {
-      format = 'html';
-    }
-    if (!_validFormats.contains(format)) {
-      throw DartdocFailure('Internal error: unrecognized format: $format');
-    }
-    switch (documentable) {
-      case LibraryContainer():
+    return switch (documentable) {
+      LibraryContainer() =>
         // [LibraryContainer]s are not ModelElements, but have documentation.
-        return FileStructure._fromLibraryContainer(documentable, format);
-      case ModelElement():
+        FileStructure._fromLibraryContainer(documentable),
+      ModelElement() =>
         // This should be the common case.
-        return FileStructure._fromModelElement(documentable, format);
-      default:
-        throw UnimplementedError(
-            'Tried to build a FileStructure for an unknown subtype of Documentable:  ${documentable.runtimeType}');
-    }
+        FileStructure._fromModelElement(documentable),
+      _ => throw UnimplementedError(
+          'Tried to build a FileStructure for an unknown subtype of Documentable:  ${documentable.runtimeType}')
+    };
   }
 
   factory FileStructure._fromLibraryContainer(
-      LibraryContainer libraryContainer, String format) {
-    switch (libraryContainer) {
-      case Category():
-        return FileStructureImpl(format, libraryContainer.name, 'topic');
-      case Package():
-        return FileStructureImpl(format, 'index', null);
-      default:
-        throw UnimplementedError(
-            'Unrecognized LibraryContainer subtype:  ${libraryContainer.runtimeType}');
-    }
-  }
+    LibraryContainer libraryContainer,
+  ) =>
+      switch (libraryContainer) {
+        Category() => FileStructureImpl(libraryContainer.name, 'topic'),
+        Package() => FileStructureImpl('index', null),
+        _ => throw UnimplementedError(
+            'Unrecognized LibraryContainer subtype:  ${libraryContainer.runtimeType}')
+      };
 
-  factory FileStructure._fromModelElement(
-      ModelElement modelElement, String format) {
-    switch (modelElement) {
-      case Library():
-        return FileStructureImpl(format, modelElement.dirName, 'library');
-      case Mixin():
-        return FileStructureImpl(format, modelElement.name, 'mixin');
-      case Class():
-        return FileStructureImpl(format, modelElement.name, 'class');
-      case Operator():
-        return FileStructureImpl(format,
-            'operator_${operatorNames[modelElement.referenceName]}', null);
-      case GetterSetterCombo():
-        return FileStructureImpl(format, modelElement.name,
-            modelElement.isConst ? 'constant' : null);
-      default:
-        return FileStructureImpl(format, modelElement.name, null);
-    }
+  factory FileStructure._fromModelElement(ModelElement modelElement) {
+    return switch (modelElement) {
+      Library() => FileStructureImpl(modelElement.dirName, 'library'),
+      Mixin() => FileStructureImpl(modelElement.name, 'mixin'),
+      Class() => FileStructureImpl(modelElement.name, 'class'),
+      ExtensionType() => FileStructureImpl(modelElement.name, 'extension-type'),
+      Operator() => FileStructureImpl(
+          'operator_${operatorNames[modelElement.referenceName]}', null),
+      GetterSetterCombo() => FileStructureImpl(
+          modelElement.name, modelElement.isConst ? 'constant' : null),
+      _ => FileStructureImpl(modelElement.name, null)
+    };
   }
 
   /// True if an independent file should be created for this `ModelElement`.
@@ -89,22 +66,16 @@ abstract class FileStructure {
 
   /// The file name for an independent file.  Only valid if [hasIndependentFile]
   /// is `true`.  May contain platform-local path separators.  Includes
-  /// the [fileType] and the [modelElement.enclosingElement]'s [dirName].
+  /// the file type and the [modelElement.enclosingElement]'s [dirName].
   String get fileName;
 
   /// The directory name that should contain any elements enclosed by
   /// [modelElement].
   String get dirName;
-
-  /// A type (generally "html" or "md") to be appended to the file name.
-  String get fileType;
 }
 
 @visibleForTesting
 class FileStructureImpl implements FileStructure {
-  @override
-  final String fileType;
-
   /// This is a name for the underlying [Documentable] that is free of
   /// characters that can not appear in a path (URI, Unix, or Windows).
   String pathSafeName;
@@ -118,7 +89,7 @@ class FileStructureImpl implements FileStructure {
   // always having a disambiguating string.
   final String? kindAddition;
 
-  FileStructureImpl(this.fileType, this.pathSafeName, this.kindAddition);
+  FileStructureImpl(this.pathSafeName, this.kindAddition);
 
   @override
 
@@ -127,9 +98,9 @@ class FileStructureImpl implements FileStructure {
   /// some will not.  See [FileStructure._fromModelElement].
   String get fileName {
     if (kindAddition != null) {
-      return '$pathSafeName-$kindAddition.$fileType';
+      return '$pathSafeName-$kindAddition.html';
     }
-    return '$pathSafeName.$fileType';
+    return '$pathSafeName.html';
   }
 
   @override

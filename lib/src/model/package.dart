@@ -36,7 +36,7 @@ class Package extends LibraryContainer
         Warnable,
         CommentReferable,
         ModelBuilder
-    implements Privacy, Documentable {
+    implements Privacy {
   @override
   final String name;
 
@@ -81,9 +81,6 @@ class Package extends LibraryContainer
   @override
   bool get isCanonical => true;
 
-  @override
-  Library? get canonicalLibrary => null;
-
   /// Number of times we have invoked a tool for this package.
   int toolInvocationIndex = 0;
 
@@ -91,7 +88,6 @@ class Package extends LibraryContainer
   // object that contains them.
   Map<String?, Set<String>> usedAnimationIdsByHref = {};
 
-  /// Pieces of the location, split to remove 'package:' and slashes.
   @override
   Set<String> get locationPieces => const {};
 
@@ -108,6 +104,12 @@ class Package extends LibraryContainer
   Kind get kind => isSdk ? Kind.sdk : Kind.package;
 
   @override
+  String? get aboveSidebarPath => null;
+
+  @override
+  String? get belowSidebarPath => null;
+
+  @override
   List<Locatable> get documentationFrom => [this];
 
   /// Return true if the code has defined non-default categories for libraries
@@ -119,13 +121,13 @@ class Package extends LibraryContainer
 
   /// The documentation from the README contents.
   @override
-  late final String? documentation = () {
+  String? get documentation {
     final docFile = packageMeta.getReadmeContents();
     return docFile != null
         ? packageGraph.resourceProvider
             .readAsMalformedAllowedStringSync(docFile)
         : null;
-  }();
+  }
 
   @override
   bool get hasDocumentation => documentation?.isNotEmpty == true;
@@ -146,7 +148,7 @@ class Package extends LibraryContainer
   /// Return true if this is the default package, this is part of an embedder
   /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
   /// only if the package was not excluded on the command line.
-  late final bool isLocal = () {
+  bool get isLocal {
     // Do not document as local if we excluded this package by name.
     if (_isExcluded) return false;
     // Document as local if this is the default package.
@@ -160,7 +162,7 @@ class Package extends LibraryContainer
     final packagePath = packageGraph.packageMeta.dir.path;
     return libraries.any(
         (l) => _pathContext.isWithin(packagePath, l.element.source.fullName));
-  }();
+  }
 
   /// True if the global config excludes this package by name.
   bool get _isExcluded => packageGraph.config.isPackageExcluded(name);
@@ -173,7 +175,7 @@ class Package extends LibraryContainer
 
   /// Returns the location of documentation for this package, for linkToRemote
   /// and canonicalization decision making.
-  late final DocumentLocation documentedWhere = () {
+  DocumentLocation get documentedWhere {
     if (isLocal && isPublic) {
       return DocumentLocation.local;
     }
@@ -184,21 +186,12 @@ class Package extends LibraryContainer
       return DocumentLocation.remote;
     }
     return DocumentLocation.missing;
-  }();
+  }
 
   @override
   String get enclosingName => packageGraph.defaultPackageName;
 
-  String get filePath => 'index.$fileType';
-
-  // TODO(jdkoren): Provide a way to determine file type of a remote package's
-  // docs. Perhaps make this configurable through dartdoc options.
-  // In theory, a remote package could be documented in any supported format.
-  // In practice, devs depend on Dart, Flutter, and/or packages fetched
-  // from pub.dev, and we know that all of those use html docs.
-  String get fileType => package.documentedWhere == DocumentLocation.remote
-      ? 'html'
-      : config.format;
+  String get filePath => 'index.html';
 
   @override
   String get fullyQualifiedName => 'package:$name';
@@ -224,7 +217,7 @@ class Package extends LibraryContainer
               tag = version.preRelease.whereType<String>().first;
               // Who knows about non-SDK packages, but SDKs must conform to the
               // known format.
-              assert(packageMeta.isSdk == false || int.tryParse(tag) == null,
+              assert(!packageMeta.isSdk || int.tryParse(tag) == null,
                   'Got an integer as string instead of the expected "dev" tag');
             }
             return tag;
@@ -251,14 +244,6 @@ class Package extends LibraryContainer
 
   @override
   Package get package => this;
-
-  // Workaround for mustache4dart issue where templates do not recognize
-  // inherited properties as being in-context.
-  @override
-  Iterable<Library> get publicLibraries {
-    assert(libraries.every((l) => l.packageMeta == packageMeta));
-    return super.publicLibraries;
-  }
 
   /// The default, unnamed category.
   ///
@@ -310,6 +295,10 @@ class Package extends LibraryContainer
       }
       for (var extension in library.extensions) {
         addToCategories(extension, (c) => c.extensions.add(extension));
+      }
+      for (var extensionType in library.extensionTypes) {
+        addToCategories(
+            extensionType, (c) => c.extensionTypes.add(extensionType));
       }
       for (var class_ in library.allClasses) {
         addToCategories(class_, (c) => c.addClass(class_));
@@ -399,16 +388,15 @@ class Package extends LibraryContainer
   List<String> get containerOrder => config.packageOrder;
 
   @override
-  late final Map<String, CommentReferable> referenceChildren =
-      <String, CommentReferable>{
+  late final Map<String, CommentReferable> referenceChildren = {
     for (var library in publicLibrariesSorted) library.referenceName: library,
   }
-        // Do not override any preexisting data, and insert based on the
-        // public library sort order.
-        // TODO(jcollins-g): warn when results require package-global
-        // lookups like this.
-        ..addEntriesIfAbsent(
-            publicLibrariesSorted.expand((l) => l.referenceChildren.entries));
+    // Do not override any preexisting data, and insert based on the
+    // public library sort order.
+    // TODO(jcollins-g): warn when results require package-global
+    // lookups like this.
+    ..addEntriesIfAbsent(
+        publicLibrariesSorted.expand((l) => l.referenceChildren.entries));
 
   @override
   Iterable<CommentReferable> get referenceParents => [packageGraph];

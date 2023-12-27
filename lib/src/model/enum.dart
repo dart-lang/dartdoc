@@ -35,8 +35,7 @@ class Enum extends InheritingContainer
   ];
 
   @override
-  String get sidebarPath =>
-      '${library.dirName}/$name-enum-sidebar.${fileStructure.fileType}';
+  String get sidebarPath => '${library.dirName}/$name-enum-sidebar.html';
 
   @override
   Kind get kind => Kind.enum_;
@@ -114,7 +113,6 @@ class EnumField extends Field {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingContainer == enclosingElement);
     // TODO(jcollins-g): EnumField should not depend on enclosingElement, but

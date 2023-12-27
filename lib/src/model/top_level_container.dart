@@ -16,6 +16,8 @@ mixin TopLevelContainer implements Nameable {
 
   Iterable<Extension> get extensions;
 
+  Iterable<ExtensionType> get extensionTypes;
+
   Iterable<Enum> get enums;
 
   Iterable<Mixin> get mixins;
@@ -33,6 +35,8 @@ mixin TopLevelContainer implements Nameable {
   bool get hasPublicClasses => publicClasses.isNotEmpty;
 
   bool get hasPublicExtensions => publicExtensions.isNotEmpty;
+
+  bool get hasPublicExtensionTypes => publicExtensionTypes.isNotEmpty;
 
   bool get hasPublicConstants => publicConstants.isNotEmpty;
 
@@ -61,6 +65,12 @@ mixin TopLevelContainer implements Nameable {
 
   late final Iterable<Extension> publicExtensionsSorted =
       publicExtensions.toList(growable: false)..sort();
+
+  Iterable<ExtensionType> get publicExtensionTypes =>
+      model_utils.filterNonPublic(extensionTypes);
+
+  late final Iterable<ExtensionType> publicExtensionTypesSorted =
+      publicExtensionTypes.toList(growable: false)..sort();
 
   Iterable<TopLevelVariable> get publicConstants =>
       model_utils.filterNonPublic(constants);

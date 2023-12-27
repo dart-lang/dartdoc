@@ -23,9 +23,10 @@ linter:
     - avoid_dynamic_calls
     - avoid_slow_async_io
     - avoid_unused_constructor_parameters
-    - collection_methods_unrelated_type
     - directives_ordering
+    - invalid_case_patterns
     - no_adjacent_strings_in_list
+    - no_literal_bool_comparisons
     - omit_local_variable_types
     - only_throw_errors
     - package_api_docs
@@ -39,4 +40,4 @@ linter:
     - unnecessary_lambdas
     - unnecessary_parenthesis
     - unnecessary_statements
-    - use_super_parameters
+    - unnecessary_breaks

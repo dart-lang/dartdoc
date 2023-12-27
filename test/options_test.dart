@@ -2,78 +2,52 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/options.dart';
-import 'package:dartdoc/src/dartdoc.dart';
+import 'package:args/args.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
+import 'package:test_reflective_loader/test_reflective_loader.dart';
 
+import 'dartdoc_test_base.dart';
 import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart' as utils;
+import 'src/utils.dart';
 
-// TODO(srawlins): Migrate to test_reflective_loader tests.
-
-void main() async {
-  const packageName = 'test_package';
-
-  late String packagePath;
-  late MemoryResourceProvider resourceProvider;
-  late PackageMetaProvider packageMetaProvider;
-  late DartdocGeneratorOptionContext context;
-
-  setUp(() {
-    packageMetaProvider = utils.testPackageMetaProvider;
-    resourceProvider =
-        packageMetaProvider.resourceProvider as MemoryResourceProvider;
+void main() {
+  defineReflectiveSuite(() {
+    defineReflectiveTests(OptionsTest);
   });
+}
 
-  Future<PubPackageBuilder> createPackageBuilder({
-    List<String> additionalOptions = const [],
-    bool skipUnreachableSdkLibraries = true,
+@reflectiveTest
+class OptionsTest extends DartdocTestBase {
+  @override
+  String get libraryName => 'options';
+
+  static const packageName = 'test_package';
+
+  Future<void> createPackage(
+    String name, {
+    String? dartdocOptions,
+    List<d.Descriptor> libFiles = const [],
+    List<d.Descriptor> files = const [],
   }) async {
-    context = await utils.generatorContextFromArgv([
-      '--input',
-      packagePath,
-      '--output',
-      p.join(packagePath, 'doc'),
-      '--sdk-dir',
-      packageMetaProvider.defaultSdkDir.path,
-      '--allow-tools',
-      '--no-link-to-remote',
-      ...additionalOptions,
-    ], packageMetaProvider);
-
-    var packageConfigProvider = utils
-        .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
+    packagePath = await d.createPackage(
+      packageName,
+      dartdocOptions: dartdocOptions,
+      libFiles: libFiles,
+      files: files,
+      resourceProvider: resourceProvider,
+    );
+    await utils.writeDartdocResources(resourceProvider);
     packageConfigProvider.addPackageToConfigFor(
         packagePath, packageName, Uri.file('$packagePath/'));
-    return PubPackageBuilder(
-      context,
-      packageMetaProvider,
-      packageConfigProvider,
-      skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
-    );
   }
 
-  Future<Dartdoc> buildDartdoc({
-    List<String> additionalOptions = const [],
-    bool skipUnreachableSdkLibraries = true,
-  }) async {
-    final packageBuilder = await createPackageBuilder(
-      additionalOptions: additionalOptions,
-      skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
-    );
-    return await Dartdoc.fromContext(
-      context,
-      packageBuilder,
-    );
-  }
-
-  test('favicon option copies a favicon file', () async {
-    packagePath = await d.createPackage(
+  void test_faviconOption_copiesFaviconFile() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -81,20 +55,24 @@ dartdoc:
 ''',
       libFiles: [d.file('lib.dart', '')],
       files: [d.file('anicon.png', 'Just plain text')],
-      resourceProvider: resourceProvider,
     );
-    await utils.writeDartdocResources(resourceProvider);
-    await (await buildDartdoc()).generateDocs();
+    await (await buildDartdoc(
+      additionalArguments: [
+        '--auto-include-dependencies',
+        '--no-link-to-remote',
+      ],
+    ))
+        .generateDocs();
 
     final faviconContent = resourceProvider
         .getFile(
-            p.joinAll([packagePath, 'doc', 'static-assets', 'favicon.png']))
+            path.joinAll([packagePath, 'doc', 'static-assets', 'favicon.png']))
         .readAsStringSync();
     expect(faviconContent, contains('Just plain text'));
-  });
+  }
 
-  test('header option adds content to index.html', () async {
-    packagePath = await d.createPackage(
+  void test_headerOption_addsContentToIndexFile() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -104,19 +82,17 @@ dartdoc:
       files: [
         d.dir('extras', [d.file('header.html', '<em>Header</em> things.')])
       ],
-      resourceProvider: resourceProvider,
     );
-    await utils.writeDartdocResources(resourceProvider);
     await (await buildDartdoc()).generateDocs();
 
     final indexContent = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'index.html']))
+        .getFile(path.joinAll([packagePath, 'doc', 'index.html']))
         .readAsStringSync();
     expect(indexContent, contains('<em>Header</em> things.'));
-  });
+  }
 
-  test('footer option adds content to index.html', () async {
-    packagePath = await d.createPackage(
+  void test_footerOption_addsContentToIndexFile() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -126,19 +102,17 @@ dartdoc:
       files: [
         d.dir('extras', [d.file('footer.html', '<em>Footer</em> things.')])
       ],
-      resourceProvider: resourceProvider,
     );
-    await utils.writeDartdocResources(resourceProvider);
     await (await buildDartdoc()).generateDocs();
 
     final indexContent = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'index.html']))
+        .getFile(path.joinAll([packagePath, 'doc', 'index.html']))
         .readAsStringSync();
     expect(indexContent, contains('<em>Footer</em> things.'));
-  });
+  }
 
-  test('footerText option adds text to index.html', () async {
-    packagePath = await d.createPackage(
+  void test_footerTextOption_addsTextToIndexFile() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -148,19 +122,17 @@ dartdoc:
       files: [
         d.dir('extras', [d.file('footer.txt', 'Just footer text')])
       ],
-      resourceProvider: resourceProvider,
     );
-    await utils.writeDartdocResources(resourceProvider);
     await (await buildDartdoc()).generateDocs();
 
     final indexContent = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'index.html']))
+        .getFile(path.joinAll([packagePath, 'doc', 'index.html']))
         .readAsStringSync();
     expect(indexContent, contains('Just footer text'));
-  });
+  }
 
-  test('excludeFooterVersion option does not display version', () async {
-    packagePath = await d.createPackage(
+  void test_excludeFooterVersionOption_doesNotDisplayVersion() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -170,13 +142,11 @@ dartdoc:
       files: [
         d.dir('extras', [d.file('footer.txt', 'Just footer text')])
       ],
-      resourceProvider: resourceProvider,
     );
-    await utils.writeDartdocResources(resourceProvider);
     await (await buildDartdoc()).generateDocs();
 
     final indexContent = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'index.html']))
+        .getFile(path.joinAll([packagePath, 'doc', 'index.html']))
         .readAsStringSync();
     final footerRegex =
         RegExp(r'<footer>(.*\s*?\n?)+?</footer>', multiLine: true);
@@ -187,10 +157,10 @@ dartdoc:
     }
     final version = RegExp(r'(\d+\.)?(\d+\.)?(\*|\d+)');
     expect(version.hasMatch(match.group(0)!), false, reason: indexContent);
-  });
+  }
 
-  test('examplePathPrefix option finds examples in a custom path', () async {
-    packagePath = await d.createPackage(
+  void test_examplePathPrefixOption_findsExamplesInACustomPath() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -213,55 +183,22 @@ An example in an unusual dir.
 '''),
         ]),
       ],
-      resourceProvider: resourceProvider,
     );
-    final packageGraph =
-        await (await createPackageBuilder()).buildPackageGraph();
-    final classFoo = packageGraph.allCanonicalModelElements
+    final packageGraph = await bootBasicPackage(
+      packagePath,
+      packageMetaProvider,
+      packageConfigProvider,
+    );
+    final classFoo = packageGraph.allLocalModelElements
+        .where((e) => e.isCanonical)
         .whereType<Class>()
         .firstWhere((c) => c.name == 'Foo');
     expect(classFoo.documentationAsHtml,
         contains('<code class="language-dart">An example in an unusual dir.'));
-  });
+  }
 
-  test("'format=md' option generates markdown files", () async {
-    packagePath = await d.createPackage(
-      packageName,
-      libFiles: [
-        d.file('library_1.dart', '''
-library library_1;
-class Foo {}
-'''),
-      ],
-      resourceProvider: resourceProvider,
-    );
-    await (await buildDartdoc(additionalOptions: ['--format', 'md']))
-        .generateDocsBase();
-    final indexContent = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'library_1', 'Foo-class.md']))
-        .readAsStringSync();
-    expect(indexContent, contains('# Foo class'));
-  });
-
-  test("'format=bad' option results in DartdocFailure", () async {
-    packagePath = await d.createPackage(
-      packageName,
-      libFiles: [
-        d.file('library_1.dart', '''
-library library_1;
-class Foo {}
-'''),
-      ],
-      resourceProvider: resourceProvider,
-    );
-    expect(
-        () => buildDartdoc(additionalOptions: ['--format', 'bad']),
-        throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
-            'message', startsWith('Unsupported output format'))));
-  });
-
-  test("'include' option can be specified in options file", () async {
-    packagePath = await d.createPackage(
+  void test_includeOption_canBeSpecifiedInOptionsFile() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -281,16 +218,18 @@ library library_3;
 class Baz {}
 '''),
       ],
-      resourceProvider: resourceProvider,
     );
-    final packageGraph =
-        await (await createPackageBuilder()).buildPackageGraph();
+    final packageGraph = await bootBasicPackage(
+      packagePath,
+      packageMetaProvider,
+      packageConfigProvider,
+    );
     expect(packageGraph.localPublicLibraries.map((l) => l.name),
         orderedEquals(['library_1', 'library_2']));
-  });
+  }
 
-  test("'include' command line option overrides options file option", () async {
-    packagePath = await d.createPackage(
+  void test_includeCommandLineOption_overridesOptionsFileOption() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -310,18 +249,19 @@ library library_3;
 class Baz {}
 '''),
       ],
-      resourceProvider: resourceProvider,
     );
-    final packageGraph = await (await createPackageBuilder(
-      additionalOptions: ['--include', 'library_3'],
-    ))
-        .buildPackageGraph();
+    final packageGraph = await bootBasicPackage(
+      packagePath,
+      packageMetaProvider,
+      packageConfigProvider,
+      additionalArguments: ['--include', 'library_3'],
+    );
     expect(packageGraph.localPublicLibraries.map((l) => l.name),
         orderedEquals(['library_3']));
-  });
+  }
 
-  test("'exclude' command line option overrides options file option", () async {
-    packagePath = await d.createPackage(
+  void test_excludeCommandLineOption_overridesOptionsFileOption() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -337,19 +277,20 @@ library library_2;
 class Bar {}
 '''),
       ],
-      resourceProvider: resourceProvider,
     );
-    final packageGraph = await (await createPackageBuilder(
-      additionalOptions: ['--exclude', 'library_1'],
-    ))
-        .buildPackageGraph();
+    final packageGraph = await bootBasicPackage(
+      packagePath,
+      packageMetaProvider,
+      packageConfigProvider,
+      additionalArguments: ['--exclude', 'library_1'],
+    );
     expect(packageGraph.localPublicLibraries.map((l) => l.name),
         orderedEquals(['library_2']));
-  });
+  }
 
-  test('showUndocumentedCategories option shows undocumented categories',
-      () async {
-    packagePath = await d.createPackage(
+  void
+      test_showUndocumentedCategoriesOption_showsUndocumentedCategories() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -361,18 +302,21 @@ dartdoc:
 class Foo {}
 '''),
       ],
-      resourceProvider: resourceProvider,
     );
-    final packageGraph =
-        await (await createPackageBuilder()).buildPackageGraph();
-    final classFoo = packageGraph.allCanonicalModelElements
+    final packageGraph = await bootBasicPackage(
+      packagePath,
+      packageMetaProvider,
+      packageConfigProvider,
+    );
+    final classFoo = packageGraph.allLocalModelElements
+        .where((e) => e.isCanonical)
         .whereType<Class>()
         .firstWhere((c) => c.name == 'Foo');
     expect(classFoo.displayedCategories, isNotEmpty);
-  });
+  }
 
-  test('categoryOrder orders categories', () async {
-    packagePath = await d.createPackage(
+  void test_categoryOrderOption_ordersCategories() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -404,19 +348,20 @@ class C3 {}
         d.file('two.md', ''),
         d.file('three.md', ''),
       ],
-      resourceProvider: resourceProvider,
     );
-    final packageGraph =
-        await (await createPackageBuilder()).buildPackageGraph();
+    final packageGraph = await bootBasicPackage(
+      packagePath,
+      packageMetaProvider,
+      packageConfigProvider,
+    );
     final package = packageGraph.packages
         .firstWhere((element) => element.name == packageName);
     expect(package.documentedCategoriesSorted.map((c) => c.name),
         equals(['Three', 'One', 'Two']));
-  });
+  }
 
-  test('categories not included in categoryOrder are ordered at the end',
-      () async {
-    packagePath = await d.createPackage(
+  void test_categoriesNotIncludedInCategoryOrder_areOrderedAtTheEnd() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -454,18 +399,20 @@ class C4 {}
         d.file('three.md', ''),
         d.file('four.md', ''),
       ],
-      resourceProvider: resourceProvider,
     );
-    final packageGraph =
-        await (await createPackageBuilder()).buildPackageGraph();
+    final packageGraph = await bootBasicPackage(
+      packagePath,
+      packageMetaProvider,
+      packageConfigProvider,
+    );
     final package = packageGraph.packages
         .firstWhere((element) => element.name == packageName);
     expect(package.documentedCategoriesSorted.map((c) => c.name),
         equals(['Two', 'One', 'Four', 'Three']));
-  });
+  }
 
-  test('categories are only tracked when used', () async {
-    packagePath = await d.createPackage(
+  void test_categoriesAreOnlyTrackedWhenUsed() async {
+    await createPackage(
       packageName,
       dartdocOptions: '''
 dartdoc:
@@ -487,20 +434,21 @@ class C1 {}
         d.file('one.md', ''),
         d.file('two.md', ''),
       ],
-      resourceProvider: resourceProvider,
     );
-    final packageGraph =
-        await (await createPackageBuilder()).buildPackageGraph();
+    final packageGraph = await bootBasicPackage(
+      packagePath,
+      packageMetaProvider,
+      packageConfigProvider,
+    );
     final package = packageGraph.packages
         .firstWhere((element) => element.name == packageName);
     expect(
         package.documentedCategoriesSorted.map((c) => c.name), equals(['One']));
-  });
+  }
 
-  test(
-      "'templates-dir' option referencing a non-existent directory results in "
-      'DartdocFailure', () async {
-    packagePath = await d.createPackage(
+  void
+      test_templatesDirOption_referencingANonExistentDirectory_resultsInDartdocFailure() async {
+    await createPackage(
       packageName,
       libFiles: [
         d.file('library_1.dart', '''
@@ -508,20 +456,19 @@ library library_1;
 class Foo {}
 '''),
       ],
-      resourceProvider: resourceProvider,
     );
     expect(
-        () => buildDartdoc(additionalOptions: ['--templates-dir', 'bad']),
+        () => buildDartdoc(additionalArguments: ['--templates-dir', 'bad']),
         throwsA(const TypeMatcher<DartdocFailure>().having(
           (f) => f.message,
           'message',
           startsWith(
               'Argument --templates-dir, set to bad, resolves to missing path'),
         )));
-  });
+  }
 
-  test("'templates-dir' option specifies the templates to use", () async {
-    packagePath = await d.createPackage(
+  void test_templatesDirOption_specifiesTheTemplatesToUse() async {
+    await createPackage(
       packageName,
       libFiles: [
         d.file('library_1.dart', '''
@@ -550,23 +497,21 @@ class Foo {}
           d.file('search.html', 'EMPTY'),
         ]),
       ],
-      resourceProvider: resourceProvider,
     );
-    var customTemplatesDir = p.join(packagePath, 'templates');
-    await utils.writeDartdocResources(resourceProvider);
+    var customTemplatesDir = path.join(packagePath, 'templates');
     var dartdoc = await buildDartdoc(
-        additionalOptions: ['--templates-dir', customTemplatesDir]);
+        additionalArguments: ['--templates-dir', customTemplatesDir]);
     await dartdoc.generateDocsBase();
     final indexContent = resourceProvider
-        .getFile(p.joinAll([packagePath, 'doc', 'library_1', 'Foo-class.html']))
+        .getFile(
+            path.joinAll([packagePath, 'doc', 'library_1', 'Foo-class.html']))
         .readAsStringSync();
     expect(indexContent, contains('CLASS FILE'));
-  });
+  }
 
-  test(
-      "'templates-dir' option referencing an empty directory results in "
-      'DartdocFailure', () async {
-    packagePath = await d.createPackage(
+  void
+      test_templatesDirOptionReferencingAnEmptyDirectory_resultsInDartdocFailure() async {
+    await createPackage(
       packageName,
       libFiles: [
         d.file('library_1.dart', '''
@@ -574,7 +519,6 @@ library library_1;
 class Foo {}
 '''),
       ],
-      resourceProvider: resourceProvider,
     );
     var customTemplatesDir = resourceProvider
         .newFolder(resourceProvider.pathContext
@@ -582,96 +526,191 @@ class Foo {}
         .path;
     expect(
         () => buildDartdoc(
-            additionalOptions: ['--templates-dir', customTemplatesDir]),
+            additionalArguments: ['--templates-dir', customTemplatesDir]),
         throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
             'message', startsWith('Missing required template file'))));
-  });
+  }
 
-  group('limit files created', () {
-    test('maxFileCount is reached', () async {
-      packagePath = await d.createPackage(
-        packageName,
-        libFiles: [
-          d.file('library_1.dart', '''
+  void test_quietOption_resultsInNoProgressOrOtherLogging() async {
+    await createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+      ],
+    );
+    final dartdoc = await buildDartdoc(additionalArguments: [
+      '--quiet',
+    ]);
+    await dartdoc.generateDocs();
+
+    // With the `--quiet` option, nothing should be printed to stdout, and only
+    // warnings should be printed to stderr.
+    expect(outBuffer, isEmpty);
+    expect(errBuffer.toString(), matches(RegExp(r'''
+  warning: library_1 has no library level documentation comments
+    from library_1: \(.*lib/library_1.dart:1:9\)
+Found 1 warning and 0 errors.
+''')));
+  }
+
+  void test_noGenerateDocsOption_resultsInNoLoggingAndNoGeneratedDocs() async {
+    await createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+      ],
+    );
+    final dartdoc = await buildDartdoc(additionalArguments: [
+      '--no-generate-docs',
+    ]);
+    await dartdoc.generateDocs();
+
+    // With the `--no-generate-docs` option, nothing should be printed to
+    // stdout, and only warnings should be printed to stderr.
+    expect(outBuffer, isEmpty);
+    expect(errBuffer.toString(), matches(RegExp(r'''
+  warning: library_1 has no library level documentation comments
+    from library_1: \(.*lib/library_1.dart:1:9\)
+Found 1 warning and 0 errors.
+''')));
+
+    final outputDirectory = resourceProvider.getFolder(
+      path.join(packagePath, 'doc', 'api'),
+    );
+    expect(outputDirectory.exists, isFalse);
+  }
+
+  void test_jsonOption_resultsInJsonOutput() async {
+    await createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+class Foo {}
+'''),
+      ],
+    );
+    await utils.writeDartdocResources(resourceProvider);
+    final dartdoc = await buildDartdoc(useJson: true);
+    await dartdoc.generateDocs();
+
+    expect(
+      outBuffer.toString().split('\n'),
+      contains('{"level":"WARNING","message":"Found 1 warning and 0 errors."}'),
+    );
+    expect(errBuffer, isEmpty);
+  }
+
+  void test_nonExistentOption_resultsInFatalError() async {
+    expect(
+      () => utils.generatorContextFromArgv([
+        '--nonexistent',
+      ], packageMetaProvider),
+      throwsA(isA<ArgParserException>().having(
+        (e) => e.toString(),
+        'toString',
+        contains('Could not find an option named "nonexistent".'),
+      )),
+    );
+  }
+
+  void test_nonExistentInputPath_resultsInFatalError() async {
+    expect(
+      () => utils.generatorContextFromArgv([
+        '--input',
+        'non-existent',
+      ], packageMetaProvider),
+      throwsA(isA<DartdocFileMissing>().having(
+        (e) => e.message,
+        'message',
+        contains(
+          'Argument --input, set to non-existent, resolves to missing path:',
+        ),
+      )),
+    );
+  }
+
+  void test_limitFilesCreated_maxFileCountIsReached() async {
+    await createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
 library library_1;
 class Foo {
   void x() {}
   void y() {}
 }
 '''),
-        ],
-        resourceProvider: resourceProvider,
-      );
-      await utils.writeDartdocResources(resourceProvider);
-      final dartdoc =
-          await buildDartdoc(additionalOptions: ['--max-file-count', '2']);
-      await expectLater(
-          dartdoc.generateDocs,
-          throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
-              'message', startsWith('Maximum file count reached: '))));
-    });
+      ],
+    );
+    final dartdoc =
+        await buildDartdoc(additionalArguments: ['--max-file-count', '2']);
+    await expectLater(
+        dartdoc.generateDocs,
+        throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
+            'message', startsWith('Maximum file count reached: '))));
+  }
 
-    test('maxFileCount is not reached', () async {
-      packagePath = await d.createPackage(
-        packageName,
-        libFiles: [
-          d.file('library_1.dart', '''
+  void test_limitFilesCreated_maxFileCountIsNotReached() async {
+    await createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
 library library_1;
 class Foo {
   void x() {}
   void y() {}
 }
 '''),
-        ],
-        resourceProvider: resourceProvider,
-      );
-      await utils.writeDartdocResources(resourceProvider);
-      final dartdoc =
-          await buildDartdoc(additionalOptions: ['--max-file-count', '2000']);
-      await dartdoc.generateDocs();
-    });
+      ],
+    );
+    final dartdoc =
+        await buildDartdoc(additionalArguments: ['--max-file-count', '2000']);
+    await dartdoc.generateDocs();
+  }
 
-    test('maxTotalSize is reached', () async {
-      packagePath = await d.createPackage(
-        packageName,
-        libFiles: [
-          d.file('library_1.dart', '''
+  void test_limitFilesCreated_maxTotalSizeIsReached() async {
+    await createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
 library library_1;
 class Foo {
   void x() {}
   void y() {}
 }
 '''),
-        ],
-        resourceProvider: resourceProvider,
-      );
-      await utils.writeDartdocResources(resourceProvider);
-      final dartdoc =
-          await buildDartdoc(additionalOptions: ['--max-total-size', '15000']);
-      await expectLater(
-          dartdoc.generateDocs,
-          throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
-              'message', startsWith('Maximum total size reached: '))));
-    });
+      ],
+    );
+    final dartdoc =
+        await buildDartdoc(additionalArguments: ['--max-total-size', '15000']);
+    await expectLater(
+        dartdoc.generateDocs,
+        throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
+            'message', startsWith('Maximum total size reached: '))));
+  }
 
-    test('maxTotalSize is not reached', () async {
-      packagePath = await d.createPackage(
-        packageName,
-        libFiles: [
-          d.file('library_1.dart', '''
+  void test_limitFilesCreated_maxTotalSizeIsNotReached() async {
+    await createPackage(
+      packageName,
+      libFiles: [
+        d.file('library_1.dart', '''
 library library_1;
 class Foo {
   void x() {}
   void y() {}
 }
 '''),
-        ],
-        resourceProvider: resourceProvider,
-      );
-      await utils.writeDartdocResources(resourceProvider);
-      final dartdoc = await buildDartdoc(
-          additionalOptions: ['--max-total-size', '15000000']);
-      await dartdoc.generateDocs();
-    });
-  });
+      ],
+    );
+    final dartdoc = await buildDartdoc(
+        additionalArguments: ['--max-total-size', '15000000']);
+    await dartdoc.generateDocs();
+  }
 }

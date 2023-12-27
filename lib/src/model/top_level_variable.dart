@@ -3,8 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 /// Top-level variables. But also picks up getters and setters?
@@ -56,7 +56,6 @@ class TopLevelVariable extends ModelElement
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
     return '${package.baseHref}$filePath';
   }
@@ -79,12 +78,8 @@ class TopLevelVariable extends ModelElement
   Kind get kind => isConst ? Kind.topLevelConstant : Kind.topLevelProperty;
 
   @override
-  Set<Feature> get features => {...super.features, ...comboFeatures};
+  Set<Attribute> get attributes => {...super.attributes, ...comboAttributes};
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
-
-  @override
-  bool get hasHideConstantImplementation =>
-      definingLibrary.hasHideConstantImplementations;
 }

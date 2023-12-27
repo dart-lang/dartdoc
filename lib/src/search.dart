@@ -157,6 +157,7 @@ class IndexItem {
         Kind.class_ => 0,
         Kind.enum_ => 0,
         Kind.extension => 0,
+        Kind.extensionType => 0,
         Kind.mixin => 0,
         Kind.topLevelConstant => 0,
         Kind.topLevelProperty => 0,

@@ -14,6 +14,7 @@ void main() {
     if (namedArgumentsAnywhereAllowed) {
       defineReflectiveTests(ConstantValuesWithNamedArgumentsAnywhereTest);
     }
+    defineReflectiveTests(HiddenConstantsTest);
   });
 }
 
@@ -177,5 +178,41 @@ const r = C(c: 1, d: 2, 3, 4);
 
     expect(rConst.constantValue,
         equals('<a href="$linkPrefix/C/C.html">C</a>(c: 1, d: 2, 3, 4)'));
+  }
+}
+
+@reflectiveTest
+class HiddenConstantsTest extends DartdocTestBase {
+  @override
+  String get libraryName => 'hidden_constants';
+
+  void test_field() async {
+    var library = await bootPackageWithLibrary('''
+/// Some documentation.
+class A {
+  static const int aConst = 12;
+}
+''');
+    var aClass = library.classes.named('A');
+    var aConst = aClass.constantFields.named('aConst');
+    expect(aConst.hasConstantValueForDisplay, isFalse);
+    expect(aClass.documentation, equals('Some documentation.'));
+  }
+
+  void test_topLevel() async {
+    var library = await bootPackageWithLibrary('''
+class A {
+  static const int aConst = 12;
+}
+
+static const aTopLevelConst = 37;
+''', libraryPreamble: '''
+/// Some documentation.
+''');
+    var aConst = library.classes.named('A').constantFields.named('aConst');
+    expect(aConst.hasConstantValueForDisplay, isFalse);
+    var aTopLevelConst = library.constants.named('aTopLevelConst');
+    expect(aTopLevelConst.hasConstantValueForDisplay, isFalse);
+    expect(library.documentation, equals('Some documentation.'));
   }
 }

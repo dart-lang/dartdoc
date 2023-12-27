@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
+import 'package:dartdoc/src/model/canonicalization.dart';
 import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/documentation.dart';
 import 'package:dartdoc/src/model/inheritable.dart';
@@ -12,23 +13,20 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show Context;
 
-final _templatePattern = RegExp(
-    r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*(\n?)',
-    multiLine: true);
-final _htmlPattern = RegExp(
-    r'[ ]*{@inject-html\s*}([\s\S]+?){@end-inject-html}[ ]*\n?',
-    multiLine: true);
+final _templatePattern =
+    RegExp(r'[ ]*\{@template\s+([^\s}].*?)\}([^]+?)\{@endtemplate\}[ ]*(\n?)');
+final _htmlPattern =
+    RegExp(r'[ ]*\{@inject-html\s*\}([^]+?)\{@end-inject-html\}[ ]*\n?');
 
 /// Matches all tool directives (even some invalid ones). This is so
 /// we can give good error messages if the directive is malformed, instead of
 /// just silently emitting it as-is.
-final _basicToolPattern = RegExp(
-    r'[ ]*{@tool\s+([^}]+)}\n?([\s\S]+?)\n?{@end-tool}[ ]*\n?',
-    multiLine: true);
+final _basicToolPattern =
+    RegExp(r'[ ]*{@tool\s+([^\s}][^}]*)}\n?([^]+?)\n?{@end-tool}[ ]*\n?');
 
-final _examplePattern = RegExp(r'{@example\s+([^}]+)}');
+final _examplePattern = RegExp(r'{@example\s+([^\s}][^}]*)}');
 
-final _macroRegExp = RegExp(r'{@macro\s+([^}]+)}');
+final _macroRegExp = RegExp(r'{@macro\s+([^\s}][^}]*)}');
 
 final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 
@@ -36,7 +34,8 @@ final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 ///
 /// [_processCommentWithoutTools] and [processComment] are the primary
 /// entrypoints.
-mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
+mixin DocumentationComment
+    on Canonicalization, Documentable, Warnable, Locatable, SourceCode {
   @override
   Element get element;
 
@@ -156,12 +155,8 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
     'youtube',
 
     // Other directives, parsed by `model/directives/*.dart`:
-    'api',
     'canonicalFor',
     'category',
-    'hideConstantImplementations',
-    'image',
-    'samples',
     'subCategory',
 
     // Common Dart annotations which may decorate named parameters:
@@ -169,7 +164,7 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
     'required',
   };
 
-  static final _nameBreak = RegExp('[\\s}]');
+  static final _nameBreak = RegExp(r'[\s}]');
 
   // TODO(srawlins): Implement more checks; see
   // https://github.com/dart-lang/dartdoc/issues/1814.
@@ -182,12 +177,8 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
       if (nameEndIndex == -1) return;
       var name = docs.substring(nameStartIndex + 2, nameEndIndex);
       if (!_allDirectiveNames.contains(name)) {
-        if (_allDirectiveNames.contains(name.toLowerCase())) {
-          warn(PackageWarning.unknownDirective,
-              message: "'$name' (use lowercase)");
-        } else {
-          warn(PackageWarning.unknownDirective, message: "'$name'");
-        }
+        // Ignore unknown directive name; the analyzer now reports this
+        // natively.
       }
       // TODO(srawlins): Replace all `replaceAllMapped` usage within this file,
       // running regex after regex over [docs], with simple calls here. This has
@@ -317,6 +308,12 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
         // Already warned about an invalid parameter if this happens.
         return '';
       }
+      warn(
+        PackageWarning.deprecated,
+        message:
+            "The '@example' directive is deprecated, and will soon no longer "
+            'be supported.',
+      );
       var lang = args['lang'] ??
           pathContext.extension(args['src']!).replaceFirst('.', '');
 
@@ -389,7 +386,7 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
   /// Matches all youtube directives (even some invalid ones). This is so
   /// we can give good error messages if the directive is malformed, instead of
   /// just silently emitting it as-is.
-  static final _basicYouTubePattern = RegExp(r'''{@youtube\s+([^}]+)}''');
+  static final _basicYouTubePattern = RegExp(r'{@youtube\s+([^\s}][^}]*)}');
 
   /// Matches YouTube IDs from supported YouTube URLs.
   static final _validYouTubeUrlPattern =
@@ -474,7 +471,7 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
   /// Matches all animation directives (even some invalid ones). This is so we
   /// can give good error messages if the directive is malformed, instead of
   /// just silently emitting it as-is.
-  static final _basicAnimationPattern = RegExp(r'''{@animation\s+([^}]+)}''');
+  static final _basicAnimationPattern = RegExp(r'{@animation\s+([^\s}][^}]*)}');
 
   /// Matches valid JavaScript identifiers.
   static final _validIdPattern = RegExp(r'^[a-zA-Z_]\w*$');
@@ -528,13 +525,7 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
       }
       final positionalArgs = args.rest.sublist(0);
       String uniqueId;
-      var wasDeprecated = false;
-      if (positionalArgs.length == 4) {
-        // Supports the original form of the animation tag for backward
-        // compatibility.
-        uniqueId = positionalArgs.removeAt(0);
-        wasDeprecated = true;
-      } else if (positionalArgs.length == 3) {
+      if (positionalArgs.length == 3) {
         uniqueId = args['id'] ?? getUniqueId('animation_');
       } else {
         warn(PackageWarning.invalidParameter,
@@ -589,16 +580,6 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
         return '';
       }
       var overlayId = '${uniqueId}_play_button_';
-
-      // Only warn about deprecation if some other warning didn't occur.
-      if (wasDeprecated) {
-        warn(PackageWarning.deprecated,
-            message:
-                'Deprecated form of @animation directive, "${basicMatch[0]}"\n'
-                'Animation directives are now of the form "{@animation '
-                'WIDTH HEIGHT URL [id=ID]}" (id is an optional '
-                'parameter)');
-      }
 
       return modelElementRenderer.renderAnimation(
           uniqueId, width, height, movieUrl, overlayId);
@@ -689,8 +670,8 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
   /// Match group 4 is the unquoted arg, if any.
   static final RegExp _argPattern = RegExp(r'([a-zA-Z\-_0-9]+=)?' // option name
       r'(?:' // Start a new non-capture group for the two possibilities.
-      r'''(["'])((?:\\{2})*|(?:.*?[^\\](?:\\{2})*))\2|''' // with quotes.
-      r'([^ ]+))'); // without quotes.
+      r'''(["'])((?:[^\\\r\n]|\\.)*?)\2|''' // with quotes.
+      r'(\S+))'); // without quotes.
 
   /// Helper to process arguments given as a (possibly quoted) string.
   ///
@@ -755,10 +736,10 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
 
   bool _documentationLocalIsSet = false;
 
-  /// Returns the documentation for this literal element unless
-  /// `config.dropTextFrom` indicates it should not be returned.  Macro
-  /// definitions are stripped, but macros themselves are not injected.  This is
-  /// a two stage process to avoid ordering problems.
+  /// Returns the documentation for this element.
+  ///
+  /// Macro definitions are stripped, but macros themselves are not injected.
+  /// This is a two stage process to avoid ordering problems.
   late final String _documentationLocal;
 
   String get documentationLocal {
@@ -851,12 +832,7 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
         'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
     assert(!isCanonical || !needsPrecache);
-    String rawDocs;
-    if (config.dropTextFrom.contains(element.library!.name)) {
-      rawDocs = '';
-    } else {
-      rawDocs = _processCommentWithoutTools(documentationComment);
-    }
+    var rawDocs = _processCommentWithoutTools(documentationComment);
     return _rawDocs = buildDocumentationAddition(rawDocs);
   }
 
@@ -864,13 +840,8 @@ mixin DocumentationComment on Documentable, Warnable, Locatable, SourceCode {
   Future<String> _buildDocumentationBase() async {
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
-    String rawDocs;
     // Do not use the sync method if we need to evaluate tools or templates.
-    if (config.dropTextFrom.contains(element.library!.name)) {
-      rawDocs = '';
-    } else {
-      rawDocs = await processComment(documentationComment);
-    }
+    var rawDocs = await processComment(documentationComment);
     return _rawDocs = buildDocumentationAddition(rawDocs);
   }
 

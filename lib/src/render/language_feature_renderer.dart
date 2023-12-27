@@ -47,17 +47,3 @@ class LanguageFeatureRendererHtml extends LanguageFeatureRenderer {
     return buffer.toString();
   }
 }
-
-/// A markdown renderer for a [LanguageFeature].
-class LanguageFeatureRendererMd extends LanguageFeatureRenderer {
-  const LanguageFeatureRendererMd();
-
-  @override
-  String renderLanguageFeatureLabel(LanguageFeature feature) {
-    final featureUrl = feature.featureUrl;
-    if (featureUrl != null) {
-      return '*[<${feature.name}>]($featureUrl)*';
-    }
-    return '*<${feature.name}>*';
-  }
-}

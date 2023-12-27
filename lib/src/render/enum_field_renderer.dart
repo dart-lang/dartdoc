@@ -30,24 +30,3 @@ class EnumFieldRendererHtml implements EnumFieldRenderer {
     return '<a$cssClass href="${field.href}#${field.htmlId}">${field.name}</a>';
   }
 }
-
-class EnumFieldRendererMd implements EnumFieldRenderer {
-  const EnumFieldRendererMd();
-
-  @override
-  String renderValue(EnumField field) {
-    if (field.name == 'values') {
-      return 'const List&lt;${field.enclosingElement.name}>';
-    } else {
-      return 'const ${field.enclosingElement.name}(${field.index})';
-    }
-  }
-
-  @override
-  String renderLinkedName(EnumField field) {
-    if (field.isDeprecated) {
-      return '[~~${field.name}~~](${field.href})';
-    }
-    return '[${field.name}](${field.href})';
-  }
-}

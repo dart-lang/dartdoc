@@ -3,11 +3,11 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import '../src/test_descriptor_utils.dart' as d;
@@ -23,18 +23,15 @@ void main() async {
   late List<String> eLines;
   late List<String> eRightSidebarLines;
 
-  Future<PubPackageBuilder> createPackageBuilder({
-    List<String> additionalOptions = const [],
-  }) async {
+  Future<PubPackageBuilder> createPackageBuilder() async {
     context = await generatorContextFromArgv([
       '--input',
       packagePath,
       '--output',
-      p.join(packagePath, 'doc'),
+      path.join(packagePath, 'doc'),
       '--sdk-dir',
       packageMetaProvider.defaultSdkDir.path,
       '--no-link-to-remote',
-      ...additionalOptions,
     ], packageMetaProvider);
 
     var packageConfigProvider =
@@ -49,16 +46,9 @@ void main() async {
     );
   }
 
-  Future<Dartdoc> buildDartdoc({
-    List<String> additionalOptions = const [],
-  }) async {
-    final packageBuilder = await createPackageBuilder(
-      additionalOptions: additionalOptions,
-    );
-    return await Dartdoc.fromContext(
-      context,
-      packageBuilder,
-    );
+  Future<Dartdoc> buildDartdoc() async {
+    final packageBuilder = await createPackageBuilder();
+    return await Dartdoc.fromContext(context, packageBuilder);
   }
 
   group('extensions', () {
@@ -109,12 +99,12 @@ dartdoc:
       await writeDartdocResources(resourceProvider);
       await (await buildDartdoc()).generateDocs();
       eLines = resourceProvider
-          .getFile(p.join(packagePath, 'doc', 'lib', 'E.html'))
+          .getFile(path.join(packagePath, 'doc', 'lib', 'E.html'))
           .readAsStringSync()
           .split('\n');
       eRightSidebarLines = resourceProvider
           .getFile(
-              p.join(packagePath, 'doc', 'lib', 'E-extension-sidebar.html'))
+              path.join(packagePath, 'doc', 'lib', 'E-extension-sidebar.html'))
           .readAsStringSync()
           .split('\n');
     });
@@ -141,7 +131,7 @@ dartdoc:
       );
     });
 
-    test('enum page contains static methods', () async {
+    test('extension page contains static methods', () async {
       expect(
           eLines,
           containsAllInOrder([
@@ -151,7 +141,7 @@ dartdoc:
           ]));
     });
 
-    test('enum page contains static fields', () async {
+    test('extension page contains static fields', () async {
       expect(
           eLines,
           containsAllInOrder([
@@ -161,7 +151,7 @@ dartdoc:
           ]));
     });
 
-    test('enum page contains static getter/setter pairs', () async {
+    test('extension page contains static getter/setter pairs', () async {
       expect(
           eLines,
           containsAllInOrder([
@@ -171,7 +161,7 @@ dartdoc:
           ]));
     });
 
-    test('enum page contains (static) constants', () async {
+    test('extension page contains (static) constants', () async {
       expect(
           eLines,
           containsAllInOrder([
@@ -181,7 +171,7 @@ dartdoc:
           ]));
     });
 
-    test('enum page contains instance operators', () async {
+    test('extension page contains instance operators', () async {
       expect(
           eLines,
           containsAllInOrder([
@@ -191,48 +181,6 @@ dartdoc:
           ]));
     });
 
-    test('enum sidebar contains methods', () async {
-      expect(
-        eRightSidebarLines,
-        containsAllInOrder([
-          matches('<a href="../lib/E.html#instance-methods">Methods</a>'),
-          matches('<a href="../lib/E/m1.html">m1</a>'),
-        ]),
-      );
-    });
-
-    test('enum sidebar contains operators', () async {
-      expect(
-        eRightSidebarLines,
-        containsAllInOrder([
-          matches('<a href="../lib/E.html#operators">Operators</a>'),
-          matches('<a href="../lib/E/operator_greater.html">operator ></a>'),
-        ]),
-      );
-    });
-
-    test('enum sidebar contains static properties', () async {
-      expect(
-        eRightSidebarLines,
-        containsAllInOrder([
-          matches(
-              '<a href="../lib/E.html#static-properties">Static properties</a>'),
-          matches('<a href="../lib/E/gs1.html">gs1</a>'),
-          matches('<a href="../lib/E/sf1.html">sf1</a>'),
-        ]),
-      );
-    });
-
-    test('enum sidebar contains static methods', () async {
-      expect(
-        eRightSidebarLines,
-        containsAllInOrder([
-          matches('<a href="../lib/E.html#static-methods">Static methods</a>'),
-          matches('<a href="../lib/E/s1.html">s1</a>'),
-        ]),
-      );
-    });
-
     test('extension page contains source link', () async {
       expect(
         eLines,
@@ -240,6 +188,48 @@ dartdoc:
           matches('<a title="View source code" class="source-link" '
               'href="https://github.com/dart-lang/TEST_PKG/lib/lib.dart#L5">'
               '<span class="material-symbols-outlined">description</span></a>'),
+        ]),
+      );
+    });
+
+    test('extension sidebar contains methods', () async {
+      expect(
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="lib/E.html#instance-methods">Methods</a>'),
+          matches('<a href="lib/E/m1.html">m1</a>'),
+        ]),
+      );
+    });
+
+    test('extension sidebar contains operators', () async {
+      expect(
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="lib/E.html#operators">Operators</a>'),
+          matches('<a href="lib/E/operator_greater.html">operator ></a>'),
+        ]),
+      );
+    });
+
+    test('extension sidebar contains static properties', () async {
+      expect(
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches(
+              '<a href="lib/E.html#static-properties">Static properties</a>'),
+          matches('<a href="lib/E/gs1.html">gs1</a>'),
+          matches('<a href="lib/E/sf1.html">sf1</a>'),
+        ]),
+      );
+    });
+
+    test('extension sidebar contains static methods', () async {
+      expect(
+        eRightSidebarLines,
+        containsAllInOrder([
+          matches('<a href="lib/E.html#static-methods">Static methods</a>'),
+          matches('<a href="lib/E/s1.html">s1</a>'),
         ]),
       );
     });

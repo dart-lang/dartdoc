@@ -6,19 +6,26 @@
     {{ /self.publicLibrariesSorted }}
   {{ /self.hasPublicLibraries }}
 
-  {{ #self.hasPublicMixins }}
-    <li class="section-title"><a href="{{{ self.href }}}#mixins">Mixins</a></li>
-    {{ #self.publicMixinsSorted }}
-      <li>{{{ linkedName }}}</li>
-    {{ /self.publicMixinsSorted }}
-  {{ /self.hasPublicMixins }}
-
   {{ #self.hasPublicClasses }}
     <li class="section-title"><a href="{{{ self.href }}}#classes">Classes</a></li>
     {{ #self.publicClassesSorted }}
       <li>{{{ linkedName }}}</li>
     {{ /self.publicClassesSorted }}
   {{ /self.hasPublicClasses }}
+
+  {{ #self.hasPublicEnums }}
+    <li class="section-title"><a href="{{{ self.href }}}#enums">Enums</a></li>
+    {{ #self.publicEnumsSorted }}
+      <li>{{{ linkedName }}}</li>
+    {{ /self.publicEnumsSorted }}
+  {{ /self.hasPublicEnums }}
+
+  {{ #self.hasPublicMixins }}
+    <li class="section-title"><a href="{{{ self.href }}}#mixins">Mixins</a></li>
+    {{ #self.publicMixinsSorted }}
+      <li>{{{ linkedName }}}</li>
+    {{ /self.publicMixinsSorted }}
+  {{ /self.hasPublicMixins }}
 
   {{ #self.hasPublicConstants}}
     <li class="section-title"><a href="{{{ self.href }}}#constants">Constants</a></li>
@@ -41,13 +48,6 @@
     {{ /self.publicFunctionsSorted }}
   {{ /self.hasPublicFunctions }}
 
-  {{ #self.hasPublicEnums }}
-    <li class="section-title"><a href="{{{ self.href }}}#enums">Enums</a></li>
-    {{ #self.publicEnumsSorted }}
-      <li>{{{ linkedName }}}</li>
-    {{ /self.publicEnumsSorted }}
-  {{ /self.hasPublicEnums }}
-
   {{ #self.hasPublicTypedefs }}
   <li class="section-title"><a href="{{{ self.href }}}#typedefs">Typedefs</a></li>
   {{ #self.publicTypedefsSorted }}
@@ -61,4 +61,18 @@
   <li>{{{ linkedName }}}</li>
   {{ /self.publicExceptionsSorted }}
   {{ /self.hasPublicExceptions }}
+
+  {{ #self.hasPublicExtensions }}
+  <li class="section-title"><a href="{{{ self.href }}}#extensions">Extensions</a></li>
+  {{ #self.publicExtensionsSorted }}
+  <li>{{{ linkedName }}}</li>
+  {{ /self.publicExtensionsSorted }}
+  {{ /self.hasPublicExtensions }}
+
+  {{ #self.hasPublicExtensionTypes }}
+  <li class="section-title"><a href="{{{ self.href }}}#extension-types">Extension Types</a></li>
+  {{ #self.publicExtensionTypesSorted }}
+  <li>{{{ linkedName }}}</li>
+  {{ /self.publicExtensionTypesSorted }}
+  {{ /self.hasPublicExtensionTypes }}
 </ol>

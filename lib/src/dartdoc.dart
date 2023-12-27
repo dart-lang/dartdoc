@@ -7,13 +7,11 @@ import 'dart:convert';
 import 'dart:io' show Platform, exitCode, stderr;
 
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/empty_generator.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
-import 'package:dartdoc/src/generator/markdown_generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -23,7 +21,7 @@ import 'package:dartdoc/src/validator.dart';
 import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 
 const String programName = 'dartdoc';
 // Update when pubspec version changes by running `pub run build_runner build`
@@ -72,7 +70,7 @@ class DartdocFileWriter implements FileWriter {
   }) {
     _validateMaxWriteStats(filePath, content.length);
     // Replace '/' separators with proper separators for the platform.
-    var outFile = p.joinAll(filePath.split('/'));
+    var outFile = path.joinAll(filePath.split('/'));
 
     if (!allowOverwrite) {
       _warnAboutOverwrite(outFile, null);
@@ -91,7 +89,7 @@ class DartdocFileWriter implements FileWriter {
     _validateMaxWriteStats(filePath, bytes.length);
 
     // Replace '/' separators with proper separators for the platform.
-    var outFile = p.joinAll(filePath.split('/'));
+    var outFile = path.joinAll(filePath.split('/'));
 
     _warnAboutOverwrite(outFile, element);
     _fileElementMap[outFile] = element;
@@ -174,21 +172,10 @@ class Dartdoc {
       maxFileCount: context.maxFileCount,
       maxTotalSize: context.maxTotalSize,
     );
-    Generator generator;
-    switch (context.format) {
-      case 'html':
-        generator = await initHtmlGenerator(context, writer: writer);
-        break;
-      case 'md':
-        generator = await initMarkdownGenerator(context, writer: writer);
-        break;
-      default:
-        throw DartdocFailure('Unsupported output format: ${context.format}');
-    }
     return Dartdoc._(
       context,
       outputDir,
-      generator,
+      await initHtmlGenerator(context, writer: writer),
       packageBuilder,
     );
   }
@@ -219,12 +206,8 @@ class Dartdoc {
 
     var warnings = packageGraph.packageWarningCounter.warningCount;
     var errors = packageGraph.packageWarningCounter.errorCount;
-    if (warnings == 0 && errors == 0) {
-      logInfo('no issues found');
-    } else {
-      logWarning("Found $warnings ${pluralize('warning', warnings)} "
-          "and $errors ${pluralize('error', errors)}.");
-    }
+    logWarning("Found $warnings ${pluralize('warning', warnings)} "
+        "and $errors ${pluralize('error', errors)}.");
 
     var seconds = stopwatch.elapsedMilliseconds / 1000.0;
     libs = packageGraph.localPublicLibraries.length;
@@ -270,9 +253,7 @@ class Dartdoc {
   ///
   /// Passing in a [postProcessCallback] to do additional processing after
   /// the documentation is generated.
-  void executeGuarded([
-    Future<void> Function(DartdocOptionContext)? postProcessCallback,
-  ]) {
+  void executeGuarded() {
     onCheckProgress.listen(logProgress);
     // This function should *never* `await runZonedGuarded` because the errors
     // thrown in [generateDocs] are uncaught. We want this because uncaught
@@ -280,26 +261,19 @@ class Dartdoc {
     //
     // If you await the zone, the code that comes after the await is not
     // executed if the zone dies due to an uncaught error. To avoid this,
-    // confusion, never `await runZonedGuarded` and never change the return
-    // value of [executeGuarded].
+    // confusion, never `await runZonedGuarded`.
     runZonedGuarded(
       () async {
         runtimeStats.startPerfTask('generateDocs');
         await generateDocs();
         runtimeStats.endPerfTask();
-        await postProcessCallback?.call(config);
       },
-      (e, chain) {
-        if (e is DartdocFailure) {
-          stderr.writeln('\n$_dartdocFailedMessage: $e.');
-          exitCode = 1;
-        } else {
-          stderr.writeln('\n$_dartdocFailedMessage: $e\n$chain');
-          exitCode = 255;
-        }
+      (e, stackTrace) {
+        stderr.writeln('\n$_dartdocFailedMessage: $e\n$stackTrace');
+        exitCode = e is DartdocFailure ? 1 : 255;
       },
       zoneSpecification: ZoneSpecification(
-        print: (_, __, ___, String line) => logPrint(line),
+        print: (_, __, ___, String line) => logInfo(line),
       ),
     );
   }

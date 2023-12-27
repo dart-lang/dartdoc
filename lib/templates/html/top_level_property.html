@@ -13,7 +13,7 @@
           {{ >annotations }}
           {{{ modelType.linkedName }}}
           {{ >name_summary }}
-          {{ >features }}
+          {{ >attributes }}
         </section>
         {{>documentation}}
         {{>source_code}}
@@ -32,6 +32,7 @@
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     {{>search_sidebar}}
     <h5>{{parent.name}} {{parent.kind}}</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
   </div><!--/.sidebar-offcanvas-left-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">

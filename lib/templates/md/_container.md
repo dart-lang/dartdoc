@@ -1,4 +1,0 @@
-##### {{{linkedName}}}{{{linkedGenericParameters}}}
-{{>categorization}}
-
-{{{ oneLineDoc }}}

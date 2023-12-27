@@ -12,7 +12,7 @@
     {{#function}}
     <section class="multi-line-signature">
         {{ >callable_multiline }}
-        {{ >features }}
+        {{ >attributes }}
     </section>
     {{>documentation}}
 
@@ -24,6 +24,7 @@
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     {{>search_sidebar}}
     <h5>{{parent.name}} {{parent.kind}}</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
   </div><!--/.sidebar-offcanvas-left-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">

@@ -6,9 +6,15 @@
       data-above-sidebar="{{ aboveSidebarPath }}"
       data-below-sidebar="{{ belowSidebarPath }}">
       {{ !-- TODO(srawlins): Add annotations. }}
-    {{#self}}
-      <div>{{>source_link}}<h1><span class="kind-library">{{{name}}}</span> {{kind}} {{>feature_set}} {{>categorization}}</h1></div>
-    {{/self}}
+    {{ #self }}
+      <div>
+        {{ >source_link }}
+        <h1>
+          <span class="kind-library">{{{ displayName }}}</span>
+          {{ kind }} {{ >feature_set }} {{ >categorization }}
+        </h1>
+      </div>
+    {{ /self }}
 
     {{#library}}
     {{>documentation}}
@@ -49,6 +55,18 @@
       </dl>
     </section>
     {{/library.hasPublicExtensions}}
+
+    {{ #library.hasPublicExtensionTypes }}
+    <section class="summary offset-anchor" id="extension-types">
+      <h2>Extension Types</h2>
+
+      <dl>
+        {{ #library.publicExtensionTypesSorted }}
+        {{ >extension_type }}
+        {{ /library.publicExtensionTypesSorted }}
+      </dl>
+    </section>
+    {{ /library.hasPublicExtensionTypes }}
 
     {{#library.hasPublicConstants}}
     <section class="summary offset-anchor" id="constants">

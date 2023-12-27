@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/model/feature.dart';
+import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 /// A [ModelElement] that is a [Container] member.
@@ -24,9 +24,9 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
       modelBuilder.fromElement(element.enclosingElement!) as Container;
 
   @override
-  Set<Feature> get features => {
-        ...super.features,
-        if (isExtended) Feature.extended,
+  Set<Attribute> get attributes => {
+        ...super.attributes,
+        if (isExtended) Attribute.extended,
       };
 
   late final Container? canonicalEnclosingContainer = () {
@@ -38,13 +38,13 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
 
   Container? computeCanonicalEnclosingContainer() {
     final enclosingElement = this.enclosingElement;
-    if (enclosingElement is! Extension) {
-      return packageGraph.findCanonicalModelElementFor(element.enclosingElement)
-          as Container?;
-    }
-    // TODO(jcollins-g): move Extension specific code to [Extendable]
-    return packageGraph.findCanonicalModelElementFor(enclosingElement.element)
-        as Container?;
+    return switch (enclosingElement) {
+      Extension() =>
+        packageGraph.findCanonicalModelElementFor(enclosingElement.element),
+      ExtensionType() =>
+        packageGraph.findCanonicalModelElementFor(enclosingElement.element),
+      _ => packageGraph.findCanonicalModelElementFor(element.enclosingElement),
+    } as Container?;
   }
 
   @override

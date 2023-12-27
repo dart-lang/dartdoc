@@ -76,14 +76,14 @@ mixin Constructable on InheritingContainer {
 abstract class InheritingContainer extends Container
     with ExtensionTarget
     implements EnclosedElement {
-  late final DefinedElementType? supertype = () {
+  DefinedElementType? get supertype {
     final elementSupertype = element.supertype;
     return elementSupertype == null ||
             elementSupertype.element.supertype == null
         ? null
         : modelBuilder.typeFrom(elementSupertype, library)
             as DefinedElementType;
-  }();
+  }
 
   /// Class modifiers from the Dart feature specification.
   ///
@@ -109,7 +109,7 @@ abstract class InheritingContainer extends Container
     ...typeParameters,
   ];
 
-  late final Iterable<Method> inheritedMethods = () {
+  Iterable<Method> get inheritedMethods {
     var methodNames = declaredMethods.map((m) => m.element.name).toSet();
     var inheritedMethodElements = _inheritedElements
         .whereType<MethodElement>()
@@ -123,8 +123,9 @@ abstract class InheritingContainer extends Container
       for (var e in inheritedMethodElements)
         modelBuilder.from(e, library, enclosingContainer: this) as Method,
     ];
-  }();
-  late final List<Operator> inheritedOperators = () {
+  }
+
+  List<Operator> get inheritedOperators {
     var operatorNames = declaredOperators.map((o) => o.element.name).toSet();
     var inheritedOperatorElements = _inheritedElements
         .whereType<MethodElement>()
@@ -135,21 +136,24 @@ abstract class InheritingContainer extends Container
       for (var e in inheritedOperatorElements)
         modelBuilder.from(e, library, enclosingContainer: this) as Operator,
     ];
-  }();
+  }
+
   @override
   late final DefinedElementType modelType =
       modelBuilder.typeFrom(element.thisType, library) as DefinedElementType;
+
   late final List<DefinedElementType> publicSuperChain =
       model_utils.filterNonPublic(superChain).toList(growable: false);
-  late final List<ExecutableElement> _inheritedElements = () {
+
+  List<ExecutableElement> get _inheritedElements {
     if (element is ClassElement && (element as ClassElement).isDartCoreObject) {
       return const <ExecutableElement>[];
     }
 
-    final inheritance = definingLibrary.inheritanceManager;
     final concreteInheritenceMap =
-        inheritance.getInheritedConcreteMap2(element);
-    final inheritenceMap = inheritance.getInheritedMap2(element);
+        packageGraph.inheritanceManager.getInheritedConcreteMap2(element);
+    final inheritenceMap =
+        packageGraph.inheritanceManager.getInheritedMap2(element);
 
     List<InterfaceElement>? inheritanceChainElements;
 
@@ -187,10 +191,10 @@ abstract class InheritingContainer extends Container
     }
 
     return combinedMap.values.toList(growable: false);
-  }();
+  }
 
   /// All fields defined on this container, _including inherited fields_.
-  late final List<Field> allFields = () {
+  List<Field> get allFields {
     var inheritedAccessorElements = {
       ..._inheritedElements.whereType<PropertyAccessorElement>()
     };
@@ -240,7 +244,7 @@ abstract class InheritingContainer extends Container
     });
 
     return fields;
-  }();
+  }
 
   @override
   late final Iterable<Method> declaredMethods =
@@ -283,6 +287,7 @@ abstract class InheritingContainer extends Container
       hasPublicSuperChainReversed ||
       hasPotentiallyApplicableExtensions;
 
+  @visibleForTesting
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
 
   bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
@@ -295,6 +300,7 @@ abstract class InheritingContainer extends Container
   /// purposes in abstract classes.
   List<InheritingContainer> get inheritanceChain;
 
+  @visibleForTesting
   Iterable<Field> get inheritedFields => allFields.where((f) => f.isInherited);
 
   @override
@@ -324,6 +330,7 @@ abstract class InheritingContainer extends Container
 
   bool get isSealed;
 
+  @visibleForTesting
   Iterable<Field> get publicInheritedFields =>
       model_utils.filterNonPublic(inheritedFields);
 
@@ -339,6 +346,7 @@ abstract class InheritingContainer extends Container
   bool get publicInheritedInstanceOperators =>
       publicInstanceOperators.every((f) => f.isInherited);
 
+  @visibleForTesting
   Iterable<Method> get publicInheritedMethods =>
       model_utils.filterNonPublic(inheritedMethods);
 
@@ -353,18 +361,19 @@ abstract class InheritingContainer extends Container
     while (parent != null) {
       typeChain.add(parent);
       final parentType = parent.type;
-      if (parentType is InterfaceType) {
-        // Avoid adding [Object] to the [superChain] ([_supertype] already has
-        // this check).
-        if (parentType.superclass?.superclass == null) {
-          break;
-        } else {
-          parent = modelBuilder.typeFrom(parentType.superclass!, library)
-              as DefinedElementType?;
-        }
-      } else {
-        parent = (parent.modelElement as Class).supertype;
+      if (parentType is! InterfaceType) {
+        throw StateError('ancestor of $this is $parent with model element '
+            '${parent.modelElement}');
       }
+
+      var superclass = parentType.superclass;
+      // Avoid adding [Object] to the [superChain] ([_supertype] already has
+      // this check).
+      if (superclass == null || superclass.superclass == null) {
+        break;
+      }
+      parent =
+          modelBuilder.typeFrom(superclass, library) as DefinedElementType?;
     }
     return typeChain;
   }
@@ -461,7 +470,7 @@ mixin MixedInTypes on InheritingContainer {
 /// Add the ability for an [InheritingContainer] to be implemented by other
 /// InheritingContainers and to reference what it itself implements.
 mixin TypeImplementing on InheritingContainer {
-  late final List<DefinedElementType> directInterfaces = [
+  late final List<DefinedElementType> _directInterfaces = [
     for (var interface in element.interfaces)
       modelBuilder.typeFrom(interface, library) as DefinedElementType
   ];
@@ -478,7 +487,7 @@ mixin TypeImplementing on InheritingContainer {
   bool get hasPublicInterfaces => publicInterfaces.isNotEmpty;
 
   /// Interfaces directly implemented by this container.
-  List<DefinedElementType> get interfaces => directInterfaces;
+  List<DefinedElementType> get interfaces => _directInterfaces;
 
   /// Returns all the "immediate" public implementors of this
   /// [TypeImplementing].  For a [Mixin], this is actually the mixin
@@ -515,11 +524,14 @@ mixin TypeImplementing on InheritingContainer {
   /// private interfaces, and so unlike other public* methods, is not
   /// a strict subset of [interfaces].
   @override
-  Iterable<DefinedElementType> get publicInterfaces sync* {
-    for (var i in directInterfaces) {
+  Iterable<DefinedElementType> get publicInterfaces {
+    var interfaces = <DefinedElementType>[];
+    for (var interface in _directInterfaces) {
+      var interfaceElement = interface.modelElement;
+
       /// Do not recurse if we can find an element here.
-      if (i.modelElement.canonicalModelElement != null) {
-        yield i;
+      if (interfaceElement.canonicalModelElement != null) {
+        interfaces.add(interface);
         continue;
       }
       // Public types used to be unconditionally exposed here.  However,
@@ -532,21 +544,21 @@ mixin TypeImplementing on InheritingContainer {
       // the superchain and publicInterfaces of this interface to pretend
       // as though the hidden class didn't exist and this class was declared
       // directly referencing the canonical classes further up the chain.
-      if (i.modelElement is InheritingContainer) {
-        var hiddenContainer = i.modelElement as InheritingContainer;
-        if (hiddenContainer.publicSuperChain.isNotEmpty) {
-          yield hiddenContainer.publicSuperChain.first;
+      if (interfaceElement is InheritingContainer) {
+        if (interfaceElement.publicSuperChain.isNotEmpty) {
+          interfaces.add(interfaceElement.publicSuperChain.first);
         }
-        yield* hiddenContainer.publicInterfaces;
+        interfaces.addAll(interfaceElement.publicInterfaces);
       } else {
         assert(
             false,
             'Can not handle intermediate non-public interfaces created by '
             'ModelElements that are not classes or mixins: $fullyQualifiedName '
-            'contains an interface $i, defined by ${i.modelElement}');
+            'contains an interface $interface, defined by $interfaceElement');
         continue;
       }
     }
+    return interfaces;
   }
 }
 

@@ -14,14 +14,17 @@
 ///
 library dartdoc.dartdoc_options;
 
-import 'dart:io' show Platform, stdout;
+import 'dart:io' show Platform, exitCode, stderr, stdout;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:args/args.dart';
+import 'package:dartdoc/src/dartdoc.dart' show dartdocVersion, programName;
 import 'package:dartdoc/src/experiment_options.dart';
 import 'package:dartdoc/src/failure.dart';
+import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/source_linker.dart';
@@ -89,9 +92,8 @@ class CategoryConfiguration {
   static CategoryConfiguration fromYamlMap(YamlMap yamlMap,
       String canonicalYamlPath, ResourceProvider resourceProvider) {
     var newCategoryDefinitions = <String, CategoryDefinition>{};
-    for (var entry in yamlMap.entries) {
-      var name = entry.key.toString();
-      var categoryMap = entry.value;
+    for (var MapEntry(:key, value: categoryMap) in yamlMap.entries) {
+      var name = key.toString();
       if (categoryMap is Map) {
         var displayName = categoryMap['displayName']?.toString();
         var documentationMarkdown = categoryMap['markdown']?.toString();
@@ -132,9 +134,8 @@ class ToolConfiguration {
       String canonicalYamlPath, ResourceProvider resourceProvider) {
     var newToolDefinitions = <String, ToolDefinition>{};
     var pathContext = resourceProvider.pathContext;
-    for (var entry in yamlMap.entries) {
-      var name = entry.key.toString();
-      var toolMap = entry.value;
+    for (var MapEntry(:key, value: toolMap) in yamlMap.entries) {
+      var name = key.toString();
       if (toolMap is! Map) {
         throw DartdocOptionError(
             'Tools must be defined as a map of tool names to definitions. Tool '
@@ -297,20 +298,18 @@ class _OptionValueWithContext<T> {
   /// Throws [UnsupportedError] if [T] isn't a [String] or [List<String>].
   T get resolvedValue {
     final value = this.value;
-    if (value is List<String>) {
-      return value
+    return switch (value) {
+      List<String>() => value
           .map((v) => pathContext.canonicalizeWithTilde(v))
           .cast<String>()
-          .toList(growable: false) as T;
-    } else if (value is String) {
-      return pathContext.canonicalizeWithTilde(value) as T;
-    } else if (value is Map<String, String>) {
-      return value.map<String, String>((String key, String value) {
-        return MapEntry(key, pathContext.canonicalizeWithTilde(value));
-      }) as T;
-    } else {
-      throw UnsupportedError('Type $T is not supported for resolvedValue');
-    }
+          .toList(growable: false) as T,
+      String() => pathContext.canonicalizeWithTilde(value) as T,
+      Map<String, String>() =>
+        value.map<String, String>((String key, String value) {
+          return MapEntry(key, pathContext.canonicalizeWithTilde(value));
+        }) as T,
+      _ => throw UnsupportedError('Type $T is not supported for resolvedValue')
+    };
   }
 }
 
@@ -416,18 +415,21 @@ abstract class DartdocOption<T extends Object?> {
     assert(isDir || isFile);
     List<String> resolvedPaths;
     var value = valueWithContext.value;
-    if (value is String) {
-      resolvedPaths = [valueWithContext.resolvedValue as String];
-    } else if (value is List<String>) {
-      resolvedPaths = valueWithContext.resolvedValue as List<String>;
-    } else if (value is Map<String, String>) {
-      resolvedPaths = [...(valueWithContext.resolvedValue as Map).values];
-    } else {
-      assert(
-          false,
-          'Trying to ensure existence of unsupported type '
-          '${valueWithContext.value.runtimeType}');
-      return;
+    switch (value) {
+      case String():
+        resolvedPaths = [valueWithContext.resolvedValue as String];
+      case List<String>():
+        resolvedPaths = valueWithContext.resolvedValue as List<String>;
+      case Map<String, String>():
+        resolvedPaths = (valueWithContext.resolvedValue as Map<String, String>)
+            .values
+            .toList(growable: false);
+      default:
+        assert(
+            false,
+            'Trying to ensure existence of unsupported type '
+            '${valueWithContext.value.runtimeType}');
+        return;
     }
     for (var path in resolvedPaths) {
       var f = isDir
@@ -937,8 +939,8 @@ mixin _DartdocFileOption<T> implements DartdocOption<T> {
         convertYamlToType = (YamlMap yamlMap, String canonicalYamlPath,
             ResourceProvider resourceProvider) {
           var returnData = <String, String>{};
-          for (var entry in yamlMap.entries) {
-            returnData[entry.key.toString()] = entry.value.toString();
+          for (var MapEntry(:key, :value) in yamlMap.entries) {
+            returnData[key.toString()] = value.toString();
           }
           return returnData as T;
         };
@@ -1254,9 +1256,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
   CategoryConfiguration get categories =>
       optionSet['categories'].valueAt(context);
 
-  late final Set<String> dropTextFrom =
-      Set.of(optionSet['dropTextFrom'].valueAt(context));
-
+  // TODO(srawlins): Remove when we remove support for `{@example}`.
   String? get examplePathPrefix =>
       optionSet['examplePathPrefix'].valueAt(context);
 
@@ -1269,8 +1269,6 @@ class DartdocOptionContext extends DartdocOptionContextBase
       {...optionSet['excludePackages'].valueAt(context)};
 
   String? get flutterRoot => optionSet['flutterRoot'].valueAt(context);
-
-  bool get hideSdkText => optionSet['hideSdkText'].valueAt(context);
 
   late final Set<String> include =
       Set.of(optionSet['include'].valueAt(context));
@@ -1327,15 +1325,11 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   bool get validateLinks => optionSet['validateLinks'].valueAt(context);
 
-  bool isLibraryExcluded(String name) =>
-      exclude.any((pattern) => name == pattern);
+  bool isLibraryExcluded(String nameOrPath) => exclude.contains(nameOrPath);
 
   bool isPackageExcluded(String name) => _excludePackages.contains(name);
 
   bool get showStats => optionSet['showStats'].valueAt(context);
-
-  /// Output format, e.g. 'html', 'md'
-  String get format => optionSet['format'].valueAt(context);
 
   // TODO(jdkoren): temporary while we confirm href base behavior doesn't break
   // important clients
@@ -1345,6 +1339,151 @@ class DartdocOptionContext extends DartdocOptionContextBase
       int.parse(optionSet['maxFileCount'].valueAt(context) ?? '0');
   int get maxTotalSize =>
       int.parse(optionSet['maxTotalSize'].valueAt(context) ?? '0');
+}
+
+/// Helper class that consolidates option contexts for instantiating generators.
+class DartdocGeneratorOptionContext extends DartdocOptionContext {
+  DartdocGeneratorOptionContext(
+      super.optionSet, super.dir, super.resourceProvider);
+  DartdocGeneratorOptionContext.fromDefaultContextLocation(
+      super.optionSet, super.resourceProvider)
+      : super.fromDefaultContextLocation();
+
+  /// The joined contents of any 'header' files specified in options.
+  String get header =>
+      _joinCustomTextFiles(optionSet['header'].valueAt(context));
+
+  /// The joined contents of any 'footer' files specified in options.
+  String get footer =>
+      _joinCustomTextFiles(optionSet['footer'].valueAt(context));
+
+  /// The joined contents of any 'footer-text' files specified in options.
+  String get footerText =>
+      _joinCustomTextFiles(optionSet['footerText'].valueAt(context));
+
+  String _joinCustomTextFiles(Iterable<String> paths) => paths
+      .map((p) => resourceProvider.getFile(p).readAsStringSync())
+      .join('\n');
+
+  bool get prettyIndexJson => optionSet['prettyIndexJson'].valueAt(context);
+
+  String? get favicon => optionSet['favicon'].valueAt(context);
+
+  String? get relCanonicalPrefix =>
+      optionSet['relCanonicalPrefix'].valueAt(context);
+
+  String? get templatesDir => optionSet['templatesDir'].valueAt(context);
+
+  // TODO(jdkoren): duplicated temporarily so that GeneratorContext is enough for configuration.
+  @override
+  bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
+
+  String? get resourcesDir => optionSet['resourcesDir'].valueAt(context);
+}
+
+class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
+    with LoggingContext {
+  DartdocProgramOptionContext(
+      super.optionSet, super.dir, super.resourceProvider);
+
+  DartdocProgramOptionContext.fromDefaultContextLocation(
+      super.optionSet, super.resourceProvider)
+      : super.fromDefaultContextLocation();
+
+  /// Whether to generate docs or perform a dry run.
+  bool get generateDocs => optionSet['generateDocs'].valueAt(context);
+  bool get help => optionSet['help'].valueAt(context);
+  bool get version => optionSet['version'].valueAt(context);
+}
+
+List<DartdocOption<bool>> createDartdocProgramOptions(
+    PackageMetaProvider packageMetaProvider) {
+  var resourceProvider = packageMetaProvider.resourceProvider;
+  return [
+    DartdocOptionArgOnly<bool>('generateDocs', true, resourceProvider,
+        help:
+            'Generate docs into the output directory (or only display warnings '
+            'if false).',
+        negatable: true),
+    DartdocOptionArgOnly<bool>('help', false, resourceProvider,
+        abbr: 'h', help: 'Show command help.', negatable: false),
+    DartdocOptionArgOnly<bool>('version', false, resourceProvider,
+        help: 'Display the version for $programName.', negatable: false),
+  ];
+}
+
+DartdocProgramOptionContext? parseOptions(
+  PackageMetaProvider packageMetaProvider,
+  List<String> arguments, {
+  // Additional options are given in google3.
+  OptionGenerator? additionalOptions,
+}) {
+  var optionRoot = DartdocOptionRoot.fromOptionGenerators(
+      'dartdoc',
+      [
+        createDartdocOptions,
+        createDartdocProgramOptions,
+        createLoggingOptions,
+        createGeneratorOptions,
+        if (additionalOptions != null) additionalOptions,
+      ],
+      packageMetaProvider);
+
+  try {
+    optionRoot.parseArguments(arguments);
+  } on FormatException catch (e) {
+    stderr.writeln(' fatal error: ${e.message}');
+    stderr.writeln('');
+    _printUsage(optionRoot.argParser);
+    // Do not use `exit()` as this bypasses `--pause-isolates-on-exit`.
+    exitCode = 64;
+    return null;
+  }
+  if (optionRoot['help'].valueAtCurrent() as bool) {
+    _printHelp(optionRoot.argParser);
+    exitCode = 0;
+    return null;
+  }
+  if (optionRoot['version'].valueAtCurrent() as bool) {
+    _printVersion(optionRoot.argParser);
+    exitCode = 0;
+    return null;
+  }
+
+  DartdocProgramOptionContext config;
+  try {
+    config = DartdocProgramOptionContext.fromDefaultContextLocation(
+        optionRoot, packageMetaProvider.resourceProvider);
+  } on DartdocOptionError catch (e) {
+    stderr.writeln(' fatal error: ${e.message}');
+    stderr.writeln('');
+    _printUsage(optionRoot.argParser);
+    exitCode = 64;
+    return null;
+  }
+  startLogging(
+    isJson: config.json,
+    isQuiet: config.quiet,
+    showProgress: config.showProgress,
+  );
+  return config;
+}
+
+/// Print help if we are passed the help option.
+void _printHelp(ArgParser parser) {
+  print('Generate HTML documentation for Dart libraries.\n');
+  print(parser.usage);
+}
+
+/// Print usage information on invalid command lines.
+void _printUsage(ArgParser parser) {
+  print('Usage: dartdoc [OPTIONS]\n');
+  print(parser.usage);
+}
+
+/// Print version information.
+void _printVersion(ArgParser parser) {
+  print('dartdoc version: $dartdocVersion');
 }
 
 /// Instantiate dartdoc's configuration file and options parser with the
@@ -1377,85 +1516,59 @@ List<DartdocOption> createDartdocOptions(
         convertYamlToType: CategoryConfiguration.fromYamlMap,
         help: 'A list of all categories, their display names, and markdown '
             'documentation in the order they are to be displayed.'),
-    DartdocOptionSyntheticOnly<List<String>>('dropTextFrom',
-        (DartdocSyntheticOption<List<String>> option, Folder dir) {
-      if (option.parent['hideSdkText'].valueAt(dir)) {
-        return [
-          'dart.async',
-          'dart.collection',
-          'dart.convert',
-          'dart.core',
-          'dart.developer',
-          'dart.html',
-          'dart.indexed_db',
-          'dart.io',
-          'dart.isolate',
-          'dart.js',
-          'dart.js_util',
-          'dart.math',
-          'dart.mirrors',
-          'dart.svg',
-          'dart.typed_data',
-          'dart.web_audio'
-        ];
-      }
-      return const [];
-    }, resourceProvider,
-        help: 'Remove text from libraries with the following names.'),
+    // TODO(srawlins): Remove when we remove support for `{@example}`.
     DartdocOptionArgFile<String?>('examplePathPrefix', null, resourceProvider,
         optionIs: OptionKind.dir,
-        help: 'Prefix for @example paths.\n(defaults to the project root)',
+        help: '(deprecated) Prefix for @example paths; defaults to the project '
+            'root.',
         mustExist: true),
     DartdocOptionArgFile<List<String>>('exclude', [], resourceProvider,
-        help: 'Library names to ignore.', splitCommas: true),
+        help: 'Names of libraries to exclude from documentation.',
+        splitCommas: true),
     DartdocOptionArgOnly<List<String>>('excludePackages', [], resourceProvider,
-        help: 'Package names to ignore.', splitCommas: true),
+        help: 'Names of packages to exclude from documentation.',
+        splitCommas: true),
     DartdocOptionSyntheticOnly<String?>('flutterRoot',
         (DartdocSyntheticOption<String?> option, Folder dir) {
       var flutterRootEnv =
           packageMetaProvider.environmentProvider['FLUTTER_ROOT'];
-      if (flutterRootEnv == null) return null;
-      return resourceProvider.pathContext.resolveTildePath(flutterRootEnv);
+      return flutterRootEnv == null
+          ? null
+          : resourceProvider.pathContext.resolveTildePath(flutterRootEnv);
     }, resourceProvider,
         optionIs: OptionKind.dir,
-        help: 'Root of the Flutter SDK, specified from environment.',
+        help: 'Root of the Flutter SDK, specified from the environment.',
         mustExist: true),
-    DartdocOptionArgOnly<bool>('hideSdkText', false, resourceProvider,
-        hide: true,
-        help: 'Drop all text for SDK components.  Helpful for integration '
-            'tests for dartdoc, probably not useful for anything else.',
-        negatable: true),
     DartdocOptionArgFile<List<String>>('include', [], resourceProvider,
-        help: 'Library names to generate docs for.', splitCommas: true),
+        help: 'Names of libraries to document.', splitCommas: true),
     DartdocOptionArgFile<List<String>>('includeExternal', [], resourceProvider,
         optionIs: OptionKind.file,
-        help:
-            'Additional (external) dart files to include; use "dir/fileName", '
-            'as in lib/material.dart.',
+        help: 'Additional (external) dart files to include; use '
+            '"<directory name>/<file name>", as in "lib/material.dart".',
         mustExist: true,
         splitCommas: true),
     DartdocOptionArgOnly<bool>('includeSource', true, resourceProvider,
         help: 'Show source code blocks.', negatable: true),
     DartdocOptionArgOnly<bool>('injectHtml', false, resourceProvider,
-        help: 'Allow the use of the {@inject-html} directive to inject raw '
+        help: 'Allow the use of the `{@inject-html}` directive to inject raw '
             'HTML into dartdoc output.'),
     DartdocOptionArgOnly<bool>('sanitizeHtml', false, resourceProvider,
         hide: true,
-        help: 'Sanitize HTML generated from markdown, {@tool} and '
-            '{@inject-html} directives.'),
+        help: 'Sanitize HTML generated from markdown text, `{@tool}` and '
+            '`{@inject-html}` directives.'),
     DartdocOptionArgOnly<String>(
         'input', resourceProvider.pathContext.current, resourceProvider,
         optionIs: OptionKind.dir,
-        help: 'Path to source directory',
+        help: 'Path to source directory.',
         mustExist: true),
-    DartdocOptionSyntheticOnly<String>('inputDir',
-        (DartdocSyntheticOption<String> option, Folder dir) {
-      if (option.parent['sdkDocs'].valueAt(dir)) {
-        return option.parent['sdkDir'].valueAt(dir);
-      }
-      return option.parent['input'].valueAt(dir);
-    }, resourceProvider,
-        help: 'Path to source directory (with override if --sdk-docs)',
+    DartdocOptionSyntheticOnly<String>(
+        'inputDir',
+        (DartdocSyntheticOption<String> option, Folder dir) =>
+            option.parent['sdkDocs'].valueAt(dir) == true
+                ? option.parent['sdkDir'].valueAt(dir)
+                : option.parent['input'].valueAt(dir),
+        resourceProvider,
+        help: 'Path to source directory (with override if --sdk-docs).',
         optionIs: OptionKind.dir,
         mustExist: true),
     DartdocOptionSet('linkTo', resourceProvider)
@@ -1484,8 +1597,6 @@ List<DartdocOption> createDartdocOptions(
           // Prefer SDK check first, then pub cache check.
           var inSdk = packageMeta
               .sdkType(option.parent.parent['flutterRoot'].valueAt(dir));
-          // Analyzer may be confused because package_meta still needs
-          // migrating.  It can definitely return null.
           if (inSdk != null) {
             Map<String, String> sdks = option.parent['sdks'].valueAt(dir);
             var inSdkVal = sdks[inSdk];
@@ -1503,14 +1614,16 @@ List<DartdocOption> createDartdocOptions(
             help: 'Allow links to be generated for packages outside this one.',
             negatable: true),
       ]),
+    // TODO(srawlins): Deprecate; with the advent of the unnamed library, this
+    // should be applied in each file, on the `library;` directive.
     DartdocOptionFileOnly<List<String>>('nodoc', [], resourceProvider,
         optionIs: OptionKind.glob,
-        help: 'Dart symbols declared in these '
-            'files will be treated as though they have the @nodoc flag added to '
-            'their documentation comment.'),
+        help: 'Dart symbols declared in these files will be treated as though '
+            'they have the @nodoc directive added to their documentation '
+            'comment.'),
     DartdocOptionArgOnly<String>('output',
         resourceProvider.pathContext.join('doc', 'api'), resourceProvider,
-        optionIs: OptionKind.dir, help: 'Path to output directory.'),
+        optionIs: OptionKind.dir, help: 'Path to the output directory.'),
     DartdocOptionSyntheticOnly<PackageMeta>(
       'packageMeta',
       (DartdocSyntheticOption<PackageMeta> option, Folder dir) {
@@ -1527,7 +1640,8 @@ List<DartdocOption> createDartdocOptions(
         splitCommas: true,
         help:
             'A list of package names to place first when grouping libraries in '
-            'packages. Unmentioned packages are sorted after these.'),
+            'packages. Unmentioned packages are placed after these.'),
+    // TODO(srawlins): Deprecate this option.
     DartdocOptionArgOnly<String?>('resourcesDir', null, resourceProvider,
         help: "An absolute path to dartdoc's resources directory.", hide: true),
     DartdocOptionArgOnly<bool>('sdkDocs', false, resourceProvider,
@@ -1596,10 +1710,6 @@ List<DartdocOption> createDartdocOptions(
         hide: true),
     DartdocOptionArgOnly<bool>('showStats', false, resourceProvider,
         help: 'Show statistics useful for debugging.', hide: true),
-    DartdocOptionArgOnly<String>('format', 'html', resourceProvider,
-        help: 'The format of documentation to generate: `md` for markdown, '
-            '`html` for html.',
-        hide: false),
     DartdocOptionArgOnly<String>('maxFileCount', '0', resourceProvider,
         help:
             'The maximum number of files dartdoc is allowed to create (0 for no limit).',

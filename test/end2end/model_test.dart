@@ -14,11 +14,10 @@ import 'package:collection/src/iterable_extensions.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
-import 'package:dartdoc/src/model/feature.dart';
+import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 import 'package:dartdoc/src/special_elements.dart';
@@ -79,6 +78,12 @@ class TestLibraryContainer extends LibraryContainer with Nameable {
 
   @override
   String get oneLineDoc => throw UnimplementedError();
+
+  @override
+  String? get aboveSidebarPath => null;
+
+  @override
+  String? get belowSidebarPath => null;
 }
 
 class TestLibraryContainerSdk extends TestLibraryContainer {
@@ -110,16 +115,6 @@ void main() {
         packageGraph.libraries.firstWhere((lib) => lib.name == 'two_exports');
     baseClassLib =
         packageGraph.libraries.firstWhere((lib) => lib.name == 'base_class');
-  });
-
-  group('PackageMeta and PackageGraph integration', () {
-    test('PackageMeta error messages generate correctly', () {
-      var message = packageGraph.packageMetaProvider
-          .getMessageForMissingPackageMeta(
-              fakeLibrary.element, packageGraph.config);
-      expect(message, contains('fake.dart'));
-      expect(message, contains('pub global activate dartdoc'));
-    });
   });
 
   group('triple-shift', () {
@@ -409,23 +404,23 @@ void main() {
 
       expect(a.modelType.name, equals('dynamic'));
       expect(a.isLate, isTrue);
-      expect(a.features, contains(Feature.lateFeature));
-      expect(a.features, isNot(contains(Feature.readWrite)));
+      expect(a.attributes, contains(Attribute.late_));
+      expect(a.attributes, isNot(contains(Attribute.getterSetterPair)));
 
       expect(b.modelType.name, equals('int'));
       expect(b.isLate, isTrue);
-      expect(b.features, contains(Feature.lateFeature));
-      expect(b.features, isNot(contains(Feature.readWrite)));
+      expect(b.attributes, contains(Attribute.late_));
+      expect(b.attributes, isNot(contains(Attribute.getterSetterPair)));
 
       expect(cField.modelType.name, equals('dynamic'));
       expect(cField.isLate, isTrue);
-      expect(cField.features, contains(Feature.lateFeature));
-      expect(cField.features, isNot(contains(Feature.readWrite)));
+      expect(cField.attributes, contains(Attribute.late_));
+      expect(cField.attributes, isNot(contains(Attribute.getterSetterPair)));
 
       expect(dField.modelType.name, equals('double'));
       expect(dField.isLate, isTrue);
-      expect(dField.features, contains(Feature.lateFeature));
-      expect(dField.features, isNot(contains(Feature.readWrite)));
+      expect(dField.attributes, contains(Attribute.late_));
+      expect(dField.attributes, isNot(contains(Attribute.getterSetterPair)));
     });
 
     test('Late final top level variables', () {
@@ -433,8 +428,9 @@ void main() {
           .firstWhere((v) => v.name == 'initializeMe');
       expect(initializeMe.modelType.name, equals('String'));
       expect(initializeMe.isLate, isTrue);
-      expect(initializeMe.features, contains(Feature.lateFeature));
-      expect(initializeMe.features, isNot(contains(Feature.readWrite)));
+      expect(initializeMe.attributes, contains(Attribute.late_));
+      expect(
+          initializeMe.attributes, isNot(contains(Attribute.getterSetterPair)));
     });
 
     test('complex nullable elements are detected and rendered correctly', () {
@@ -775,32 +771,16 @@ void main() {
     // TODO consider moving these to a separate suite
     test('CategoryRendererHtml renders category label', () {
       var category = packageGraph.publicPackages.first.categories.first;
-      var renderer = CategoryRendererHtml();
       expect(
-          renderer.renderCategoryLabel(category),
+          category.categoryLabel,
           '<span class="category superb cp-0 linked" title="This is part of the Superb topic.">'
           '<a href="${htmlBasePlaceholder}topics/Superb-topic.html">Superb</a></span>');
     });
 
     test('CategoryRendererHtml renders linkedName', () {
       var category = packageGraph.publicPackages.first.categories.first;
-      var renderer = CategoryRendererHtml();
-      expect(renderer.renderLinkedName(category),
+      expect(category.linkedName,
           '<a href="${htmlBasePlaceholder}topics/Superb-topic.html">Superb</a>');
-    });
-
-    test('CategoryRendererMd renders category label', () {
-      var category = packageGraph.publicPackages.first.categories.first;
-      var renderer = CategoryRendererMd();
-      expect(renderer.renderCategoryLabel(category),
-          '[Superb](${htmlBasePlaceholder}topics/Superb-topic.html)');
-    });
-
-    test('CategoryRendererMd renders linkedName', () {
-      var category = packageGraph.publicPackages.first.categories.first;
-      var renderer = CategoryRendererMd();
-      expect(renderer.renderLinkedName(category),
-          '[Superb](${htmlBasePlaceholder}topics/Superb-topic.html)');
     });
   });
 
@@ -1325,19 +1305,19 @@ void main() {
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
-                'Link to constructor (implied): <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">new renamedLib.YetAnotherHelper()</a>'));
-        expect(
-            aFunctionUsingRenamedLib.documentationAsHtml,
-            contains(
                 'Link to constructor (implied, no new): <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper()</a>'));
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
                 'Link to class: <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper-class.html">renamedLib.YetAnotherHelper</a>'));
         expect(
-            aFunctionUsingRenamedLib.documentationAsHtml,
-            contains(
-                'Link to constructor (direct): <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper.YetAnotherHelper</a>'));
+          aFunctionUsingRenamedLib.documentationAsHtml,
+          contains(
+            'Link to constructor (direct): '
+            '<a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">'
+            'renamedLib.YetAnotherHelper.new</a>',
+          ),
+        );
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
             contains(
@@ -2659,9 +2639,10 @@ void main() {
 
         test('in class scope overridden by constructors when specified', () {
           expect(
-              referenceLookup(FactoryConstructorThings,
-                  'new FactoryConstructorThings.anotherName'),
-              equals(MatchingLinkResult(anotherName)));
+            referenceLookup(FactoryConstructorThings,
+                'FactoryConstructorThings.anotherName()'),
+            equals(MatchingLinkResult(anotherName)),
+          );
         });
 
         test(
@@ -2692,9 +2673,10 @@ void main() {
               equals(MatchingLinkResult(anotherConstructor)));
           // A conflicting constructor has to be explicit.
           expect(
-              referenceLookup(
-                  anotherName, 'new FactoryConstructorThings.anotherName'),
-              equals(MatchingLinkResult(anotherName)));
+            referenceLookup(
+                anotherName, 'FactoryConstructorThings.anotherName()'),
+            equals(MatchingLinkResult(anotherName)),
+          );
         });
 
         test('in method scope referring to parameters and variables', () {
@@ -2742,18 +2724,22 @@ void main() {
       });
 
       test(
-          'Verify that constructors do not override member fields unless explicitly specified',
-          () {
-        expect(referenceLookup(baseForDocComments, 'aConstructorShadowed'),
-            equals(MatchingLinkResult(aConstructorShadowedField)));
+          'Verify that constructors do not override member fields unless '
+          'explicitly specified', () {
         expect(
-            referenceLookup(
-                baseForDocComments, 'BaseForDocComments.aConstructorShadowed'),
-            equals(MatchingLinkResult(aConstructorShadowedField)));
+          referenceLookup(baseForDocComments, 'aConstructorShadowed'),
+          equals(MatchingLinkResult(aConstructorShadowedField)),
+        );
         expect(
-            referenceLookup(baseForDocComments,
-                'new BaseForDocComments.aConstructorShadowed'),
-            equals(MatchingLinkResult(aConstructorShadowed)));
+          referenceLookup(
+              baseForDocComments, 'BaseForDocComments.aConstructorShadowed'),
+          equals(MatchingLinkResult(aConstructorShadowedField)),
+        );
+        expect(
+          referenceLookup(
+              baseForDocComments, 'BaseForDocComments.aConstructorShadowed()'),
+          equals(MatchingLinkResult(aConstructorShadowed)),
+        );
       });
 
       test('Deprecated lookup styles still function', () {
@@ -2763,9 +2749,9 @@ void main() {
 
       test('Verify basic linking inside class', () {
         expect(
-            referenceLookup(
-                baseForDocComments, 'BaseForDocComments.BaseForDocComments'),
-            equals(MatchingLinkResult(defaultConstructor)));
+          referenceLookup(baseForDocComments, 'BaseForDocComments.new'),
+          equals(MatchingLinkResult(defaultConstructor)),
+        );
 
         // We don't want the parameter on the default constructor, here.
         expect(
@@ -3544,7 +3530,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('method overrides another', () {
       expect(m1.isOverride, isTrue);
-      expect(m1.features, contains(Feature.overrideFeature));
+      expect(m1.attributes, contains(Attribute.override_));
     });
 
     test('generic method type args are rendered', () {
@@ -3713,28 +3699,29 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('covariant fields are recognized', () {
       expect(covariantField.isCovariant, isTrue);
-      expect(covariantField.featuresAsString, contains('covariant'));
+      expect(covariantField.attributesAsString, contains('covariant'));
       expect(covariantSetter.isCovariant, isTrue);
       expect(covariantSetter.setter!.isCovariant, isTrue);
-      expect(covariantSetter.featuresAsString, contains('covariant'));
+      expect(covariantSetter.attributesAsString, contains('covariant'));
     });
 
     test('indentation is not lost inside indented code samples', () {
       expect(
-          aProperty.documentation,
-          equals(
-              'This property is quite fancy, and requires sample code to understand.\n'
-              '\n'
-              '```dart\n'
-              'AClassWithFancyProperties x = new AClassWithFancyProperties();\n'
-              '\n'
-              'if (x.aProperty.contains(\'Hello\')) {\n'
-              '  print("I am indented!");\n'
-              '  if (x.aProperty.contains(\'World\')) {\n'
-              '    print ("I am indented even more!!!");\n'
-              '  }\n'
-              '}\n'
-              '```'));
+        aProperty.documentation,
+        equals(
+            'This property is quite fancy, and requires sample code to understand.\n'
+            '\n'
+            '```dart\n'
+            'AClassWithFancyProperties x = AClassWithFancyProperties();\n'
+            '\n'
+            'if (x.aProperty.contains(\'Hello\')) {\n'
+            '  print("I am indented!");\n'
+            '  if (x.aProperty.contains(\'World\')) {\n'
+            '    print ("I am indented even more!!!");\n'
+            '  }\n'
+            '}\n'
+            '```'),
+      );
     });
 
     test('Docs from inherited implicit accessors are preserved', () {
@@ -3763,7 +3750,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(documentedPartialFieldInSubclassOnly.documentationComment,
           contains('This getter is documented'));
       expect(documentedPartialFieldInSubclassOnly.annotations,
-          isNot(contains(Feature.inheritedSetter)));
+          isNot(contains(Attribute.inheritedSetter)));
     });
 
     test('@nodoc overridden in subclass for getter works', () {
@@ -3786,16 +3773,16 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(implicitGetterExplicitSetter.getter!.isInherited, isTrue);
       expect(implicitGetterExplicitSetter.setter!.isInherited, isFalse);
       expect(implicitGetterExplicitSetter.isInherited, isFalse);
-      expect(implicitGetterExplicitSetter.features,
-          isNot(contains(Feature.inherited)));
-      expect(implicitGetterExplicitSetter.features,
-          contains(Feature.inheritedGetter));
-      expect(implicitGetterExplicitSetter.features,
-          isNot(contains(Feature.overrideFeature)));
-      expect(implicitGetterExplicitSetter.features,
-          contains(Feature.overrideSetter));
-      expect(
-          implicitGetterExplicitSetter.features, contains(Feature.readWrite));
+      expect(implicitGetterExplicitSetter.attributes,
+          isNot(contains(Attribute.inherited)));
+      expect(implicitGetterExplicitSetter.attributes,
+          contains(Attribute.inheritedGetter));
+      expect(implicitGetterExplicitSetter.attributes,
+          isNot(contains(Attribute.override_)));
+      expect(implicitGetterExplicitSetter.attributes,
+          contains(Attribute.overrideSetter));
+      expect(implicitGetterExplicitSetter.attributes,
+          contains(Attribute.getterSetterPair));
       expect(
           implicitGetterExplicitSetter.oneLineDoc,
           equals(
@@ -3810,16 +3797,16 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(explicitGetterImplicitSetter.getter!.isInherited, isFalse);
       expect(explicitGetterImplicitSetter.setter!.isInherited, isTrue);
       expect(explicitGetterImplicitSetter.isInherited, isFalse);
-      expect(explicitGetterImplicitSetter.features,
-          isNot(contains(Feature.inherited)));
-      expect(explicitGetterImplicitSetter.features,
-          contains(Feature.inheritedSetter));
-      expect(explicitGetterImplicitSetter.features,
-          isNot(contains(Feature.overrideFeature)));
-      expect(explicitGetterImplicitSetter.features,
-          contains(Feature.overrideGetter));
-      expect(
-          explicitGetterImplicitSetter.features, contains(Feature.readWrite));
+      expect(explicitGetterImplicitSetter.attributes,
+          isNot(contains(Attribute.inherited)));
+      expect(explicitGetterImplicitSetter.attributes,
+          contains(Attribute.inheritedSetter));
+      expect(explicitGetterImplicitSetter.attributes,
+          isNot(contains(Attribute.override_)));
+      expect(explicitGetterImplicitSetter.attributes,
+          contains(Attribute.overrideGetter));
+      expect(explicitGetterImplicitSetter.attributes,
+          contains(Attribute.getterSetterPair));
       expect(explicitGetterImplicitSetter.oneLineDoc,
           equals('Getter doc for explicitGetterImplicitSetter'));
       // Even though we have some new setter docs, getter still takes priority.
@@ -3880,14 +3867,14 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(f1.isFinal, isFalse);
       expect(finalProperty.isFinal, isTrue);
       expect(finalProperty.isLate, isFalse);
-      expect(finalProperty.features, contains(Feature.finalFeature));
-      expect(finalProperty.features, isNot(contains(Feature.lateFeature)));
+      expect(finalProperty.attributes, contains(Attribute.final_));
+      expect(finalProperty.attributes, isNot(contains(Attribute.late_)));
       expect(onlySetter.isFinal, isFalse);
-      expect(onlySetter.features, isNot(contains(Feature.finalFeature)));
-      expect(onlySetter.features, isNot(contains(Feature.lateFeature)));
+      expect(onlySetter.attributes, isNot(contains(Attribute.final_)));
+      expect(onlySetter.attributes, isNot(contains(Attribute.late_)));
       expect(dynamicGetter.isFinal, isFalse);
-      expect(dynamicGetter.features, isNot(contains(Feature.finalFeature)));
-      expect(dynamicGetter.features, isNot(contains(Feature.lateFeature)));
+      expect(dynamicGetter.attributes, isNot(contains(Attribute.final_)));
+      expect(dynamicGetter.attributes, isNot(contains(Attribute.late_)));
     });
 
     test('is not static', () {
@@ -4070,14 +4057,14 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('Verify that final and late show up (or not) appropriately', () {
       expect(meaningOfLife.isFinal, isTrue);
       expect(meaningOfLife.isLate, isFalse);
-      expect(meaningOfLife.features, contains(Feature.finalFeature));
-      expect(meaningOfLife.features, isNot(contains(Feature.lateFeature)));
+      expect(meaningOfLife.attributes, contains(Attribute.final_));
+      expect(meaningOfLife.attributes, isNot(contains(Attribute.late_)));
       expect(justGetter.isFinal, isFalse);
-      expect(justGetter.features, isNot(contains(Feature.finalFeature)));
-      expect(justGetter.features, isNot(contains(Feature.lateFeature)));
+      expect(justGetter.attributes, isNot(contains(Attribute.final_)));
+      expect(justGetter.attributes, isNot(contains(Attribute.late_)));
       expect(justSetter.isFinal, isFalse);
-      expect(justSetter.features, isNot(contains(Feature.finalFeature)));
-      expect(justSetter.features, isNot(contains(Feature.lateFeature)));
+      expect(justSetter.attributes, isNot(contains(Attribute.final_)));
+      expect(justSetter.attributes, isNot(contains(Attribute.late_)));
     });
 
     test(
@@ -4301,13 +4288,17 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('calculates comment references to classes vs. constructors correctly',
         () {
       expect(
-          referToADefaultConstructor.documentationAsHtml,
-          contains(
-              '<a href="${htmlBasePlaceholder}fake/ReferToADefaultConstructor-class.html">ReferToADefaultConstructor</a>'));
+        referToADefaultConstructor.documentationAsHtml,
+        contains(
+            '<a href="${htmlBasePlaceholder}fake/ReferToADefaultConstructor-class.html">'
+            'ReferToADefaultConstructor</a>'),
+      );
       expect(
-          referToADefaultConstructor.documentationAsHtml,
-          contains(
-              '<a href="${htmlBasePlaceholder}fake/ReferToADefaultConstructor/ReferToADefaultConstructor.html">ReferToADefaultConstructor.ReferToADefaultConstructor</a>'));
+        referToADefaultConstructor.documentationAsHtml,
+        contains(
+            '<a href="${htmlBasePlaceholder}fake/ReferToADefaultConstructor/ReferToADefaultConstructor.html">'
+            'ReferToADefaultConstructor.new</a>'),
+      );
     });
 
     test('displays generic parameters correctly', () {

@@ -7,15 +7,15 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
 import 'package:dartdoc/src/mustachio/annotations.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 
 import 'codegen_aot_compiler.dart';
 import 'codegen_runtime_renderer.dart';
 
 void main() async {
-  await build(p.join('lib', 'src', 'generator', 'templates.dart'));
+  await build(path.join('lib', 'src', 'generator', 'templates.dart'));
   await build(
-    p.join('test', 'mustachio', 'foo.dart'),
+    path.join('test', 'mustachio', 'foo.dart'),
     rendererClassesArePublic: true,
   );
 }
@@ -23,7 +23,6 @@ void main() async {
 Future<void> build(
   String sourcePath, {
   String? root,
-  Iterable<TemplateFormat> templateFormats = TemplateFormat.values,
   bool rendererClassesArePublic = false,
 }) async {
   root ??= Directory.current.path;
@@ -36,7 +35,7 @@ Future<void> build(
   );
   var analysisContext = contextCollection.contextFor(root);
   final libraryResult = await analysisContext.currentSession
-      .getResolvedLibrary(p.join(root, sourcePath));
+      .getResolvedLibrary(path.join(root, sourcePath));
   if (libraryResult is! ResolvedLibraryResult) {
     throw StateError(
         'Expected library result to be ResolvedLibraryResult, but is '
@@ -59,30 +58,19 @@ Future<void> build(
     typeSystem,
     rendererClassesArePublic: rendererClassesArePublic,
   );
-  await File(p.join(
-          root, '${p.withoutExtension(sourcePath)}.runtime_renderers.dart'))
+  var basePath = path.withoutExtension(sourcePath);
+  await File(path.join(root, '$basePath.runtime_renderers.dart'))
       .writeAsString(runtimeRenderersContents);
 
-  for (var format in templateFormats) {
-    String aotRenderersContents;
-    var someSpec = rendererSpecs.first;
-    if (someSpec.standardTemplatePaths[format] != null) {
-      aotRenderersContents = await compileTemplatesToRenderers(
-        rendererSpecs,
-        typeProvider,
-        typeSystem,
-        format,
-        root: root,
-        sourcePath: sourcePath,
-      );
-    } else {
-      aotRenderersContents = '';
-    }
-
-    var basePath = p.withoutExtension(sourcePath);
-    await File(p.join(root, format.aotLibraryPath(basePath)))
-        .writeAsString(aotRenderersContents);
-  }
+  var aotRenderersContents = await compileTemplatesToRenderers(
+    rendererSpecs,
+    typeProvider,
+    typeSystem,
+    root: root,
+    sourcePath: sourcePath,
+  );
+  await File(path.join(root, '$basePath.aot_renderers_for_html.dart'))
+      .writeAsString(aotRenderersContents);
 }
 
 RendererSpec _buildRendererSpec(ElementAnnotation annotation) {
@@ -109,14 +97,11 @@ RendererSpec _buildRendererSpec(ElementAnnotation annotation) {
 
   var standardHtmlTemplateField =
       constantValue.getField('standardHtmlTemplate')!;
-  var standardMdTemplateField = constantValue.getField('standardMdTemplate')!;
-
   return RendererSpec(
     nameField.toSymbolValue()!,
     contextType as InterfaceType,
     visibleTypes,
     standardHtmlTemplateField.toStringValue()!,
-    standardMdTemplateField.toStringValue()!,
   );
 }
 

@@ -6,14 +6,16 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/model/canonicalization.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 
 class Validator {
   final PackageGraph _packageGraph;
@@ -28,13 +30,13 @@ class Validator {
 
   Validator(this._packageGraph, this._config, String origin, this._writtenFiles,
       this._onCheckProgress)
-      : _origin = p.normalize(origin),
+      : _origin = path.normalize(origin),
         _hrefs = _packageGraph.allHrefs;
 
   /// Don't call this method more than once, and only after you've
   /// generated all docs for the Package.
   void validateLinks() {
-    logInfo('Validating...');
+    logInfo('Validating links...');
     runtimeStats.resetAccumulators({
       'readCountForLinkValidation',
       'readCountForIndexValidation',
@@ -45,7 +47,7 @@ class Validator {
   }
 
   void _collectLinks(String pathToCheck, [String? source, String? fullPath]) {
-    fullPath ??= p.join(_origin, pathToCheck);
+    fullPath ??= path.join(_origin, pathToCheck);
 
     final pageLinks = _getLinksAndBaseHref(fullPath);
     if (pageLinks == null) {
@@ -67,16 +69,16 @@ class Validator {
     // the stack without this.
     final toVisit = <(String newPathToCheck, String newFullPath)>{};
     final pathDirectory = baseHref == null
-        ? p.dirname(pathToCheck)
-        : '${p.dirname(pathToCheck)}/$baseHref';
+        ? path.dirname(pathToCheck)
+        : '${path.dirname(pathToCheck)}/$baseHref';
 
     for (final href in links) {
       final uri = Uri.tryParse(href);
       if (uri == null || !uri.hasAuthority && !uri.hasFragment) {
         var linkPath = '$pathDirectory/$href';
 
-        linkPath = p.normalize(linkPath);
-        final newFullPath = p.join(_origin, linkPath);
+        linkPath = path.normalize(linkPath);
+        final newFullPath = path.join(_origin, linkPath);
         if (!_visited.contains(newFullPath)) {
           toVisit.add((linkPath, newFullPath));
           _visited.add(newFullPath);
@@ -91,13 +93,13 @@ class Validator {
   }
 
   void _checkForOrphans() {
-    final staticAssets = p.join(_origin, 'static-assets', '');
-    final indexJson = p.join(_origin, 'index.json');
+    final staticAssets = path.join(_origin, 'static-assets', '');
+    final indexJson = path.join(_origin, 'index.json');
     var foundIndexJson = false;
 
     void checkDirectory(Folder dir) {
       for (final child in dir.getChildren()) {
-        final fullPath = p.normalize(child.path);
+        final fullPath = path.normalize(child.path);
         if (_visited.contains(fullPath)) {
           continue;
         }
@@ -108,12 +110,12 @@ class Validator {
         if (fullPath.startsWith(staticAssets)) {
           continue;
         }
-        if (p.equals(fullPath, indexJson)) {
+        if (path.equals(fullPath, indexJson)) {
           foundIndexJson = true;
           _onCheckProgress.add(fullPath);
           continue;
         }
-        final relativeFullPath = p.relative(fullPath, from: _origin);
+        final relativeFullPath = path.relative(fullPath, from: _origin);
         if (!_writtenFiles.contains(relativeFullPath)) {
           // This isn't a file we wrote (this time); don't claim we did.
           _warn(PackageWarning.unknownFile, fullPath, _origin);
@@ -138,8 +140,8 @@ class Validator {
   }
 
   void _checkSearchIndex() {
-    final fullPath = p.join(_origin, 'index.json');
-    final indexPath = p.join(_origin, 'index.html');
+    final fullPath = path.join(_origin, 'index.json');
+    final indexPath = path.join(_origin, 'index.html');
     final file = _config.resourceProvider.getFile(fullPath);
     if (!file.exists) {
       return;
@@ -154,8 +156,8 @@ class Validator {
     found.add(indexPath);
     for (var entry in jsonData.cast<Map<String, dynamic>>()) {
       if (entry.containsKey('href')) {
-        final entryPath =
-            p.joinAll([_origin, ...p.posix.split(entry['href'] as String)]);
+        final entryPath = path
+            .joinAll([_origin, ...path.posix.split(entry['href'] as String)]);
         if (!_visited.contains(entryPath)) {
           _warn(PackageWarning.brokenLink, entryPath, _origin,
               referredFrom: fullPath);
@@ -212,19 +214,15 @@ class Validator {
     String origin, {
     String? referredFrom,
   }) {
-    // Ordinarily this would go in [Package.warn], but we don't actually know
-    // what [ModelElement] to warn on yet.
-    Warnable? warnOnElement;
-    final referredFromElements = <Warnable>{};
-    Set<Warnable>? warnOnElements;
+    final referredFromElements = <Canonicalization>{};
 
     // Make all paths relative to origin.
-    if (p.isWithin(origin, warnOn)) {
-      warnOn = p.relative(warnOn, from: origin);
+    if (path.isWithin(origin, warnOn)) {
+      warnOn = path.relative(warnOn, from: origin);
     }
     if (referredFrom != null) {
-      if (p.isWithin(origin, referredFrom)) {
-        referredFrom = p.relative(referredFrom, from: origin);
+      if (path.isWithin(origin, referredFrom)) {
+        referredFrom = path.relative(referredFrom, from: origin);
       }
       final hrefReferredFrom = _hrefs[referredFrom];
       // Source paths are always relative.
@@ -232,19 +230,12 @@ class Validator {
         referredFromElements.addAll(hrefReferredFrom);
       }
     }
-    warnOnElements = _hrefs[warnOn];
+    var warnOnElements = _hrefs[warnOn];
 
     if (referredFromElements.any((e) => e.isCanonical)) {
       referredFromElements.removeWhere((e) => !e.isCanonical);
     }
-    if (warnOnElements != null) {
-      for (final e in warnOnElements) {
-        if (e.isCanonical) {
-          warnOnElement = e;
-          break;
-        }
-      }
-    }
+    var warnOnElement = warnOnElements?.firstWhereOrNull((e) => e.isCanonical);
 
     if (referredFromElements.isEmpty && referredFrom == 'index.html') {
       referredFromElements.add(_packageGraph.defaultPackage);

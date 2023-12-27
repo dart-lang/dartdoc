@@ -7,8 +7,7 @@ library dartdoc.dartdoc_test;
 import 'dart:async';
 
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/dartdoc.dart' show Dartdoc, DartdocResults;
-import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/dartdoc.dart' show Dartdoc, DartdocResults;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/io_utils.dart';
@@ -18,7 +17,7 @@ import 'package:dartdoc/src/model/package_builder.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import '../src/utils.dart';
@@ -50,10 +49,7 @@ void main() {
           [createDartdocProgramOptions, createLoggingOptions],
           pubPackageMetaProvider);
       optionSet.parseArguments([]);
-      startLogging(DartdocLoggingOptionContext(
-          optionSet,
-          _resourceProvider.getFolder(_pathContext.current),
-          _resourceProvider));
+      startLogging(isJson: false, isQuiet: true, showProgress: false);
 
       // Set up the pub metadata for our test packages.
       runPubGet(testPackageToolError.path);
@@ -132,7 +128,7 @@ void main() {
         results = await dartdoc.generateDocs();
       });
 
-      test('generate docs for ${p.basename(_testPackageDir.path)} works',
+      test('generate docs for ${path.basename(_testPackageDir.path)} works',
           () async {
         expect(results.packageGraph, isNotNull);
         var packageGraph = results.packageGraph;
@@ -147,7 +143,7 @@ void main() {
       });
     });
 
-    test('generate docs for ${p.basename(_testPackageBadDir.path)} fails',
+    test('generate docs for ${path.basename(_testPackageBadDir.path)} fails',
         skip: 'Blocked on getting analysis errors with correct interpretation '
             'from analysis_options', () async {
       var dartdoc = await buildDartdoc([], _testPackageBadDir, tempDir);

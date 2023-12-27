@@ -8,7 +8,7 @@
 .settings/
 .vscode/
 build/
-doc/
+doc/api/
 lcov.info
 test_data/
 testing/**/doc

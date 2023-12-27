@@ -25,28 +25,6 @@ class RecordTypeFieldListHtmlRenderer extends _RecordTypeFieldListRenderer {
   String typeName(String name) => '<span class="type-annotation">$name</span>';
 }
 
-class RecordTypeFieldListMdRenderer extends _RecordTypeFieldListRenderer {
-  const RecordTypeFieldListMdRenderer();
-
-  @override
-  String annotation(String name) => name;
-
-  @override
-  String listItem(String item) => item;
-
-  @override
-  String orderedList(String listItems) => listItems;
-
-  @override
-  String field(String name) => name;
-
-  @override
-  String fieldName(String name) => name;
-
-  @override
-  String typeName(String name) => name;
-}
-
 abstract class _RecordTypeFieldListRenderer {
   const _RecordTypeFieldListRenderer();
 

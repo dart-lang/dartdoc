@@ -33,6 +33,16 @@ abstract class Documentable extends Nameable {
   String? get href;
 
   Kind get kind;
+
+  /// The full path of the sidebar for elements "above" this element.
+  ///
+  /// A `null` value indicates no content is displayed in the "above" sidebar.
+  String? get aboveSidebarPath;
+
+  /// The full path of the sidebar for elements "below" this element.
+  ///
+  /// A `null` value indicates no content is displayed in the "below" sidebar.
+  String? get belowSidebarPath;
 }
 
 /// For a given package, indicate with this enum whether it should be documented
@@ -63,7 +73,7 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   }
 
   @override
-  bool get hasDocumentation => documentation.isNotEmpty == true;
+  bool get hasDocumentation => documentation.isNotEmpty;
 
   @override
   bool get isDocumented;
@@ -77,5 +87,5 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   String get location => '(${documentationFile?.path})';
 
   @override
-  Set<String> get locationPieces => <String>{location};
+  Set<String> get locationPieces => {location};
 }

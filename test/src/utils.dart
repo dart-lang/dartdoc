@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library test_utils;
-
 import 'dart:io';
 
 import 'package:analyzer/file_system/file_system.dart';
@@ -11,11 +9,11 @@ import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
-import 'package:dartdoc/options.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/resource_loader.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model_element.dart';
@@ -24,7 +22,7 @@ import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
@@ -59,19 +57,22 @@ Future<DartdocOptionContext> contextFromArgv(
 Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
     List<String> argv, PackageMetaProvider packageMetaProvider) async {
   var optionSet = DartdocOptionRoot.fromOptionGenerators(
-      'dartdoc',
-      [
-        createDartdocOptions,
-        createGeneratorOptions,
-      ],
-      packageMetaProvider);
+    'dartdoc',
+    [
+      createDartdocProgramOptions,
+      createLoggingOptions,
+      createDartdocOptions,
+      createGeneratorOptions,
+    ],
+    packageMetaProvider,
+  );
   optionSet.parseArguments(argv);
   return DartdocGeneratorOptionContext.fromDefaultContextLocation(
       optionSet, packageMetaProvider.resourceProvider);
 }
 
 void runPubGet(String dirPath) {
-  var binPath = p.join(p.dirname(Platform.resolvedExecutable), 'dart');
+  var binPath = path.join(path.dirname(Platform.resolvedExecutable), 'dart');
   if (Platform.isWindows) {
     binPath += '.exe';
   }
@@ -153,7 +154,6 @@ PackageMetaProvider get testPackageMetaProvider {
     sdkRoot,
     {},
     defaultSdk: FolderBasedDartSdk(resourceProvider, sdkRoot),
-    messageForMissingPackageMeta: PubPackageMeta.messageForMissingPackageMeta,
   );
 }
 
@@ -215,13 +215,13 @@ two:lib/
       "name": "one",
       "rootUri": "../../one",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "3.0"
     },
     {
       "name": "two",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "3.0"
     }
   ],
   "generated": "2020-07-07T15:25:30.566271Z",
@@ -240,6 +240,7 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
   for (var template in [
     '_accessor_getter',
     '_accessor_setter',
+    '_attributes',
     '_callable',
     '_callable_multiline',
     '_categorization',
@@ -247,7 +248,6 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
     '_constant',
     '_documentation',
     '_extension',
-    '_features',
     '_feature_set',
     '_footer',
     '_head',
@@ -352,6 +352,13 @@ bool get recordsAllowed =>
 /// We can not use [ExperimentalFeature.releaseVersion] or even
 /// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
 /// even when partial analyzer implementations are available.
+bool get extensionTypesAllowed =>
+    VersionRange(min: Version.parse('3.2.0-0.0-dev'), includeMin: true)
+        .allows(platformVersion);
+
+/// We can not use [ExperimentalFeature.releaseVersion] or even
+/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
+/// even when partial analyzer implementations are available.
 bool get classModifiersAllowed =>
     VersionRange(min: Version.parse('3.0.0-0.0-dev'), includeMin: true)
         .allows(platformVersion);
@@ -386,8 +393,9 @@ extension IterableStringExtensions on Iterable<String> {
 
 /// Extension methods just for tests.
 extension on ResourceProvider {
-  Future<void> writeDartdocResource(String path, String content) async {
-    var fileUri = await resolveResourceUri(Uri.parse('package:dartdoc/$path'));
+  Future<void> writeDartdocResource(String resourcePath, String content) async {
+    var fileUri =
+        await resolveResourceUri(Uri.parse('package:dartdoc/$resourcePath'));
     getFile(fileUri.toFilePath()).writeAsStringSync(content);
   }
 }

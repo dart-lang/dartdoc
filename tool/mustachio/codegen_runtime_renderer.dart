@@ -12,7 +12,7 @@ import 'package:analyzer/dart/element/type_system.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/type_utils.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 
 import 'utilities.dart';
 
@@ -23,7 +23,7 @@ String buildRuntimeRenderers(Set<RendererSpec> specs, Uri sourceUri,
   var visibleElements = specs
       .map((spec) => spec.visibleTypes)
       .reduce((value, element) => value.union(element))
-      .map((type) => DartTypeExtension(type).element!)
+      .map((type) => type.documentableElement!)
       .toSet();
   var raw = RuntimeRenderersBuilder(
           sourceUri, typeProvider, typeSystem, visibleElements,
@@ -87,9 +87,9 @@ class RuntimeRenderersBuilder {
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
+import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
-import 'package:dartdoc/src/model/feature.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -97,7 +97,7 @@ import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/warnings.dart';
-import '${p.basename(_sourceUri.path)}';
+import '${path.basename(_sourceUri.path)}';
 ''');
 
     specs.forEach(_addTypesForRendererSpec);
@@ -517,8 +517,14 @@ renderVariable:
     }
 
     if (getterType.isDartCoreBool) {
-      _buffer.writeln(
-          'getBool: ($_contextTypeVariable c) => c.$getterName == true,');
+      _buffer.write(
+        'getBool: ($_contextTypeVariable c) => c.$getterName',
+      );
+      if (getterType.nullabilitySuffix != NullabilitySuffix.none) {
+        _buffer.writeln(' == true,');
+      } else {
+        _buffer.writeln(',');
+      }
     } else if (_typeSystem.isAssignableTo(
         getterType, _typeProvider.iterableDynamicType)) {
       var iterableElement = _typeProvider.iterableElement;
@@ -532,7 +538,7 @@ renderVariable:
         // TODO(srawlins): Find a solution for this. We can track all of the
         // concrete types substituted for `E` for example.
         if (innerType is! TypeParameterType) {
-          var innerTypeElement = DartTypeExtension(innerType).element;
+          var innerTypeElement = innerType.documentableElement;
           var renderFunctionName = _typeToRenderFunctionName[innerTypeElement];
           String renderCall;
           if (renderFunctionName == null) {

@@ -4,8 +4,7 @@
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/dartdoc.dart' show DartdocFileWriter;
-import 'package:dartdoc/options.dart';
+import 'package:dartdoc/src/dartdoc.dart' show DartdocFileWriter;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';
@@ -17,7 +16,7 @@ import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
@@ -25,7 +24,7 @@ import 'src/utils.dart' as utils;
 void main() {
   group('HTML generator tests', () {
     late MemoryResourceProvider resourceProvider;
-    late p.Context pathContext;
+    late path.Context pathContext;
 
     late PackageMetaProvider packageMetaProvider;
     late FakePackageConfigProvider packageConfigProvider;
@@ -68,8 +67,8 @@ void main() {
           HtmlGeneratorBackend(options, templates, writer, resourceProvider));
     });
 
-    File getConvertedFile(String path) =>
-        resourceProvider.getFile(resourceProvider.convertPath(path));
+    File getConvertedFile(String filePath) =>
+        resourceProvider.getFile(resourceProvider.convertPath(filePath));
 
     tearDown(clearPackageMetaCache);
 
