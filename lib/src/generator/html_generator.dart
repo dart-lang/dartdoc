@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library dartdoc.html_generator;
-
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';

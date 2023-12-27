@@ -23,8 +23,10 @@ linter:
     - avoid_dynamic_calls
     - avoid_slow_async_io
     - avoid_unused_constructor_parameters
+    - dangling_library_doc_comments
     - directives_ordering
     - invalid_case_patterns
+    - library_annotations
     - no_adjacent_strings_in_list
     - no_literal_bool_comparisons
     - omit_local_variable_types
@@ -38,6 +40,7 @@ linter:
     - type_annotate_public_apis
     - unawaited_futures
     - unnecessary_lambdas
+    - unnecessary_library_directive
     - unnecessary_parenthesis
     - unnecessary_statements
     - unnecessary_breaks
