@@ -599,8 +599,7 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
       String help = '',
       OptionKind optionIs = OptionKind.other,
       this.negatable = false})
-      : assert(T is! Iterable),
-        super(name, null, help, optionIs, mustExist, null, resourceProvider);
+      : super(name, null, help, optionIs, mustExist, null, resourceProvider);
 
   @override
   bool get hide => false;
