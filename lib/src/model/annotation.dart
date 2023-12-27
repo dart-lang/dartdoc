@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/attribute.dart';
@@ -25,7 +27,7 @@ class Annotation extends Attribute with ModelBuilder {
 
   @override
   late final String linkedNameWithParameters =
-      packageGraph.rendererFactory.attributeRenderer.renderAnnotation(this);
+      '@$linkedName${HtmlEscape().convert(parameterText)}';
 
   @override
   String get linkedName => annotation.element is PropertyAccessorElement

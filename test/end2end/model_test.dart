@@ -18,7 +18,6 @@ import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 import 'package:dartdoc/src/special_elements.dart';
@@ -772,17 +771,15 @@ void main() {
     // TODO consider moving these to a separate suite
     test('CategoryRendererHtml renders category label', () {
       var category = packageGraph.publicPackages.first.categories.first;
-      var renderer = CategoryRendererHtml();
       expect(
-          renderer.renderCategoryLabel(category),
+          category.categoryLabel,
           '<span class="category superb cp-0 linked" title="This is part of the Superb topic.">'
           '<a href="${htmlBasePlaceholder}topics/Superb-topic.html">Superb</a></span>');
     });
 
     test('CategoryRendererHtml renders linkedName', () {
       var category = packageGraph.publicPackages.first.categories.first;
-      var renderer = CategoryRendererHtml();
-      expect(renderer.renderLinkedName(category),
+      expect(category.linkedName,
           '<a href="${htmlBasePlaceholder}topics/Superb-topic.html">Superb</a>');
     });
   });

@@ -107,9 +107,14 @@ abstract class TemplateData<T extends Documentable> extends TemplateDataBase {
     String name, {
     String? kind,
     bool isDeprecated = false,
-  }) =>
-      _packageGraph.rendererFactory.templateRenderer
-          .composeLayoutTitle(name, kind, isDeprecated);
+  }) {
+    var kindText = kind == null ? '' : ' $kind';
+    if (isDeprecated) {
+      return '<span class="deprecated">$name</span>$kindText';
+    } else {
+      return '$name$kindText';
+    }
+  }
 }
 
 /// A [TemplateData] which contains a library, for rendering the

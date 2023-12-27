@@ -8,7 +8,6 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/model_object_builder.dart';
-import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 /// A subcategory of a package, containing elements tagged with `{@category}`.
@@ -118,9 +117,37 @@ class Category extends Nameable
   @override
   String? get belowSidebarPath => null;
 
-  String get categoryLabel => _categoryRenderer.renderCategoryLabel(this);
+  String get categoryLabel {
+    final buffer = StringBuffer('<span class="category ');
+    buffer.writeAll(name.toLowerCase().split(' '), '-');
+    buffer.write(' cp-');
+    buffer.write(categoryIndex);
 
-  String get linkedName => _categoryRenderer.renderLinkedName(this);
+    if (isDocumented) {
+      buffer.write(' linked');
+    }
+
+    buffer.write('"'); // Wrap up the class list and begin title
+    buffer.write(' title="This is part of the ');
+    buffer.write(name);
+    buffer.write(' ');
+    buffer.write(kind);
+    buffer.write('.">'); // Wrap up the title
+
+    buffer.write(linkedName);
+    buffer.write('</span>');
+
+    return buffer.toString();
+  }
+
+  String get linkedName {
+    final unbrokenName = name.replaceAll(' ', '&nbsp;');
+    if (isDocumented) {
+      return '<a href="$href">$unbrokenName</a>';
+    } else {
+      return unbrokenName;
+    }
+  }
 
   /// The position in the container order for this category.
   int get categoryIndex => package.categories.indexOf(this);
@@ -146,9 +173,6 @@ class Category extends Nameable
 
   @override
   Iterable<Class> get exceptions => _exceptions;
-
-  CategoryRenderer get _categoryRenderer =>
-      packageGraph.rendererFactory.categoryRenderer;
 
   @override
   Map<String, CommentReferable> get referenceChildren => const {};
