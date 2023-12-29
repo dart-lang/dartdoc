@@ -4,9 +4,9 @@
 
 import 'dart:convert';
 import 'dart:html';
-import 'package:dartdoc/src/search.dart';
 
-import 'web_interop.dart';
+import 'package:dartdoc/src/search.dart';
+import 'package:http/http.dart' as http show read;
 
 final String _htmlBase = () {
   final body = document.querySelector('body')!;
@@ -35,16 +35,8 @@ void init() {
     searchSidebar?.placeholder = 'Failed to initialize search';
   }
 
-  window.fetch('${_htmlBase}index.json').then((response) async {
-    response = response as FetchResponse;
-    var code = response.status;
-    if (code == 404) {
-      disableSearch();
-      return;
-    }
-
-    var text = await response.text;
-    final index = Index.fromJson(text);
+  http.read(Uri.parse('${_htmlBase}index.json')).then((response) {
+    final index = Index.fromJson(response);
 
     // Navigate to the first result from the 'search' query parameter
     // if specified and found.
@@ -71,6 +63,8 @@ void init() {
     if (searchSidebar != null) {
       _Search(index).initialize(searchSidebar);
     }
+  }).catchError((_) {
+    disableSearch();
   });
 }
 

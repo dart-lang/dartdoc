@@ -2,7 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:html';
+import 'dart:html' hide HttpRequest;
+
+import 'package:http/http.dart' as http show read;
 
 import 'highlight.dart' as highlight;
 import 'search.dart' as search;
@@ -45,7 +47,7 @@ void initializeSidebars() {
   if (aboveSidebarPath != null &&
       aboveSidebarPath.isNotEmpty &&
       leftSidebar != null) {
-    HttpRequest.getString('$baseHref$aboveSidebarPath').then((content) {
+    http.read(Uri.parse('$baseHref$aboveSidebarPath')).then((content) {
       leftSidebar.setInnerHtml(content, treeSanitizer: sanitizer);
     });
   }
@@ -54,7 +56,7 @@ void initializeSidebars() {
   if (belowSidebarPath != null &&
       belowSidebarPath.isNotEmpty &&
       rightSidebar != null) {
-    HttpRequest.getString('$baseHref$belowSidebarPath').then((content) {
+    http.read(Uri.parse('$baseHref$belowSidebarPath')).then((content) {
       rightSidebar.setInnerHtml(content, treeSanitizer: sanitizer);
     });
   }

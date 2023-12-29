@@ -1,5 +1,6 @@
 ## 8.0.4-wip
 
+* Require Dart 3.2 or later.
 * Remove explicit library names. (#3609)
 
 ## 8.0.3
