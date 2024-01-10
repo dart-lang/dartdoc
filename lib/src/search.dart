@@ -139,7 +139,7 @@ class IndexItem {
     return IndexItem._(
       name: data['name'],
       qualifiedName: data['qualifiedName'],
-      packageRank: data['packageRank'] as int,
+      packageRank: (data['packageRank'] as int?) ?? 0,
       href: data['href'],
       kind: Kind.values[data['kind'] as int],
       overriddenDepth: (data['overriddenDepth'] as int?) ?? 0,
