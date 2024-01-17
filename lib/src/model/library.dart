@@ -330,8 +330,17 @@ class Library extends ModelElement
   String get _importPath {
     // This code should not be used for Dart SDK libraries.
     assert(!element.source.uri.isScheme('dart'));
-    var relativePath = pathContext.relative(element.source.fullName,
-        from: package.packagePath);
+    var fullName = element.source.fullName;
+     if (!pathContext.isWithin(fullName, package.packagePath) &&
+         package.packagePath.contains('/google3/')) {
+       // In google3, `fullName` is specified as if the root of google3 was `/`.
+       // And `package.packagePath` contains the true google3 root.
+       var root = pathContext
+           .joinAll(pathContext.split(package.packagePath)..removeLast());
+       fullName = '$root$fullName';
+     }
+     var relativePath =
+         pathContext.relative(fullName, from: package.packagePath);
     assert(relativePath.startsWith('lib${pathContext.separator}'));
     const libDirectoryLength = 'lib/'.length;
     return relativePath.substring(libDirectoryLength);
