@@ -3499,14 +3499,7 @@ String _deduplicated_lib_templates_html__head_html(TemplateDataBase context0) {
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">''');
-  if (context0.includeVersion) {
-    buffer.writeln();
-    buffer.write('''
-  <meta name="generator" content="made with love by dartdoc">''');
-  }
-  buffer.writeln();
-  buffer.write('''
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
   <meta name="description" content="''');
   buffer.writeEscaped(context0.metaDescription);
   buffer.write('''">
