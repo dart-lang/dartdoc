@@ -3503,9 +3503,7 @@ String _deduplicated_lib_templates_html__head_html(TemplateDataBase context0) {
   if (context0.includeVersion) {
     buffer.writeln();
     buffer.write('''
-  <meta name="generator" content="made with love by dartdoc ''');
-    buffer.writeEscaped(context0.version);
-    buffer.write('''">''');
+  <meta name="generator" content="made with love by dartdoc">''');
   }
   buffer.writeln();
   buffer.write('''
