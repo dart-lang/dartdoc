@@ -14,7 +14,7 @@ dependencies:
   glob: ^2.1.1
   html: ^0.15.3
   logging: ^1.1.1
-  markdown: ^7.1.0
+  markdown: ^7.2.1
   meta: ^1.9.1
   package_config: ^2.1.0
   path: ^1.8.3
