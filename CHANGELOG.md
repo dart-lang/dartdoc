@@ -1,6 +1,7 @@
 ## 8.0.4-wip
 
 * Remove explicit library names. (#3609)
+* No longer write the dartdoc version into generated html files.
 
 ## 8.0.3
 
