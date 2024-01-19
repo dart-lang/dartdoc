@@ -1216,18 +1216,18 @@ li.inherited a {
 }
 
 .markdown-alert-title {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--main-sidebar-color);
 }
 
 /* note, tip, important, warning, caution */
 
 .markdown-alert-note {
-  border-left-color: var(--main-tag-color);
+  border-left-color: var(--main-hyperlinks-color);
 }
 
 .markdown-alert-note .markdown-alert-title {
-  color: var(--main-tag-color);
+  color: var(--main-hyperlinks-color);
 }
 
 .markdown-alert-tip {
@@ -1239,25 +1239,25 @@ li.inherited a {
 }
 
 .markdown-alert-important {
-  border-left-color: var(--main-comment-color);
+  border-left-color: var(--main-tag-color);
 }
 
 .markdown-alert-important .markdown-alert-title {
-  color: var(--main-comment-color);
+  color: var(--main-tag-color);
 }
 
 .markdown-alert-warning {
-  border-left-color: var(--main-section-color);
-}
-
-.markdown-alert-warning .markdown-alert-title {
-  color: var(--main-section-color);
-}
-
-.markdown-alert-caution {
   border-left-color: var(--main-string-color);
 }
 
-.markdown-alert-caution .markdown-alert-title {
+.markdown-alert-warning .markdown-alert-title {
   color: var(--main-string-color);
+}
+
+.markdown-alert-caution {
+  border-left-color: var(--main-section-color);
+}
+
+.markdown-alert-caution .markdown-alert-title {
+  color: var(--main-section-color);
 }
