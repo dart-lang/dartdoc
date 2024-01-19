@@ -250,9 +250,6 @@ class Dartdoc {
   }
 
   /// Runs [generateDocs] function and properly handles the errors.
-  ///
-  /// Passing in a [postProcessCallback] to do additional processing after
-  /// the documentation is generated.
   void executeGuarded() {
     onCheckProgress.listen(logProgress);
     // This function should *never* `await runZonedGuarded` because the errors

@@ -132,6 +132,7 @@ final List<md.InlineSyntax> _markdownSyntaxes = [
 ];
 
 final List<md.BlockSyntax> _markdownBlockSyntaxes = [
+  const md.AlertBlockSyntax(),
   const md.FencedCodeBlockSyntax(),
   const md.HeaderWithIdSyntax(),
   const md.SetextHeaderWithIdSyntax(),
