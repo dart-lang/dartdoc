@@ -31,6 +31,11 @@
 
   --main-number-filter: invert(0%);
   --main-icon-color: black;
+
+  /* alerts */
+  --alert-info: #e7f8ff;
+  --alert-warning: #fcf8e3;
+  --alert-error: #fde9ee;
 }
 
 .dark-theme {
@@ -64,6 +69,11 @@
 
   --main-number-filter: invert(100%);
   --main-icon-color: white;
+
+  /* alerts */
+  --alert-info: #1976d2;
+  --alert-warning: #ffe57f;
+  --alert-error: #cf6679;
 }
 
 #theme {
@@ -1201,14 +1211,13 @@ li.inherited a {
 /* github alert styles */
 
 .markdown-alert {
-  padding: .5rem 1rem;
-  border-left: 0.25em solid var(--main-sidebar-color);
+  margin-top: 1rem;
   margin-bottom: 1rem;
+  padding: 30px;
 }
 
-.markdown-body p {
-  margin-top: 0;
-  margin-bottom: 16px;
+.markdown-alert p:nth-child(2) {
+  display: inline;
 }
 
 .markdown-alert>:last-child {
@@ -1216,48 +1225,35 @@ li.inherited a {
 }
 
 .markdown-alert-title {
-  font-weight: 500;
-  color: var(--main-sidebar-color);
+  font-weight: bold;  
+}
+
+.markdown-alert-title:after {
+  content: ':';
+}
+
+p.markdown-alert-title {
+  display: inline;
 }
 
 /* note, tip, important, warning, caution */
 
-.markdown-alert-note {
-  border-left-color: var(--main-hyperlinks-color);
+.markdown-alert.markdown-alert-note {
+  background-color: var(--alert-info);
 }
 
-.markdown-alert-note .markdown-alert-title {
-  color: var(--main-hyperlinks-color);
+.markdown-alert.markdown-alert-tip {
+  background-color: var(--alert-info);
 }
 
-.markdown-alert-tip {
-  border-left-color: var(--main-var-color);
+.markdown-alert.markdown-alert-important {
+  background-color: var(--alert-info);
 }
 
-.markdown-alert-tip .markdown-alert-title {
-  color: var(--main-var-color);
+.markdown-alert.markdown-alert-warning {
+  background-color: var(--alert-warning);
 }
 
-.markdown-alert-important {
-  border-left-color: var(--main-tag-color);
-}
-
-.markdown-alert-important .markdown-alert-title {
-  color: var(--main-tag-color);
-}
-
-.markdown-alert-warning {
-  border-left-color: var(--main-string-color);
-}
-
-.markdown-alert-warning .markdown-alert-title {
-  color: var(--main-string-color);
-}
-
-.markdown-alert-caution {
-  border-left-color: var(--main-section-color);
-}
-
-.markdown-alert-caution .markdown-alert-title {
-  color: var(--main-section-color);
+.markdown-alert.markdown-alert-caution {
+  background-color: var(--alert-error);
 }
