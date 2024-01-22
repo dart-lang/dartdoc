@@ -92,6 +92,15 @@
   cursor: pointer;
 }
 
+li .material-symbols-outlined, dt .material-symbols-outlined {
+  font-size: 1em;
+  vertical-align: text-bottom;
+}
+
+dt .material-symbols-outlined {
+  text-indent: 0;
+}
+
 .light-theme #light-theme-button {
   display: none;
 }

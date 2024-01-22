@@ -71,6 +71,7 @@ const _visibleTypes = {
   Enum,
   Extension,
   ExtensionType,
+  ExternalItem,
   FeatureSet,
   FunctionTypeElementType,
   InheritingContainer,

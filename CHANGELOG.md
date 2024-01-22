@@ -4,6 +4,7 @@
 * No longer write the dartdoc version into generated html files.
 * Add support for GitHub markdown alert syntax
   (https://docs.github.com/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts).
+* Add support for external links to dartdoc categories (#3617).
 
 ## 8.0.3
 

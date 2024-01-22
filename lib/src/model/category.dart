@@ -67,6 +67,8 @@ class Category extends Nameable
             config.categories.categoryDefinitions[_name.orDefault] ??
                 CategoryDefinition(_name, null, null);
 
+  Iterable<ExternalItem> get externalItems => _categoryDefinition.externalItems;
+
   void addClass(Class class_) {
     if (class_.isErrorOrException) {
       _exceptions.add(class_);
@@ -183,4 +185,22 @@ class Category extends Nameable
 
 extension on String? {
   String get orDefault => this ?? '<default>';
+}
+
+/// A external link for an item in a dartdoc category.
+///
+/// This is a name, url, and optional documentation text.
+class ExternalItem {
+  final String name;
+  final String url;
+  final String docs;
+
+  ExternalItem({
+    required this.name,
+    required this.url,
+    required String? docs,
+  }) : docs = docs ?? '';
+
+  @override
+  String toString() => '$name $url';
 }
