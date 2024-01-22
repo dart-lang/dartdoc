@@ -21,6 +21,7 @@ void main() async {
   late PackageMetaProvider packageMetaProvider;
   late DartdocGeneratorOptionContext context;
   late List<String> topicOneLines;
+  late List<String> indexPageLines;
 
   Future<PubPackageBuilder> createPackageBuilder() async {
     context = await utils.generatorContextFromArgv([
@@ -75,6 +76,8 @@ dartdoc:
   categories:
     One:
       markdown: one.md
+    Documented:
+      markdown: documented.md  
 ''',
       libFiles: [
         d.file('lib.dart', '''
@@ -119,9 +122,14 @@ extension Ex on int {}
 /// {@category One}
 extension type ExType(int it) {}
 '''),
+        d.file('other.dart', '''
+/// {@category Documented}
+library;      
+'''),
       ],
       files: [
         d.file('one.md', ''),
+        d.file('documented.md', 'First line.\n\nSecond line.'),
       ],
       resourceProvider: resourceProvider,
     );
@@ -129,6 +137,10 @@ extension type ExType(int it) {}
     await (await buildDartdoc()).generateDocs();
     topicOneLines = resourceProvider
         .getFile(path.join(packagePath, 'doc', 'topics', 'One-topic.html'))
+        .readAsStringSync()
+        .split('\n');
+    indexPageLines = resourceProvider
+        .getFile(path.join(packagePath, 'doc', 'index.html'))
         .readAsStringSync()
         .split('\n');
   });
@@ -295,5 +307,12 @@ extension type ExType(int it) {}
         matches('<a href="../lib/ExType-extension-type.html">ExType</a>'),
       ]),
     );
+  });
+
+  test('index page includes topics and their one liner description', () {
+    indexPageLines.expectMainContentContainsAllInOrder([
+      equalsIgnoringWhitespace('<h3>Documented</h3>'),
+      equalsIgnoringWhitespace('<p>First line.</p>'),
+    ]);
   });
 }
