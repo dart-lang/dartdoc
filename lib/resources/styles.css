@@ -1226,6 +1226,7 @@ li.inherited a {
 
 .markdown-alert-title {
   display: flex;
+  align-items: center;
   gap: 0.4rem;
   margin-bottom: 0.5rem;
 
