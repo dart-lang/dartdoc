@@ -16290,6 +16290,7 @@ const _invisibleGetters = {
     'alias',
     'element',
     'element2',
+    'extensionTypeErasure',
     'hashCode',
     'isBottom',
     'isDartAsyncFuture',
@@ -16384,6 +16385,7 @@ const _invisibleGetters = {
     'hasDeprecated',
     'hasDoNotStore',
     'hasFactory',
+    'hasImmutable',
     'hasInternal',
     'hasIsTest',
     'hasIsTestGroup',
@@ -16463,6 +16465,7 @@ const _invisibleGetters = {
     'runtimeType'
   },
   'ExecutableMember': {
+    'augmentationSubstitution',
     'children',
     'context',
     'declaration',
@@ -16473,6 +16476,7 @@ const _invisibleGetters = {
     'hasDeprecated',
     'hasDoNotStore',
     'hasFactory',
+    'hasImmutable',
     'hasImplicitReturnType',
     'hasInternal',
     'hasIsTest',
@@ -16499,6 +16503,7 @@ const _invisibleGetters = {
     'isAbstract',
     'isAsynchronous',
     'isAugmentation',
+    'isExtensionTypeMember',
     'isExternal',
     'isGenerator',
     'isLegacy',
@@ -16730,6 +16735,7 @@ const _invisibleGetters = {
     'values'
   },
   'Member': {
+    'augmentationSubstitution',
     'children',
     'context',
     'declaration',
@@ -16740,6 +16746,7 @@ const _invisibleGetters = {
     'hasDeprecated',
     'hasDoNotStore',
     'hasFactory',
+    'hasImmutable',
     'hasInternal',
     'hasIsTest',
     'hasIsTestGroup',
@@ -16881,6 +16888,7 @@ const _invisibleGetters = {
     'typeParameters'
   },
   'ParameterMember': {
+    'augmentationSubstitution',
     'children',
     'context',
     'declaration',
@@ -16893,6 +16901,7 @@ const _invisibleGetters = {
     'hasDeprecated',
     'hasDoNotStore',
     'hasFactory',
+    'hasImmutable',
     'hasImplicitType',
     'hasInternal',
     'hasIsTest',
