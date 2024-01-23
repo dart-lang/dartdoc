@@ -2,8 +2,11 @@
 
 * Remove explicit library names. (#3609)
 * No longer write the dartdoc version into generated html files.
-* Add support for GitHub markdown alert syntax
-  (https://docs.github.com/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts).
+* Add support for [GitHub markdown alert syntax][].
+* Require Dart 3.2.0 or later.
+* Require `analyzer: ^6.4.0`.
+
+[GitHub markdown alert syntax]: https://docs.github.com/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts
 
 ## 8.0.3
 
