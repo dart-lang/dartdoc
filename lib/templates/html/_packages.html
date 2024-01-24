@@ -17,6 +17,14 @@
     {{/defaultCategory.publicLibrariesSorted}}
     {{#categoriesWithPublicLibraries}}
       <li class="section-subtitle">{{name}}</li>
+      {{#externalItems}}
+        <li class="section-subitem">
+          <a href="{{url}}" target="_blank">
+            {{name}}
+            <span class="material-symbols-outlined">open_in_new</span>
+          </a>
+        </li>
+      {{/externalItems}}
       {{#publicLibrariesSorted}}
         <li class="section-subitem">{{{linkedName}}}</li>
       {{/publicLibrariesSorted}}

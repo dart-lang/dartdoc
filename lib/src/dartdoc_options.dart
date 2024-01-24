@@ -71,7 +71,15 @@ class CategoryDefinition {
   /// (or null if undocumented).
   final String? documentationMarkdown;
 
-  CategoryDefinition(this.name, this._displayName, this.documentationMarkdown);
+  /// The external items defined for this category.
+  final List<ExternalItem> externalItems;
+
+  CategoryDefinition(
+    this.name,
+    this._displayName,
+    this.documentationMarkdown, {
+    this.externalItems = const [],
+  });
 
   /// Returns the [_displayName], if available, or else simply [name].
   String get displayName => _displayName ?? name ?? '';
@@ -107,8 +115,39 @@ class CategoryConfiguration {
                 'the missing file $documentationMarkdown');
           }
         }
-        newCategoryDefinitions[name] =
-            CategoryDefinition(name, displayName, documentationMarkdown);
+        final externalItems = <ExternalItem>[];
+        var items = categoryMap['external'] as List?;
+        if (items != null) {
+          for (var item in items) {
+            if (item is! Map) {
+              throw DartdocOptionError("'external' field should be a map");
+            } else {
+              final itemName = item['name'] as String?;
+              if (itemName == null) {
+                throw DartdocOptionError(
+                    "'external' item missing required field 'name'");
+              }
+
+              final itemUrl = item['url'] as String?;
+              if (itemUrl == null) {
+                throw DartdocOptionError(
+                    "'external' item missing required field 'url'");
+              }
+
+              externalItems.add(ExternalItem(
+                name: itemName,
+                url: itemUrl,
+                docs: item['docs'] as String?,
+              ));
+            }
+          }
+        }
+        newCategoryDefinitions[name] = CategoryDefinition(
+          name,
+          displayName,
+          documentationMarkdown,
+          externalItems: externalItems,
+        );
       }
     }
     return CategoryConfiguration._(newCategoryDefinitions);

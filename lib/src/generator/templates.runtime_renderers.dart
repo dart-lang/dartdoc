@@ -1276,6 +1276,19 @@ class _Renderer_Category extends RendererBase<Category> {
                         _render_Extension(e, ast, r.template, sink, parent: r));
                   },
                 ),
+                'externalItems': Property(
+                  getValue: (CT_ c) => c.externalItems,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<ExternalItem>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.externalItems.map((e) => _render_ExternalItem(
+                        e, ast, r.template, sink,
+                        parent: r));
+                  },
+                ),
                 'filePath': Property(
                   getValue: (CT_ c) => c.filePath,
                   renderVariable:
@@ -5816,6 +5829,99 @@ class _Renderer_ExtensionTypeTemplateData<T extends ExtensionType>
   Property<ExtensionTypeTemplateData<T>>? getProperty(String key) {
     if (propertyMap<T, ExtensionTypeTemplateData<T>>().containsKey(key)) {
       return propertyMap<T, ExtensionTypeTemplateData<T>>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+void _render_ExternalItem(ExternalItem context, List<MustachioNode> ast,
+    Template template, StringSink sink,
+    {RendererBase<Object>? parent}) {
+  var renderer = _Renderer_ExternalItem(context, parent, template, sink);
+  renderer.renderBlock(ast);
+}
+
+class _Renderer_ExternalItem extends RendererBase<ExternalItem> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends ExternalItem>() =>
+      _propertyMapCache.putIfAbsent(
+          CT_,
+          () => {
+                ..._Renderer_Object.propertyMap<CT_>(),
+                'docs': Property(
+                  getValue: (CT_ c) => c.docs,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.docs, ast, r.template, sink, parent: r);
+                  },
+                ),
+                'name': Property(
+                  getValue: (CT_ c) => c.name,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.name, ast, r.template, sink, parent: r);
+                  },
+                ),
+                'url': Property(
+                  getValue: (CT_ c) => c.url,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.url, ast, r.template, sink, parent: r);
+                  },
+                ),
+              }) as Map<String, Property<CT_>>;
+
+  _Renderer_ExternalItem(ExternalItem context, RendererBase<Object>? parent,
+      Template template, StringSink sink)
+      : super(context, parent, template, sink);
+
+  @override
+  Property<ExternalItem>? getProperty(String key) {
+    if (propertyMap<ExternalItem>().containsKey(key)) {
+      return propertyMap<ExternalItem>()[key];
     } else {
       return null;
     }
@@ -12764,13 +12870,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
