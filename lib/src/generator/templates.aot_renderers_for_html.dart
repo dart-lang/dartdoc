@@ -1175,15 +1175,15 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context7 = context0.library;
-  if (context7.hasPublicMixins) {
+  if (context7.hasPublicEnums) {
     buffer.writeln();
     buffer.write('''
-    <section class="summary offset-anchor" id="mixins">
-      <h2>Mixins</h2>
+    <section class="summary offset-anchor" id="enums">
+      <h2>Enums</h2>
 
       <dl>''');
     var context8 = context7.library;
-    var context9 = context8.publicMixinsSorted;
+    var context9 = context8.publicEnumsSorted;
     for (var context10 in context9) {
       buffer.write('\n        ');
       buffer.write(_renderLibrary_partial_container_5(context10));
@@ -1195,18 +1195,18 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context11 = context0.library;
-  if (context11.hasPublicExtensions) {
+  if (context11.hasPublicMixins) {
     buffer.writeln();
     buffer.write('''
-    <section class="summary offset-anchor" id="extensions">
-      <h2>Extensions</h2>
+    <section class="summary offset-anchor" id="mixins">
+      <h2>Mixins</h2>
 
       <dl>''');
     var context12 = context11.library;
-    var context13 = context12.publicExtensionsSorted;
+    var context13 = context12.publicMixinsSorted;
     for (var context14 in context13) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_extension_6(context14));
+      buffer.write(_renderLibrary_partial_container_5(context14));
     }
     buffer.writeln();
     buffer.write('''
@@ -1226,7 +1226,7 @@ String renderLibrary(LibraryTemplateData context0) {
     var context17 = context16.publicExtensionTypesSorted;
     for (var context18 in context17) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_extension_type_7(context18));
+      buffer.write(_renderLibrary_partial_extension_type_6(context18));
     }
     buffer.writeln();
     buffer.write('''
@@ -1235,18 +1235,18 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context19 = context0.library;
-  if (context19.hasPublicConstants) {
+  if (context19.hasPublicExtensions) {
     buffer.writeln();
     buffer.write('''
-    <section class="summary offset-anchor" id="constants">
-      <h2>Constants</h2>
+    <section class="summary offset-anchor" id="extensions">
+      <h2>Extensions</h2>
 
-      <dl class="properties">''');
+      <dl>''');
     var context20 = context19.library;
-    var context21 = context20.publicConstantsSorted;
+    var context21 = context20.publicExtensionsSorted;
     for (var context22 in context21) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_constant_8(context22));
+      buffer.write(_renderLibrary_partial_extension_7(context22));
     }
     buffer.writeln();
     buffer.write('''
@@ -1255,18 +1255,18 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context23 = context0.library;
-  if (context23.hasPublicProperties) {
+  if (context23.hasPublicConstants) {
     buffer.writeln();
     buffer.write('''
-    <section class="summary offset-anchor" id="properties">
-      <h2>Properties</h2>
+    <section class="summary offset-anchor" id="constants">
+      <h2>Constants</h2>
 
       <dl class="properties">''');
     var context24 = context23.library;
-    var context25 = context24.publicPropertiesSorted;
+    var context25 = context24.publicConstantsSorted;
     for (var context26 in context25) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_property_9(context26));
+      buffer.write(_renderLibrary_partial_constant_8(context26));
     }
     buffer.writeln();
     buffer.write('''
@@ -1275,18 +1275,18 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context27 = context0.library;
-  if (context27.hasPublicFunctions) {
+  if (context27.hasPublicProperties) {
     buffer.writeln();
     buffer.write('''
-    <section class="summary offset-anchor" id="functions">
-      <h2>Functions</h2>
+    <section class="summary offset-anchor" id="properties">
+      <h2>Properties</h2>
 
-      <dl class="callables">''');
+      <dl class="properties">''');
     var context28 = context27.library;
-    var context29 = context28.publicFunctionsSorted;
+    var context29 = context28.publicPropertiesSorted;
     for (var context30 in context29) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_callable_10(context30));
+      buffer.write(_renderLibrary_partial_property_9(context30));
     }
     buffer.writeln();
     buffer.write('''
@@ -1295,18 +1295,18 @@ String renderLibrary(LibraryTemplateData context0) {
   }
   buffer.writeln();
   var context31 = context0.library;
-  if (context31.hasPublicEnums) {
+  if (context31.hasPublicFunctions) {
     buffer.writeln();
     buffer.write('''
-    <section class="summary offset-anchor" id="enums">
-      <h2>Enums</h2>
+    <section class="summary offset-anchor" id="functions">
+      <h2>Functions</h2>
 
-      <dl>''');
+      <dl class="callables">''');
     var context32 = context31.library;
-    var context33 = context32.publicEnumsSorted;
+    var context33 = context32.publicFunctionsSorted;
     for (var context34 in context33) {
       buffer.write('\n        ');
-      buffer.write(_renderLibrary_partial_container_5(context34));
+      buffer.write(_renderLibrary_partial_callable_10(context34));
     }
     buffer.writeln();
     buffer.write('''
@@ -2013,18 +2013,34 @@ String renderSidebarForLibrary<T extends Documentable>(
     }
   }
   buffer.writeln();
+  if (context1.hasPublicExtensionTypes) {
+    buffer.writeln();
+    buffer.write('''
+      <li class="section-title"><a href="''');
+    buffer.write(context1.href);
+    buffer.write('''#extension-types">Extension Types</a></li>''');
+    var context8 = context1.publicExtensionTypesSorted;
+    for (var context9 in context8) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context9.linkedName);
+      buffer.write('''</li>''');
+    }
+  }
+  buffer.writeln();
   if (context1.hasPublicConstants) {
     buffer.writeln();
     buffer.write('''
       <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#constants">Constants</a></li>''');
-    var context8 = context1.publicConstantsSorted;
-    for (var context9 in context8) {
+    var context10 = context1.publicConstantsSorted;
+    for (var context11 in context10) {
       buffer.writeln();
       buffer.write('''
         <li>''');
-      buffer.write(context9.linkedName);
+      buffer.write(context11.linkedName);
       buffer.write('''</li>''');
     }
   }
@@ -2035,12 +2051,12 @@ String renderSidebarForLibrary<T extends Documentable>(
       <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#properties">Properties</a></li>''');
-    var context10 = context1.publicPropertiesSorted;
-    for (var context11 in context10) {
+    var context12 = context1.publicPropertiesSorted;
+    for (var context13 in context12) {
       buffer.writeln();
       buffer.write('''
         <li>''');
-      buffer.write(context11.linkedName);
+      buffer.write(context13.linkedName);
       buffer.write('''</li>''');
     }
   }
@@ -2051,12 +2067,12 @@ String renderSidebarForLibrary<T extends Documentable>(
       <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#functions">Functions</a></li>''');
-    var context12 = context1.publicFunctionsSorted;
-    for (var context13 in context12) {
+    var context14 = context1.publicFunctionsSorted;
+    for (var context15 in context14) {
       buffer.writeln();
       buffer.write('''
         <li>''');
-      buffer.write(context13.linkedName);
+      buffer.write(context15.linkedName);
       buffer.write('''</li>''');
     }
   }
@@ -2067,12 +2083,12 @@ String renderSidebarForLibrary<T extends Documentable>(
       <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#typedefs">Typedefs</a></li>''');
-    var context14 = context1.publicTypedefsSorted;
-    for (var context15 in context14) {
+    var context16 = context1.publicTypedefsSorted;
+    for (var context17 in context16) {
       buffer.writeln();
       buffer.write('''
         <li>''');
-      buffer.write(context15.linkedName);
+      buffer.write(context17.linkedName);
       buffer.write('''</li>''');
     }
   }
@@ -2083,12 +2099,12 @@ String renderSidebarForLibrary<T extends Documentable>(
       <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#exceptions">Exceptions</a></li>''');
-    var context16 = context1.publicExceptionsSorted;
-    for (var context17 in context16) {
+    var context18 = context1.publicExceptionsSorted;
+    for (var context19 in context18) {
       buffer.writeln();
       buffer.write('''
         <li>''');
-      buffer.write(context17.linkedName);
+      buffer.write(context19.linkedName);
       buffer.write('''</li>''');
     }
   }
@@ -2099,23 +2115,7 @@ String renderSidebarForLibrary<T extends Documentable>(
       <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#extensions">Extensions</a></li>''');
-    var context18 = context1.publicExtensionsSorted;
-    for (var context19 in context18) {
-      buffer.writeln();
-      buffer.write('''
-        <li>''');
-      buffer.write(context19.linkedName);
-      buffer.write('''</li>''');
-    }
-  }
-  buffer.writeln();
-  if (context1.hasPublicExtensionTypes) {
-    buffer.writeln();
-    buffer.write('''
-      <li class="section-title"><a href="''');
-    buffer.write(context1.href);
-    buffer.write('''#extension-types">Extension Types</a></li>''');
-    var context20 = context1.publicExtensionTypesSorted;
+    var context20 = context1.publicExtensionsSorted;
     for (var context21 in context20) {
       buffer.writeln();
       buffer.write('''
@@ -2456,14 +2456,14 @@ String _renderCategory_partial_sidebar_for_category_11(
   }
   buffer.writeln();
   var context17 = context0.self;
-  if (context17.hasPublicConstants) {
+  if (context17.hasPublicExtensionTypes) {
     buffer.writeln();
     buffer.write('''
     <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#constants">Constants</a></li>''');
+    buffer.write('''#extension-types">Extension Types</a></li>''');
     var context18 = context0.self;
-    var context19 = context18.publicConstantsSorted;
+    var context19 = context18.publicExtensionTypesSorted;
     for (var context20 in context19) {
       buffer.writeln();
       buffer.write('''
@@ -2474,14 +2474,14 @@ String _renderCategory_partial_sidebar_for_category_11(
   }
   buffer.writeln();
   var context21 = context0.self;
-  if (context21.hasPublicProperties) {
+  if (context21.hasPublicConstants) {
     buffer.writeln();
     buffer.write('''
     <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#properties">Properties</a></li>''');
+    buffer.write('''#constants">Constants</a></li>''');
     var context22 = context0.self;
-    var context23 = context22.publicPropertiesSorted;
+    var context23 = context22.publicConstantsSorted;
     for (var context24 in context23) {
       buffer.writeln();
       buffer.write('''
@@ -2492,14 +2492,14 @@ String _renderCategory_partial_sidebar_for_category_11(
   }
   buffer.writeln();
   var context25 = context0.self;
-  if (context25.hasPublicFunctions) {
+  if (context25.hasPublicProperties) {
     buffer.writeln();
     buffer.write('''
     <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#functions">Functions</a></li>''');
+    buffer.write('''#properties">Properties</a></li>''');
     var context26 = context0.self;
-    var context27 = context26.publicFunctionsSorted;
+    var context27 = context26.publicPropertiesSorted;
     for (var context28 in context27) {
       buffer.writeln();
       buffer.write('''
@@ -2510,32 +2510,32 @@ String _renderCategory_partial_sidebar_for_category_11(
   }
   buffer.writeln();
   var context29 = context0.self;
-  if (context29.hasPublicTypedefs) {
+  if (context29.hasPublicFunctions) {
     buffer.writeln();
     buffer.write('''
-  <li class="section-title"><a href="''');
+    <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#typedefs">Typedefs</a></li>''');
+    buffer.write('''#functions">Functions</a></li>''');
     var context30 = context0.self;
-    var context31 = context30.publicTypedefsSorted;
+    var context31 = context30.publicFunctionsSorted;
     for (var context32 in context31) {
       buffer.writeln();
       buffer.write('''
-  <li>''');
+      <li>''');
       buffer.write(context32.linkedName);
       buffer.write('''</li>''');
     }
   }
   buffer.writeln();
   var context33 = context0.self;
-  if (context33.hasPublicExceptions) {
+  if (context33.hasPublicTypedefs) {
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#exceptions">Exceptions</a></li>''');
+    buffer.write('''#typedefs">Typedefs</a></li>''');
     var context34 = context0.self;
-    var context35 = context34.publicExceptionsSorted;
+    var context35 = context34.publicTypedefsSorted;
     for (var context36 in context35) {
       buffer.writeln();
       buffer.write('''
@@ -2546,14 +2546,14 @@ String _renderCategory_partial_sidebar_for_category_11(
   }
   buffer.writeln();
   var context37 = context0.self;
-  if (context37.hasPublicExtensions) {
+  if (context37.hasPublicExceptions) {
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#extensions">Extensions</a></li>''');
+    buffer.write('''#exceptions">Exceptions</a></li>''');
     var context38 = context0.self;
-    var context39 = context38.publicExtensionsSorted;
+    var context39 = context38.publicExceptionsSorted;
     for (var context40 in context39) {
       buffer.writeln();
       buffer.write('''
@@ -2564,14 +2564,14 @@ String _renderCategory_partial_sidebar_for_category_11(
   }
   buffer.writeln();
   var context41 = context0.self;
-  if (context41.hasPublicExtensionTypes) {
+  if (context41.hasPublicExtensions) {
     buffer.writeln();
     buffer.write('''
   <li class="section-title"><a href="''');
     buffer.write(context0.self.href);
-    buffer.write('''#extension-types">Extension Types</a></li>''');
+    buffer.write('''#extensions">Extensions</a></li>''');
     var context42 = context0.self;
-    var context43 = context42.publicExtensionTypesSorted;
+    var context43 = context42.publicExtensionsSorted;
     for (var context44 in context43) {
       buffer.writeln();
       buffer.write('''
@@ -3058,10 +3058,7 @@ String _renderLibrary_partial_documentation_4(Library context1) =>
 String _renderLibrary_partial_container_5(Container context3) =>
     _deduplicated_lib_templates_html__container_html(context3);
 
-String _renderLibrary_partial_extension_6(Extension context3) =>
-    _deduplicated_lib_templates_html__extension_html(context3);
-
-String _renderLibrary_partial_extension_type_7(ExtensionType context3) {
+String _renderLibrary_partial_extension_type_6(ExtensionType context3) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context3.htmlId);
@@ -3074,7 +3071,7 @@ String _renderLibrary_partial_extension_type_7(ExtensionType context3) {
   buffer.write(context3.linkedName);
   buffer.write('''</span> ''');
   buffer.write(
-      __renderLibrary_partial_extension_type_7_partial_categorization_0(
+      __renderLibrary_partial_extension_type_6_partial_categorization_0(
           context3));
   buffer.writeln();
   buffer.write('''
@@ -3091,9 +3088,12 @@ String _renderLibrary_partial_extension_type_7(ExtensionType context3) {
   return buffer.toString();
 }
 
-String __renderLibrary_partial_extension_type_7_partial_categorization_0(
+String __renderLibrary_partial_extension_type_6_partial_categorization_0(
         ExtensionType context3) =>
     _deduplicated_lib_templates_html__categorization_html(context3);
+
+String _renderLibrary_partial_extension_7(Extension context3) =>
+    _deduplicated_lib_templates_html__extension_html(context3);
 
 String _renderLibrary_partial_constant_8(TopLevelVariable context3) =>
     _deduplicated_lib_templates_html__constant_html(context3);

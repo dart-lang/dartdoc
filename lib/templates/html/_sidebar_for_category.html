@@ -27,6 +27,13 @@
     {{ /self.publicMixinsSorted }}
   {{ /self.hasPublicMixins }}
 
+  {{ #self.hasPublicExtensionTypes }}
+    <li class="section-title"><a href="{{{ self.href }}}#extension-types">Extension Types</a></li>
+    {{ #self.publicExtensionTypesSorted }}
+      <li>{{{ linkedName }}}</li>
+    {{ /self.publicExtensionTypesSorted }}
+  {{ /self.hasPublicExtensionTypes }}
+
   {{ #self.hasPublicConstants}}
     <li class="section-title"><a href="{{{ self.href }}}#constants">Constants</a></li>
     {{ #self.publicConstantsSorted }}
@@ -68,11 +75,4 @@
   <li>{{{ linkedName }}}</li>
   {{ /self.publicExtensionsSorted }}
   {{ /self.hasPublicExtensions }}
-
-  {{ #self.hasPublicExtensionTypes }}
-  <li class="section-title"><a href="{{{ self.href }}}#extension-types">Extension Types</a></li>
-  {{ #self.publicExtensionTypesSorted }}
-  <li>{{{ linkedName }}}</li>
-  {{ /self.publicExtensionTypesSorted }}
-  {{ /self.hasPublicExtensionTypes }}
 </ol>
