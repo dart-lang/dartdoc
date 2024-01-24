@@ -96,6 +96,10 @@
   cursor: pointer;
 }
 
+#theme-button .material-symbols-outlined:hover {
+  color: var(--main-hyperlinks-color);
+}
+
 .light-theme #light-theme-button {
   display: none;
 }
@@ -859,6 +863,10 @@ button {
   color: var(--main-icon-color);
   user-select: none;
   cursor: pointer;
+}
+
+#sidenav-left-toggle:hover {
+  color: var(--main-hyperlinks-color);
 }
 
 /* left-nav disappears, and can transition in from the left */
