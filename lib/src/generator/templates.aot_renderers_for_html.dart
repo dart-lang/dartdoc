@@ -1048,6 +1048,13 @@ String renderIndex(PackageTemplateData context0) {
           <h3>''');
       buffer.writeEscaped(context8.name);
       buffer.write('''</h3>''');
+      if (context8.isDocumented) {
+        buffer.writeln();
+        buffer.write('''
+          <p>''');
+        buffer.write(context8.oneLineDoc);
+        buffer.write('''</p>''');
+      }
       var context9 = context8.externalItems;
       for (var context10 in context9) {
         buffer.writeln();

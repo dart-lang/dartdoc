@@ -19,6 +19,9 @@
         {{/defaultCategory.publicLibrariesSorted}}
         {{#categoriesWithPublicLibraries}}
           <h3>{{name}}</h3>
+          {{#isDocumented}}
+          <p>{{{ oneLineDoc }}}</p>
+          {{/isDocumented}}
           {{#externalItems}}
             <dt>
               <span class="name">
