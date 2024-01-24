@@ -19,6 +19,17 @@
         {{/defaultCategory.publicLibrariesSorted}}
         {{#categoriesWithPublicLibraries}}
           <h3>{{name}}</h3>
+          {{#externalItems}}
+            <dt>
+              <span class="name">
+                <a href="{{url}}" target="_blank">
+                  {{name}}
+                  <span class="material-symbols-outlined">open_in_new</span>
+                </a>
+              </span>
+            </dt>
+            <dd>{{docs}}</dd>
+          {{/externalItems}}
           {{#publicLibrariesSorted}}
             {{>library}}
           {{/publicLibrariesSorted}}
