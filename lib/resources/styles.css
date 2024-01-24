@@ -34,6 +34,8 @@
 
   /* alerts */
   --alert-info: #e7f8ff;
+  --alert-tip: #ecfaf7;
+  --alert-important: #e2dbff;
   --alert-warning: #fcf8e3;
   --alert-error: #fde9ee;
 }
@@ -71,9 +73,11 @@
   --main-icon-color: white;
 
   /* alerts */
-  --alert-info: #1976d2;
-  --alert-warning: #ffe57f;
-  --alert-error: #cf6679;
+  --alert-info: #043875;
+  --alert-tip: #065517;
+  --alert-important: #4a00b4;
+  --alert-warning: #7b6909;
+  --alert-error: #7a0c17;
 }
 
 #theme {
@@ -90,6 +94,15 @@
   color: var(--main-icon-color);
   user-select: none;
   cursor: pointer;
+}
+
+li .material-symbols-outlined, dt .material-symbols-outlined {
+  font-size: 1em;
+  vertical-align: text-bottom;
+}
+
+dt .material-symbols-outlined {
+  text-indent: 0;
 }
 
 .light-theme #light-theme-button {
@@ -1213,11 +1226,7 @@ li.inherited a {
 .markdown-alert {
   margin-top: 1rem;
   margin-bottom: 1rem;
-  padding: 30px;
-}
-
-.markdown-alert p:nth-child(2) {
-  display: inline;
+  padding: 1.25rem;
 }
 
 .markdown-alert>:last-child {
@@ -1225,15 +1234,17 @@ li.inherited a {
 }
 
 .markdown-alert-title {
-  font-weight: bold;  
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
 }
 
-.markdown-alert-title:after {
-  content: ':';
-}
-
-p.markdown-alert-title {
-  display: inline;
+.markdown-alert-title:before {
+  font: 24px / 1 'Material Symbols Outlined';
 }
 
 /* note, tip, important, warning, caution */
@@ -1242,18 +1253,38 @@ p.markdown-alert-title {
   background-color: var(--alert-info);
 }
 
+.markdown-alert-note .markdown-alert-title:before {
+  content: 'info';
+}
+
 .markdown-alert.markdown-alert-tip {
-  background-color: var(--alert-info);
+  background-color: var(--alert-tip);
+}
+
+.markdown-alert-tip .markdown-alert-title:before {
+  content: 'lightbulb';
 }
 
 .markdown-alert.markdown-alert-important {
-  background-color: var(--alert-info);
+  background-color: var(--alert-important);
+}
+
+.markdown-alert-important .markdown-alert-title:before {
+  content: 'feedback';
 }
 
 .markdown-alert.markdown-alert-warning {
   background-color: var(--alert-warning);
 }
 
+.markdown-alert-warning .markdown-alert-title:before {
+  content: 'warning';
+}
+
 .markdown-alert.markdown-alert-caution {
   background-color: var(--alert-error);
+}
+
+.markdown-alert-caution .markdown-alert-title:before {
+  content: 'report';
 }

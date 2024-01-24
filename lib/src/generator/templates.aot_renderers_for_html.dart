@@ -1055,10 +1055,31 @@ String renderIndex(PackageTemplateData context0) {
         buffer.write(context8.oneLineDoc);
         buffer.write('''</p>''');
       }
-      var context9 = context8.publicLibrariesSorted;
+      var context9 = context8.externalItems;
       for (var context10 in context9) {
+        buffer.writeln();
+        buffer.write('''
+            <dt>
+              <span class="name">
+                <a href="''');
+        buffer.writeEscaped(context10.url);
+        buffer.write('''" target="_blank">
+                  ''');
+        buffer.writeEscaped(context10.name);
+        buffer.writeln();
+        buffer.write('''
+                  <span class="material-symbols-outlined">open_in_new</span>
+                </a>
+              </span>
+            </dt>
+            <dd>''');
+        buffer.writeEscaped(context10.docs);
+        buffer.write('''</dd>''');
+      }
+      var context11 = context8.publicLibrariesSorted;
+      for (var context12 in context11) {
         buffer.write('\n            ');
-        buffer.write(_renderIndex_partial_library_2(context10));
+        buffer.write(_renderIndex_partial_library_2(context12));
       }
     }
     buffer.writeln();
@@ -3538,7 +3559,7 @@ String _deduplicated_lib_templates_html__head_html(TemplateDataBase context0) {
   buffer.write('''
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
   ''');
   buffer.writeln();
   buffer.write('''
@@ -4343,12 +4364,28 @@ String _deduplicated_lib_templates_html__packages_html(
       <li class="section-subtitle">''');
       buffer.writeEscaped(context9.name);
       buffer.write('''</li>''');
-      var context10 = context9.publicLibrariesSorted;
+      var context10 = context9.externalItems;
       for (var context11 in context10) {
         buffer.writeln();
         buffer.write('''
+        <li class="section-subitem">
+          <a href="''');
+        buffer.writeEscaped(context11.url);
+        buffer.write('''" target="_blank">
+            ''');
+        buffer.writeEscaped(context11.name);
+        buffer.writeln();
+        buffer.write('''
+            <span class="material-symbols-outlined">open_in_new</span>
+          </a>
+        </li>''');
+      }
+      var context12 = context9.publicLibrariesSorted;
+      for (var context13 in context12) {
+        buffer.writeln();
+        buffer.write('''
         <li class="section-subitem">''');
-        buffer.write(context11.linkedName);
+        buffer.write(context13.linkedName);
         buffer.write('''</li>''');
       }
     }
