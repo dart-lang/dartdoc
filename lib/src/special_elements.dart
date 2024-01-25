@@ -60,7 +60,7 @@ enum SpecialClass {
 /// Given an SDK, resolve URIs for the libraries containing our special
 /// classes.
 Set<String> specialLibraryFiles(DartSdk sdk) =>
-    SpecialClass.values.map((e) => e._path(sdk)).whereNotNull().toSet();
+    SpecialClass.values.map((e) => e._path(sdk)).nonNulls.toSet();
 
 /// Class for managing special [Class] objects inside Dartdoc.
 class SpecialClasses {

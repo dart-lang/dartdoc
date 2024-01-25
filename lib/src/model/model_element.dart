@@ -670,8 +670,7 @@ abstract class ModelElement extends Canonicalization
       var getterDeprecated = pie.getter?.metadata.any((a) => a.isDeprecated);
       var setterDeprecated = pie.setter?.metadata.any((a) => a.isDeprecated);
 
-      var deprecatedValues =
-          [getterDeprecated, setterDeprecated].whereNotNull();
+      var deprecatedValues = [getterDeprecated, setterDeprecated].nonNulls;
 
       // At least one of these should be non-null. Otherwise things are weird
       assert(deprecatedValues.isNotEmpty);

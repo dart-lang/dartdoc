@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
 
@@ -63,7 +62,7 @@ mixin Categorization on DocumentationComment implements Indexable {
 
   @visibleForTesting
   List<Category> get categories => [
-        ...?categoryNames?.map((n) => package.nameToCategory[n]).whereNotNull()
+        ...?categoryNames?.map((n) => package.nameToCategory[n]).nonNulls
       ]..sort();
 
   Iterable<Category> get displayedCategories {
