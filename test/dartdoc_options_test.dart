@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -756,6 +757,33 @@ dartdoc:
         () {
       expect(dartdocOptionSetFiles['parentOverride'].valueAt(secondDirFirstSub),
           equals('parent'));
+    });
+  });
+
+  group('CategoryConfiguration', () {
+    const configData = '''
+CategoryOne:
+  external:
+    - name: 'package:web'
+      url: https://pub.dev/documentation/web/latest/
+      docs: Lorem ipsum.
+''';
+
+    test('parses external items', () {
+      final resourceProvider = MemoryResourceProvider();
+      final yamlMap = loadYaml(configData) as YamlMap;
+      final result =
+          CategoryConfiguration.fromYamlMap(yamlMap, '', resourceProvider);
+      expect(result.categoryDefinitions, hasLength(1));
+
+      final name = result.categoryDefinitions.keys.first;
+      final definition = result.categoryDefinitions[name]!;
+      expect(name, 'CategoryOne');
+      expect(definition.externalItems, hasLength(1));
+
+      final item = definition.externalItems.first;
+      expect(item.name, 'package:web');
+      expect(item.url, 'https://pub.dev/documentation/web/latest/');
     });
   });
 }
