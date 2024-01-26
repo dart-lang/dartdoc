@@ -1,9 +1,11 @@
-## 8.0.4-wip
+## 8.0.4
 
 * Remove explicit library names. (#3609)
-* No longer write the dartdoc version into generated html files.
-* Add support for [GitHub markdown alert syntax][].
-* Add support for external links to dartdoc categories (#3617).
+* No longer write the dartdoc version into generated HTML files.
+* Add support for [GitHub Markdown alert syntax][].
+* Add support for external links to dartdoc categories. (#3617)
+* Fix index.json parsing when packageRank is missing. (#3616)
+* Stop double wrapping nullable records. (#3608)
 * Require Dart 3.2.0 or later.
 * Require `analyzer: ^6.4.0`.
 
