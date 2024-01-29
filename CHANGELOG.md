@@ -1,3 +1,7 @@
+## 8.0.5-wip
+
+* Add troubleshooting information when the sidebars failed to load.
+
 ## 8.0.4
 
 * Remove explicit library names. (#3609)

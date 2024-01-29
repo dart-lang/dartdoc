@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:js/js.dart';
+import 'dart:js_interop';
 
 void init() {
   highlight?.highlightAll();
@@ -10,7 +10,7 @@ void init() {
 
 @JS()
 @staticInterop
-class HighlightJs {}
+final class HighlightJs {}
 
 extension HighlightJsExtension on HighlightJs {
   external void highlightAll();

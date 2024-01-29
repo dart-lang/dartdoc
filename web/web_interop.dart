@@ -2,22 +2,17 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:js_util' as js_util;
-
-import 'package:js/js.dart';
+import 'dart:js_interop';
 
 @JS('Response')
 @staticInterop
-class FetchResponse {}
+final class FetchResponse {}
 
 extension FetchResponseExtension on FetchResponse {
   external int get status;
 
   @JS('text')
-  external Promise _text();
-  Future<String> get text => js_util.promiseToFuture(_text());
+  external JSPromise _text();
+  Future<String> get text async =>
+      ((await _text().toDart) as JSString).toString();
 }
-
-@JS()
-@staticInterop
-class Promise {}

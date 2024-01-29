@@ -8,56 +8,72 @@ import 'highlight.dart' as highlight;
 import 'search.dart' as search;
 import 'sidenav.dart' as sidenav;
 import 'theme.dart' as theme;
+import 'web_interop.dart';
 
 void main() {
-  highlight.init();
   initializeSidebars();
-  sidenav.init();
   search.init();
+  sidenav.init();
+  highlight.init();
   theme.init();
 }
 
 void initializeSidebars() {
-  final body = document.querySelector('body');
+  final body = document.body;
   if (body == null) {
     return;
   }
-  final dataUsingBaseHref = body.dataset['using-base-href'];
+  final dataUsingBaseHref = body.getAttribute('data-using-base-href');
   if (dataUsingBaseHref == null) {
     // This should never happen.
     return;
   }
-  var baseHref = '';
+  final String baseHref;
   if (dataUsingBaseHref != 'true') {
-    final dataBaseHref = body.dataset['base-href'];
+    final dataBaseHref = body.getAttribute('data-base-href');
     if (dataBaseHref == null) {
       return;
     }
     baseHref = dataBaseHref;
+  } else {
+    baseHref = '';
   }
-  final mainContent = document.querySelector('#dartdoc-main-content');
+
+  final mainContent = document.getElementById('dartdoc-main-content');
   if (mainContent == null) {
     return;
   }
-  final aboveSidebarPath = mainContent.dataset['above-sidebar'];
-  final leftSidebar = document.querySelector('#dartdoc-sidebar-left-content');
   final sanitizer = _SidebarNodeTreeSanitizer(baseHref);
-  if (aboveSidebarPath != null &&
-      aboveSidebarPath.isNotEmpty &&
-      leftSidebar != null) {
-    HttpRequest.getString('$baseHref$aboveSidebarPath').then((content) {
-      leftSidebar.setInnerHtml(content, treeSanitizer: sanitizer);
+
+  void loadSidebar(String? sidebarPath, Element? sidebarElement) {
+    if (sidebarPath == null || sidebarPath.isEmpty || sidebarElement == null) {
+      return;
+    }
+
+    window.fetch('$baseHref$sidebarPath').then((response) async {
+      final fetchResponse = response as FetchResponse;
+      if (response.status != 200) {
+        final errorAnchor = (document.createElement('a') as AnchorElement)
+          ..href = 'https://dart.dev/tools/dart-doc'
+          ..text = 'Failed to load sidebar. '
+              'Visit dart.dev for help troubleshooting.';
+        sidebarElement.append(errorAnchor);
+        return;
+      }
+
+      final content = await fetchResponse.text;
+
+      sidebarElement.setInnerHtml(content, treeSanitizer: sanitizer);
     });
   }
-  final belowSidebarPath = mainContent.dataset['below-sidebar'];
-  final rightSidebar = document.querySelector('#dartdoc-sidebar-right');
-  if (belowSidebarPath != null &&
-      belowSidebarPath.isNotEmpty &&
-      rightSidebar != null) {
-    HttpRequest.getString('$baseHref$belowSidebarPath').then((content) {
-      rightSidebar.setInnerHtml(content, treeSanitizer: sanitizer);
-    });
-  }
+
+  final aboveSidebarPath = mainContent.getAttribute('data-above-sidebar');
+  final leftSidebar = document.getElementById('dartdoc-sidebar-left-content');
+  loadSidebar(aboveSidebarPath, leftSidebar);
+
+  final belowSidebarPath = mainContent.getAttribute('data-below-sidebar');
+  final rightSidebar = document.getElementById('dartdoc-sidebar-right');
+  loadSidebar(belowSidebarPath, rightSidebar);
 }
 
 /// A permissive sanitizer that allows external links (e.g. to api.dart.dev) and

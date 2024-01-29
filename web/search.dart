@@ -36,14 +36,13 @@ void init() {
   }
 
   window.fetch('${_htmlBase}index.json').then((response) async {
-    response = response as FetchResponse;
-    var code = response.status;
-    if (code == 404) {
+    final fetchResponse = response as FetchResponse;
+    if (fetchResponse.status != 200) {
       disableSearch();
       return;
     }
 
-    var text = await response.text;
+    final text = await fetchResponse.text;
     final index = Index.fromJson(text);
 
     // Navigate to the first result from the 'search' query parameter
