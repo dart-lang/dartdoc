@@ -11,8 +11,8 @@ The supported directives are listed below:
 
 ## `@nodoc` - Do not include documentation
 
-An element whose doc comment should not appear in the generated documenation can
-include the `@nodoc` directive.
+An element whose doc comment should not appear in the generated documentation
+can include the `@nodoc` directive.
 
 Note that the `@nodoc` directive does not have curly braces, like most of the
 other directives.

@@ -14,8 +14,12 @@ For issues/details related to the hosted Dart SDK API docs, see
 
 ## Installation
 
-The [`dart`](https://dart.dev/tools/dart-tool) tool,
-with the `dart doc` command, is part of the [Dart SDK](https://dart.dev/get-dart).
+The [`dart`][] tool, with the [`dart doc`][] command,
+is part of the [Dart SDK][].
+
+[`dart`]: https://dart.dev/tools/dart-tool
+[`dart doc`]: https://dart.dev/tools/dart-doc
+[Dart SDK]: https://dart.dev/get-dart
 
 ## Generating docs
 
@@ -39,26 +43,31 @@ Documented 1 public library in 17.9 seconds
 Success! Docs generated into <path to dartdoc>/doc/api
 ```
 
-By default, the documentation is generated to the `doc/api` directory as static
-HTML files.
+By default, the documentation is generated to the `doc/api` directory as
+static HTML files.
+
+To view the generated documentation, you must load them with an HTTP server.
+To learn more, follow the [Viewing docs](#viewing-docs) guide.
 
 Run `dart help doc` to see the available command-line options.
 
 ## Viewing docs
 
-You can view the generated docs directly from the file system, but if you want
-to use the search function, you must load them with an HTTP server.
+To enable navigation and search, the generated docs must be
+served with an HTTP server.
 
-An easy way to run an HTTP server locally is to use the `dhttpd` package. For
-example:
+An easy way to run an HTTP server locally is to use [`package:dhttpd`][].
+For example:
 
 ```
 $ dart pub global activate dhttpd
-$ dhttpd --path doc/api
+$ dart pub global run dhttpd --path doc/api
 ```
 
-Navigate to `http://localhost:8080` in your browser; the search function should
-now work.
+To then read the generated docs in your browser,
+open the link that `dhttpd` outputs, usually `http://localhost:8080`.
+
+[`package:dhttpd`]: https://pub.dev/packages/dhttpd
 
 ## Link structure
 
@@ -83,16 +92,18 @@ File names are _case-sensitive_.
 
 ## Writing docs
 
-Check out the
-[Effective Dart: Documentation guide](https://dart.dev/guides/language/effective-dart/documentation).
+To learn about writing documentation comments,
+check out the [Effective Dart: Documentation guide][].
 
 The guide covers formatting, linking, markup, and general best practices when
-authoring doc comments for Dart with `dartdoc`.
+authoring doc comments for Dart with `dart doc`.
+
+[Effective Dart: Documentation guide]: https://dart.dev/effective-dart/documentation
 
 ## Excluding from documentation
 
-`dart doc` will not generate documentation for a Dart element and its children that have the
-`@nodoc` tag in the documentation comment.
+`dart doc` will not generate documentation for a Dart element and
+its children that have the `@nodoc` tag in the documentation comment.
 
 ## Advanced features
 
@@ -501,7 +512,7 @@ Please see the [dartdoc license][].
 Generated docs include:
 
  * Highlight.js -
-   [LICENSE](https://github.com/isagalaev/highlight.js/blob/main/LICENSE)
+   [LICENSE](https://github.com/highlightjs/highlight.js/blob/main/LICENSE)
    * With `github.css` (c) Vasily Polovnyov <vast@whiteants.net>
 
 [GitHub Issue Tracker]: https://github.com/dart-lang/dartdoc/issues
