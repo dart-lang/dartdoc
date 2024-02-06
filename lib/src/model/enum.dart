@@ -48,8 +48,9 @@ class Enum extends InheritingContainer
       declaredFields.where((f) => f is! EnumField && f.isConst);
 
   @override
-  late final Iterable<Field> publicEnumValues =
-      model_utils.filterNonPublic(allFields).whereType<EnumField>();
+  late final List<Field> publicEnumValues = model_utils
+      .filterNonPublic(allFields.whereType<EnumField>())
+      .toList(growable: false);
 
   @override
   bool get hasPublicEnumValues => publicEnumValues.isNotEmpty;

@@ -631,7 +631,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
   }
 
   @visibleForTesting
-  late final Iterable<Library> libraries =
+  late final List<Library> libraries =
       packages.expand((p) => p.libraries).toList(growable: false)..sort();
 
   int get libraryCount => libraries.length;
@@ -905,7 +905,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return allElements;
   }
 
-  late final Iterable<ModelElement> allLocalModelElements = [
+  late final List<ModelElement> allLocalModelElements = [
     for (var library in _localLibraries) ...library.allModelElements
   ];
 
