@@ -257,7 +257,21 @@ abstract class InheritingContainer extends Container
               as Library) as TypeParameter)
       .toList(growable: false);
 
-  InheritingContainer(super.library, super.packageGraph);
+  bool get hasPotentiallyApplicableExtensions =>
+      potentiallyApplicableExtensionsSorted.isNotEmpty;
+
+  /// The sorted list of potentially applicable extensions, for display in
+  /// templates.
+  ///
+  /// This is defined as those extensions where an instantiation of the type
+  /// defined by [element] can exist where this extension applies, not including
+  /// any extension that applies to every type.
+  late final List<Extension> potentiallyApplicableExtensionsSorted =
+      packageGraph.documentedExtensions
+          .where((e) => !e.alwaysApplies)
+          .where((e) => e.couldApplyTo(this))
+          .toList(growable: false)
+        ..sort(byName);
 
   @override
   List<ModelElement> get allModelElements => _allModelElements;

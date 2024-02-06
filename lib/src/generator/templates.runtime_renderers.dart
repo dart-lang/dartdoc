@@ -7713,6 +7713,18 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                         parent: r);
                   },
                 ),
+                'potentiallyApplicableExtensionsSorted': Property(
+                  getValue: (CT_ c) => c.potentiallyApplicableExtensionsSorted,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<Extension>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.potentiallyApplicableExtensionsSorted.map((e) =>
+                        _render_Extension(e, ast, r.template, sink, parent: r));
+                  },
+                ),
                 'publicInheritedInstanceFields': Property(
                   getValue: (CT_ c) => c.publicInheritedInstanceFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -12566,7 +12578,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12804,13 +12816,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
