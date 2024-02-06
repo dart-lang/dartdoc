@@ -1,62 +1,62 @@
 {{>head}}
 
-  <div
-      id="dartdoc-main-content"
-      class="main-content"
-      data-above-sidebar="{{ aboveSidebarPath }}"
-      data-below-sidebar="{{ belowSidebarPath }}">
-    {{ #self }}
-      <div>{{ >source_link }}
-        <h1>
-          <span class="kind-enum">{{{ nameWithGenerics }}}</span>
-          {{ kind }} {{ >feature_set }} {{ >categorization }}
-        </h1>
-      </div>
-    {{ /self }}
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="{{ aboveSidebarPath }}"
+    data-below-sidebar="{{ belowSidebarPath }}">
+  {{ #self }}
+    <div>{{ >source_link }}
+      <h1>
+        <span class="kind-enum">{{{ nameWithGenerics }}}</span>
+        {{ kind }} {{ >feature_set }} {{ >categorization }}
+      </h1>
+    </div>
+  {{ /self }}
 
-    {{ #eNum }}
+  {{ #eNum }}
     {{ >documentation }}
 
     {{ #hasModifiers }}
-    <section>
-      <dl class="dl-horizontal">
-        {{ >super_chain }}
-        {{ >interfaces }}
-        {{ >mixed_in_types }}
-        {{ >container_annotations }}
-      </dl>
-    </section>
+      <section>
+        <dl class="dl-horizontal">
+          {{ >super_chain }}
+          {{ >interfaces }}
+          {{ >mixed_in_types }}
+          {{ >container_annotations }}
+        </dl>
+      </section>
     {{ /hasModifiers }}
 
     {{ >constructors }}
 
     {{ #hasPublicEnumValues }}
-    <section class="summary offset-anchor" id="values">
-      <h2>Values</h2>
+      <section class="summary offset-anchor" id="values">
+        <h2>Values</h2>
 
-      <dl class="properties">
-        {{ #publicEnumValues }}
-          {{ >constant }}
-        {{ /publicEnumValues }}
-      </dl>
-    </section>
+        <dl class="properties">
+          {{ #publicEnumValues }}
+            {{ >constant }}
+          {{ /publicEnumValues }}
+        </dl>
+      </section>
     {{ /hasPublicEnumValues }}
 
     {{ #hasPublicInstanceFields }}
-    <section
-        class="
-          summary
-          offset-anchor
-          {{ #publicInheritedInstanceFields }}inherited{{ /publicInheritedInstanceFields }}"
-        id="instance-properties">
-      <h2>Properties</h2>
+      <section
+          class="
+            summary
+            offset-anchor
+            {{ #publicInheritedInstanceFields }}inherited{{ /publicInheritedInstanceFields }}"
+          id="instance-properties">
+        <h2>Properties</h2>
 
-      <dl class="properties">
-        {{ #publicInstanceFieldsSorted }}
-        {{ >property }}
-        {{ /publicInstanceFieldsSorted }}
-      </dl>
-    </section>
+        <dl class="properties">
+          {{ #publicInstanceFieldsSorted }}
+          {{ >property }}
+          {{ /publicInstanceFieldsSorted }}
+        </dl>
+      </section>
     {{ /hasPublicInstanceFields }}
 
     {{ >instance_methods }}
@@ -64,16 +64,16 @@
     {{ >static_properties }}
     {{ >static_methods }}
     {{ >static_constants }}
-    {{ /eNum }}
-  </div><!-- /.main-content -->
+  {{ /eNum }}
+</div><!-- /.main-content -->
 
-  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    {{ >search_sidebar}}
-    <h5>{{ parent.name }} {{ parent.kind }}</h5>
-    <div id="dartdoc-sidebar-left-content"></div>
-  </div>
+<div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+  {{ >search_sidebar }}
+  <h5>{{ parent.name }} {{ parent.kind }}</h5>
+  <div id="dartdoc-sidebar-left-content"></div>
+</div>
 
-  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
-  </div><!-- /.sidebar-offcanvas -->
+<div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!-- /.sidebar-offcanvas -->
 
 {{ >footer }}

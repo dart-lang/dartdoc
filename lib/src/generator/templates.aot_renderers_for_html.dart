@@ -282,19 +282,19 @@ String renderClass(ClassTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div
-      id="dartdoc-main-content"
-      class="main-content"
-      data-above-sidebar="''');
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="''');
   buffer.writeEscaped(context0.aboveSidebarPath);
   buffer.write('''"
-      data-below-sidebar="''');
+    data-below-sidebar="''');
   buffer.writeEscaped(context0.belowSidebarPath);
   buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
-      <div>''');
+    <div>''');
   buffer.write(_renderClass_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-class">''');
   buffer.write(context1.nameWithGenerics);
@@ -325,37 +325,37 @@ String renderClass(ClassTemplateData context0) {
     if (context2.hasPublicImplementors) {
       buffer.writeln();
       buffer.write('''
-        <dt>Implementers</dt>
-        <dd><ul class="comma-separated clazz-relationships">''');
+          <dt>Implementers</dt>
+          <dd><ul class="comma-separated clazz-relationships">''');
       var context3 = context2.publicImplementorsSorted;
       for (var context4 in context3) {
         buffer.writeln();
         buffer.write('''
-          <li>''');
+              <li>''');
         buffer.write(context4.linkedName);
         buffer.write('''</li>''');
       }
       buffer.writeln();
       buffer.write('''
-        </ul></dd>''');
+          </ul></dd>''');
     }
     buffer.writeln();
     if (context2.hasPotentiallyApplicableExtensions) {
       buffer.writeln();
       buffer.write('''
-        <dt>Available Extensions</dt>
-        <dd><ul class="comma-separated clazz-relationships">''');
+          <dt>Available Extensions</dt>
+          <dd><ul class="comma-separated clazz-relationships">''');
       var context5 = context2.potentiallyApplicableExtensionsSorted;
       for (var context6 in context5) {
         buffer.writeln();
         buffer.write('''
-          <li>''');
+              <li>''');
         buffer.write(context6.linkedName);
         buffer.write('''</li>''');
       }
       buffer.writeln();
       buffer.write('''
-        </ul></dd>''');
+          </ul></dd>''');
     }
     buffer.write('\n\n        ');
     buffer.write(_renderClass_partial_container_annotations_8(context2));
@@ -516,27 +516,27 @@ String renderEnum(EnumTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div
-      id="dartdoc-main-content"
-      class="main-content"
-      data-above-sidebar="''');
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="''');
   buffer.writeEscaped(context0.aboveSidebarPath);
   buffer.write('''"
-      data-below-sidebar="''');
+    data-below-sidebar="''');
   buffer.writeEscaped(context0.belowSidebarPath);
   buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
-      <div>''');
+    <div>''');
   buffer.write(_renderEnum_partial_source_link_1(context1));
   buffer.writeln();
   buffer.write('''
-        <h1>
-          <span class="kind-enum">''');
+      <h1>
+        <span class="kind-enum">''');
   buffer.write(context1.nameWithGenerics);
   buffer.write('''</span>
-          ''');
+        ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
   buffer.write(_renderEnum_partial_feature_set_2(context1));
@@ -544,8 +544,8 @@ String renderEnum(EnumTemplateData context0) {
   buffer.write(_renderEnum_partial_categorization_3(context1));
   buffer.writeln();
   buffer.write('''
-        </h1>
-      </div>''');
+      </h1>
+    </div>''');
   buffer.writeln();
   var context2 = context0.eNum;
   buffer.write('\n    ');
@@ -554,20 +554,20 @@ String renderEnum(EnumTemplateData context0) {
   if (context2.hasModifiers) {
     buffer.writeln();
     buffer.write('''
-    <section>
-      <dl class="dl-horizontal">
-        ''');
+      <section>
+        <dl class="dl-horizontal">
+          ''');
     buffer.write(_renderEnum_partial_super_chain_5(context2));
-    buffer.write('\n        ');
+    buffer.write('\n          ');
     buffer.write(_renderEnum_partial_interfaces_6(context2));
-    buffer.write('\n        ');
+    buffer.write('\n          ');
     buffer.write(_renderEnum_partial_mixed_in_types_7(context2));
-    buffer.write('\n        ');
+    buffer.write('\n          ');
     buffer.write(_renderEnum_partial_container_annotations_8(context2));
     buffer.writeln();
     buffer.write('''
-      </dl>
-    </section>''');
+        </dl>
+      </section>''');
   }
   buffer.write('\n\n    ');
   buffer.write(_renderEnum_partial_constructors_9(context2));
@@ -575,45 +575,45 @@ String renderEnum(EnumTemplateData context0) {
   if (context2.hasPublicEnumValues) {
     buffer.writeln();
     buffer.write('''
-    <section class="summary offset-anchor" id="values">
-      <h2>Values</h2>
+      <section class="summary offset-anchor" id="values">
+        <h2>Values</h2>
 
-      <dl class="properties">''');
+        <dl class="properties">''');
     var context3 = context2.publicEnumValues;
     for (var context4 in context3) {
-      buffer.write('\n          ');
+      buffer.write('\n            ');
       buffer.write(_renderEnum_partial_constant_10(context4));
     }
     buffer.writeln();
     buffer.write('''
-      </dl>
-    </section>''');
+        </dl>
+      </section>''');
   }
   buffer.writeln();
   if (context2.hasPublicInstanceFields) {
     buffer.writeln();
     buffer.write('''
-    <section
-        class="
-          summary
-          offset-anchor''');
+      <section
+          class="
+            summary
+            offset-anchor''');
     if (context2.publicInheritedInstanceFields) {
       buffer.write('''inherited''');
     }
     buffer.write('''"
-        id="instance-properties">
-      <h2>Properties</h2>
+          id="instance-properties">
+        <h2>Properties</h2>
 
-      <dl class="properties">''');
+        <dl class="properties">''');
     var context5 = context2.publicInstanceFieldsSorted;
     for (var context6 in context5) {
-      buffer.write('\n        ');
+      buffer.write('\n          ');
       buffer.write(_renderEnum_partial_property_11(context6));
     }
     buffer.writeln();
     buffer.write('''
-      </dl>
-    </section>''');
+        </dl>
+      </section>''');
   }
   buffer.write('\n\n    ');
   buffer.write(_renderEnum_partial_instance_methods_12(context2));
@@ -627,23 +627,23 @@ String renderEnum(EnumTemplateData context0) {
   buffer.write(_renderEnum_partial_static_constants_16(context2));
   buffer.writeln();
   buffer.write('''
-  </div><!-- /.main-content -->
+</div><!-- /.main-content -->
 
-  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    ''');
+<div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+  ''');
   buffer.write(_renderEnum_partial_search_sidebar_17(context0));
   buffer.writeln();
   buffer.write('''
-    <h5>''');
+  <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
-    <div id="dartdoc-sidebar-left-content"></div>
-  </div>
+  <div id="dartdoc-sidebar-left-content"></div>
+</div>
 
-  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
-  </div><!-- /.sidebar-offcanvas -->
+<div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!-- /.sidebar-offcanvas -->
 
 ''');
   buffer.write(_renderEnum_partial_footer_18(context0));
@@ -879,7 +879,7 @@ String renderExtensionType<T extends ExtensionType>(
   if (context2.hasPublicInstanceFields) {
     buffer.writeln();
     buffer.write('''
-    <section class="summary offset-anchor" id="instance-properties">
+      <section class="summary offset-anchor" id="instance-properties">
         <h2>Properties</h2>
 
         <dl class="properties">''');
@@ -891,7 +891,7 @@ String renderExtensionType<T extends ExtensionType>(
     buffer.writeln();
     buffer.write('''
         </dl>
-    </section>''');
+      </section>''');
   }
   buffer.write('\n\n    ');
   buffer.write(_renderExtensionType_partial_instance_methods_9(context2));
@@ -904,16 +904,16 @@ String renderExtensionType<T extends ExtensionType>(
   buffer.write('\n    ');
   buffer.write(_renderExtensionType_partial_static_constants_13(context2));
   buffer.writeln();
+  buffer.writeln();
   buffer.write('''
-
 </div><!-- /.main-content -->
 
 <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    ''');
+  ''');
   buffer.write(_renderExtensionType_partial_search_sidebar_14(context0));
   buffer.writeln();
   buffer.write('''
-    <h5>''');
+  <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
@@ -925,7 +925,6 @@ String renderExtensionType<T extends ExtensionType>(
 
 ''');
   buffer.write(_renderExtensionType_partial_footer_15(context0));
-  buffer.writeln();
   buffer.writeln();
 
   return buffer.toString();
@@ -1473,19 +1472,19 @@ String renderMixin(MixinTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div
-      id="dartdoc-main-content"
-      class="main-content"
-      data-above-sidebar="''');
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="''');
   buffer.writeEscaped(context0.aboveSidebarPath);
   buffer.write('''"
-      data-below-sidebar="''');
+    data-below-sidebar="''');
   buffer.writeEscaped(context0.belowSidebarPath);
   buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
-      <div>''');
+    <div>''');
   buffer.write(_renderMixin_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-mixin">''');
   buffer.write(context1.nameWithGenerics);
@@ -1498,7 +1497,7 @@ String renderMixin(MixinTemplateData context0) {
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.mixin;
-  buffer.write('\n    ');
+  buffer.write('\n  ');
   buffer.write(_renderMixin_partial_documentation_4(context2));
   buffer.writeln();
   if (context2.hasModifiers) {
@@ -1509,19 +1508,19 @@ String renderMixin(MixinTemplateData context0) {
     if (context2.hasPublicSuperclassConstraints) {
       buffer.writeln();
       buffer.write('''
-        <dt>Superclass Constraints</dt>
-        <dd><ul class="comma-separated dark mixin-relationships">''');
+          <dt>Superclass Constraints</dt>
+          <dd><ul class="comma-separated dark mixin-relationships">''');
       var context3 = context2.publicSuperclassConstraints;
       for (var context4 in context3) {
         buffer.writeln();
         buffer.write('''
-          <li>''');
+              <li>''');
         buffer.write(context4.linkedName);
         buffer.write('''</li>''');
       }
       buffer.writeln();
       buffer.write('''
-        </ul></dd>''');
+          </ul></dd>''');
     }
     buffer.write('\n\n        ');
     buffer.write(_renderMixin_partial_super_chain_5(context2));
@@ -1531,21 +1530,21 @@ String renderMixin(MixinTemplateData context0) {
     if (context2.hasPublicImplementors) {
       buffer.writeln();
       buffer.write('''
-        <dt>Mixin Applications</dt>
-        <dd>
-          <ul class="comma-separated mixin-relationships">''');
+          <dt>Mixin Applications</dt>
+          <dd>
+            <ul class="comma-separated mixin-relationships">''');
       var context5 = context2.publicImplementorsSorted;
       for (var context6 in context5) {
         buffer.writeln();
         buffer.write('''
-            <li>''');
+              <li>''');
         buffer.write(context6.linkedName);
         buffer.write('''</li>''');
       }
       buffer.writeln();
       buffer.write('''
-          </ul>
-        </dd>''');
+            </ul>
+          </dd>''');
     }
     buffer.write('\n\n        ');
     buffer.write(_renderMixin_partial_annotations_7(context2));
@@ -1568,7 +1567,7 @@ String renderMixin(MixinTemplateData context0) {
       <dl class="properties">''');
     var context7 = context2.publicInstanceFields;
     for (var context8 in context7) {
-      buffer.write('\n        ');
+      buffer.write('\n          ');
       buffer.write(_renderMixin_partial_property_8(context8));
     }
     buffer.writeln();
@@ -1588,23 +1587,23 @@ String renderMixin(MixinTemplateData context0) {
   buffer.write(_renderMixin_partial_static_constants_13(context2));
   buffer.writeln();
   buffer.write('''
-  </div> <!-- /.main-content -->
+</div> <!-- /.main-content -->
 
-  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    ''');
+<div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+  ''');
   buffer.write(_renderMixin_partial_search_sidebar_14(context0));
   buffer.writeln();
   buffer.write('''
-    <h5>''');
+  <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
-    <div id="dartdoc-sidebar-left-content"></div>
-  </div>
+  <div id="dartdoc-sidebar-left-content"></div>
+</div>
 
-  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
-  </div><!--/.sidebar-offcanvas-->
+<div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
 
 ''');
   buffer.write(_renderMixin_partial_footer_15(context0));
@@ -1619,19 +1618,19 @@ String renderProperty(PropertyTemplateData context0) {
   buffer.writeln();
   buffer.write('''
 
-  <div
-      id="dartdoc-main-content"
-      class="main-content"
-      data-above-sidebar="''');
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="''');
   buffer.writeEscaped(context0.aboveSidebarPath);
   buffer.write('''"
-      data-below-sidebar="''');
+    data-below-sidebar="''');
   buffer.writeEscaped(context0.belowSidebarPath);
   buffer.write('''">''');
   var context1 = context0.self;
   buffer.writeln();
   buffer.write('''
-      <div>''');
+    <div>''');
   buffer.write(_renderProperty_partial_source_link_1(context1));
   buffer.write('''<h1><span class="kind-property">''');
   buffer.writeEscaped(context1.name);
@@ -1645,21 +1644,21 @@ String renderProperty(PropertyTemplateData context0) {
   if (context2.hasNoGetterSetter) {
     buffer.writeln();
     buffer.write('''
-        <section class="multi-line-signature">
-          ''');
+      <section class="multi-line-signature">
+        ''');
     buffer.write(_renderProperty_partial_annotations_3(context2));
-    buffer.write('\n          ');
+    buffer.write('\n        ');
     buffer.write(context2.modelType.linkedName);
-    buffer.write('\n          ');
+    buffer.write('\n        ');
     buffer.write(_renderProperty_partial_name_summary_4(context2));
-    buffer.write('\n          ');
+    buffer.write('\n        ');
     buffer.write(_renderProperty_partial_attributes_5(context2));
     buffer.writeln();
     buffer.write('''
-        </section>
-        ''');
+      </section>
+      ''');
     buffer.write(_renderProperty_partial_documentation_6(context2));
-    buffer.write('\n        ');
+    buffer.write('\n      ');
     buffer.write(_renderProperty_partial_source_code_7(context2));
   }
   buffer.writeln();
@@ -1676,23 +1675,23 @@ String renderProperty(PropertyTemplateData context0) {
   }
   buffer.writeln();
   buffer.write('''
-  </div> <!-- /.main-content -->
+</div> <!-- /.main-content -->
 
-  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    ''');
+<div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+  ''');
   buffer.write(_renderProperty_partial_search_sidebar_10(context0));
   buffer.writeln();
   buffer.write('''
-    <h5>''');
+  <h5>''');
   buffer.writeEscaped(context0.parent!.name);
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
-    <div id="dartdoc-sidebar-left-content"></div>
-  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-left-content"></div>
+</div><!--/.sidebar-offcanvas-->
 
-  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
-  </div><!--/.sidebar-offcanvas-->
+<div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
 
 ''');
   buffer.write(_renderProperty_partial_footer_11(context0));
@@ -3791,7 +3790,7 @@ String _deduplicated_lib_templates_html__extension_html(Extension context0) {
   buffer.write('''<dt id="''');
   buffer.writeEscaped(context0.htmlId);
   buffer.write('''">
-    <span class="name ''');
+  <span class="name ''');
   if (context0.isDeprecated) {
     buffer.write('''deprecated''');
   }
@@ -3805,7 +3804,7 @@ String _deduplicated_lib_templates_html__extension_html(Extension context0) {
   buffer.write('''
 </dt>
 <dd>
-    ''');
+  ''');
   buffer.write(context0.oneLineDoc);
   buffer.writeln();
   buffer.write('''
@@ -3955,7 +3954,8 @@ String _deduplicated_lib_templates_html__property_html(
   buffer.write(context0.arrow);
   buffer.write(' ');
   buffer.write(context0.modelType.linkedName);
-  buffer.write('''</span> ''');
+  buffer.write('''</span>
+  ''');
   buffer.write(
       __deduplicated_lib_templates_html__property_html_partial_categorization_0(
           context0));
@@ -4863,7 +4863,8 @@ String
   buffer.write(context1.arrow);
   buffer.write(' ');
   buffer.write(context1.modelType.linkedName);
-  buffer.write('''</span> ''');
+  buffer.write('''</span>
+  ''');
   buffer.write(
       ___deduplicated_lib_templates_html__static_properties_html_partial_property_0_partial_categorization_0(
           context1));
@@ -5215,41 +5216,41 @@ String _deduplicated_lib_templates_html__accessor_getter_html(
   if (context1 != null) {
     buffer.writeln();
     buffer.write('''
-<section id="getter">
+  <section id="getter">
 
-<section class="multi-line-signature">
-  ''');
+    <section class="multi-line-signature">
+      ''');
     buffer.write(
         __deduplicated_lib_templates_html__accessor_getter_html_partial_annotations_0(
             context1));
     buffer.writeln();
     buffer.write('''
-  <span class="returntype">''');
+      <span class="returntype">''');
     buffer.write(context1.modelType.returnType.linkedName);
     buffer.write('''</span>
-  ''');
+      ''');
     buffer.write(
         __deduplicated_lib_templates_html__accessor_getter_html_partial_name_summary_1(
             context1));
-    buffer.write('\n  ');
+    buffer.write('\n      ');
     buffer.write(
         __deduplicated_lib_templates_html__accessor_getter_html_partial_attributes_2(
             context1));
     buffer.writeln();
     buffer.write('''
-</section>
+    </section>
 
-''');
+    ''');
     buffer.write(
         __deduplicated_lib_templates_html__accessor_getter_html_partial_documentation_3(
             context1));
-    buffer.writeln();
+    buffer.write('\n    ');
     buffer.write(
         __deduplicated_lib_templates_html__accessor_getter_html_partial_source_code_4(
             context1));
     buffer.writeln();
     buffer.write('''
-</section>''');
+  </section>''');
   }
   buffer.writeln();
 
@@ -5359,42 +5360,42 @@ String _deduplicated_lib_templates_html__accessor_setter_html(
   if (context1 != null) {
     buffer.writeln();
     buffer.write('''
-<section id="setter">
+  <section id="setter">
 
-<section class="multi-line-signature">
-  ''');
+    <section class="multi-line-signature">
+      ''');
     buffer.write(
         __deduplicated_lib_templates_html__accessor_setter_html_partial_annotations_0(
             context1));
     buffer.writeln();
     buffer.write('''
-  <span class="returntype">void</span>
-  ''');
+      <span class="returntype">void</span>
+      ''');
     buffer.write(
         __deduplicated_lib_templates_html__accessor_setter_html_partial_name_summary_1(
             context1));
     buffer.write('''<span class="signature">(<wbr>''');
     buffer.write(context1.linkedParamsNoMetadata);
     buffer.write(''')</span>
-  ''');
+      ''');
     buffer.write(
         __deduplicated_lib_templates_html__accessor_setter_html_partial_attributes_2(
             context1));
     buffer.writeln();
     buffer.write('''
-</section>
+    </section>
 
-''');
+    ''');
     buffer.write(
         __deduplicated_lib_templates_html__accessor_setter_html_partial_documentation_3(
             context1));
-    buffer.writeln();
+    buffer.write('\n    ');
     buffer.write(
         __deduplicated_lib_templates_html__accessor_setter_html_partial_source_code_4(
             context1));
     buffer.writeln();
     buffer.write('''
-</section>''');
+  </section>''');
   }
   buffer.writeln();
 
