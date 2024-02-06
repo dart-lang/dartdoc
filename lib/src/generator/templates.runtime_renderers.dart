@@ -12,7 +12,6 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -5089,77 +5088,6 @@ class _Renderer_Extension extends RendererBase<Extension> {
   }
 }
 
-class _Renderer_ExtensionTarget extends RendererBase<ExtensionTarget> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<
-          CT_ extends ExtensionTarget>() =>
-      _propertyMapCache.putIfAbsent(
-          CT_,
-          () => {
-                'hasModifiers': Property(
-                  getValue: (CT_ c) => c.hasModifiers,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasModifiers,
-                ),
-                'hasPotentiallyApplicableExtensions': Property(
-                  getValue: (CT_ c) => c.hasPotentiallyApplicableExtensions,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPotentiallyApplicableExtensions,
-                ),
-                'modelType': Property(
-                  getValue: (CT_ c) => c.modelType,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_ElementType.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as ElementType,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_ElementType(c.modelType, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
-                'potentiallyApplicableExtensionsSorted': Property(
-                  getValue: (CT_ c) => c.potentiallyApplicableExtensionsSorted,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<Extension>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.potentiallyApplicableExtensionsSorted.map((e) =>
-                        _render_Extension(e, ast, r.template, sink, parent: r));
-                  },
-                ),
-              }) as Map<String, Property<CT_>>;
-
-  _Renderer_ExtensionTarget(ExtensionTarget context,
-      RendererBase<Object>? parent, Template template, StringSink sink)
-      : super(context, parent, template, sink);
-
-  @override
-  Property<ExtensionTarget>? getProperty(String key) {
-    if (propertyMap<ExtensionTarget>().containsKey(key)) {
-      return propertyMap<ExtensionTarget>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
 String renderExtension<T extends Extension>(
     ExtensionTemplateData<T> context, Template template) {
   var buffer = StringBuffer();
@@ -7448,7 +7376,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
           CT_,
           () => {
                 ..._Renderer_Container.propertyMap<CT_>(),
-                ..._Renderer_ExtensionTarget.propertyMap<CT_>(),
                 'allFields': Property(
                   getValue: (CT_ c) => c.allFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7626,6 +7553,13 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasModifiers,
                 ),
+                'hasPotentiallyApplicableExtensions': Property(
+                  getValue: (CT_ c) => c.hasPotentiallyApplicableExtensions,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasPotentiallyApplicableExtensions,
+                ),
                 'hasPublicSuperChainReversed': Property(
                   getValue: (CT_ c) => c.hasPublicSuperChainReversed,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7777,6 +7711,18 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                     _render_DefinedElementType(
                         c.modelType, ast, r.template, sink,
                         parent: r);
+                  },
+                ),
+                'potentiallyApplicableExtensionsSorted': Property(
+                  getValue: (CT_ c) => c.potentiallyApplicableExtensionsSorted,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<Extension>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.potentiallyApplicableExtensionsSorted.map((e) =>
+                        _render_Extension(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'publicInheritedInstanceFields': Property(
@@ -12632,7 +12578,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12870,13 +12816,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();

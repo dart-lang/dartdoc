@@ -8,7 +8,6 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/container_modifiers.dart';
-import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
@@ -74,8 +73,9 @@ mixin Constructable on InheritingContainer {
 /// * **instance**: As with [Container], but also includes inherited children.
 /// * **inherited**: Filtered getters giving only inherited children.
 abstract class InheritingContainer extends Container
-    with ExtensionTarget
     implements EnclosedElement {
+  InheritingContainer(super.library, super.packageGraph);
+
   DefinedElementType? get supertype {
     final elementSupertype = element.supertype;
     return elementSupertype == null ||
@@ -138,7 +138,6 @@ abstract class InheritingContainer extends Container
     ];
   }
 
-  @override
   late final DefinedElementType modelType =
       modelBuilder.typeFrom(element.thisType, library) as DefinedElementType;
 
@@ -258,7 +257,21 @@ abstract class InheritingContainer extends Container
               as Library) as TypeParameter)
       .toList(growable: false);
 
-  InheritingContainer(super.library, super.packageGraph);
+  bool get hasPotentiallyApplicableExtensions =>
+      potentiallyApplicableExtensionsSorted.isNotEmpty;
+
+  /// The sorted list of potentially applicable extensions, for display in
+  /// templates.
+  ///
+  /// This is defined as those extensions where an instantiation of the type
+  /// defined by [element] can exist where this extension applies, not including
+  /// any extension that applies to every type.
+  late final List<Extension> potentiallyApplicableExtensionsSorted =
+      packageGraph.documentedExtensions
+          .where((e) => !e.alwaysApplies)
+          .where((e) => e.couldApplyTo(this))
+          .toList(growable: false)
+        ..sort(byName);
 
   @override
   List<ModelElement> get allModelElements => _allModelElements;
@@ -281,7 +294,6 @@ abstract class InheritingContainer extends Container
 
   String get fullkind => kind.toString();
 
-  @override
   bool get hasModifiers =>
       hasAnnotations ||
       hasPublicSuperChainReversed ||
@@ -544,19 +556,19 @@ mixin TypeImplementing on InheritingContainer {
       // the superchain and publicInterfaces of this interface to pretend
       // as though the hidden class didn't exist and this class was declared
       // directly referencing the canonical classes further up the chain.
-      if (interfaceElement is InheritingContainer) {
-        if (interfaceElement.publicSuperChain.isNotEmpty) {
-          interfaces.add(interfaceElement.publicSuperChain.first);
-        }
-        interfaces.addAll(interfaceElement.publicInterfaces);
-      } else {
+      if (interfaceElement is! InheritingContainer) {
         assert(
-            false,
-            'Can not handle intermediate non-public interfaces created by '
-            'ModelElements that are not classes or mixins: $fullyQualifiedName '
-            'contains an interface $interface, defined by $interfaceElement');
+          false,
+          'Can not handle intermediate non-public interfaces created by '
+          "ModelElements that are not classes or mixins: '$fullyQualifiedName' "
+          "contains an interface '$interface', defined by '$interfaceElement'",
+        );
         continue;
       }
+      if (interfaceElement.publicSuperChain.isNotEmpty) {
+        interfaces.add(interfaceElement.publicSuperChain.first);
+      }
+      interfaces.addAll(interfaceElement.publicInterfaces);
     }
     return interfaces;
   }
@@ -566,12 +578,12 @@ extension on InterfaceElement {
   bool get isDartCoreObject => name == 'Object' && library.name == 'dart.core';
 }
 
-extension DefinedElementTypeIterableExtensions on Iterable<DefinedElementType> {
-  /// Expands the `ModelElement` for each element to its inheritance chain.
+extension DefinedElementTypeIterableExtension on Iterable<DefinedElementType> {
+  /// Expands the [ModelElement] for each element to its inheritance chain.
   Iterable<InheritingContainer> get expandInheritanceChain =>
       expand((e) => (e.modelElement as InheritingContainer).inheritanceChain);
 
-  /// Returns the `ModelElement` for each element.
+  /// Returns the [ModelElement] for each element.
   Iterable<InheritingContainer> get modelElements =>
       map((e) => e.modelElement as InheritingContainer);
 }
