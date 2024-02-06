@@ -469,17 +469,18 @@ Map<String, String> createThrowawayPubCache() {
 final String _defaultPubCache = Platform.environment['PUB_CACHE'] ??
     path.context.resolveTildePath('~/.pub-cache');
 
-Future<void> docTestingPackage() async {
+Future<String> docTestingPackage() async {
   var testPackagePath = testPackage.absolute.path;
   var launcher = SubprocessLauncher('doc-test-package');
   await launcher.runStreamedDartCommand(['pub', 'get'],
       workingDirectory: testPackagePath);
+  var outputPath = _testingPackageDocsDir.absolute.path;
   await launcher.runStreamedDartCommand(
     [
       '--enable-asserts',
       path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
       '--output',
-      _testingPackageDocsDir.absolute.path,
+      outputPath,
       '--example-path-prefix',
       'examples',
       '--include-source',
@@ -489,6 +490,7 @@ Future<void> docTestingPackage() async {
     ],
     workingDirectory: testPackagePath,
   );
+  return outputPath;
 }
 
 final Directory _testingPackageDocsDir =
@@ -649,6 +651,7 @@ Future<void> _serveDocsFrom(String servePath, int port, String context) async {
 }
 
 Future<void> serveTestingPackageDocs() async {
+  var outputPath = await docTestingPackage();
   print('launching dhttpd on port 8002 for SDK');
   var launcher = SubprocessLauncher('serve-test-package-docs');
   await launcher.runStreamed(Platform.resolvedExecutable, [
@@ -659,7 +662,7 @@ Future<void> serveTestingPackageDocs() async {
     '--port',
     '8002',
     '--path',
-    _testingPackageDocsDir.absolute.path,
+    outputPath,
   ]);
 }
 
