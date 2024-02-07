@@ -70,9 +70,6 @@ String _getPackageVersion() {
 Directory get testPackage =>
     Directory(path.joinAll(['testing', 'test_package']));
 
-Directory get testPackageExperiments =>
-    Directory(path.joinAll(['testing', 'test_package_experiments']));
-
 Future<void> runAnalyze(ArgResults commandResults) async {
   for (var target in commandResults.rest) {
     await switch (target) {
@@ -91,7 +88,6 @@ Future<void> analyzePackage() async =>
 Future<void> analyzeTestPackages() async {
   var testPackagePaths = [
     testPackage.path,
-    if (Platform.version.contains('dev')) testPackageExperiments.path,
   ];
   for (var testPackagePath in testPackagePaths) {
     await SubprocessLauncher('pub-get').runStreamedDartCommand(

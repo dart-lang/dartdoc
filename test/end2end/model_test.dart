@@ -396,10 +396,6 @@ void main() {
       var cField = c.instanceFields.firstWhere((f) => f.name == 'cField');
       var dField = c.instanceFields.firstWhere((f) => f.name == 'dField');
 
-      // If Null safety isn't enabled, fields named 'late' come back from the
-      // analyzer instead of setting up 'isLate'.
-      expect(c.instanceFields.any((f) => f.name == 'late'), isFalse);
-
       expect(a.modelType.name, equals('dynamic'));
       expect(a.isLate, isTrue);
       expect(a.attributes, contains(Attribute.late_));

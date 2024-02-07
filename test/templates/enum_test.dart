@@ -19,7 +19,7 @@ void main() async {
   late List<String> enumWithDefaultConstructorLines;
   late List<String> enumWithDefaultConstructorRightSidebarLines;
 
-  group('enhanced enums', skip: !enhancedEnumsAllowed, () {
+  group('enhanced enums', () {
     setUpAll(() async {
       final packageMetaProvider = testPackageMetaProvider;
       final resourceProvider =
@@ -30,12 +30,7 @@ void main() async {
 name: enums
 version: 0.0.1
 environment:
-  sdk: '>=2.17.0-0 <3.0.0'
-''',
-        analysisOptions: '''
-analyzer:
-  enable-experiment:
-    - enhanced-enums
+  sdk: '>=2.17.0 <3.0.0'
 ''',
         libFiles: [
           d.file('lib.dart', '''

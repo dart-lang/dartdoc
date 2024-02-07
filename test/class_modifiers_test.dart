@@ -16,9 +16,7 @@ extension on InheritingContainer {
 
 void main() {
   defineReflectiveSuite(() {
-    if (classModifiersAllowed) {
-      defineReflectiveTests(ClassModifiersTest);
-    }
+    defineReflectiveTests(ClassModifiersTest);
   });
 }
 
@@ -28,10 +26,7 @@ class ClassModifiersTest extends DartdocTestBase {
   String get libraryName => 'class_modifiers';
 
   @override
-  String get sdkConstraint => '>=3.0.0-0.0-dev <4.0.0';
-
-  @override
-  List<String> get experiments => ['class-modifiers', 'sealed-class'];
+  String get sdkConstraint => '>=3.0.0 <4.0.0';
 
   /// From the table in the class modifiers feature specification.
   void test_tableOfModifiers() async {

@@ -29,7 +29,7 @@ import 'package:test/test.dart';
 /// The number of public libraries in testing/test_package, minus 2 for
 /// the excluded libraries listed in the initializers for _testPackageGraphMemo
 /// and minus 1 for the @nodoc tag in the 'excluded' library.
-const int kTestPackagePublicLibraries = 27;
+const int kTestPackagePublicLibraries = 30;
 
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
@@ -331,43 +331,8 @@ Matcher matchesCompressed(String text) => matches(RegExp(text.replaceAll(
 /// We can not use [ExperimentalFeature.releaseVersion] or even
 /// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
 /// even when partial analyzer implementations are available.
-bool get enhancedEnumsAllowed =>
-    VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
-        .allows(platformVersion);
-
-/// We can not use [ExperimentalFeature.releaseVersion] or even
-/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
-/// even when partial analyzer implementations are available.
-bool get namedArgumentsAnywhereAllowed =>
-    VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
-        .allows(platformVersion);
-
-/// We can not use [ExperimentalFeature.releaseVersion] or even
-/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
-/// even when partial analyzer implementations are available.
-bool get recordsAllowed =>
-    VersionRange(min: Version.parse('2.19.0-0'), includeMin: true)
-        .allows(platformVersion);
-
-/// We can not use [ExperimentalFeature.releaseVersion] or even
-/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
-/// even when partial analyzer implementations are available.
 bool get extensionTypesAllowed =>
     VersionRange(min: Version.parse('3.2.0-0.0-dev'), includeMin: true)
-        .allows(platformVersion);
-
-/// We can not use [ExperimentalFeature.releaseVersion] or even
-/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
-/// even when partial analyzer implementations are available.
-bool get classModifiersAllowed =>
-    VersionRange(min: Version.parse('3.0.0-0.0-dev'), includeMin: true)
-        .allows(platformVersion);
-
-/// We can not use [ExperimentalFeature.releaseVersion] or even
-/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
-/// even when partial analyzer implementations are available.
-bool get superParametersAllowed =>
-    VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
         .allows(platformVersion);
 
 extension ModelElementIterableExtensions<T extends ModelElement>

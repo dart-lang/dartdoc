@@ -1,5 +1,5 @@
 name: test_package
-homepage: http://github.com/dart-lang
+homepage: https://github.com/dart-lang
 description: Best package ever.
 publish_to: none
 version: 0.0.1
@@ -9,4 +9,4 @@ dependencies:
   test_package_imported:
     path: "../test_package_imported"
 environment:
-  sdk: '>=2.19.0 <3.0.0'
+  sdk: ^3.0.0

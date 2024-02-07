@@ -1,7 +1,7 @@
 name: test_package_flutter_plugin
 version: 0.1.0
 description: A happy flutter almost plugin being documented
-homepage: http://github.com/dart-lang/dartdoc/tree/main/testing/test_package_flutter_plugin
+homepage: https://github.com/dart-lang/dartdoc/tree/main/testing/test_package_flutter_plugin
 
 dependencies:
   flutter:

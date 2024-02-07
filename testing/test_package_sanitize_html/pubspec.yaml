@@ -1,5 +1,5 @@
 name: test_package
-homepage: http://github.com/dart-lang
+homepage: https://github.com/dart-lang
 description: Worst package ever.
 version: 0.0.1
 environment:

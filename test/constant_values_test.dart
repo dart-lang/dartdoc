@@ -11,29 +11,15 @@ import 'src/utils.dart';
 void main() {
   defineReflectiveSuite(() {
     defineReflectiveTests(ConstantValuesWithConstructorTearoffsTest);
-    if (namedArgumentsAnywhereAllowed) {
-      defineReflectiveTests(ConstantValuesWithNamedArgumentsAnywhereTest);
-    }
+    defineReflectiveTests(ConstantValuesWithNamedArgumentsAnywhereTest);
     defineReflectiveTests(HiddenConstantsTest);
   });
 }
-
-// TODO(srawlins): Sort members after a code review for the
-// test_reflective_loader migration.
 
 @reflectiveTest
 class ConstantValuesWithConstructorTearoffsTest extends DartdocTestBase {
   @override
   String get libraryName => 'constructor_tearoffs';
-
-  void test_nonGenericFunctionReference() async {
-    var library = await bootPackageWithLibrary('''
-void func() {}
-const aFunc = func;
-''');
-    var aFuncConstant = library.constants.named('aFunc');
-    expect(aFuncConstant.constantValue, equals('func'));
-  }
 
   void test_genericFunctionReference() async {
     var library = await bootPackageWithLibrary('''
@@ -79,6 +65,15 @@ const aTearOffNamedConstructorArgs = F<int>.alternative;
         library.constants.named('aTearOffNamedConstructorArgs');
     expect(aTearOffNamedConstructorArgs.constantValue,
         equals('F&lt;int&gt;.alternative'));
+  }
+
+  void test_nonGenericFunctionReference() async {
+    var library = await bootPackageWithLibrary('''
+void func() {}
+const aFunc = func;
+''');
+    var aFuncConstant = library.constants.named('aFunc');
+    expect(aFuncConstant.constantValue, equals('func'));
   }
 
   void test_unnamedConstructorReference() async {
@@ -141,19 +136,6 @@ class ConstantValuesWithNamedArgumentsAnywhereTest extends DartdocTestBase {
   @override
   String get sdkConstraint => '>=2.17.0 <3.0.0';
 
-  void test_namedParametersInConstInvocationValue_specifiedLast() async {
-    var library = await bootPackageWithLibrary('''
-class C {
-  const C(int a, int b, {required int c, required int d});
-}
-const p = C(1, 2, c: 3, d: 4);
-''');
-    var pConst = library.constants.named('p');
-
-    expect(pConst.constantValue,
-        equals('<a href="$linkPrefix/C/C.html">C</a>(1, 2, c: 3, d: 4)'));
-  }
-
   void test_namedParametersInConstInvocationValue_specifiedAnywhere() async {
     var library = await bootPackageWithLibrary('''
 class C {
@@ -178,6 +160,19 @@ const r = C(c: 1, d: 2, 3, 4);
 
     expect(rConst.constantValue,
         equals('<a href="$linkPrefix/C/C.html">C</a>(c: 1, d: 2, 3, 4)'));
+  }
+
+  void test_namedParametersInConstInvocationValue_specifiedLast() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  const C(int a, int b, {required int c, required int d});
+}
+const p = C(1, 2, c: 3, d: 4);
+''');
+    var pConst = library.constants.named('p');
+
+    expect(pConst.constantValue,
+        equals('<a href="$linkPrefix/C/C.html">C</a>(1, 2, c: 3, d: 4)'));
   }
 }
 

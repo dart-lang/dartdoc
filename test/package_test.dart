@@ -47,7 +47,9 @@ void main() {
 
   tearDown(clearPackageMetaCache);
 
-  group('tests', () {
+  group('tests', onPlatform: {
+    'windows': Skip('Test does not work on Windows (#2446)'),
+  }, () {
     group('typical package', () {
       setUp(() {
         optionSet.parseArguments([]);
@@ -492,5 +494,5 @@ int x;
         expect(packageGraph.localPackages.first.categories, isEmpty);
       });
     });
-  }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
+  });
 }

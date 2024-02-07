@@ -30,7 +30,7 @@ List<DartdocOption<Object>> createExperimentOptions(
     // TODO(jcollins-g): Consider loading experiment values from
     // dartdoc_options.yaml?
     DartdocOptionArgOnly<List<String>>(
-        'enable-experiment', ['non-nullable'], resourceProvider,
+        'enable-experiment', [], resourceProvider,
         help: 'Enable or disable listed experiments.\n'
             '${featureHelpTexts.join('\n')}'),
   ];

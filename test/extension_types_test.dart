@@ -19,9 +19,6 @@ void main() {
 @reflectiveTest
 class ExtensionTypesTest extends DartdocTestBase {
   @override
-  List<String> get experiments => ['inline-class'];
-
-  @override
   String get libraryName => 'extension_types';
 
   @override

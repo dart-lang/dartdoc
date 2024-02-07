@@ -10,9 +10,7 @@ import 'src/utils.dart';
 
 void main() {
   defineReflectiveSuite(() {
-    if (recordsAllowed) {
-      defineReflectiveTests(RecordTest);
-    }
+    defineReflectiveTests(RecordTest);
   });
 }
 

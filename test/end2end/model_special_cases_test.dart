@@ -29,7 +29,7 @@ Future<PackageGraph> get _testPackageGraphGinormous =>
             PhysicalPackageConfigProvider(),
             excludeLibraries: [
               'css',
-              'code_in_commnets',
+              'code_in_comments',
               'excluded'
             ],
             additionalArguments: [
@@ -171,8 +171,13 @@ void main() {
 
     test('negative tests', () {
       // Mixins do not have constructors.
-      expect(referenceLookup(constructorTearoffs, 'M.new'),
-          equals(MatchingLinkResult(null)));
+      expect(
+        referenceLookup(constructorTearoffs, 'M.new')
+            .commentReferable
+            ?.library
+            ?.name,
+        anyOf(isNull, isNot('constructor_tearoffs')),
+      );
       // These things aren't expressions, parentheses are still illegal.
       expect(referenceLookup(constructorTearoffs, '(C).new'),
           equals(MatchingLinkResult(null)));

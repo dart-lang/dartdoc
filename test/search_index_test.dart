@@ -10,13 +10,10 @@ import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
 import 'dartdoc_test_base.dart';
-import 'src/utils.dart';
 
 void main() {
   defineReflectiveSuite(() {
-    if (recordsAllowed) {
-      defineReflectiveTests(SearchIndexTest);
-    }
+    defineReflectiveTests(SearchIndexTest);
   });
 }
 

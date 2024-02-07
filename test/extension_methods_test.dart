@@ -14,9 +14,7 @@ import 'src/utils.dart';
 
 void main() {
   defineReflectiveSuite(() {
-    if (classModifiersAllowed) {
-      defineReflectiveTests(ExtensionMethodsTest);
-    }
+    defineReflectiveTests(ExtensionMethodsTest);
   });
 }
 

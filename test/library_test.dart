@@ -94,7 +94,9 @@ A doc comment.
     expect(library.oneLineDoc, 'A doc comment.');
   });
 
-  test('libraries in SDK package have appropriate data', () async {
+  test('libraries in SDK package have appropriate data', onPlatform: {
+    'windows': Skip('Test does not work on Windows (#2446)'),
+  }, () async {
     var packageMetaProvider = testPackageMetaProvider;
     var sdkFolder = packageMetaProvider.defaultSdkDir;
     var packageConfigProvider = getTestPackageConfigProvider(sdkFolder.path);
@@ -116,5 +118,5 @@ A doc comment.
     expect(dartAsyncLib.dirName, 'dart-async');
     expect(dartAsyncLib.href,
         '${htmlBasePlaceholder}dart-async/dart-async-library.html');
-  }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
+  });
 }
