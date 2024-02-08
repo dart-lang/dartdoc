@@ -102,7 +102,7 @@ class Library extends ModelElement
   /// documented with this library, but these ModelElements and names correspond
   /// to the defining library where each originally came from with respect
   /// to inheritance and reexporting.  Most useful for error reporting.
-  late final Iterable<String> allOriginalModelElementNames =
+  late final List<String> allOriginalModelElementNames =
       allModelElements.map((e) {
     if (e is GetterSetterCombo) {
       Accessor? getter;
@@ -142,13 +142,13 @@ class Library extends ModelElement
   Iterable<Class> get classes => allClasses.where((c) => !c.isErrorOrException);
 
   @override
-  late final Iterable<Extension> extensions = _exportedAndLocalElements
+  late final List<Extension> extensions = _exportedAndLocalElements
       .whereType<ExtensionElement>()
       .map((e) => modelBuilder.from(e, this) as Extension)
       .toList(growable: false);
 
   @override
-  late final Iterable<ExtensionType> extensionTypes = _exportedAndLocalElements
+  late final List<ExtensionType> extensionTypes = _exportedAndLocalElements
       .whereType<ExtensionTypeElement>()
       .map((e) => modelBuilder.from(e, this) as ExtensionType)
       .toList(growable: false);
@@ -331,16 +331,16 @@ class Library extends ModelElement
     // This code should not be used for Dart SDK libraries.
     assert(!element.source.uri.isScheme('dart'));
     var fullName = element.source.fullName;
-     if (!pathContext.isWithin(fullName, package.packagePath) &&
-         package.packagePath.contains('/google3/')) {
-       // In google3, `fullName` is specified as if the root of google3 was `/`.
-       // And `package.packagePath` contains the true google3 root.
-       var root = pathContext
-           .joinAll(pathContext.split(package.packagePath)..removeLast());
-       fullName = '$root$fullName';
-     }
-     var relativePath =
-         pathContext.relative(fullName, from: package.packagePath);
+    if (!pathContext.isWithin(fullName, package.packagePath) &&
+        package.packagePath.contains('/google3/')) {
+      // In google3, `fullName` is specified as if the root of google3 was `/`.
+      // And `package.packagePath` contains the true google3 root.
+      var root = pathContext
+          .joinAll(pathContext.split(package.packagePath)..removeLast());
+      fullName = '$root$fullName';
+    }
+    var relativePath =
+        pathContext.relative(fullName, from: package.packagePath);
     assert(relativePath.startsWith('lib${pathContext.separator}'));
     const libDirectoryLength = 'lib/'.length;
     return relativePath.substring(libDirectoryLength);
@@ -355,7 +355,7 @@ class Library extends ModelElement
 
   /// All variables ("properties") except constants.
   @override
-  late final Iterable<TopLevelVariable> properties =
+  late final List<TopLevelVariable> properties =
       _variables.where((v) => !v.isConst).toList(growable: false);
 
   @override

@@ -19,7 +19,7 @@ import 'package:meta/meta.dart';
 /// Note that [Constructor]s are not considered to be modifiers so a
 /// [hasModifiers] override is not necessary for this mixin.
 mixin Constructable on InheritingContainer {
-  late final Iterable<Constructor> constructors = element.constructors
+  late final List<Constructor> constructors = element.constructors
       .map((e) => modelBuilder.from(e, library) as Constructor)
       .toList(growable: false);
 
@@ -246,8 +246,9 @@ abstract class InheritingContainer extends Container
   }
 
   @override
-  late final Iterable<Method> declaredMethods =
-      element.methods.map((e) => modelBuilder.from(e, library) as Method);
+  late final List<Method> declaredMethods = element.methods
+      .map((e) => modelBuilder.from(e, library) as Method)
+      .toList(growable: false);
 
   @override
   late final List<TypeParameter> typeParameters = element.typeParameters

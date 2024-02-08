@@ -220,7 +220,7 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
       packageGraph.rendererFactory.parameterizedElementTypeRenderer;
 
   @override
-  late final Iterable<ElementType> typeArguments = type.typeArguments
+  late final List<ElementType> typeArguments = type.typeArguments
       .map((f) => modelBuilder.typeFrom(f, library))
       .toList(growable: false);
 }
@@ -238,7 +238,7 @@ mixin Aliased implements ElementType, ModelBuilderInterface {
   late final ModelElement aliasElement =
       modelBuilder.fromElement(typeAliasElement);
 
-  late final Iterable<ElementType> aliasArguments = type.alias!.typeArguments
+  late final List<ElementType> aliasArguments = type.alias!.typeArguments
       .map((f) => modelBuilder.typeFrom(f, library))
       .toList(growable: false);
 }
@@ -422,7 +422,7 @@ class CallableElementType extends DefinedElementType with Rendered, Callable {
       packageGraph.rendererFactory.callableElementTypeRenderer;
 
   @override
-  late final Iterable<ElementType> typeArguments = type.alias?.typeArguments
+  late final List<ElementType> typeArguments = type.alias?.typeArguments
           .map((f) => modelBuilder.typeFrom(f, library))
           .toList(growable: false) ??
       const [];

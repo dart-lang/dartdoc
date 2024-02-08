@@ -105,7 +105,7 @@ abstract class Container extends ModelElement
       publicInstanceMethods.toList(growable: false)..sort();
 
   @nonVirtual
-  late final Iterable<Operator> declaredOperators =
+  late final List<Operator> declaredOperators =
       declaredMethods.whereType<Operator>().toList(growable: false);
 
   @override
