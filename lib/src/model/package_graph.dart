@@ -139,8 +139,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // all packages are picked up.
     for (var package in _documentedPackages) {
       for (var library in package.libraries) {
-        _addToImplementors(library.allClasses);
-        _addToImplementors(library.mixins);
+        _addToImplementers(library.allClasses);
+        _addToImplementers(library.mixins);
+        _addToImplementers(library.extensionTypes);
         _extensions.addAll(library.extensions);
       }
       if (package.isLocal && !package.hasPublicLibraries) {
@@ -579,7 +580,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return hrefMap;
   }
 
-  void _addToImplementors(Iterable<InheritingContainer> containers) {
+  void _addToImplementers(Iterable<InheritingContainer> containers) {
     assert(!allImplementorsAdded);
 
     // Private containers may not be included in documentation, but may still be
@@ -588,7 +589,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     var privates = <InheritingContainer>[];
 
     void checkAndAddContainer(
-        InheritingContainer implemented, InheritingContainer implementor) {
+        InheritingContainer implemented, InheritingContainer implementer) {
       if (!implemented.isPublic) {
         privates.add(implemented);
       }
@@ -597,36 +598,40 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       var list = _implementors.putIfAbsent(implemented, () => []);
       // TODO(srawlins): This would be more efficient if we created a
       // SplayTreeSet keyed off of `.element`.
-      if (!list.any((l) => l.element == implementor.element)) {
-        list.add(implementor);
+      if (!list.any((l) => l.element == implementer.element)) {
+        list.add(implementer);
       }
     }
 
-    void addImplementor(InheritingContainer clazz) {
-      var supertype = clazz.supertype;
+    void addImplementer(InheritingContainer container) {
+      var supertype = container.supertype;
       if (supertype != null) {
         checkAndAddContainer(
-            supertype.modelElement as InheritingContainer, clazz);
+            supertype.modelElement as InheritingContainer, container);
       }
-      if (clazz is Class) {
-        for (var type in clazz.mixedInTypes) {
-          checkAndAddContainer(type.modelElement as InheritingContainer, clazz);
+      if (container is Class) {
+        for (var element in container.mixedInElements) {
+          checkAndAddContainer(element, container);
         }
-        for (var type in clazz.interfaces) {
-          checkAndAddContainer(type.modelElement as InheritingContainer, clazz);
+        for (var element in container.interfaceElements) {
+          checkAndAddContainer(element, container);
+        }
+      } else if (container is ExtensionType) {
+        for (var element in container.interfaceElements) {
+          checkAndAddContainer(element, container);
         }
       }
-      for (var type in clazz.publicInterfaces) {
-        checkAndAddContainer(type.modelElement as InheritingContainer, clazz);
+      for (var element in container.publicInterfaceElements) {
+        checkAndAddContainer(element, container);
       }
     }
 
-    containers.forEach(addImplementor);
+    containers.forEach(addImplementer);
 
     // [privates] may grow while processing; use a for loop, rather than a
     // for-each loop, to avoid concurrent modification errors.
     for (var i = 0; i < privates.length; i++) {
-      addImplementor(privates[i]);
+      addImplementer(privates[i]);
     }
   }
 
@@ -660,10 +665,10 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           ?.linkedName ??
       'Object';
 
-  /// The set of [Class]es which should _not_ be presented as implementors.
+  /// The set of [Class]es which should _not_ be presented as implementers.
   ///
   /// Add classes here if they are similar to Interceptor in that they are to be
-  /// ignored even when they are the implementors of [Inheritable]s, and the
+  /// ignored even when they are the implementers of [Inheritable]s, and the
   /// class these inherit from should instead claim implementation.
   late final Set<Class> inheritThrough = () {
     var interceptorSpecialClass = specialClasses[SpecialClass.interceptor];

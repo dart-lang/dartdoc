@@ -7746,6 +7746,19 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.publicInheritedInstanceOperators,
                 ),
+                'publicInterfaceElements': Property(
+                  getValue: (CT_ c) => c.publicInterfaceElements,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'Iterable<InheritingContainer>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.publicInterfaceElements.map((e) =>
+                        _render_InheritingContainer(e, ast, r.template, sink,
+                            parent: r));
+                  },
+                ),
                 'publicInterfaces': Property(
                   getValue: (CT_ c) => c.publicInterfaces,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -9934,17 +9947,17 @@ class _Renderer_MixedInTypes extends RendererBase<MixedInTypes> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasPublicMixedInTypes,
                 ),
-                'mixedInTypes': Property(
-                  getValue: (CT_ c) => c.mixedInTypes,
+                'mixedInElements': Property(
+                  getValue: (CT_ c) => c.mixedInElements,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'List<DefinedElementType>'),
+                          c, remainingNames, 'List<InheritingContainer>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    return c.mixedInTypes.map((e) => _render_DefinedElementType(
-                        e, ast, r.template, sink,
-                        parent: r));
+                    return c.mixedInElements.map((e) =>
+                        _render_InheritingContainer(e, ast, r.template, sink,
+                            parent: r));
                   },
                 ),
                 'publicMixedInTypes': Property(
@@ -15266,6 +15279,19 @@ class _Renderer_TypeImplementing extends RendererBase<TypeImplementing> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasPublicInterfaces,
+                ),
+                'interfaceElements': Property(
+                  getValue: (CT_ c) => c.interfaceElements,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<InheritingContainer>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.interfaceElements.map((e) =>
+                        _render_InheritingContainer(e, ast, r.template, sink,
+                            parent: r));
+                  },
                 ),
                 'interfaces': Property(
                   getValue: (CT_ c) => c.interfaces,

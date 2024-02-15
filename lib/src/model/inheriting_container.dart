@@ -363,7 +363,12 @@ abstract class InheritingContainer extends Container
   Iterable<Method> get publicInheritedMethods =>
       model_utils.filterNonPublic(inheritedMethods);
 
-  Iterable<DefinedElementType> get publicInterfaces => const [];
+  Iterable<DefinedElementType> get publicInterfaces;
+
+  Iterable<InheritingContainer> get publicInterfaceElements => [
+        for (var interface in publicInterfaces)
+          interface.modelElement as InheritingContainer,
+      ];
 
   Iterable<DefinedElementType> get publicSuperChainReversed =>
       publicSuperChain.reversed;
@@ -467,9 +472,14 @@ abstract class InheritingContainer extends Container
 
 /// Add the ability to support mixed-in types to an [InheritingContainer].
 mixin MixedInTypes on InheritingContainer {
+  @visibleForTesting
   late final List<DefinedElementType> mixedInTypes = element.mixins
       .map((f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
       .toList(growable: false);
+
+  List<InheritingContainer> get mixedInElements => [
+        for (var t in mixedInTypes) t.modelElement as InheritingContainer,
+      ];
 
   @override
   bool get hasModifiers => super.hasModifiers || hasPublicMixedInTypes;
@@ -502,9 +512,14 @@ mixin TypeImplementing on InheritingContainer {
   /// Interfaces directly implemented by this container.
   List<DefinedElementType> get interfaces => _directInterfaces;
 
-  /// Returns all the "immediate" public implementors of this
-  /// [TypeImplementing].  For a [Mixin], this is actually the mixin
-  /// applications using the [Mixin].
+  List<InheritingContainer> get interfaceElements => [
+        for (var interface in interfaces)
+          interface.modelElement as InheritingContainer,
+      ];
+
+  /// All the "immediate" public implementors of this [TypeImplementing].
+  ///
+  /// For a [Mixin], this is actually the mixin applications using the [Mixin].
   ///
   /// If this [InheritingContainer] has a private implementor, then that is
   /// counted as a proxy for any public implementors of that private container.
@@ -520,16 +535,17 @@ mixin TypeImplementing on InheritingContainer {
       if (implementor.isPublicAndPackageDocumented) {
         result.add(implementor);
       } else {
-        model_utils
-            .findCanonicalFor(
-                packageGraph.implementors[implementor] ?? const [])
-            .forEach(addToResult);
+        var implementors = packageGraph.implementors[implementor];
+        if (implementors != null) {
+          model_utils.findCanonicalFor(implementors).forEach(addToResult);
+        }
       }
     }
 
-    model_utils
-        .findCanonicalFor(packageGraph.implementors[this] ?? const [])
-        .forEach(addToResult);
+    var implementors = packageGraph.implementors[this];
+    if (implementors != null) {
+      model_utils.findCanonicalFor(implementors).forEach(addToResult);
+    }
     return result;
   }
 
@@ -580,11 +596,14 @@ extension on InterfaceElement {
 }
 
 extension DefinedElementTypeIterableExtension on Iterable<DefinedElementType> {
-  /// Expands the [ModelElement] for each element to its inheritance chain.
-  Iterable<InheritingContainer> get expandInheritanceChain =>
-      expand((e) => (e.modelElement as InheritingContainer).inheritanceChain);
-
-  /// Returns the [ModelElement] for each element.
+  /// The [ModelElement] for each element.
   Iterable<InheritingContainer> get modelElements =>
       map((e) => e.modelElement as InheritingContainer);
+}
+
+extension InheritingContainerIterableExtension
+    on Iterable<InheritingContainer> {
+  /// Expands each element to its inheritance chain.
+  Iterable<InheritingContainer> get expandInheritanceChain =>
+      expand((e) => e.inheritanceChain);
 }
