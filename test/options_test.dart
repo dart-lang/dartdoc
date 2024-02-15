@@ -12,7 +12,6 @@ import 'package:test_reflective_loader/test_reflective_loader.dart';
 
 import 'dartdoc_test_base.dart';
 import 'src/test_descriptor_utils.dart' as d;
-import 'src/utils.dart' as utils;
 import 'src/utils.dart';
 
 void main() {
@@ -28,8 +27,7 @@ class OptionsTest extends DartdocTestBase {
 
   static const packageName = 'test_package';
 
-  Future<void> createPackage(
-    String name, {
+  Future<void> createPackage({
     String? dartdocOptions,
     List<d.Descriptor> libFiles = const [],
     List<d.Descriptor> files = const [],
@@ -41,14 +39,13 @@ class OptionsTest extends DartdocTestBase {
       files: files,
       resourceProvider: resourceProvider,
     );
-    await utils.writeDartdocResources(resourceProvider);
+    await writeDartdocResources(resourceProvider);
     packageConfigProvider.addPackageToConfigFor(
         packagePath, packageName, Uri.file('$packagePath/'));
   }
 
   void test_faviconOption_copiesFaviconFile() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   favicon: anicon.png
@@ -59,7 +56,6 @@ dartdoc:
     await (await buildDartdoc(
       additionalArguments: [
         '--auto-include-dependencies',
-        '--no-link-to-remote',
       ],
     ))
         .generateDocs();
@@ -73,7 +69,6 @@ dartdoc:
 
   void test_headerOption_addsContentToIndexFile() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   header: ['extras/header.html']
@@ -93,7 +88,6 @@ dartdoc:
 
   void test_footerOption_addsContentToIndexFile() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   footer: ['extras/footer.html']
@@ -113,7 +107,6 @@ dartdoc:
 
   void test_footerTextOption_addsTextToIndexFile() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   footerText: ['extras/footer.txt']
@@ -133,7 +126,6 @@ dartdoc:
 
   void test_excludeFooterVersionOption_doesNotDisplayVersion() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   excludeFooterVersion: true
@@ -161,7 +153,6 @@ dartdoc:
 
   void test_examplePathPrefixOption_findsExamplesInACustomPath() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   examplePathPrefix: 'package_examples'
@@ -199,7 +190,6 @@ An example in an unusual dir.
 
   void test_includeOption_canBeSpecifiedInOptionsFile() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   include: ["library_1", "library_2"]
@@ -230,7 +220,6 @@ class Baz {}
 
   void test_includeCommandLineOption_overridesOptionsFileOption() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   include: ["library_1", "library_2"]
@@ -262,7 +251,6 @@ class Baz {}
 
   void test_excludeCommandLineOption_overridesOptionsFileOption() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   include: ["library_1", "library_2"]
@@ -291,7 +279,6 @@ class Bar {}
   void
       test_showUndocumentedCategoriesOption_showsUndocumentedCategories() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   showUndocumentedCategories: true
@@ -317,7 +304,6 @@ class Foo {}
 
   void test_categoryOrderOption_ordersCategories() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   categories:
@@ -362,7 +348,6 @@ class C3 {}
 
   void test_categoriesNotIncludedInCategoryOrder_areOrderedAtTheEnd() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   categories:
@@ -413,7 +398,6 @@ class C4 {}
 
   void test_categoriesAreOnlyTrackedWhenUsed() async {
     await createPackage(
-      packageName,
       dartdocOptions: '''
 dartdoc:
   categories:
@@ -449,7 +433,6 @@ class C1 {}
   void
       test_templatesDirOption_referencingANonExistentDirectory_resultsInDartdocFailure() async {
     await createPackage(
-      packageName,
       libFiles: [
         d.file('library_1.dart', '''
 library library_1;
@@ -469,7 +452,6 @@ class Foo {}
 
   void test_templatesDirOption_specifiesTheTemplatesToUse() async {
     await createPackage(
-      packageName,
       libFiles: [
         d.file('library_1.dart', '''
 library library_1;
@@ -512,7 +494,6 @@ class Foo {}
   void
       test_templatesDirOptionReferencingAnEmptyDirectory_resultsInDartdocFailure() async {
     await createPackage(
-      packageName,
       libFiles: [
         d.file('library_1.dart', '''
 library library_1;
@@ -533,7 +514,6 @@ class Foo {}
 
   void test_quietOption_resultsInNoProgressOrOtherLogging() async {
     await createPackage(
-      packageName,
       libFiles: [
         d.file('library_1.dart', '''
 library library_1;
@@ -558,7 +538,6 @@ Found 1 warning and 0 errors.
 
   void test_noGenerateDocsOption_resultsInNoLoggingAndNoGeneratedDocs() async {
     await createPackage(
-      packageName,
       libFiles: [
         d.file('library_1.dart', '''
 library library_1;
@@ -588,7 +567,6 @@ Found 1 warning and 0 errors.
 
   void test_jsonOption_resultsInJsonOutput() async {
     await createPackage(
-      packageName,
       libFiles: [
         d.file('library_1.dart', '''
 library library_1;
@@ -596,7 +574,7 @@ class Foo {}
 '''),
       ],
     );
-    await utils.writeDartdocResources(resourceProvider);
+    await writeDartdocResources(resourceProvider);
     final dartdoc = await buildDartdoc(useJson: true);
     await dartdoc.generateDocs();
 
@@ -609,7 +587,7 @@ class Foo {}
 
   void test_nonExistentOption_resultsInFatalError() async {
     expect(
-      () => utils.generatorContextFromArgv([
+      () => generatorContextFromArgv([
         '--nonexistent',
       ], packageMetaProvider),
       throwsA(isA<ArgParserException>().having(
@@ -622,7 +600,7 @@ class Foo {}
 
   void test_nonExistentInputPath_resultsInFatalError() async {
     expect(
-      () => utils.generatorContextFromArgv([
+      () => generatorContextFromArgv([
         '--input',
         'non-existent',
       ], packageMetaProvider),
@@ -638,7 +616,6 @@ class Foo {}
 
   void test_limitFilesCreated_maxFileCountIsReached() async {
     await createPackage(
-      packageName,
       libFiles: [
         d.file('library_1.dart', '''
 library library_1;
@@ -659,7 +636,6 @@ class Foo {
 
   void test_limitFilesCreated_maxFileCountIsNotReached() async {
     await createPackage(
-      packageName,
       libFiles: [
         d.file('library_1.dart', '''
 library library_1;
@@ -677,7 +653,6 @@ class Foo {
 
   void test_limitFilesCreated_maxTotalSizeIsReached() async {
     await createPackage(
-      packageName,
       libFiles: [
         d.file('library_1.dart', '''
 library library_1;
@@ -698,7 +673,6 @@ class Foo {
 
   void test_limitFilesCreated_maxTotalSizeIsNotReached() async {
     await createPackage(
-      packageName,
       libFiles: [
         d.file('library_1.dart', '''
 library library_1;
