@@ -31,14 +31,14 @@ class Mixin extends InheritingContainer with TypeImplementing {
     this,
 
     // Mix-in interfaces come before other interfaces.
-    ...superclassConstraints.expandInheritanceChain,
+    ...superclassConstraints.modelElements.expandInheritanceChain,
 
     for (var container in superChain.modelElements)
       ...container.inheritanceChain,
 
     // Interfaces need to come last, because classes in the superChain might
     // implement them even when they aren't mentioned.
-    ...interfaces.expandInheritanceChain,
+    ...interfaceElements.expandInheritanceChain,
   ];
 
   Mixin(this.element, super.library, super.packageGraph);
