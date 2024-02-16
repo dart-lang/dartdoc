@@ -173,8 +173,8 @@ abstract class ModelElement extends Canonicalization
     }
 
     // Return the cached ModelElement if it exists.
-    var cachedModelElement = packageGraph
-        .allConstructedModelElements[(e, library, enclosingContainer)];
+    var cachedModelElement = packageGraph.allConstructedModelElements[
+        ConstructedModelElementsKey(e, library, enclosingContainer)];
     if (cachedModelElement != null) {
       return cachedModelElement;
     }
@@ -263,8 +263,8 @@ abstract class ModelElement extends Canonicalization
     }
 
     // Return the cached ModelElement if it exists.
-    var cachedModelElement = packageGraph
-        .allConstructedModelElements[(e, library, enclosingContainer)];
+    var cachedModelElement = packageGraph.allConstructedModelElements[
+        ConstructedModelElementsKey(e, library, enclosingContainer)];
     if (cachedModelElement != null) {
       return cachedModelElement;
     }
@@ -294,11 +294,12 @@ abstract class ModelElement extends Canonicalization
     //                   is fixed?
     if (library != Library.sentinel && newModelElement is! Parameter) {
       runtimeStats.incrementAccumulator('modelElementCacheInsertion');
-      var key = (e, library, enclosingContainer);
+      var key = ConstructedModelElementsKey(e, library, enclosingContainer);
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
         library.packageGraph.allInheritableElements
-            .putIfAbsent((e, library), () => {}).add(newModelElement);
+            .putIfAbsent(InheritableElementsKey(e, library), () => {})
+            .add(newModelElement);
       }
     }
   }
