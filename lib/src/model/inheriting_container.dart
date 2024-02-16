@@ -104,10 +104,15 @@ abstract class InheritingContainer extends Container
               packageGraph.rendererFactory.languageFeatureRenderer)
           .toList();
 
-  late final List<ModelElement> _allModelElements = [
-    ...super.allModelElements,
-    ...typeParameters,
-  ];
+  late final List<ModelElement> _allModelElements = () {
+    _inheritedElementsCache = _inheritedElements;
+    var result = [
+      ...super.allModelElements,
+      ...typeParameters,
+    ];
+    _inheritedElementsCache = null;
+    return result;
+  }();
 
   Iterable<Method> get inheritedMethods {
     var methodNames = declaredMethods.map((m) => m.element.name).toSet();
@@ -144,7 +149,9 @@ abstract class InheritingContainer extends Container
   late final List<DefinedElementType> publicSuperChain =
       model_utils.filterNonPublic(superChain).toList(growable: false);
 
+  List<ExecutableElement>? _inheritedElementsCache;
   List<ExecutableElement> get _inheritedElements {
+    if (_inheritedElementsCache != null) return _inheritedElementsCache!;
     if (element is ClassElement && (element as ClassElement).isDartCoreObject) {
       return const <ExecutableElement>[];
     }
@@ -193,7 +200,7 @@ abstract class InheritingContainer extends Container
   }
 
   /// All fields defined on this container, _including inherited fields_.
-  List<Field> get allFields {
+  late List<Field> allFields = () {
     var inheritedAccessorElements = {
       ..._inheritedElements.whereType<PropertyAccessorElement>()
     };
@@ -243,7 +250,7 @@ abstract class InheritingContainer extends Container
     });
 
     return fields;
-  }
+  }();
 
   @override
   late final List<Method> declaredMethods = element.methods
