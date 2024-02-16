@@ -83,7 +83,7 @@ class Base1<E> {
 
 class Base2 {}
 
-class Foo<E> extends Base1<E>, Base2 {}
+class Foo<E> implements Base1<E>, Base2 {}
 
 class FooSub extends Foo<int> {}
 

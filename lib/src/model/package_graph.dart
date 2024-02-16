@@ -319,11 +319,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   /// All [ModelElement]s constructed for this package; a superset of
   /// the elements gathered in [_gatherModelElements].
-  final Map<(Element element, Library library, Container? enclosingElement),
-      ModelElement> allConstructedModelElements = {};
+  final Map<ConstructedModelElementsKey, ModelElement>
+      allConstructedModelElements = {};
 
   /// Anything that might be inheritable, place here for later lookup.
-  final Map<(Element, Library), Set<ModelElement>> allInheritableElements = {};
+  final Map<InheritableElementsKey, Set<ModelElement>> allInheritableElements =
+      {};
 
   /// A mapping of the list of classes which implement each class.
   final Map<InheritingContainer, List<InheritingContainer>> _implementors =
@@ -805,18 +806,20 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       {InheritingContainer? preferredClass}) {
     var candidates = <ModelElement>{};
     if (lib != null) {
-      var constructedWithKey = allConstructedModelElements[(e, lib, null)];
+      var constructedWithKey = allConstructedModelElements[
+          ConstructedModelElementsKey(e, lib, null)];
       if (constructedWithKey != null) {
         candidates.add(constructedWithKey);
       }
-      var constructedWithKeyWithClass =
-          allConstructedModelElements[(e, lib, preferredClass)];
+      var constructedWithKeyWithClass = allConstructedModelElements[
+          ConstructedModelElementsKey(e, lib, preferredClass)];
       if (constructedWithKeyWithClass != null) {
         candidates.add(constructedWithKeyWithClass);
       }
       if (candidates.isEmpty) {
         candidates = {
-          ...?allInheritableElements[(e, lib)]?.where((me) => me.isCanonical),
+          ...?allInheritableElements[InheritableElementsKey(e, lib)]
+              ?.where((me) => me.isCanonical),
         };
       }
     }
@@ -1008,4 +1011,31 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   @override
   Iterable<CommentReferable> get referenceParents => const [];
+}
+
+class ConstructedModelElementsKey {
+  final Element element;
+  final Library library;
+  final Container? enclosingElement;
+
+  ConstructedModelElementsKey(
+      this.element, this.library, this.enclosingElement);
+
+  @override
+  late final int hashCode = Object.hash(element, library, enclosingElement);
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! ConstructedModelElementsKey) return false;
+    return other.element == element &&
+        other.library == library &&
+        other.enclosingElement == enclosingElement;
+  }
+}
+
+class InheritableElementsKey {
+  final Element element;
+  final Library library;
+
+  InheritableElementsKey(this.element, this.library);
 }
