@@ -59,7 +59,7 @@ dartdoc:
     return resourceProvider.readLines([packagePath, 'doc', ...filePath]);
   }
 
-  void test_pageListsClassesThatExtend() async {
+  void test_class_extends() async {
     var baseLines = await createPackageAndReadLines(
       libFiles: [
         d.file('lib.dart', '''
@@ -78,7 +78,7 @@ class Foo extends Base {}
     ]);
   }
 
-  void test_pageListsClassesThatImplement() async {
+  void test_class_implements() async {
     var baseLines = await createPackageAndReadLines(
       libFiles: [
         d.file('lib.dart', '''
@@ -97,7 +97,7 @@ class Foo implements Base {}
     ]);
   }
 
-  void test_pageListsClassesThatImplementWithGenericType() async {
+  void test_class_implements_withGenericType() async {
     var baseLines = await createPackageAndReadLines(
       libFiles: [
         d.file('lib.dart', '''
@@ -116,7 +116,7 @@ class Foo<E> implements Base<E> {}
     ]);
   }
 
-  void test_pageListsClassesThatImplementWithInstantiatedType() async {
+  void test_class_implements_withInstantiatedType() async {
     var baseLines = await createPackageAndReadLines(
       libFiles: [
         d.file('lib.dart', '''
@@ -135,7 +135,7 @@ class Foo implements Base<int> {}
     ]);
   }
 
-  void test_pageListsExtensionTypesThatImplement() async {
+  void test_extensionType_implements() async {
     var base1Lines = await createPackageAndReadLines(
       libFiles: [
         d.file('lib.dart', '''
@@ -156,13 +156,12 @@ extension type ET(Base2 base) implements Base1 {}
     ]);
   }
 
-  @FailingTest(reason: 'Not implemented yet; should be?')
-  void test_pageListsMixinsThatConstrainSuperclass() async {
+  void test_mixin_implements() async {
     var baseLines = await createPackageAndReadLines(
       libFiles: [
         d.file('lib.dart', '''
 class Base {}
-mixin M on Base {}
+mixin M implements Base {}
 '''),
       ],
       filePath: ['lib', 'Base-class.html'],
@@ -176,12 +175,13 @@ mixin M on Base {}
     ]);
   }
 
-  void test_pageListsMixinsThatImplement() async {
+  @FailingTest(reason: 'Not implemented yet; should be?')
+  void test_mixin_superclassConstraint() async {
     var baseLines = await createPackageAndReadLines(
       libFiles: [
         d.file('lib.dart', '''
 class Base {}
-mixin M implements Base {}
+mixin M on Base {}
 '''),
       ],
       filePath: ['lib', 'Base-class.html'],

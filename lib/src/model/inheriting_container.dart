@@ -549,9 +549,9 @@ mixin TypeImplementing on InheritingContainer {
       }
     }
 
-    var implementors = packageGraph.implementors[this];
-    if (implementors != null) {
-      model_utils.findCanonicalFor(implementors).forEach(addToResult);
+    var immediateImplementors = packageGraph.implementors[this];
+    if (immediateImplementors != null) {
+      model_utils.findCanonicalFor(immediateImplementors).forEach(addToResult);
     }
     return result;
   }
