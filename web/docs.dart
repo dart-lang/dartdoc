@@ -54,7 +54,7 @@ void initializeSidebars() {
       final fetchResponse = response as FetchResponse;
       if (response.status != 200) {
         final errorAnchor = (document.createElement('a') as AnchorElement)
-          ..href = 'https://dart.dev/tools/dart-doc'
+          ..href = 'https://dart.dev/tools/dart-doc#troubleshoot'
           ..text = 'Failed to load sidebar. '
               'Visit dart.dev for help troubleshooting.';
         sidebarElement.append(errorAnchor);
