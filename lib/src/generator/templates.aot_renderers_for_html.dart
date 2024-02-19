@@ -918,6 +918,7 @@ String renderExtensionType<T extends ExtensionType>(
   buffer.write(' ');
   buffer.writeEscaped(context0.parent!.kind.toString());
   buffer.write('''</h5>
+  <div id="dartdoc-sidebar-left-content"></div>
 </div>
 
 <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
