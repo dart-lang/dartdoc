@@ -4,12 +4,12 @@
     class="main-content"
     data-above-sidebar="{{ aboveSidebarPath }}"
     data-below-sidebar="{{ belowSidebarPath }}">
-    {{ #self }}
+  {{ #self }}
     <div>{{ >source_link }}<h1><span class="kind-class">{{{ nameWithGenerics }}}</span>
       {{ kind }} {{ >feature_set }} {{ >categorization }}</h1></div>
-    {{ /self }}
+  {{ /self }}
 
-    {{ #extensionType }}
+  {{ #extensionType }}
     {{ >documentation }}
     <section>
       <dl class="dl-horizontal">
@@ -18,7 +18,7 @@
           <ul class="comma-separated clazz-relationships">
             {{ #representationType }}
               <li>{{{ linkedName }}}</li>
-          {{ /representationType }}
+            {{ /representationType }}
           </ul>
         </dd>
         {{ >interfaces }}
@@ -29,15 +29,15 @@
     {{ >constructors }}
 
     {{ #hasPublicInstanceFields }}
-    <section class="summary offset-anchor" id="instance-properties">
+      <section class="summary offset-anchor" id="instance-properties">
         <h2>Properties</h2>
 
         <dl class="properties">
-            {{ #publicInstanceFieldsSorted }}
+          {{ #publicInstanceFieldsSorted }}
             {{ >property }}
-            {{ /publicInstanceFieldsSorted }}
+          {{ /publicInstanceFieldsSorted }}
         </dl>
-    </section>
+      </section>
     {{ /hasPublicInstanceFields }}
 
     {{ >instance_methods }}
@@ -46,11 +46,12 @@
     {{ >static_methods }}
     {{ >static_constants }}
 
+  {{ /extensionType }}
 </div><!-- /.main-content -->
 
 <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    {{ >search_sidebar }}
-    <h5>{{ parent.name }} {{ parent.kind }}</h5>
+  {{ >search_sidebar }}
+  <h5>{{ parent.name }} {{ parent.kind }}</h5>
 </div>
 
 <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">

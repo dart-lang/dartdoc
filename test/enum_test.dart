@@ -162,8 +162,8 @@ enum E<T> implements C<T>, D { one, two, three; }
 ''');
     var eEnum = library.enums.named('E');
 
-    expect(eEnum.interfaces, hasLength(2));
-    expect(eEnum.interfaces.map((i) => i.name), equals(['C', 'D']));
+    expect(eEnum.interfaceElements, hasLength(2));
+    expect(eEnum.interfaceElements.map((e) => e.name), equals(['C', 'D']));
   }
 
   void test_linkedGenericParameters() async {
@@ -214,8 +214,8 @@ enum E<T> with M<T>, N { one, two, three; }
 ''');
     var eEnum = library.enums.named('E');
 
-    expect(eEnum.mixedInTypes, hasLength(2));
-    expect(eEnum.mixedInTypes.map((i) => i.name), equals(['M', 'N']));
+    expect(eEnum.mixedInElements, hasLength(2));
+    expect(eEnum.mixedInElements.map((e) => e.name), equals(['M', 'N']));
   }
 
   void test_namedConstructorCanBeReferenced() async {

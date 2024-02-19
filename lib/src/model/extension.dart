@@ -6,7 +6,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/type_utils.dart';
 import 'package:meta/meta.dart';
@@ -28,8 +27,8 @@ class Extension extends Container implements EnclosedElement {
       extendedType.instantiatedType is VoidType ||
       extendedType.instantiatedType.isDartCoreObject;
 
-  bool couldApplyTo<T extends ExtensionTarget>(T c) =>
-      _couldApplyTo(c.modelType as DefinedElementType);
+  bool couldApplyTo<T extends InheritingContainer>(T c) =>
+      _couldApplyTo(c.modelType);
 
   /// Whether this extension could apply to [type].
   bool _couldApplyTo(DefinedElementType type) {
@@ -57,7 +56,7 @@ class Extension extends Container implements EnclosedElement {
   Kind get kind => Kind.extension;
 
   @override
-  late List<Method> declaredMethods = element.methods
+  late final List<Method> declaredMethods = element.methods
       .map((e) => modelBuilder.from(e, library) as Method)
       .toList(growable: false);
 

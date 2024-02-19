@@ -139,8 +139,9 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // all packages are picked up.
     for (var package in _documentedPackages) {
       for (var library in package.libraries) {
-        _addToImplementors(library.allClasses);
-        _addToImplementors(library.mixins);
+        _addToImplementers(library.allClasses);
+        _addToImplementers(library.mixins);
+        _addToImplementers(library.extensionTypes);
         _extensions.addAll(library.extensions);
       }
       if (package.isLocal && !package.hasPublicLibraries) {
@@ -318,11 +319,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   /// All [ModelElement]s constructed for this package; a superset of
   /// the elements gathered in [_gatherModelElements].
-  final Map<(Element element, Library library, Container? enclosingElement),
-      ModelElement> allConstructedModelElements = {};
+  final Map<ConstructedModelElementsKey, ModelElement>
+      allConstructedModelElements = {};
 
   /// Anything that might be inheritable, place here for later lookup.
-  final Map<(Element, Library), Set<ModelElement>> allInheritableElements = {};
+  final Map<InheritableElementsKey, Set<ModelElement>> allInheritableElements =
+      {};
 
   /// A mapping of the list of classes which implement each class.
   final Map<InheritingContainer, List<InheritingContainer>> _implementors =
@@ -579,7 +581,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return hrefMap;
   }
 
-  void _addToImplementors(Iterable<InheritingContainer> containers) {
+  void _addToImplementers(Iterable<InheritingContainer> containers) {
     assert(!allImplementorsAdded);
 
     // Private containers may not be included in documentation, but may still be
@@ -588,7 +590,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     var privates = <InheritingContainer>[];
 
     void checkAndAddContainer(
-        InheritingContainer implemented, InheritingContainer implementor) {
+        InheritingContainer implemented, InheritingContainer implementer) {
       if (!implemented.isPublic) {
         privates.add(implemented);
       }
@@ -597,41 +599,45 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       var list = _implementors.putIfAbsent(implemented, () => []);
       // TODO(srawlins): This would be more efficient if we created a
       // SplayTreeSet keyed off of `.element`.
-      if (!list.any((l) => l.element == implementor.element)) {
-        list.add(implementor);
+      if (!list.any((l) => l.element == implementer.element)) {
+        list.add(implementer);
       }
     }
 
-    void addImplementor(InheritingContainer clazz) {
-      var supertype = clazz.supertype;
+    void addImplementer(InheritingContainer container) {
+      var supertype = container.supertype;
       if (supertype != null) {
         checkAndAddContainer(
-            supertype.modelElement as InheritingContainer, clazz);
+            supertype.modelElement as InheritingContainer, container);
       }
-      if (clazz is Class) {
-        for (var type in clazz.mixedInTypes) {
-          checkAndAddContainer(type.modelElement as InheritingContainer, clazz);
+      if (container is Class) {
+        for (var element in container.mixedInElements) {
+          checkAndAddContainer(element, container);
         }
-        for (var type in clazz.interfaces) {
-          checkAndAddContainer(type.modelElement as InheritingContainer, clazz);
+        for (var element in container.interfaceElements) {
+          checkAndAddContainer(element, container);
+        }
+      } else if (container is ExtensionType) {
+        for (var element in container.interfaceElements) {
+          checkAndAddContainer(element, container);
         }
       }
-      for (var type in clazz.publicInterfaces) {
-        checkAndAddContainer(type.modelElement as InheritingContainer, clazz);
+      for (var element in container.publicInterfaceElements) {
+        checkAndAddContainer(element, container);
       }
     }
 
-    containers.forEach(addImplementor);
+    containers.forEach(addImplementer);
 
     // [privates] may grow while processing; use a for loop, rather than a
     // for-each loop, to avoid concurrent modification errors.
     for (var i = 0; i < privates.length; i++) {
-      addImplementor(privates[i]);
+      addImplementer(privates[i]);
     }
   }
 
   @visibleForTesting
-  late final Iterable<Library> libraries =
+  late final List<Library> libraries =
       packages.expand((p) => p.libraries).toList(growable: false)..sort();
 
   int get libraryCount => libraries.length;
@@ -660,10 +666,10 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
           ?.linkedName ??
       'Object';
 
-  /// The set of [Class]es which should _not_ be presented as implementors.
+  /// The set of [Class]es which should _not_ be presented as implementers.
   ///
   /// Add classes here if they are similar to Interceptor in that they are to be
-  /// ignored even when they are the implementors of [Inheritable]s, and the
+  /// ignored even when they are the implementers of [Inheritable]s, and the
   /// class these inherit from should instead claim implementation.
   late final Set<Class> inheritThrough = () {
     var interceptorSpecialClass = specialClasses[SpecialClass.interceptor];
@@ -800,18 +806,20 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
       {InheritingContainer? preferredClass}) {
     var candidates = <ModelElement>{};
     if (lib != null) {
-      var constructedWithKey = allConstructedModelElements[(e, lib, null)];
+      var constructedWithKey = allConstructedModelElements[
+          ConstructedModelElementsKey(e, lib, null)];
       if (constructedWithKey != null) {
         candidates.add(constructedWithKey);
       }
-      var constructedWithKeyWithClass =
-          allConstructedModelElements[(e, lib, preferredClass)];
+      var constructedWithKeyWithClass = allConstructedModelElements[
+          ConstructedModelElementsKey(e, lib, preferredClass)];
       if (constructedWithKeyWithClass != null) {
         candidates.add(constructedWithKeyWithClass);
       }
       if (candidates.isEmpty) {
         candidates = {
-          ...?allInheritableElements[(e, lib)]?.where((me) => me.isCanonical),
+          ...?allInheritableElements[InheritableElementsKey(e, lib)]
+              ?.where((me) => me.isCanonical),
         };
       }
     }
@@ -905,7 +913,7 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     return allElements;
   }
 
-  late final Iterable<ModelElement> allLocalModelElements = [
+  late final List<ModelElement> allLocalModelElements = [
     for (var library in _localLibraries) ...library.allModelElements
   ];
 
@@ -1003,4 +1011,31 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   @override
   Iterable<CommentReferable> get referenceParents => const [];
+}
+
+class ConstructedModelElementsKey {
+  final Element element;
+  final Library library;
+  final Container? enclosingElement;
+
+  ConstructedModelElementsKey(
+      this.element, this.library, this.enclosingElement);
+
+  @override
+  late final int hashCode = Object.hash(element, library, enclosingElement);
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! ConstructedModelElementsKey) return false;
+    return other.element == element &&
+        other.library == library &&
+        other.enclosingElement == enclosingElement;
+  }
+}
+
+class InheritableElementsKey {
+  final Element element;
+  final Library library;
+
+  InheritableElementsKey(this.element, this.library);
 }

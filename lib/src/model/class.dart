@@ -31,7 +31,7 @@ class Class extends InheritingContainer
     this,
 
     // Caching should make this recursion a little less painful.
-    for (var container in mixedInTypes.reversed.modelElements)
+    for (var container in mixedInElements.reversed)
       ...container.inheritanceChain,
 
     for (var container in superChain.modelElements)
@@ -39,7 +39,7 @@ class Class extends InheritingContainer
 
     // Interfaces need to come last, because classes in the superChain might
     // implement them even when they aren't mentioned.
-    ...interfaces.expandInheritanceChain,
+    ...interfaceElements.expandInheritanceChain,
   ];
 
   Class(this.element, Library library, PackageGraph packageGraph)

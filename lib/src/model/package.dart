@@ -175,7 +175,7 @@ class Package extends LibraryContainer
 
   /// Returns the location of documentation for this package, for linkToRemote
   /// and canonicalization decision making.
-  DocumentLocation get documentedWhere {
+  late DocumentLocation documentedWhere = () {
     if (isLocal && isPublic) {
       return DocumentLocation.local;
     }
@@ -186,7 +186,7 @@ class Package extends LibraryContainer
       return DocumentLocation.remote;
     }
     return DocumentLocation.missing;
-  }
+  }();
 
   @override
   String get enclosingName => packageGraph.defaultPackageName;

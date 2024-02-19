@@ -27,11 +27,11 @@ class Enum extends InheritingContainer
   @override
   late final List<InheritingContainer> inheritanceChain = [
     this,
-    for (var container in mixedInTypes.reversed.modelElements)
+    for (var container in mixedInElements.reversed)
       ...container.inheritanceChain,
     for (var container in superChain.modelElements)
       ...container.inheritanceChain,
-    ...interfaces.expandInheritanceChain,
+    ...interfaceElements.expandInheritanceChain,
   ];
 
   @override
@@ -48,8 +48,9 @@ class Enum extends InheritingContainer
       declaredFields.where((f) => f is! EnumField && f.isConst);
 
   @override
-  late final Iterable<Field> publicEnumValues =
-      model_utils.filterNonPublic(allFields).whereType<EnumField>();
+  late final List<Field> publicEnumValues = model_utils
+      .filterNonPublic(allFields.whereType<EnumField>())
+      .toList(growable: false);
 
   @override
   bool get hasPublicEnumValues => publicEnumValues.isNotEmpty;

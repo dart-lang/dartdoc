@@ -63,7 +63,7 @@ class ExtensionType extends InheritingContainer
   @override
   late final List<InheritingContainer> inheritanceChain = [
     this,
-    ...interfaces.expandInheritanceChain,
+    ...interfaceElements.expandInheritanceChain,
   ];
 
   @override

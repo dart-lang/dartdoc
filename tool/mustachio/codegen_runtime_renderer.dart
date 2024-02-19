@@ -89,7 +89,6 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -157,13 +156,8 @@ import '${path.basename(_sourceUri.path)}';
   /// return type. Getters annotated with `@internal`, `@protected`,
   ///  `@visibleForOverriding`, or `@visibleForTesting` are not valid.
   void _addPropertyToProcess(PropertyAccessorElement property) {
-    if (property.isPrivate || property.isStatic || property.isSetter) return;
-    if (property.hasInternal ||
-        property.hasProtected ||
-        property.hasVisibleForOverriding ||
-        property.hasVisibleForTesting) {
-      return;
-    }
+    if (property.shouldBeOmitted) return;
+
     var type = _relevantTypeFrom(property.type.returnType);
     if (type == null) return;
 
@@ -476,13 +470,8 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
       return;
     }
 
-    if (property.isPrivate || property.isStatic || property.isSetter) return;
-    if (property.hasInternal ||
-        property.hasProtected ||
-        property.hasVisibleForOverriding ||
-        property.hasVisibleForTesting) {
-      return;
-    }
+    if (property.shouldBeOmitted) return;
+
     _buffer.writeln("'${property.name}': Property(");
     _buffer
         .writeln('getValue: ($_contextTypeVariable c) => c.${property.name},');
@@ -716,5 +705,22 @@ extension on InterfaceElement {
           .where((e) => e.isPublic && !e.isStatic && !e.isSetter)
           .map((e) => e.name),
     };
+  }
+}
+
+extension on PropertyAccessorElement {
+  // Whether this property should be omitted from the runtime renderer code.
+  bool get shouldBeOmitted {
+    return isPrivate ||
+        isStatic ||
+        isSetter ||
+        hasInternal ||
+        hasProtected ||
+        hasVisibleForOverriding ||
+        hasVisibleForTesting ||
+        variable.hasInternal ||
+        variable.hasProtected ||
+        variable.hasVisibleForOverriding ||
+        variable.hasVisibleForTesting;
   }
 }

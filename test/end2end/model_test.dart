@@ -1820,8 +1820,8 @@ void main() {
 
     test('Verify inheritance/mixin structure and type inference', () {
       expect(
-          TypeInferenceMixedIn.mixedInTypes
-              .map<String>((DefinedElementType t) => t.modelElement.name),
+          TypeInferenceMixedIn.mixedInElements
+              .map<String>((element) => element.name),
           orderedEquals(['GenericMixin']));
       expect(
           TypeInferenceMixedIn.mixedInTypes.first.typeArguments
@@ -1983,15 +1983,15 @@ void main() {
     });
 
     test('mixins', () {
-      expect(Apple.mixedInTypes, hasLength(0));
+      expect(Apple.mixedInElements, hasLength(0));
     });
 
     test('mixins private', () {
-      expect(F.mixedInTypes, hasLength(1));
+      expect(F.mixedInElements, hasLength(1));
     });
 
     test('interfaces', () {
-      var interfaces = Dog.interfaces;
+      var interfaces = Dog.interfaceElements;
       expect(interfaces, hasLength(2));
       expect(interfaces[0].name, 'Cat');
       expect(interfaces[1].name, 'E');
@@ -4399,28 +4399,37 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('a class that implements Future<void>', () {
       expect(
-          ImplementsFutureVoid.linkedName,
-          equals(
-              '<a href="${htmlBasePlaceholder}fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>'));
+        ImplementsFutureVoid.linkedName,
+        equals(
+          '<a href="${htmlBasePlaceholder}fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>',
+        ),
+      );
       var FutureVoid =
-          ImplementsFutureVoid.interfaces.firstWhere((c) => c.name == 'Future');
+          ImplementsFutureVoid.interfaces.firstWhere((e) => e.name == 'Future');
       expect(
-          FutureVoid.linkedName,
-          equals(
-              'Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span>'));
+        FutureVoid.linkedName,
+        equals(
+          'Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span>',
+        ),
+      );
     });
 
     test('Verify that a mixin with a void type parameter works', () {
       expect(
-          ATypeTakingClassMixedIn.linkedName,
-          equals(
-              '<a href="${htmlBasePlaceholder}fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a>'));
+        ATypeTakingClassMixedIn.linkedName,
+        equals(
+          '<a href="${htmlBasePlaceholder}fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a>',
+        ),
+      );
       var ATypeTakingClassVoid = ATypeTakingClassMixedIn.mixedInTypes
-          .firstWhere((c) => c.name == 'ATypeTakingClass');
+          .firstWhere((e) => e.name == 'ATypeTakingClass');
       expect(
-          ATypeTakingClassVoid.linkedName,
-          equals(
-              '<a href="${htmlBasePlaceholder}fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span>'));
+        ATypeTakingClassVoid.linkedName,
+        equals(
+          '<a href="${htmlBasePlaceholder}fake/ATypeTakingClass-class.html">ATypeTakingClass</a>'
+          '<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span>',
+        ),
+      );
     });
   });
 
