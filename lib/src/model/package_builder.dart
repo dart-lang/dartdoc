@@ -136,8 +136,7 @@ class PubPackageBuilder implements PackageBuilder {
 
   late final Map<String, List<Folder>> _packageMap;
 
-  late final AnalysisContextCollection _contextCollection =
-      AnalysisContextCollectionImpl(
+  late final _contextCollection = AnalysisContextCollectionImpl(
     includedPaths: [_config.inputDir],
     // TODO(jcollins-g): should we pass excluded directories here instead of
     // handling it ourselves?
@@ -464,6 +463,8 @@ class PubPackageBuilder implements PackageBuilder {
       specialFiles.difference(files),
       addingSpecials: true,
     );
+    // Shutdown macro support.
+    await _contextCollection.dispose();
   }
 
   /// Throws an exception if any configured-to-be-included files were not found
