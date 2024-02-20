@@ -19,8 +19,7 @@ abstract class Typedef extends ModelElement
 
   DartType get aliasedType => element.aliasedType;
 
-  late final ElementType modelType =
-      modelBuilder.typeFrom(element.aliasedType, library);
+  late final ElementType modelType = getTypeFor(element.aliasedType, library);
 
   @override
   Library get enclosingElement => library;
@@ -65,7 +64,7 @@ abstract class Typedef extends ModelElement
 
   @override
   List<TypeParameter> get typeParameters => element.typeParameters
-      .map((f) => modelBuilder.from(f, library) as TypeParameter)
+      .map((f) => packageGraph.getModelFor(f, library) as TypeParameter)
       .toList(growable: false);
 
   TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;

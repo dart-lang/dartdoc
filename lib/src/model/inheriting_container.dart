@@ -20,7 +20,7 @@ import 'package:meta/meta.dart';
 /// [hasModifiers] override is not necessary for this mixin.
 mixin Constructable on InheritingContainer {
   late final List<Constructor> constructors = element.constructors
-      .map((e) => modelBuilder.from(e, library) as Constructor)
+      .map((e) => packageGraph.getModelFor(e, library) as Constructor)
       .toList(growable: false);
 
   @override
@@ -81,8 +81,7 @@ abstract class InheritingContainer extends Container
     return elementSupertype == null ||
             elementSupertype.element.supertype == null
         ? null
-        : modelBuilder.typeFrom(elementSupertype, library)
-            as DefinedElementType;
+        : getTypeFor(elementSupertype, library) as DefinedElementType;
   }
 
   /// Class modifiers from the Dart feature specification.
@@ -126,7 +125,8 @@ abstract class InheritingContainer extends Container
 
     return [
       for (var e in inheritedMethodElements)
-        modelBuilder.from(e, library, enclosingContainer: this) as Method,
+        packageGraph.getModelFor(e, library, enclosingContainer: this)
+            as Method,
     ];
   }
 
@@ -139,12 +139,13 @@ abstract class InheritingContainer extends Container
 
     return [
       for (var e in inheritedOperatorElements)
-        modelBuilder.from(e, library, enclosingContainer: this) as Operator,
+        packageGraph.getModelFor(e, library, enclosingContainer: this)
+            as Operator,
     ];
   }
 
   late final DefinedElementType modelType =
-      modelBuilder.typeFrom(element.thisType, library) as DefinedElementType;
+      getTypeFor(element.thisType, library) as DefinedElementType;
 
   late final List<DefinedElementType> publicSuperChain =
       model_utils.filterNonPublic(superChain).toList(growable: false);
@@ -254,14 +255,14 @@ abstract class InheritingContainer extends Container
 
   @override
   late final List<Method> declaredMethods = element.methods
-      .map((e) => modelBuilder.from(e, library) as Method)
+      .map((e) => packageGraph.getModelFor(e, library) as Method)
       .toList(growable: false);
 
   @override
   late final List<TypeParameter> typeParameters = element.typeParameters
-      .map((typeParameter) => modelBuilder.from(
+      .map((typeParameter) => packageGraph.getModelFor(
           typeParameter,
-          modelBuilder.fromElement(typeParameter.enclosingElement!.library!)
+          getModelForElement(typeParameter.enclosingElement!.library!)
               as Library) as TypeParameter)
       .toList(growable: false);
 
@@ -292,7 +293,7 @@ abstract class InheritingContainer extends Container
 
   /// The [InheritingContainer] with the library in which [element] is defined.
   InheritingContainer get definingContainer =>
-      modelBuilder.from(element, definingLibrary) as InheritingContainer;
+      packageGraph.getModelFor(element, definingLibrary) as InheritingContainer;
 
   @override
   InterfaceElement get element;
@@ -397,8 +398,7 @@ abstract class InheritingContainer extends Container
       if (superclass == null || superclass.superclass == null) {
         break;
       }
-      parent =
-          modelBuilder.typeFrom(superclass, library) as DefinedElementType?;
+      parent = getTypeFor(superclass, library) as DefinedElementType?;
     }
     return typeChain;
   }
@@ -419,7 +419,7 @@ abstract class InheritingContainer extends Container
       if (element == null) return null;
       final enclosingContainer =
           inheritedAccessors.contains(element) ? this : null;
-      return modelBuilder.from(element, library,
+      return packageGraph.getModelFor(element, library,
           enclosingContainer: enclosingContainer) as ContainerAccessor;
     }
 
@@ -459,14 +459,14 @@ abstract class InheritingContainer extends Container
     if ((getter == null || getter.isInherited) &&
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
-      return modelBuilder.fromPropertyInducingElement(field, library,
+      return getModelForPropertyInducingElement(field, library,
           enclosingContainer: this, getter: getter, setter: setter) as Field;
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
       // half-inherited fields when traversing the inheritance tree.  Make
       // this better, somehow.
-      return modelBuilder.fromPropertyInducingElement(field, library,
+      return getModelForPropertyInducingElement(field, library,
           getter: getter, setter: setter) as Field;
     }
   }
@@ -481,7 +481,7 @@ abstract class InheritingContainer extends Container
 mixin MixedInTypes on InheritingContainer {
   @visibleForTesting
   late final List<DefinedElementType> mixedInTypes = element.mixins
-      .map((f) => modelBuilder.typeFrom(f, library) as DefinedElementType)
+      .map((f) => getTypeFor(f, library) as DefinedElementType)
       .toList(growable: false);
 
   List<InheritingContainer> get mixedInElements => [
@@ -502,7 +502,7 @@ mixin MixedInTypes on InheritingContainer {
 mixin TypeImplementing on InheritingContainer {
   late final List<DefinedElementType> _directInterfaces = [
     for (var interface in element.interfaces)
-      modelBuilder.typeFrom(interface, library) as DefinedElementType
+      getTypeFor(interface, library) as DefinedElementType
   ];
 
   late final List<InheritingContainer> publicImplementorsSorted =

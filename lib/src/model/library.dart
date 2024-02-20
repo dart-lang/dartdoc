@@ -109,19 +109,20 @@ class Library extends ModelElement
       Accessor? setter;
       var elementGetter = e.getter;
       if (elementGetter != null) {
-        getter = modelBuilder.fromElement(elementGetter.element) as Accessor;
+        getter = getModelForElement(elementGetter.element) as Accessor;
       }
       var elementSetter = e.setter;
       if (elementSetter != null) {
-        setter = modelBuilder.fromElement(elementSetter.element) as Accessor;
+        setter = getModelForElement(elementSetter.element) as Accessor;
       }
-      return modelBuilder
-          .fromPropertyInducingElement(e.element as PropertyInducingElement,
-              modelBuilder.fromElement(e.element.library!) as Library,
-              getter: getter, setter: setter)
+      return getModelForPropertyInducingElement(
+              e.element as PropertyInducingElement,
+              getModelForElement(e.element.library!) as Library,
+              getter: getter,
+              setter: setter)
           .fullyQualifiedName;
     }
-    return modelBuilder.fromElement(e.element).fullyQualifiedName;
+    return getModelForElement(e.element).fullyQualifiedName;
   }).toList(growable: false);
 
   @override
@@ -144,13 +145,13 @@ class Library extends ModelElement
   @override
   late final List<Extension> extensions = _exportedAndLocalElements
       .whereType<ExtensionElement>()
-      .map((e) => modelBuilder.from(e, this) as Extension)
+      .map((e) => packageGraph.getModelFor(e, this) as Extension)
       .toList(growable: false);
 
   @override
   late final List<ExtensionType> extensionTypes = _exportedAndLocalElements
       .whereType<ExtensionTypeElement>()
-      .map((e) => modelBuilder.from(e, this) as ExtensionType)
+      .map((e) => packageGraph.getModelFor(e, this) as ExtensionType)
       .toList(growable: false);
 
   SdkLibrary? get _sdkLib =>
@@ -185,9 +186,8 @@ class Library extends ModelElement
       var prefixName = i.prefix?.element.name;
       // Ignore invalid imports.
       if (prefixName != null && i.importedLibrary != null) {
-        prefixToLibrary
-            .putIfAbsent(prefixName, () => {})
-            .add(modelBuilder.from(i.importedLibrary!, library) as Library);
+        prefixToLibrary.putIfAbsent(prefixName, () => {}).add(
+            packageGraph.getModelFor(i.importedLibrary!, library) as Library);
       }
     }
     return prefixToLibrary;
@@ -234,13 +234,13 @@ class Library extends ModelElement
   @override
   late final List<Enum> enums = _exportedAndLocalElements
       .whereType<EnumElement>()
-      .map((e) => modelBuilder.from(e, this) as Enum)
+      .map((e) => packageGraph.getModelFor(e, this) as Enum)
       .toList(growable: false);
 
   @override
   late final List<Mixin> mixins = _exportedAndLocalElements
       .whereType<MixinElement>()
-      .map((e) => modelBuilder.from(e, this) as Mixin)
+      .map((e) => packageGraph.getModelFor(e, this) as Mixin)
       .toList(growable: false);
 
   @override
@@ -263,7 +263,7 @@ class Library extends ModelElement
   @override
   late final List<ModelFunction> functions = _exportedAndLocalElements
       .whereType<FunctionElement>()
-      .map((e) => modelBuilder.from(e, this) as ModelFunction)
+      .map((e) => packageGraph.getModelFor(e, this) as ModelFunction)
       .toList(growable: false);
 
   @override
@@ -361,7 +361,7 @@ class Library extends ModelElement
   @override
   late final List<Typedef> typedefs = _exportedAndLocalElements
       .whereType<TypeAliasElement>()
-      .map((e) => modelBuilder.from(e, this) as Typedef)
+      .map((e) => packageGraph.getModelFor(e, this) as Typedef)
       .toList(growable: false);
 
   TypeSystem get typeSystem => element.typeSystem;
@@ -369,7 +369,7 @@ class Library extends ModelElement
   late final List<Class> allClasses = _exportedAndLocalElements
       .whereType<ClassElement>()
       .where((e) => e is! EnumElement && e is! MixinElement)
-      .map((e) => modelBuilder.from(e, this) as Class)
+      .map((e) => packageGraph.getModelFor(e, this) as Class)
       .toList(growable: false);
 
   List<TopLevelVariable> get _variables {
@@ -383,14 +383,14 @@ class Library extends ModelElement
       Accessor? getter;
       var elementGetter = element.getter;
       if (elementGetter != null) {
-        getter = modelBuilder.from(elementGetter, this) as Accessor;
+        getter = packageGraph.getModelFor(elementGetter, this) as Accessor;
       }
       Accessor? setter;
       var elementSetter = element.setter;
       if (elementSetter != null) {
-        setter = modelBuilder.from(elementSetter, this) as Accessor;
+        setter = packageGraph.getModelFor(elementSetter, this) as Accessor;
       }
-      var me = modelBuilder.fromPropertyInducingElement(element, this,
+      var me = getModelForPropertyInducingElement(element, this,
           getter: getter, setter: setter);
       variables.add(me as TopLevelVariable);
     }
@@ -429,8 +429,8 @@ class Library extends ModelElement
   @override
   Map<String, CommentReferable> get referenceChildren {
     var referenceChildrenBuilder = <String, CommentReferable>{};
-    var definedNamesModelElements = element.exportNamespace.definedNames.values
-        .map(modelBuilder.fromElement);
+    var definedNamesModelElements =
+        element.exportNamespace.definedNames.values.map(getModelForElement);
     referenceChildrenBuilder.addEntries(
         definedNamesModelElements.whereNotType<Accessor>().generateEntries());
     // TODO(jcollins-g): warn and get rid of this case where it shows up.

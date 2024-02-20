@@ -11,7 +11,7 @@ import 'model.dart';
 
 /// Bridges the gap between model elements and packages,
 /// both of which have documentation.
-abstract class Documentable extends Nameable {
+abstract class Documentable with Nameable {
   String? get documentation;
 
   String get documentationAsHtml;
@@ -20,6 +20,7 @@ abstract class Documentable extends Nameable {
 
   String get oneLineDoc;
 
+  @override
   PackageGraph get packageGraph;
 
   Package get package;

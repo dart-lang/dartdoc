@@ -17,7 +17,7 @@ class Extension extends Container implements EnclosedElement {
   final ExtensionElement element;
 
   late final ElementType extendedType =
-      modelBuilder.typeFrom(element.extendedType, library);
+      getTypeFor(element.extendedType, library);
 
   Extension(this.element, super.library, super.packageGraph);
 
@@ -57,7 +57,7 @@ class Extension extends Container implements EnclosedElement {
 
   @override
   late final List<Method> declaredMethods = element.methods
-      .map((e) => modelBuilder.from(e, library) as Method)
+      .map((e) => packageGraph.getModelFor(e, library) as Method)
       .toList(growable: false);
 
   @override
@@ -74,15 +74,15 @@ class Extension extends Container implements EnclosedElement {
     if (fieldSetter != null) {
       setter = ContainerAccessor(fieldSetter, library, packageGraph);
     }
-    return modelBuilder.fromPropertyInducingElement(field, library,
+    return getModelForPropertyInducingElement(field, library,
         getter: getter, setter: setter) as Field;
   }).toList(growable: false);
 
   @override
   late final List<TypeParameter> typeParameters = element.typeParameters
-      .map((typeParameter) => modelBuilder.from(
+      .map((typeParameter) => packageGraph.getModelFor(
           typeParameter,
-          modelBuilder.fromElement(typeParameter.enclosingElement!.library!)
+          getModelForElement(typeParameter.enclosingElement!.library!)
               as Library) as TypeParameter)
       .toList(growable: false);
 

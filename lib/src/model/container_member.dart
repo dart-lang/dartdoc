@@ -21,7 +21,7 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   Container get enclosingElement;
 
   late final Container definingEnclosingContainer =
-      modelBuilder.fromElement(element.enclosingElement!) as Container;
+      getModelForElement(element.enclosingElement!) as Container;
 
   @override
   Set<Attribute> get attributes => {

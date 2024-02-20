@@ -72,7 +72,7 @@ mixin GetterSetterCombo on ModelElement {
       warn(PackageWarning.missingConstantConstructor, message: constructorName);
       return original;
     }
-    var target = modelBuilder.fromElement(staticElement) as Constructor;
+    var target = getModelForElement(staticElement) as Constructor;
     if (target.enclosingElement is! Class) return original;
     var targetClass = target.enclosingElement as Class;
     // TODO(jcollins-g): this logic really should be integrated into Constructor,

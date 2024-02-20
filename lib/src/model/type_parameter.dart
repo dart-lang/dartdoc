@@ -16,7 +16,7 @@ class TypeParameter extends ModelElement with HasNoPage {
 
   @override
   ModelElement get enclosingElement =>
-      modelBuilder.from(element.enclosingElement!, library);
+      packageGraph.getModelFor(element.enclosingElement!, library);
 
   /// [TypeParameter]s don't have documentation pages, and don't link to the
   /// element on which they are declared.
@@ -30,7 +30,7 @@ class TypeParameter extends ModelElement with HasNoPage {
 
   ElementType? get boundType {
     var bound = element.bound;
-    return bound == null ? null : modelBuilder.typeFrom(bound, library);
+    return bound == null ? null : getTypeFor(bound, library);
   }
 
   @override

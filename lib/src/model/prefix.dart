@@ -24,7 +24,7 @@ class Prefix extends ModelElement with HasNoPage implements EnclosedElement {
 
   // TODO(jcollins-g): consider connecting PrefixElement to the imported library
   // in analyzer?
-  late final Library associatedLibrary = modelBuilder.fromElement(library
+  late final Library associatedLibrary = getModelForElement(library
       .element.libraryImports
       .firstWhere((i) => i.prefix?.element == element)
       .importedLibrary!) as Library;

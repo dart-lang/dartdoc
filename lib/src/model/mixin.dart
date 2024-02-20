@@ -18,7 +18,7 @@ class Mixin extends InheritingContainer with TypeImplementing {
   late final List<ParameterizedElementType> superclassConstraints = [
     ...element.superclassConstraints
         .map((InterfaceType i) =>
-            modelBuilder.typeFrom(i, library) as ParameterizedElementType)
+            getTypeFor(i, library) as ParameterizedElementType)
         .where((t) =>
             t.modelElement != packageGraph.specialClasses[SpecialClass.object])
   ];

@@ -39,7 +39,7 @@ class Method extends ModelElement
 
   void _calcTypeParameters() {
     typeParameters = element.typeParameters.map((f) {
-      return modelBuilder.from(f, library) as TypeParameter;
+      return packageGraph.getModelFor(f, library) as TypeParameter;
     }).toList(growable: false);
   }
 
@@ -58,7 +58,7 @@ class Method extends ModelElement
 
   @override
   Container get enclosingElement => _enclosingContainer ??=
-      modelBuilder.from(element.enclosingElement, library) as Container;
+      packageGraph.getModelFor(element.enclosingElement, library) as Container;
 
   @override
   String get filePath =>
@@ -104,8 +104,8 @@ class Method extends ModelElement
   ExecutableMember? get originalMember =>
       super.originalMember as ExecutableMember?;
 
-  late final Callable modelType = modelBuilder.typeFrom(
-      (originalMember ?? element).type, library) as Callable;
+  late final Callable modelType =
+      getTypeFor((originalMember ?? element).type, library) as Callable;
 
   @override
   Method? get overriddenElement {
@@ -121,7 +121,7 @@ class Method extends ModelElement
           'Expected "${e.enclosingElement?.name}" to be a InterfaceElement, '
           'but was ${e.enclosingElement.runtimeType}',
         );
-        return modelBuilder.fromElement(e) as Method?;
+        return getModelForElement(e) as Method?;
       }
     }
     return null;

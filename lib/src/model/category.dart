@@ -7,12 +7,12 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 /// A subcategory of a package, containing elements tagged with `{@category}`.
-class Category extends Nameable
+class Category
     with
+        Nameable,
         Warnable,
         CommentReferable,
         Locatable,
@@ -20,8 +20,7 @@ class Category extends Nameable
         MarkdownFileDocumentation,
         LibraryContainer,
         TopLevelContainer,
-        Indexable,
-        ModelBuilder
+        Indexable
     implements Documentable {
   /// All libraries in [libraries] must come from [_package].
   @override
