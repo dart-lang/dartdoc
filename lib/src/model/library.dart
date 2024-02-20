@@ -116,7 +116,7 @@ class Library extends ModelElement
         setter = modelBuilder.fromElement(elementSetter.element) as Accessor;
       }
       return modelBuilder
-          .fromPropertyInducingElement(e.element,
+          .fromPropertyInducingElement(e.element as PropertyInducingElement,
               modelBuilder.fromElement(e.element.library!) as Library,
               getter: getter, setter: setter)
           .fullyQualifiedName;

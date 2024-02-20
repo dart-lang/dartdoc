@@ -73,15 +73,21 @@ mixin ModelElementBuilderImpl implements ModelElementBuilder {
       ModelElement._fromElement(e, packageGraph);
 
   @override
-  ModelElement fromPropertyInducingElement(Element e, Library l,
-          {Container? enclosingContainer,
-          Accessor? getter,
-          Accessor? setter}) =>
+  ModelElement fromPropertyInducingElement(
+    PropertyInducingElement element,
+    Library library, {
+    required Accessor? getter,
+    required Accessor? setter,
+    Container? enclosingContainer,
+  }) =>
       ModelElement._fromPropertyInducingElement(
-          e as PropertyInducingElement, l, packageGraph,
-          enclosingContainer: enclosingContainer,
-          getter: getter,
-          setter: setter);
+        element,
+        library,
+        packageGraph,
+        enclosingContainer: enclosingContainer,
+        getter: getter,
+        setter: setter,
+      );
 }
 
 /// This class is the foundation of Dartdoc's model for source code.
@@ -162,10 +168,13 @@ abstract class ModelElement extends Canonicalization
   /// [ModelElement._from]. Specify [enclosingContainer]
   /// if and only if this is to be an inherited or extended object.
   factory ModelElement._fromPropertyInducingElement(
-      PropertyInducingElement e, Library library, PackageGraph packageGraph,
-      {required Accessor? getter,
-      required Accessor? setter,
-      Container? enclosingContainer}) {
+    PropertyInducingElement e,
+    Library library,
+    PackageGraph packageGraph, {
+    required Accessor? getter,
+    required Accessor? setter,
+    Container? enclosingContainer,
+  }) {
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
     //                   for members?
     if (e is Member) {
@@ -292,6 +301,8 @@ abstract class ModelElement extends Canonicalization
       {Container? enclosingContainer}) {
     // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
     //                   is fixed?
+    assert(enclosingContainer == null || enclosingContainer.library == library,
+        '$enclosingContainer.library != $library');
     if (library != Library.sentinel && newModelElement is! Parameter) {
       runtimeStats.incrementAccumulator('modelElementCacheInsertion');
       var key = ConstructedModelElementsKey(e, library, enclosingContainer);
