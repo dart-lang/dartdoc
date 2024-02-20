@@ -1,3 +1,7 @@
+## 8.0.6-wip
+
+* Add troubleshooting information when the sidebars failed to load.
+
 ## 8.0.5
 
 * Require `analyzer: ^6.4.1`.
