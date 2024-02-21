@@ -25,7 +25,7 @@ mixin SourceCode implements Documentable {
 }
 
 extension on Element? {
-  /// Whether `this` is an agumentation method or property.
+  /// Whether `this` is an augmentation method or property.
   ///
   /// This property should only be referenced for elements whose source code we
   /// may wish to refer to.
