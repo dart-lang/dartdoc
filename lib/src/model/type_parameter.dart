@@ -82,5 +82,5 @@ mixin TypeParameters implements ModelElement {
   List<TypeParameter> get typeParameters;
 
   TypeParametersRenderer get _typeParametersRenderer =>
-      packageGraph.rendererFactory.typeParametersRenderer;
+      const TypeParametersRendererHtml();
 }

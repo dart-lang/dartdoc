@@ -721,16 +721,14 @@ abstract class ModelElement extends Canonicalization
   @visibleForTesting
   @override
   ModelElementRenderer get modelElementRenderer =>
-      packageGraph.rendererFactory.modelElementRenderer;
+      const ModelElementRendererHtml();
 
-  ParameterRenderer get _parameterRenderer =>
-      packageGraph.rendererFactory.parameterRenderer;
+  ParameterRenderer get _parameterRenderer => const ParameterRendererHtml();
 
   ParameterRenderer get _parameterRendererDetailed =>
-      packageGraph.rendererFactory.parameterRendererDetailed;
+      const ParameterRendererHtmlList();
 
-  SourceCodeRenderer get _sourceCodeRenderer =>
-      packageGraph.rendererFactory.sourceCodeRenderer;
+  SourceCodeRenderer get _sourceCodeRenderer => const SourceCodeRendererHtml();
 
   String get linkedParams => _parameterRenderer.renderLinkedParams(parameters);
 

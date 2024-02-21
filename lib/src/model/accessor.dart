@@ -49,8 +49,7 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   bool get isSynthetic => element.isSynthetic;
 
-  SourceCodeRenderer get _sourceCodeRenderer =>
-      packageGraph.rendererFactory.sourceCodeRenderer;
+  SourceCodeRenderer get _sourceCodeRenderer => const SourceCodeRendererHtml();
 
   // The [enclosingCombo] where this element was defined.
   late final GetterSetterCombo definingCombo =

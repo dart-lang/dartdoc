@@ -166,7 +166,7 @@ class FunctionTypeElementType extends UndefinedElementType
 
   @override
   ElementTypeRenderer get _renderer =>
-      packageGraph.rendererFactory.functionTypeElementTypeRenderer;
+      const FunctionTypeElementTypeRendererHtml();
 }
 
 /// A [RecordType] which does not have an underpinning Element.
@@ -178,8 +178,7 @@ class RecordElementType extends UndefinedElementType with Rendered {
   String get name => 'Record';
 
   @override
-  ElementTypeRenderer get _renderer =>
-      packageGraph.rendererFactory.recordElementTypeRenderer;
+  ElementTypeRenderer get _renderer => const RecordElementTypeRendererHtml();
 
   List<RecordTypeField> get positionalFields => type.positionalFields;
 
@@ -204,7 +203,7 @@ class AliasedUndefinedElementType extends UndefinedElementType
 
   @override
   ElementTypeRenderer get _renderer =>
-      packageGraph.rendererFactory.aliasedUndefinedElementTypeRenderer;
+      const AliasedUndefinedElementTypeRendererHtml();
 }
 
 class ParameterizedElementType extends DefinedElementType with Rendered {
@@ -217,7 +216,7 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
 
   @override
   ElementTypeRenderer<ParameterizedElementType> get _renderer =>
-      packageGraph.rendererFactory.parameterizedElementTypeRenderer;
+      const ParameterizedElementTypeRendererHtml();
 
   @override
   late final List<ElementType> typeArguments = type.typeArguments
@@ -254,7 +253,7 @@ class AliasedElementType extends ParameterizedElementType with Aliased {
 
   @override
   ElementTypeRenderer<AliasedElementType> get _renderer =>
-      packageGraph.rendererFactory.aliasedElementTypeRenderer;
+      const AliasedElementTypeRendererHtml();
 }
 
 class TypeParameterElementType extends DefinedElementType {
@@ -419,7 +418,7 @@ class CallableElementType extends DefinedElementType with Rendered, Callable {
 
   @override
   ElementTypeRenderer<CallableElementType> get _renderer =>
-      packageGraph.rendererFactory.callableElementTypeRenderer;
+      const CallableElementTypeRendererHtml();
 
   @override
   late final List<ElementType> typeArguments = type.alias?.typeArguments

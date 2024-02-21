@@ -68,7 +68,7 @@ abstract class Typedef extends ModelElement
       .map((f) => modelBuilder.from(f, library) as TypeParameter)
       .toList(growable: false);
 
-  TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;
+  TypedefRenderer get _renderer => const TypedefRendererHtml();
 
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];

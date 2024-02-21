@@ -78,6 +78,5 @@ class Documentation {
     return document.parseMarkdownText(text, processFullText: processFullText);
   }
 
-  DocumentationRenderer get _renderer =>
-      _element.packageGraph.rendererFactory.documentationRenderer;
+  DocumentationRenderer get _renderer => const DocumentationRendererHtml();
 }
