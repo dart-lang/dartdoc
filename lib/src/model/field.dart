@@ -149,8 +149,7 @@ class Field extends ModelElement
   @override
   String? get belowSidebarPath => null;
 
-  SourceCodeRenderer get _sourceCodeRenderer =>
-      packageGraph.rendererFactory.sourceCodeRenderer;
+  SourceCodeRenderer get _sourceCodeRenderer => const SourceCodeRendererHtml();
 
   late final String _sourceCode = () {
     // We could use a set to figure the dupes out, but that would lose ordering.

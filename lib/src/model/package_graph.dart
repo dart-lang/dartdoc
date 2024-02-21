@@ -26,7 +26,6 @@ import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
-import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tool_definition.dart';
 import 'package:dartdoc/src/tool_runner.dart';
@@ -38,7 +37,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     this.config,
     DartSdk sdk,
     this.hasEmbedderSdk,
-    this.rendererFactory,
     this.packageMetaProvider,
   )   : packageMeta = config.topLevelPackageMeta,
         sdkLibrarySources = {
@@ -345,9 +343,6 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
 
   /// Dartdoc's configuration flags.
   final DartdocOptionContext config;
-
-  /// Factory for HTML rendering.
-  final HtmlRenderFactory rendererFactory;
 
   /// PackageMeta Provider for building [PackageMeta]s.
   final PackageMetaProvider packageMetaProvider;

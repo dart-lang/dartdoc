@@ -27,7 +27,6 @@ import 'package:dartdoc/src/model/model.dart' hide Package;
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
-import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
@@ -63,7 +62,6 @@ class PubPackageBuilder implements PackageBuilder {
       }
     }
 
-    var rendererFactory = const HtmlRenderFactory();
     runtimeStats.resetAccumulators([
       'elementTypeInstantiation',
       'modelElementCacheInsertion',
@@ -78,7 +76,6 @@ class PubPackageBuilder implements PackageBuilder {
       _config,
       _sdk,
       _embedderSdkUris.isNotEmpty,
-      rendererFactory,
       _packageMetaProvider,
     );
     await _getLibraries(newGraph);
