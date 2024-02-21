@@ -1012,6 +1012,7 @@ class _Renderer_Category extends RendererBase<Category> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
+                ..._Renderer_Object.propertyMap<CT_>(),
                 ..._Renderer_Nameable.propertyMap<CT_>(),
                 ..._Renderer_Warnable.propertyMap<CT_>(),
                 ..._Renderer_CommentReferable.propertyMap<CT_>(),
@@ -3871,6 +3872,7 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
+                ..._Renderer_Object.propertyMap<CT_>(),
                 ..._Renderer_Nameable.propertyMap<CT_>(),
                 'aboveSidebarPath': Property(
                   getValue: (CT_ c) => c.aboveSidebarPath,
@@ -11477,7 +11479,6 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                ..._Renderer_Object.propertyMap<CT_>(),
                 'breadcrumbName': Property(
                   getValue: (CT_ c) => c.breadcrumbName,
                   renderVariable:
@@ -16542,7 +16543,6 @@ const _invisibleGetters = {
     'isExtensionTypeMember',
     'isExternal',
     'isGenerator',
-    'isLegacy',
     'isOperator',
     'isPrivate',
     'isPublic',
@@ -16805,7 +16805,6 @@ const _invisibleGetters = {
     'hasVisibleOutsideTemplate',
     'hashCode',
     'id',
-    'isLegacy',
     'isPrivate',
     'isPublic',
     'isSynthetic',
@@ -16966,7 +16965,6 @@ const _invisibleGetters = {
     'isFinal',
     'isInitializingFormal',
     'isLate',
-    'isLegacy',
     'isPrivate',
     'isPublic',
     'isStatic',
