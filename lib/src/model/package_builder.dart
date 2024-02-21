@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
@@ -136,8 +135,7 @@ class PubPackageBuilder implements PackageBuilder {
 
   late final Map<String, List<Folder>> _packageMap;
 
-  late final AnalysisContextCollection _contextCollection =
-      AnalysisContextCollectionImpl(
+  late final _contextCollection = AnalysisContextCollectionImpl(
     includedPaths: [_config.inputDir],
     // TODO(jcollins-g): should we pass excluded directories here instead of
     // handling it ourselves?
@@ -464,6 +462,8 @@ class PubPackageBuilder implements PackageBuilder {
       specialFiles.difference(files),
       addingSpecials: true,
     );
+    // Shutdown macro support.
+    await _contextCollection.dispose();
   }
 
   /// Throws an exception if any configured-to-be-included files were not found
