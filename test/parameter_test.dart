@@ -22,92 +22,58 @@ class ParameterTest extends DartdocTestBase {
   @override
   String get sdkConstraint => '>=2.17.0 <3.0.0';
 
-  void test_requiredPositionalFieldFormalParameter() async {
+  void test_formalParameter_generic_method() async {
     var library = await bootPackageWithLibrary('''
-class A {
-  int? f;
-  A.requiredPositional(this.f);
+class C {
+  C() {}
+  int one(int Function<T>(T)? f) {
+    return 1;
+  }
 }
 ''');
-    var requiredPositional = library.constructor('A.requiredPositional');
-
-    expect(requiredPositional.linkedParams, matchesCompressed(r'''
-        <span class="parameter" id="requiredPositional-param-f">
+    var one = library.method('C', 'one');
+    expect(one.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="one-param-f">
           <span class="type-annotation">
-            <a href=".*/dart-core/int-class\.html">int</a>\?
+            <a href=".*/dart-core/int-class\.html">int</a>
           </span>
           <span class="parameter-name">f</span>
+          &lt;<wbr>
+          <span class="type-parameter">T</span>
+          &gt;\(
+          <span class="parameter" id="param-">
+            <span class="type-annotation">T</span>
+          </span>
+          \)\?
         </span>
       '''));
   }
 
-  void test_optionalPositionalFieldFormalParameter() async {
+  void test_formalParameter_generic_topLevelFunction() async {
     var library = await bootPackageWithLibrary('''
-class A {
-  int? f;
-  A.optionalPositional([this.f]);
+int one(int Function<T>(T)? f) {
+  return 1;
 }
 ''');
-    var optionalPositional = library.constructor('A.optionalPositional');
-
-    expect(optionalPositional.linkedParams, matchesCompressed(r'''
-        <span class="parameter" id="optionalPositional-param-f">
-          \[
+    var one = library.publicFunctions.firstWhere((c) => c.name == 'one');
+    expect(one.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="one-param-f">
           <span class="type-annotation">
-            <a href=".*/dart-core/int-class\.html">int</a>\?
+            <a href=".*/dart-core/int-class\.html">int</a>
           </span>
           <span class="parameter-name">f</span>
-          \]
+          &lt;<wbr>
+          <span class="type-parameter">T</span>
+          &gt;\(
+          <span class="parameter" id="param-">
+            <span class="type-annotation">T</span>
+          </span>
+          \)\?
         </span>
       '''));
   }
 
-  void test_optionalPositionalFieldFormalParameterWithDefaultValue() async {
-    var library = await bootPackageWithLibrary('''
-class A {
-  int? f;
-  A.defaultValue([this.f = 0]);
-}
-''');
-    var defaultValue = library.constructor('A.defaultValue');
-
-    expect(defaultValue.linkedParams, matchesCompressed(r'''
-        <span class="parameter" id="defaultValue-param-f">
-          \[
-          <span class="type-annotation">
-            <a href=".*/dart-core/int-class\.html">int</a>\?
-          </span>
-          <span class="parameter-name">f</span>
-          =
-          <span class="default-value">0</span>
-          \]
-        </span>
-      '''));
-  }
-
-  void test_requiredNamedFieldFormalParameter() async {
-    var library = await bootPackageWithLibrary('''
-class A {
-  int? f;
-  A.requiredNamed({required this.f});
-}
-''');
-    var requiredNamed = library.constructor('A.requiredNamed');
-
-    expect(requiredNamed.linkedParams, matchesCompressed(r'''
-        <span class="parameter" id="requiredNamed-param-f">
-          \{
-          <span>required</span>
-          <span class="type-annotation">
-            <a href=".*/dart-core/int-class\.html">int</a>\?
-          </span>
-          <span class="parameter-name">f</span>
-          \}
-        </span>
-      '''));
-  }
-
-  void test_namedFieldFormalParameter() async {
+  void test_formalParameter_named() async {
     var library = await bootPackageWithLibrary('''
 class A {
   int? f;
@@ -128,7 +94,7 @@ class A {
       '''));
   }
 
-  void test_namedFieldFormalParameterWithDefaultValue() async {
+  void test_formalParameter_named_defaultValue() async {
     var library = await bootPackageWithLibrary('''
 class A {
   int? f;
@@ -151,68 +117,65 @@ class A {
       '''));
   }
 
-  void test_requiredPositionalSuperParameter() async {
+  void test_formalParameter_named_required() async {
     var library = await bootPackageWithLibrary('''
-class C {
-  C.requiredPositional(int a);
-}
-class D extends C {
-  D.requiredPositional(super.a) : super.requiredPositional();
+class A {
+  int? f;
+  A.requiredNamed({required this.f});
 }
 ''');
-    var requiredPositional = library.constructor('D.requiredPositional');
+    var requiredNamed = library.constructor('A.requiredNamed');
 
-    expect(requiredPositional.linkedParams, matchesCompressed(r'''
-        <span class="parameter" id="requiredPositional-param-a">
+    expect(requiredNamed.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="requiredNamed-param-f">
+          \{
+          <span>required</span>
           <span class="type-annotation">
-            <a href=".*/dart-core/int-class\.html">int</a>
+            <a href=".*/dart-core/int-class\.html">int</a>\?
           </span>
-          <span class="parameter-name">a</span>
+          <span class="parameter-name">f</span>
+          \}
         </span>
       '''));
   }
 
-  void test_optionalPositionalSuperParameter() async {
+  void test_formalParameter_positional_optional() async {
     var library = await bootPackageWithLibrary('''
-class C {
-  C.optionalPositional([int? a]);
-}
-class D extends C {
-  D.optionalPositional([super.a]) : super.optionalPositional();
+class A {
+  int? f;
+  A.optionalPositional([this.f]);
 }
 ''');
-    var optionalPositional = library.constructor('D.optionalPositional');
+    var optionalPositional = library.constructor('A.optionalPositional');
 
     expect(optionalPositional.linkedParams, matchesCompressed(r'''
-        <span class="parameter" id="optionalPositional-param-a">
+        <span class="parameter" id="optionalPositional-param-f">
           \[
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
           </span>
-          <span class="parameter-name">a</span>
+          <span class="parameter-name">f</span>
           \]
         </span>
       '''));
   }
 
-  void test_optionalPositionalSuperParameterWithDefault() async {
+  void test_formalParameter_positional_optional_defaultValue() async {
     var library = await bootPackageWithLibrary('''
-class C {
-  C.defaultValue([int a = 0]);
-}
-class D extends C {
-  D.defaultValue([super.a = 0]) : super.defaultValue();
+class A {
+  int? f;
+  A.defaultValue([this.f = 0]);
 }
 ''');
-    var defaultValue = library.constructor('D.defaultValue');
+    var defaultValue = library.constructor('A.defaultValue');
 
     expect(defaultValue.linkedParams, matchesCompressed(r'''
-        <span class="parameter" id="defaultValue-param-a">
+        <span class="parameter" id="defaultValue-param-f">
           \[
           <span class="type-annotation">
-            <a href=".*/dart-core/int-class\.html">int</a>
+            <a href=".*/dart-core/int-class\.html">int</a>\?
           </span>
-          <span class="parameter-name">a</span>
+          <span class="parameter-name">f</span>
           =
           <span class="default-value">0</span>
           \]
@@ -220,31 +183,93 @@ class D extends C {
       '''));
   }
 
-  void test_requiredNamedSuperParameters() async {
+  void test_formalParameter_positional_required() async {
     var library = await bootPackageWithLibrary('''
-class C {
-  C.requiredNamed({required int a});
-}
-class D extends C {
-  D.requiredNamed({required super.a}) : super.requiredNamed();
+class A {
+  int? f;
+  A.requiredPositional(this.f);
 }
 ''');
-    var requiredNamed = library.constructor('D.requiredNamed');
+    var requiredPositional = library.constructor('A.requiredPositional');
 
-    expect(requiredNamed.linkedParams, matchesCompressed(r'''
-        <span class="parameter" id="requiredNamed-param-a">
-          \{
-          <span>required</span>
+    expect(requiredPositional.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="requiredPositional-param-f">
           <span class="type-annotation">
-            <a href=".*/dart-core/int-class\.html">int</a>
+            <a href=".*/dart-core/int-class\.html">int</a>\?
           </span>
-          <span class="parameter-name">a</span>
-          \}
+          <span class="parameter-name">f</span>
         </span>
       '''));
   }
 
-  void test_namedSuperParameter() async {
+  void test_superConstructorParameter_fieldFormal() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  int f;
+  C.fieldFormal(this.f);
+}
+class D extends C {
+  D.fieldFormal(super.f) : super.fieldFormal();
+}
+''');
+    var fieldFormal = library.constructor('D.fieldFormal');
+
+    expect(fieldFormal.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="fieldFormal-param-f">
+          <span class="type-annotation">
+            <a href=".*/dart-core/int-class\.html">int</a>
+          </span>
+          <span class="parameter-name">f</span>
+        </span>
+      '''));
+  }
+
+  void test_superConstructorParameter_isSubtype() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  C.positionalNum(num g);
+}
+class D extends C {
+  D.positionalNum(int super.g) : super.positionalNum();
+}
+''');
+    var positionalNum = library.constructor('D.positionalNum');
+
+    expect(positionalNum.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="positionalNum-param-g">
+          <span class="type-annotation">
+            <a href=".*/dart-core/int-class\.html">int</a>
+          </span>
+          <span class="parameter-name">g</span>
+        </span>
+      '''));
+  }
+
+  void test_superConstructorParameter_superParameter() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  C.requiredPositional(int a);
+}
+class D extends C {
+  D.requiredPositional(super.a) : super.requiredPositional();
+}
+class E extends D {
+  E.superIsSuper(super.a) : super.requiredPositional();
+}
+''');
+    var superIsSuper = library.constructor('E.superIsSuper');
+
+    expect(superIsSuper.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="superIsSuper-param-a">
+          <span class="type-annotation">
+            <a href=".*/dart-core/int-class\.html">int</a>
+          </span>
+          <span class="parameter-name">a</span>
+        </span>
+      '''));
+  }
+
+  void test_superParameter_named() async {
     var library = await bootPackageWithLibrary('''
 class C {
   C.named({int? a});
@@ -267,7 +292,7 @@ class D extends C {
       '''));
   }
 
-  void test_namedSuperParameterWithDefault() async {
+  void test_superParameter_named_default() async {
     var library = await bootPackageWithLibrary('''
 class C {
   C.namedWithDefault({int a = 0});
@@ -292,29 +317,79 @@ class D extends C {
       '''));
   }
 
-  void test_superConstructorParameterIsFieldFormal() async {
+  void test_superParameter_named_required() async {
     var library = await bootPackageWithLibrary('''
 class C {
-  int f;
-  C.fieldFormal(this.f);
+  C.requiredNamed({required int a});
 }
 class D extends C {
-  D.fieldFormal(super.f) : super.fieldFormal();
+  D.requiredNamed({required super.a}) : super.requiredNamed();
 }
 ''');
-    var fieldFormal = library.constructor('D.fieldFormal');
+    var requiredNamed = library.constructor('D.requiredNamed');
 
-    expect(fieldFormal.linkedParams, matchesCompressed(r'''
-        <span class="parameter" id="fieldFormal-param-f">
+    expect(requiredNamed.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="requiredNamed-param-a">
+          \{
+          <span>required</span>
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>
           </span>
-          <span class="parameter-name">f</span>
+          <span class="parameter-name">a</span>
+          \}
         </span>
       '''));
   }
 
-  void test_superConstructorParameterIsSuperParameter() async {
+  void test_superParameter_positional_optional() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  C.optionalPositional([int? a]);
+}
+class D extends C {
+  D.optionalPositional([super.a]) : super.optionalPositional();
+}
+''');
+    var optionalPositional = library.constructor('D.optionalPositional');
+
+    expect(optionalPositional.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="optionalPositional-param-a">
+          \[
+          <span class="type-annotation">
+            <a href=".*/dart-core/int-class\.html">int</a>\?
+          </span>
+          <span class="parameter-name">a</span>
+          \]
+        </span>
+      '''));
+  }
+
+  void test_superParameter_positional_optional_default() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  C.defaultValue([int a = 0]);
+}
+class D extends C {
+  D.defaultValue([super.a = 0]) : super.defaultValue();
+}
+''');
+    var defaultValue = library.constructor('D.defaultValue');
+
+    expect(defaultValue.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="defaultValue-param-a">
+          \[
+          <span class="type-annotation">
+            <a href=".*/dart-core/int-class\.html">int</a>
+          </span>
+          <span class="parameter-name">a</span>
+          =
+          <span class="default-value">0</span>
+          \]
+        </span>
+      '''));
+  }
+
+  void test_superParameter_positional_required() async {
     var library = await bootPackageWithLibrary('''
 class C {
   C.requiredPositional(int a);
@@ -322,39 +397,15 @@ class C {
 class D extends C {
   D.requiredPositional(super.a) : super.requiredPositional();
 }
-class E extends D {
-  E.superIsSuper(super.a) : super.requiredPositional();
-}
 ''');
-    var superIsSuper = library.constructor('E.superIsSuper');
+    var requiredPositional = library.constructor('D.requiredPositional');
 
-    expect(superIsSuper.linkedParams, matchesCompressed(r'''
-        <span class="parameter" id="superIsSuper-param-a">
+    expect(requiredPositional.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="requiredPositional-param-a">
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>
           </span>
           <span class="parameter-name">a</span>
-        </span>
-      '''));
-  }
-
-  void test_parameterIsSubtypeOfSuperConstructorParameter() async {
-    var library = await bootPackageWithLibrary('''
-class C {
-  C.positionalNum(num g);
-}
-class D extends C {
-  D.positionalNum(int super.g) : super.positionalNum();
-}
-''');
-    var positionalNum = library.constructor('D.positionalNum');
-
-    expect(positionalNum.linkedParams, matchesCompressed(r'''
-        <span class="parameter" id="positionalNum-param-g">
-          <span class="type-annotation">
-            <a href=".*/dart-core/int-class\.html">int</a>
-          </span>
-          <span class="parameter-name">g</span>
         </span>
       '''));
   }
@@ -368,4 +419,9 @@ extension on Library {
         .constructors
         .firstWhere((c) => c.name == name);
   }
+
+  Method method(String className, String methodName) => classes
+      .firstWhere((clas) => clas.name == className)
+      .declaredMethods
+      .firstWhere((method) => method.name == methodName);
 }
