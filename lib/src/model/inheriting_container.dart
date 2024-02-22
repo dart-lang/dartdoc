@@ -20,7 +20,7 @@ import 'package:meta/meta.dart';
 /// [hasModifiers] override is not necessary for this mixin.
 mixin Constructable on InheritingContainer {
   late final List<Constructor> constructors = element.constructors
-      .map((e) => packageGraph.getModelFor(e, library) as Constructor)
+      .map((e) => getModelFor(e, library) as Constructor)
       .toList(growable: false);
 
   @override
@@ -125,8 +125,7 @@ abstract class InheritingContainer extends Container
 
     return [
       for (var e in inheritedMethodElements)
-        packageGraph.getModelFor(e, library, enclosingContainer: this)
-            as Method,
+        getModelFor(e, library, enclosingContainer: this) as Method,
     ];
   }
 
@@ -139,8 +138,7 @@ abstract class InheritingContainer extends Container
 
     return [
       for (var e in inheritedOperatorElements)
-        packageGraph.getModelFor(e, library, enclosingContainer: this)
-            as Operator,
+        getModelFor(e, library, enclosingContainer: this) as Operator,
     ];
   }
 
@@ -255,12 +253,12 @@ abstract class InheritingContainer extends Container
 
   @override
   late final List<Method> declaredMethods = element.methods
-      .map((e) => packageGraph.getModelFor(e, library) as Method)
+      .map((e) => getModelFor(e, library) as Method)
       .toList(growable: false);
 
   @override
   late final List<TypeParameter> typeParameters = element.typeParameters
-      .map((typeParameter) => packageGraph.getModelFor(
+      .map((typeParameter) => getModelFor(
           typeParameter,
           getModelForElement(typeParameter.enclosingElement!.library!)
               as Library) as TypeParameter)
@@ -293,7 +291,7 @@ abstract class InheritingContainer extends Container
 
   /// The [InheritingContainer] with the library in which [element] is defined.
   InheritingContainer get definingContainer =>
-      packageGraph.getModelFor(element, definingLibrary) as InheritingContainer;
+      getModelFor(element, definingLibrary) as InheritingContainer;
 
   @override
   InterfaceElement get element;
@@ -419,7 +417,7 @@ abstract class InheritingContainer extends Container
       if (element == null) return null;
       final enclosingContainer =
           inheritedAccessors.contains(element) ? this : null;
-      return packageGraph.getModelFor(element, library,
+      return getModelFor(element, library,
           enclosingContainer: enclosingContainer) as ContainerAccessor;
     }
 

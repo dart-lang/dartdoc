@@ -41,6 +41,8 @@ mixin Nameable {
   PackageGraph get packageGraph;
 
   /// Returns the [ModelElement] for [element], instantiating it if needed.
+  ///
+  /// A convenience method for [ModelElement.for_], see its documentation.
   ModelElement getModelFor(
     Element element,
     Library library, {
@@ -54,10 +56,19 @@ mixin Nameable {
       );
 
   /// Returns the [ModelElement] for [element], instantiating it if needed.
+  ///
+  /// A convenience method for [ModelElement.forElement], see its
+  /// documentation.
   ModelElement getModelForElement(Element element) =>
       ModelElement.forElement(element, packageGraph);
 
   /// Returns the [ModelElement] for [element], instantiating it if needed.
+  ///
+  /// A convenience method for [ModelElement.forPropertyInducingElement], see
+  /// its documentation.
+  // TODO(srawlins): Most callers seem to determine `getter` and `setter`
+  // immediately before calling this method, and I imagine could instead just
+  // call `getModelFor`.
   ModelElement getModelForPropertyInducingElement(
     PropertyInducingElement element,
     Library library, {

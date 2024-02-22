@@ -39,7 +39,7 @@ class Method extends ModelElement
 
   void _calcTypeParameters() {
     typeParameters = element.typeParameters.map((f) {
-      return packageGraph.getModelFor(f, library) as TypeParameter;
+      return getModelFor(f, library) as TypeParameter;
     }).toList(growable: false);
   }
 
@@ -58,7 +58,7 @@ class Method extends ModelElement
 
   @override
   Container get enclosingElement => _enclosingContainer ??=
-      packageGraph.getModelFor(element.enclosingElement, library) as Container;
+      getModelFor(element.enclosingElement, library) as Container;
 
   @override
   String get filePath =>

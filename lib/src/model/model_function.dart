@@ -41,7 +41,7 @@ class ModelFunctionTyped extends ModelElement
   @override
   late final List<TypeParameter> typeParameters = [
     for (var p in element.typeParameters)
-      packageGraph.getModelFor(p, library) as TypeParameter,
+      getModelFor(p, library) as TypeParameter,
   ];
 
   ModelFunctionTyped(this.element, super.library, super.packageGraph);

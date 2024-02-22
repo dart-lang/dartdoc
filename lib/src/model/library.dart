@@ -145,13 +145,13 @@ class Library extends ModelElement
   @override
   late final List<Extension> extensions = _exportedAndLocalElements
       .whereType<ExtensionElement>()
-      .map((e) => packageGraph.getModelFor(e, this) as Extension)
+      .map((e) => getModelFor(e, this) as Extension)
       .toList(growable: false);
 
   @override
   late final List<ExtensionType> extensionTypes = _exportedAndLocalElements
       .whereType<ExtensionTypeElement>()
-      .map((e) => packageGraph.getModelFor(e, this) as ExtensionType)
+      .map((e) => getModelFor(e, this) as ExtensionType)
       .toList(growable: false);
 
   SdkLibrary? get _sdkLib =>
@@ -186,8 +186,9 @@ class Library extends ModelElement
       var prefixName = i.prefix?.element.name;
       // Ignore invalid imports.
       if (prefixName != null && i.importedLibrary != null) {
-        prefixToLibrary.putIfAbsent(prefixName, () => {}).add(
-            packageGraph.getModelFor(i.importedLibrary!, library) as Library);
+        prefixToLibrary
+            .putIfAbsent(prefixName, () => {})
+            .add(getModelFor(i.importedLibrary!, library) as Library);
       }
     }
     return prefixToLibrary;
@@ -234,13 +235,13 @@ class Library extends ModelElement
   @override
   late final List<Enum> enums = _exportedAndLocalElements
       .whereType<EnumElement>()
-      .map((e) => packageGraph.getModelFor(e, this) as Enum)
+      .map((e) => getModelFor(e, this) as Enum)
       .toList(growable: false);
 
   @override
   late final List<Mixin> mixins = _exportedAndLocalElements
       .whereType<MixinElement>()
-      .map((e) => packageGraph.getModelFor(e, this) as Mixin)
+      .map((e) => getModelFor(e, this) as Mixin)
       .toList(growable: false);
 
   @override
@@ -263,7 +264,7 @@ class Library extends ModelElement
   @override
   late final List<ModelFunction> functions = _exportedAndLocalElements
       .whereType<FunctionElement>()
-      .map((e) => packageGraph.getModelFor(e, this) as ModelFunction)
+      .map((e) => getModelFor(e, this) as ModelFunction)
       .toList(growable: false);
 
   @override

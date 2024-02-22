@@ -81,7 +81,11 @@ abstract class ModelElement extends Canonicalization
 
   ModelElement(this._library, this._packageGraph, [this._originalMember]);
 
-  /// Returns a [ModelElement] for [e].
+  /// Returns a [ModelElement] for an [Element], which can be a
+  /// property-inducing element or not.
+  ///
+  /// This constructor is used when the caller does not know the element's
+  /// library, or whether it is property-inducing.
   factory ModelElement.forElement(Element e, PackageGraph p) {
     if (e is MultiplyDefinedElement) {
       // The code-to-document has static errors. We can pick the first
@@ -105,9 +109,9 @@ abstract class ModelElement extends Canonicalization
     return ModelElement.for_(e, library, p);
   }
 
-  /// Returns a [ModelElement] for [PropertyInducingElement] [e].
+  /// Returns a [ModelElement] for a property-inducing element.
   ///
-  /// Do not construct any ModelElements except from this constructor or
+  /// Do not construct any [ModelElement]s except from this constructor or
   /// [ModelElement.for_]. Specify [enclosingContainer] if and only if this is
   /// to be an inherited or extended object.
   factory ModelElement.forPropertyInducingElement(
@@ -181,7 +185,7 @@ abstract class ModelElement extends Canonicalization
   /// Returns a [ModelElement] from a non-property-inducing [e].
   ///
   /// Do not construct any ModelElements except from this constructor or
-  /// [ModelElement._fromPropertyInducingElement]. Specify [enclosingContainer]
+  /// [ModelElement.forPropertyInducingElement]. Specify [enclosingContainer]
   /// if and only if this is to be an inherited or extended object.
   // TODO(jcollins-g): this way of using the optional parameter is messy,
   // clean that up.
@@ -238,7 +242,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   /// Caches a newly-created [ModelElement] from [ModelElement._from] or
-  /// [ModelElement._fromPropertyInducingElement].
+  /// [ModelElement.forPropertyInducingElement].
   static void _cacheNewModelElement(
       Element e, ModelElement newModelElement, Library library,
       {Container? enclosingContainer}) {

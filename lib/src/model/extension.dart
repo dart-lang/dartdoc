@@ -57,7 +57,7 @@ class Extension extends Container implements EnclosedElement {
 
   @override
   late final List<Method> declaredMethods = element.methods
-      .map((e) => packageGraph.getModelFor(e, library) as Method)
+      .map((e) => getModelFor(e, library) as Method)
       .toList(growable: false);
 
   @override
@@ -80,7 +80,7 @@ class Extension extends Container implements EnclosedElement {
 
   @override
   late final List<TypeParameter> typeParameters = element.typeParameters
-      .map((typeParameter) => packageGraph.getModelFor(
+      .map((typeParameter) => getModelFor(
           typeParameter,
           getModelForElement(typeParameter.enclosingElement!.library!)
               as Library) as TypeParameter)

@@ -4,9 +4,7 @@
 
 /// The models used to represent Dart types, all subclasses of [ElementType].
 ///
-/// The only entrypoint for constructing these classes is
-/// [ElementTypeBuilderImpl.typeFrom], which delegates instantiation to various
-/// factories.
+/// The only entrypoint for constructing these classes is [ElementType.for_].
 library;
 
 import 'package:analyzer/dart/element/element.dart';
@@ -147,7 +145,7 @@ class FunctionTypeElementType extends UndefinedElementType
       : super._();
 
   List<TypeParameter> get typeFormals => type.typeFormals
-      .map((p) => packageGraph.getModelFor(p, library) as TypeParameter)
+      .map((p) => getModelFor(p, library) as TypeParameter)
       .toList(growable: false);
 
   @override
@@ -210,7 +208,7 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
 
   @override
   late final List<ElementType> typeArguments = type.typeArguments
-      .map((f) => packageGraph.getTypeFor(f, library))
+      .map((f) => getTypeFor(f, library))
       .toList(growable: false);
 }
 
@@ -228,7 +226,7 @@ mixin Aliased implements ElementType {
       ModelElement.forElement(typeAliasElement, packageGraph);
 
   late final List<ElementType> aliasArguments = type.alias!.typeArguments
-      .map((f) => packageGraph.getTypeFor(f, library))
+      .map((f) => getTypeFor(f, library))
       .toList(growable: false);
 }
 
@@ -370,11 +368,10 @@ abstract class DefinedElementType extends ElementType {
 /// unless it is an alias reference.
 mixin Callable on ElementType {
   List<Parameter> get parameters => type.parameters
-      .map((p) => packageGraph.getModelFor(p, library) as Parameter)
+      .map((p) => getModelFor(p, library) as Parameter)
       .toList(growable: false);
 
-  late final ElementType returnType =
-      packageGraph.getTypeFor(type.returnType, library);
+  late final ElementType returnType = getTypeFor(type.returnType, library);
 
   @override
   // TODO(jcollins-g): mustachio should not require this
@@ -412,7 +409,7 @@ class CallableElementType extends DefinedElementType with Rendered, Callable {
 
   @override
   late final List<ElementType> typeArguments = type.alias?.typeArguments
-          .map((f) => packageGraph.getTypeFor(f, library))
+          .map((f) => getTypeFor(f, library))
           .toList(growable: false) ??
       const [];
 }

@@ -33,7 +33,7 @@ class Constructor extends ModelElement
 
   @override
   Container get enclosingElement =>
-      packageGraph.getModelFor(element.enclosingElement, library) as Container;
+      getModelFor(element.enclosingElement, library) as Container;
 
   @override
   String get filePath =>

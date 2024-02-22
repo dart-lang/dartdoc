@@ -50,7 +50,7 @@ class ExtensionType extends InheritingContainer
     if (fieldSetter != null) {
       setter = ContainerAccessor(fieldSetter, library, packageGraph);
     }
-    return packageGraph.getModelForPropertyInducingElement(field, library,
+    return getModelForPropertyInducingElement(field, library,
         getter: getter, setter: setter) as Field;
   }).toList(growable: false);
 

@@ -24,7 +24,7 @@ class Parameter extends ModelElement with HasNoPage {
     final enclosingElement = element.enclosingElement;
     return enclosingElement == null
         ? null
-        : packageGraph.getModelFor(enclosingElement, library);
+        : getModelFor(enclosingElement, library);
   }
 
   bool get hasDefaultValue {
