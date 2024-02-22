@@ -10,7 +10,7 @@ import 'package:yaml/yaml.dart' as yaml;
 
 export 'package:test_descriptor/test_descriptor.dart';
 
-String buildPubspecText({String sdkConstraint = '>=2.15.0 <3.0.0'}) => '''
+String buildPubspecText({String sdkConstraint = '>=3.2.0 <4.0.0'}) => '''
 name: test_package
 version: 0.0.1
 environment:
@@ -76,9 +76,9 @@ Future<String> createPackage(
   "packages": [
     $packagesInfo
   ],
-  "generated": "2021-09-14T20:36:04.604099Z",
+  "generated": "2024-02-14T20:36:04.604099Z",
   "generator": "pub",
-  "generatorVersion": "2.14.1"
+  "generatorVersion": "3.2.0"
 }
 ''')
       ],

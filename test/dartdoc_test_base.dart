@@ -36,10 +36,9 @@ abstract class DartdocTestBase {
 
   String get linkPrefix => '$placeholder$libraryName';
 
-  String get dartCoreUrlPrefix =>
-      'https://api.dart.dev/stable/2.16.0/dart-core';
+  String get dartCoreUrlPrefix => 'https://api.dart.dev/stable/3.2.0/dart-core';
 
-  String get sdkConstraint => '>=2.15.0 <3.0.0';
+  String get sdkConstraint => '>=3.2.0 <4.0.0';
 
   List<String> get experiments => [];
 

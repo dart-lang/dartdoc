@@ -18,9 +18,9 @@ void main() async {
   const linkPrefix = '$placeholder$libraryName';
 
   const intLink =
-      '<a href="https://api.dart.dev/stable/2.16.0/dart-core/int-class.html">int</a>';
+      '<a href="https://api.dart.dev/stable/3.2.0/dart-core/int-class.html">int</a>';
   const stringLink =
-      '<a href="https://api.dart.dev/stable/2.16.0/dart-core/String-class.html">String</a>';
+      '<a href="https://api.dart.dev/stable/3.2.0/dart-core/String-class.html">String</a>';
 
   final packageMetaProvider = testPackageMetaProvider;
   final resourceProvider =
