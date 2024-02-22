@@ -133,7 +133,8 @@ mixin GetterSetterCombo on ModelElement {
       // For an enum value with an implicit constructor call (like
       // `enum E { one, two; }`), `constantInitializer.toString()` does not
       // include the implicit enum index argument (it is something like
-      // `const E()`). We must manually include it.
+      // `const E()`). We must manually include it. See
+      // https://github.com/dart-lang/sdk/issues/54988.
       initializerString =
           initializerString.replaceFirst('()', '(${self.index})');
     }
