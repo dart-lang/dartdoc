@@ -406,27 +406,6 @@ mixin Rendered implements ElementType {
   ElementTypeRenderer<ElementType> get _renderer;
 }
 
-/// A callable type that may or may not be backed by a declaration using the
-/// generic function syntax.
-class CallableElementType extends DefinedElementType with Rendered, Callable {
-  CallableElementType._(
-      FunctionType super.t, super.library, super.packageGraph, super.element)
-      : super._();
-
-  @override
-  String get name => super.name.isNotEmpty ? super.name : 'Function';
-
-  @override
-  ElementTypeRenderer<CallableElementType> get _renderer =>
-      const CallableElementTypeRendererHtml();
-
-  @override
-  late final List<ElementType> typeArguments = type.alias?.typeArguments
-          .map((f) => modelBuilder.typeFrom(f, library))
-          .toList(growable: false) ??
-      const [];
-}
-
 extension on DartType {
   /// The dartdoc nullability suffix for this type in [library].
   String nullabilitySuffixWithin(Library library) {
