@@ -164,6 +164,22 @@ abstract class ParameterRenderer {
           : modelType.returnType.linkedName;
       buffer.write(typeName(returnTypeName));
       buffer.write(' ${parameterName(param.name)}');
+
+      // Writes out the generic type parameters for a function type.
+      // TODO(kallentu): Pull this type parameter generation into a helper for
+      // other renderers that also do this same work.
+      if (modelType is FunctionTypeElementType) {
+        if (modelType.typeFormals.isNotEmpty) {
+          if (!modelType.typeFormals.every((t) => t.name == 'dynamic')) {
+            buffer
+              ..write('&lt;<wbr><span class="type-parameter">')
+              ..writeAll(modelType.typeFormals.map((t) => t.name),
+                  '</span>, <span class="type-parameter">')
+              ..write('</span>&gt;');
+          }
+        }
+      }
+
       if (!modelType.isTypedef && modelType is DefinedElementType) {
         buffer.write('(');
         buffer.write(renderLinkedParams(
