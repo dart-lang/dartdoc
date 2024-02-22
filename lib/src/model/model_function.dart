@@ -41,7 +41,7 @@ class ModelFunctionTyped extends ModelElement
   @override
   late final List<TypeParameter> typeParameters = [
     for (var p in element.typeParameters)
-      modelBuilder.from(p, library) as TypeParameter,
+      getModelFor(p, library) as TypeParameter,
   ];
 
   ModelFunctionTyped(this.element, super.library, super.packageGraph);
@@ -82,6 +82,5 @@ class ModelFunctionTyped extends ModelElement
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
-  late final Callable modelType =
-      modelBuilder.typeFrom(element.type, library) as Callable;
+  late final Callable modelType = getTypeFor(element.type, library) as Callable;
 }

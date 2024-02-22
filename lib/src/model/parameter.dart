@@ -24,7 +24,7 @@ class Parameter extends ModelElement with HasNoPage {
     final enclosingElement = element.enclosingElement;
     return enclosingElement == null
         ? null
-        : modelBuilder.from(enclosingElement, library);
+        : getModelFor(enclosingElement, library);
   }
 
   bool get hasDefaultValue {
@@ -101,5 +101,5 @@ class Parameter extends ModelElement with HasNoPage {
       super.originalMember as ParameterMember?;
 
   late final ElementType modelType =
-      modelBuilder.typeFrom((originalMember ?? element).type, library);
+      getTypeFor((originalMember ?? element).type, library);
 }

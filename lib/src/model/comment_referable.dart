@@ -15,7 +15,6 @@ import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
-import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
 import 'package:meta/meta.dart';
 
@@ -31,7 +30,8 @@ class _ReferenceChildrenLookup {
 }
 
 /// Support comment reference lookups on a Nameable object.
-mixin CommentReferable implements Nameable, ModelBuilderInterface {
+mixin CommentReferable implements Nameable {
+  //, ModelBuilderInterface {
   /// For any [CommentReferable] where an analyzer [Scope] exists (or can
   /// be constructed), implement this.  This will take priority over
   /// lookups via [referenceChildren].  Can be cached.
@@ -107,12 +107,12 @@ mixin CommentReferable implements Nameable, ModelBuilderInterface {
     if (resultElement is PropertyAccessorElement) {
       final variable = resultElement.variable;
       if (variable.isSynthetic) {
-        result = modelBuilder.fromElement(resultElement);
+        result = packageGraph.getModelForElement(resultElement);
       } else {
-        result = modelBuilder.fromElement(variable);
+        result = packageGraph.getModelForElement(variable);
       }
     } else {
-      result = modelBuilder.fromElement(resultElement);
+      result = packageGraph.getModelForElement(resultElement);
     }
     if (result.enclosingElement is Container) {
       assert(

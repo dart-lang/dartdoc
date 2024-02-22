@@ -4,16 +4,15 @@
 
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/nameable.dart';
+import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:test/test.dart';
 
 const _separator = '.';
 
-abstract class Base extends Nameable with CommentReferable {
+abstract class Base with Nameable, CommentReferable {
   @override
-  ModelObjectBuilder get modelBuilder =>
-      throw UnimplementedError('not needed for this test');
+  PackageGraph get packageGraph => throw UnimplementedError();
 
   List<Base> get children;
 

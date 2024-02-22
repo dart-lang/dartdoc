@@ -44,8 +44,8 @@ class Accessor extends ModelElement implements EnclosedElement {
   ExecutableMember? get originalMember =>
       super.originalMember as ExecutableMember?;
 
-  late final Callable modelType = modelBuilder.typeFrom(
-      (originalMember ?? element).type, library) as Callable;
+  late final Callable modelType =
+      getTypeFor((originalMember ?? element).type, library) as Callable;
 
   bool get isSynthetic => element.isSynthetic;
 
@@ -53,7 +53,7 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   // The [enclosingCombo] where this element was defined.
   late final GetterSetterCombo definingCombo =
-      modelBuilder.fromElement(element.variable) as GetterSetterCombo;
+      getModelForElement(element.variable) as GetterSetterCombo;
 
   String get _sourceCode {
     if (!isSynthetic) {
@@ -123,11 +123,10 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   ModelElement get enclosingElement {
     if (element.enclosingElement is CompilationUnitElement) {
-      return modelBuilder
-          .fromElement(element.enclosingElement.enclosingElement!);
+      return getModelForElement(element.enclosingElement.enclosingElement!);
     }
 
-    return modelBuilder.from(element.enclosingElement, library);
+    return packageGraph.getModelFor(element.enclosingElement, library);
   }
 
   @override
@@ -236,7 +235,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
         continue;
       }
       final parentContainer =
-          modelBuilder.fromElement(supertype.element) as InheritingContainer;
+          getModelForElement(supertype.element) as InheritingContainer;
       final possibleFields =
           parentContainer.declaredFields.where((f) => !f.isStatic);
       final fieldName = accessor.name.replaceFirst('=', '');

@@ -92,8 +92,8 @@ class TestLibraryContainerSdk extends TestLibraryContainer {
   bool get isSdk => true;
 }
 
-void main() {
-  late final PackageGraph packageGraph;
+void main() async {
+  final packageGraph = await testPackageGraph;
   late final Library exLibrary;
   late final Library fakeLibrary;
   late final Library twoExportsLib;
@@ -103,7 +103,6 @@ void main() {
   setUpAll(() async {
     // Use model_special_cases_test.dart for tests that require
     // a different package graph.
-    packageGraph = await testPackageGraph;
     exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
     fakeLibrary =
         packageGraph.libraries.firstWhere((lib) => lib.name == 'fake');
@@ -970,7 +969,7 @@ void main() {
           ...fakeLibrary.element.importedLibraries,
           ...fakeLibrary.element.exportedLibraries
         })
-          packageGraph.modelBuilder.fromElement(l) as Library
+          packageGraph.getModelForElement(l) as Library
       };
       expect(fakeLibraryImportedExported.any((l) => l.name == 'import_unusual'),
           isTrue);
@@ -4895,8 +4894,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       r'x100$',
     ];
     for (var i = 1; i < names.length; i++) {
-      var a = StringName(names[i - 1]);
-      var b = StringName(names[i]);
+      var a = StringName(names[i - 1], packageGraph);
+      var b = StringName(names[i], packageGraph);
       test('"$a" < "$b"', () {
         expect(byName(a, a), 0);
         expect(byName(b, b), 0);
@@ -4906,9 +4905,9 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     }
 
     test('sort order is stable when necessary', () {
-      var a = StringNameHashCode('a', 12);
-      var b = StringNameHashCode('b', 12);
-      var aa = StringNameHashCode('a', 14);
+      var a = StringNameHashCode('a', 12, packageGraph);
+      var b = StringNameHashCode('b', 12, packageGraph);
+      var aa = StringNameHashCode('a', 14, packageGraph);
       expect(byName(a, aa), -1);
       expect(byName(a, b), -1);
       expect(byName(b, a), 1);
@@ -4917,23 +4916,30 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 }
 
-class StringName extends Nameable {
+class StringName with Nameable {
   @override
   final String name;
 
-  StringName(this.name);
+  @override
+  PackageGraph packageGraph;
+
+  StringName(this.name, this.packageGraph);
 
   @override
   String toString() => name;
 }
 
-class StringNameHashCode extends Nameable {
+class StringNameHashCode with Nameable {
   @override
   final String name;
+
   @override
   final int hashCode;
 
-  StringNameHashCode(this.name, this.hashCode);
+  @override
+  PackageGraph packageGraph;
+
+  StringNameHashCode(this.name, this.hashCode, this.packageGraph);
 
   @override
   String toString() => name;

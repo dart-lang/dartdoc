@@ -22,7 +22,6 @@ import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
@@ -32,7 +31,7 @@ import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 
-class PackageGraph with CommentReferable, Nameable, ModelBuilder {
+class PackageGraph with CommentReferable, Nameable {
   PackageGraph.uninitialized(
     this.config,
     DartSdk sdk,
@@ -756,11 +755,11 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     // For elements defined in extensions, they are canonical.
     var enclosingElement = e.enclosingElement;
     if (enclosingElement is ExtensionElement) {
-      lib ??= modelBuilder.fromElement(enclosingElement.library) as Library?;
+      lib ??= getModelForElement(enclosingElement.library) as Library?;
       // TODO(keertip): Find a better way to exclude members of extensions
       // when libraries are specified using the "--include" flag.
       if (lib != null && lib.isDocumented) {
-        return modelBuilder.from(e, lib);
+        return getModelFor(e, lib);
       }
     }
     // TODO(jcollins-g): The data structures should be changed to eliminate
@@ -775,14 +774,12 @@ class PackageGraph with CommentReferable, Nameable, ModelBuilder {
     } else {
       if (lib != null) {
         if (e is PropertyInducingElement) {
-          var getter =
-              e.getter != null ? modelBuilder.from(e.getter!, lib) : null;
-          var setter =
-              e.setter != null ? modelBuilder.from(e.setter!, lib) : null;
-          modelElement = modelBuilder.fromPropertyInducingElement(e, lib,
+          var getter = e.getter != null ? getModelFor(e.getter!, lib) : null;
+          var setter = e.setter != null ? getModelFor(e.setter!, lib) : null;
+          modelElement = getModelForPropertyInducingElement(e, lib,
               getter: getter as Accessor?, setter: setter as Accessor?);
         } else {
-          modelElement = modelBuilder.from(e, lib);
+          modelElement = getModelFor(e, lib);
         }
       }
       assert(modelElement is! Inheritable);

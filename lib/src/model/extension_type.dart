@@ -14,7 +14,7 @@ class ExtensionType extends InheritingContainer
   final ExtensionTypeElement element;
 
   late final ElementType representationType =
-      modelBuilder.typeFrom(element.typeErasure, library);
+      getTypeFor(element.typeErasure, library);
 
   ExtensionType(this.element, super.library, super.packageGraph);
 
@@ -50,7 +50,7 @@ class ExtensionType extends InheritingContainer
     if (fieldSetter != null) {
       setter = ContainerAccessor(fieldSetter, library, packageGraph);
     }
-    return modelBuilder.fromPropertyInducingElement(field, library,
+    return getModelForPropertyInducingElement(field, library,
         getter: getter, setter: setter) as Field;
   }).toList(growable: false);
 

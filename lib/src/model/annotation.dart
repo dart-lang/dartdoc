@@ -10,16 +10,14 @@ import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/class.dart';
 import 'package:dartdoc/src/model/getter_setter_combo.dart';
 import 'package:dartdoc/src/model/library.dart';
-import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 
 /// Represents a Dart annotation, attached to an element in the source code with
 /// `@`.
-class Annotation extends Attribute with ModelBuilder {
+class Annotation extends Attribute {
   final ElementAnnotation annotation;
   final Library library;
 
-  @override
   final PackageGraph packageGraph;
 
   Annotation(this.annotation, this.library, this.packageGraph)
@@ -31,15 +29,16 @@ class Annotation extends Attribute with ModelBuilder {
 
   @override
   String get linkedName => annotation.element is PropertyAccessorElement
-      ? modelBuilder.fromElement(annotation.element!).linkedName
+      ? packageGraph.getModelForElement(annotation.element!).linkedName
       // TODO(jcollins-g): consider linking to constructor instead of type?
       : modelType.linkedName;
 
   late final ElementType modelType = switch (annotation.element) {
     ConstructorElement(:var returnType) =>
-      modelBuilder.typeFrom(returnType, library),
+      packageGraph.getTypeFor(returnType, library),
     PropertyAccessorElement(:var variable) =>
-      (modelBuilder.fromElement(variable) as GetterSetterCombo).modelType,
+      (packageGraph.getModelForElement(variable) as GetterSetterCombo)
+          .modelType,
     _ => throw StateError(
         'non-callable element used as annotation?: ${annotation.element}')
   };

@@ -4,9 +4,7 @@
 
 /// The models used to represent Dart types, all subclasses of [ElementType].
 ///
-/// The only entrypoint for constructing these classes is
-/// [ElementTypeBuilderImpl.typeFrom], which delegates instantiation to various
-/// factories.
+/// The only entrypoint for constructing these classes is [ElementType.for_].
 library;
 
 import 'package:analyzer/dart/element/element.dart';
@@ -14,25 +12,14 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/type_utils.dart';
 import 'package:meta/meta.dart';
 
-mixin ElementTypeBuilderImpl implements ElementTypeBuilder {
-  PackageGraph get packageGraph;
-
-  @override
-  ElementType typeFrom(DartType type, Library library) =>
-      ElementType._from(type, library, packageGraph);
-}
-
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
-abstract class ElementType
-    with CommentReferable, Nameable, ModelBuilder
-    implements Privacy {
+abstract class ElementType with CommentReferable, Nameable implements Privacy {
   final DartType type;
   @override
   final PackageGraph packageGraph;
@@ -44,7 +31,7 @@ abstract class ElementType
   ElementType._(this.type, this.library, this.packageGraph)
       : nullabilitySuffix = type.nullabilitySuffixWithin(library);
 
-  factory ElementType._from(
+  factory ElementType.for_(
       DartType type, Library library, PackageGraph packageGraph) {
     runtimeStats.incrementAccumulator('elementTypeInstantiation');
     var fElement = type.documentableElement;
@@ -53,7 +40,7 @@ abstract class ElementType
         fElement.kind == ElementKind.NEVER) {
       return UndefinedElementType._from(type, library, packageGraph);
     }
-    var modelElement = packageGraph.modelBuilder.fromElement(fElement);
+    var modelElement = packageGraph.getModelForElement(fElement);
     return DefinedElementType._from(type, modelElement, library, packageGraph);
   }
 
@@ -158,7 +145,7 @@ class FunctionTypeElementType extends UndefinedElementType
       : super._();
 
   List<TypeParameter> get typeFormals => type.typeFormals
-      .map((p) => packageGraph.modelBuilder.from(p, library) as TypeParameter)
+      .map((p) => getModelFor(p, library) as TypeParameter)
       .toList(growable: false);
 
   @override
@@ -220,12 +207,12 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
 
   @override
   late final List<ElementType> typeArguments = type.typeArguments
-      .map((f) => modelBuilder.typeFrom(f, library))
+      .map((f) => getTypeFor(f, library))
       .toList(growable: false);
 }
 
-/// A [ElementType] whose underlying type was referred to by a type alias.
-mixin Aliased implements ElementType, ModelBuilderInterface {
+/// An [ElementType] whose underlying type was referred to by a type alias.
+mixin Aliased implements ElementType {
   Element get typeAliasElement => type.alias!.element;
 
   @override
@@ -235,10 +222,10 @@ mixin Aliased implements ElementType, ModelBuilderInterface {
   bool get isTypedef => true;
 
   late final ModelElement aliasElement =
-      modelBuilder.fromElement(typeAliasElement);
+      ModelElement.forElement(typeAliasElement, packageGraph);
 
   late final List<ElementType> aliasArguments = type.alias!.typeArguments
-      .map((f) => modelBuilder.typeFrom(f, library))
+      .map((f) => getTypeFor(f, library))
       .toList(growable: false);
 }
 
@@ -373,18 +360,17 @@ abstract class DefinedElementType extends ElementType {
   @internal
   @override
   CommentReferable get definingCommentReferable =>
-      modelBuilder.fromElement(modelElement.element);
+      ModelElement.forElement(modelElement.element, packageGraph);
 }
 
 /// Any callable [ElementType] will mix-in this class, whether anonymous or not,
 /// unless it is an alias reference.
 mixin Callable on ElementType {
   List<Parameter> get parameters => type.parameters
-      .map((p) => modelBuilder.from(p, library) as Parameter)
+      .map((p) => getModelFor(p, library) as Parameter)
       .toList(growable: false);
 
-  late final ElementType returnType =
-      modelBuilder.typeFrom(type.returnType, library);
+  late final ElementType returnType = getTypeFor(type.returnType, library);
 
   @override
   // TODO(jcollins-g): mustachio should not require this

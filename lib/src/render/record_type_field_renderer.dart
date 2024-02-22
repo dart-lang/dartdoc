@@ -59,8 +59,8 @@ abstract class _RecordTypeFieldListRenderer {
 
         var fieldBuffer = StringBuffer();
         fieldBuffer.write(prefix);
-        var modelType = recordElementType.modelBuilder
-            .typeFrom(field.type, recordElementType.library);
+        var modelType =
+            recordElementType.getTypeFor(field.type, recordElementType.library);
         var linkedTypeName = typeName(modelType.linkedName);
         if (linkedTypeName.isNotEmpty) {
           fieldBuffer.write(linkedTypeName);

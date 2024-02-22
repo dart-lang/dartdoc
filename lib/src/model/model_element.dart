@@ -21,7 +21,6 @@ import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/model/prefix.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/render/model_element_renderer.dart';
@@ -34,55 +33,6 @@ import 'package:dartdoc/src/type_utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show Context;
-
-// TODO(jcollins-g): Implement resolution per ECMA-408 4th edition, page 39 #22.
-/// Resolves this very rare case incorrectly by picking the closest element in
-/// the inheritance and interface chains from the analyzer.
-ModelElement _resolveMultiplyInheritedElement(
-    MultiplyInheritedExecutableElement e,
-    Library library,
-    PackageGraph packageGraph,
-    Class enclosingClass) {
-  var inheritables = e.inheritedElements
-      .map((ee) => ModelElement._fromElement(ee, packageGraph) as Inheritable);
-  late Inheritable foundInheritable;
-  var lowIndex = enclosingClass.inheritanceChain.length;
-  for (var inheritable in inheritables) {
-    var index = enclosingClass.inheritanceChain
-        .indexOf(inheritable.enclosingElement as InheritingContainer);
-    if (index < lowIndex) {
-      foundInheritable = inheritable;
-      lowIndex = index;
-    }
-  }
-  return ModelElement._from(foundInheritable.element, library, packageGraph,
-      enclosingContainer: enclosingClass);
-}
-
-mixin ModelElementBuilderImpl implements ModelElementBuilder {
-  PackageGraph get packageGraph;
-
-  @override
-  ModelElement from(Element e, Library library,
-          {Container? enclosingContainer}) =>
-      ModelElement._from(e, library, packageGraph,
-          enclosingContainer: enclosingContainer);
-
-  @override
-  ModelElement fromElement(Element e) =>
-      ModelElement._fromElement(e, packageGraph);
-
-  @override
-  ModelElement fromPropertyInducingElement(Element e, Library l,
-          {Container? enclosingContainer,
-          Accessor? getter,
-          Accessor? setter}) =>
-      ModelElement._fromPropertyInducingElement(
-          e as PropertyInducingElement, l, packageGraph,
-          enclosingContainer: enclosingContainer,
-          getter: getter,
-          setter: setter);
-}
 
 /// This class is the foundation of Dartdoc's model for source code.
 ///
@@ -121,8 +71,7 @@ abstract class ModelElement extends Canonicalization
         SourceCode,
         Indexable,
         FeatureSet,
-        DocumentationComment,
-        ModelBuilder
+        DocumentationComment
     implements Comparable<ModelElement>, Documentable, Privacy {
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Member? _originalMember;
@@ -132,8 +81,12 @@ abstract class ModelElement extends Canonicalization
 
   ModelElement(this._library, this._packageGraph, [this._originalMember]);
 
-  /// Creates a [ModelElement] from [e].
-  factory ModelElement._fromElement(Element e, PackageGraph p) {
+  /// Returns a [ModelElement] for an [Element], which can be a
+  /// property-inducing element or not.
+  ///
+  /// This constructor is used when the caller does not know the element's
+  /// library, or whether it is property-inducing.
+  factory ModelElement.forElement(Element e, PackageGraph p) {
     if (e is MultiplyDefinedElement) {
       // The code-to-document has static errors. We can pick the first
       // conflicting element and move on.
@@ -144,28 +97,31 @@ abstract class ModelElement extends Canonicalization
     if (e is PropertyInducingElement) {
       var elementGetter = e.getter;
       var getter = elementGetter != null
-          ? ModelElement._from(elementGetter, library, p)
+          ? ModelElement.for_(elementGetter, library, p)
           : null;
       var elementSetter = e.setter;
       var setter = elementSetter != null
-          ? ModelElement._from(elementSetter, library, p)
+          ? ModelElement.for_(elementSetter, library, p)
           : null;
-      return ModelElement._fromPropertyInducingElement(e, library, p,
+      return ModelElement.forPropertyInducingElement(e, library, p,
           getter: getter as Accessor?, setter: setter as Accessor?);
     }
-    return ModelElement._from(e, library, p);
+    return ModelElement.for_(e, library, p);
   }
 
-  /// Creates a [ModelElement] from [PropertyInducingElement] [e].
+  /// Returns a [ModelElement] for a property-inducing element.
   ///
-  /// Do not construct any ModelElements except from this constructor or
-  /// [ModelElement._from]. Specify [enclosingContainer]
-  /// if and only if this is to be an inherited or extended object.
-  factory ModelElement._fromPropertyInducingElement(
-      PropertyInducingElement e, Library library, PackageGraph packageGraph,
-      {required Accessor? getter,
-      required Accessor? setter,
-      Container? enclosingContainer}) {
+  /// Do not construct any [ModelElement]s except from this constructor or
+  /// [ModelElement.for_]. Specify [enclosingContainer] if and only if this is
+  /// to be an inherited or extended object.
+  factory ModelElement.forPropertyInducingElement(
+    PropertyInducingElement e,
+    Library library,
+    PackageGraph packageGraph, {
+    required Accessor? getter,
+    required Accessor? setter,
+    Container? enclosingContainer,
+  }) {
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
     //                   for members?
     if (e is Member) {
@@ -226,10 +182,10 @@ abstract class ModelElement extends Canonicalization
     return newModelElement;
   }
 
-  /// Creates a [ModelElement] from a non-property-inducing [e].
+  /// Returns a [ModelElement] from a non-property-inducing [e].
   ///
   /// Do not construct any ModelElements except from this constructor or
-  /// [ModelElement._fromPropertyInducingElement]. Specify [enclosingContainer]
+  /// [ModelElement.forPropertyInducingElement]. Specify [enclosingContainer]
   /// if and only if this is to be an inherited or extended object.
   // TODO(jcollins-g): this way of using the optional parameter is messy,
   // clean that up.
@@ -237,7 +193,7 @@ abstract class ModelElement extends Canonicalization
   // TODO(jcollins-g): Allow e to be null and drop extraneous null checks.
   // TODO(jcollins-g): Auto-vivify element's defining library for library
   // parameter when given a null.
-  factory ModelElement._from(
+  factory ModelElement.for_(
       Element e, Library library, PackageGraph packageGraph,
       {Container? enclosingContainer}) {
     assert(library != Library.sentinel ||
@@ -286,12 +242,14 @@ abstract class ModelElement extends Canonicalization
   }
 
   /// Caches a newly-created [ModelElement] from [ModelElement._from] or
-  /// [ModelElement._fromPropertyInducingElement].
+  /// [ModelElement.forPropertyInducingElement].
   static void _cacheNewModelElement(
       Element e, ModelElement newModelElement, Library library,
       {Container? enclosingContainer}) {
     // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
     //                   is fixed?
+    assert(enclosingContainer == null || enclosingContainer.library == library,
+        '$enclosingContainer.library != $library');
     if (library != Library.sentinel && newModelElement is! Parameter) {
       runtimeStats.incrementAccumulator('modelElementCacheInsertion');
       var key = ConstructedModelElementsKey(e, library, enclosingContainer);
@@ -312,8 +270,8 @@ abstract class ModelElement extends Canonicalization
     Member? originalMember,
   }) {
     return switch (e) {
-      MultiplyInheritedExecutableElement() => _resolveMultiplyInheritedElement(
-          e, library, packageGraph, enclosingContainer as Class),
+      MultiplyInheritedExecutableElement() => e.resolveMultiplyInheritedElement(
+          library, packageGraph, enclosingContainer as Class),
       LibraryElement() => packageGraph.findButDoNotCreateLibraryFor(e)!,
       PrefixElement() => Prefix(e, library, packageGraph),
       EnumElement() => Enum(e, library, packageGraph),
@@ -480,7 +438,7 @@ abstract class ModelElement extends Canonicalization
   late final String sourceHref = SourceLinker.fromElement(this).href();
 
   Library get definingLibrary =>
-      modelBuilder.fromElement(element.library!) as Library;
+      getModelForElement(element.library!) as Library;
 
   late final Library? canonicalLibrary = () {
     if (!utils.hasPublicName(element)) {
@@ -560,7 +518,7 @@ abstract class ModelElement extends Canonicalization
     }
 
     var topLevelModelElement =
-        ModelElement._fromElement(topLevelElement, packageGraph);
+        ModelElement.forElement(topLevelElement, packageGraph);
     return topLevelModelElement.calculateCanonicalCandidate(candidateLibraries);
   }
 
@@ -792,8 +750,8 @@ abstract class ModelElement extends Canonicalization
     }
 
     return List.of(
-      params.map(
-          (p) => ModelElement._from(p, library, packageGraph) as Parameter),
+      params
+          .map((p) => ModelElement.for_(p, library, packageGraph) as Parameter),
       growable: false,
     );
   }();
@@ -826,11 +784,35 @@ abstract class ModelElement extends Canonicalization
   @override
   CommentReferable get definingCommentReferable {
     var element = this.element;
-    return modelBuilder.fromElement(element);
+    return getModelForElement(element);
   }
 
   String get linkedObjectType => _packageGraph.dartCoreObject;
 
   @override
   late final FileStructure fileStructure = FileStructure.fromDocumentable(this);
+}
+
+extension on MultiplyInheritedExecutableElement {
+  /// Resolves this very rare case incorrectly by picking the closest element in
+  /// the inheritance and interface chains from the analyzer.
+  // TODO(jcollins-g): Implement resolution per ECMA-408 4th edition, page 39
+  // #22.
+  ModelElement resolveMultiplyInheritedElement(
+      Library library, PackageGraph packageGraph, Class enclosingClass) {
+    var inheritables = inheritedElements
+        .map((e) => ModelElement.forElement(e, packageGraph) as Inheritable);
+    late Inheritable foundInheritable;
+    var lowIndex = enclosingClass.inheritanceChain.length;
+    for (var inheritable in inheritables) {
+      var index = enclosingClass.inheritanceChain
+          .indexOf(inheritable.enclosingElement as InheritingContainer);
+      if (index < lowIndex) {
+        foundInheritable = inheritable;
+        lowIndex = index;
+      }
+    }
+    return ModelElement.for_(foundInheritable.element, library, packageGraph,
+        enclosingContainer: enclosingClass);
+  }
 }

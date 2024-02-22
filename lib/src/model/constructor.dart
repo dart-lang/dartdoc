@@ -33,7 +33,7 @@ class Constructor extends ModelElement
 
   @override
   Container get enclosingElement =>
-      modelBuilder.from(element.enclosingElement, library) as Container;
+      getModelFor(element.enclosingElement, library) as Container;
 
   @override
   String get filePath =>
@@ -70,8 +70,7 @@ class Constructor extends ModelElement
   @override
   Kind get kind => Kind.constructor;
 
-  late final Callable modelType =
-      modelBuilder.typeFrom(element.type, library) as Callable;
+  late final Callable modelType = getTypeFor(element.type, library) as Callable;
 
   @override
   String get name {
@@ -115,7 +114,7 @@ class Constructor extends ModelElement
 
     var parameterElements = parameters.map((parameter) {
       var element = dereferenceParameter(parameter.element);
-      return element == null ? parameter : modelBuilder.fromElement(element);
+      return element == null ? parameter : getModelForElement(element);
     });
     return {
       for (var element in parameterElements) element.referenceName: element,

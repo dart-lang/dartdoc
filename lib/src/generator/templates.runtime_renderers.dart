@@ -15,7 +15,6 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/model/model_object_builder.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -426,7 +425,6 @@ class _Renderer_Annotation extends RendererBase<Annotation> {
           CT_,
           () => {
                 ..._Renderer_Attribute.propertyMap<CT_>(),
-                ..._Renderer_ModelBuilder.propertyMap<CT_>(),
                 'annotation': Property(
                   getValue: (CT_ c) => c.annotation,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -1014,6 +1012,7 @@ class _Renderer_Category extends RendererBase<Category> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
+                ..._Renderer_Object.propertyMap<CT_>(),
                 ..._Renderer_Nameable.propertyMap<CT_>(),
                 ..._Renderer_Warnable.propertyMap<CT_>(),
                 ..._Renderer_CommentReferable.propertyMap<CT_>(),
@@ -1023,7 +1022,6 @@ class _Renderer_Category extends RendererBase<Category> {
                 ..._Renderer_LibraryContainer.propertyMap<CT_>(),
                 ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
                 ..._Renderer_Indexable.propertyMap<CT_>(),
-                ..._Renderer_ModelBuilder.propertyMap<CT_>(),
                 'aboveSidebarPath': Property(
                   getValue: (CT_ c) => c.aboveSidebarPath,
                   renderVariable:
@@ -3874,6 +3872,7 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
+                ..._Renderer_Object.propertyMap<CT_>(),
                 ..._Renderer_Nameable.propertyMap<CT_>(),
                 'aboveSidebarPath': Property(
                   getValue: (CT_ c) => c.aboveSidebarPath,
@@ -4351,7 +4350,6 @@ class _Renderer_ElementType extends RendererBase<ElementType> {
                 ..._Renderer_Object.propertyMap<CT_>(),
                 ..._Renderer_CommentReferable.propertyMap<CT_>(),
                 ..._Renderer_Nameable.propertyMap<CT_>(),
-                ..._Renderer_ModelBuilder.propertyMap<CT_>(),
                 'breadcrumbName': Property(
                   getValue: (CT_ c) => c.breadcrumbName,
                   renderVariable:
@@ -10266,55 +10264,6 @@ class _Renderer_MixinTemplateData extends RendererBase<MixinTemplateData> {
   }
 }
 
-class _Renderer_ModelBuilder extends RendererBase<ModelBuilder> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<CT_ extends ModelBuilder>() =>
-      _propertyMapCache.putIfAbsent(
-          CT_,
-          () => {
-                'modelBuilder': Property(
-                  getValue: (CT_ c) => c.modelBuilder,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'ModelObjectBuilder'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.modelBuilder, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['ModelObjectBuilder']!);
-                  },
-                ),
-                'packageGraph': Property(
-                  getValue: (CT_ c) => c.packageGraph,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'PackageGraph'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.packageGraph, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['PackageGraph']!);
-                  },
-                ),
-              }) as Map<String, Property<CT_>>;
-
-  _Renderer_ModelBuilder(ModelBuilder context, RendererBase<Object>? parent,
-      Template template, StringSink sink)
-      : super(context, parent, template, sink);
-
-  @override
-  Property<ModelBuilder>? getProperty(String key) {
-    if (propertyMap<ModelBuilder>().containsKey(key)) {
-      return propertyMap<ModelBuilder>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
 void _render_ModelElement(ModelElement context, List<MustachioNode> ast,
     Template template, StringSink sink,
     {RendererBase<Object>? parent}) {
@@ -10337,7 +10286,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                 ..._Renderer_Indexable.propertyMap<CT_>(),
                 ..._Renderer_FeatureSet.propertyMap<CT_>(),
                 ..._Renderer_DocumentationComment.propertyMap<CT_>(),
-                ..._Renderer_ModelBuilder.propertyMap<CT_>(),
                 'annotations': Property(
                   getValue: (CT_ c) => c.annotations,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -11531,7 +11479,6 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                ..._Renderer_Object.propertyMap<CT_>(),
                 'breadcrumbName': Property(
                   getValue: (CT_ c) => c.breadcrumbName,
                   renderVariable:
@@ -11651,6 +11598,19 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
                       List<MustachioNode> ast, StringSink sink) {
                     return c.namePieces.map((e) =>
                         _render_String(e, ast, r.template, sink, parent: r));
+                  },
+                ),
+                'packageGraph': Property(
+                  getValue: (CT_ c) => c.packageGraph,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'PackageGraph'),
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.packageGraph, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['PackageGraph']!);
                   },
                 ),
               }) as Map<String, Property<CT_>>;
@@ -11870,7 +11830,6 @@ class _Renderer_Package extends RendererBase<Package> {
                 ..._Renderer_Canonicalization.propertyMap<CT_>(),
                 ..._Renderer_Warnable.propertyMap<CT_>(),
                 ..._Renderer_CommentReferable.propertyMap<CT_>(),
-                ..._Renderer_ModelBuilder.propertyMap<CT_>(),
                 'aboveSidebarPath': Property(
                   getValue: (CT_ c) => c.aboveSidebarPath,
                   renderVariable:
@@ -12591,7 +12550,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12829,7 +12788,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -16883,7 +16842,6 @@ const _invisibleGetters = {
   },
   'ModelElementRenderer': {'hashCode', 'runtimeType'},
   'ModelNode': {'hashCode', 'runtimeType', 'sourceCode'},
-  'ModelObjectBuilder': {'hashCode', 'runtimeType'},
   'PackageGraph': {
     'allConstructedModelElements',
     'allExtensionsAdded',
