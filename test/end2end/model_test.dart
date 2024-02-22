@@ -4379,7 +4379,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('a function requiring a Future<void> parameter', () {
       expect(
           ParameterRendererHtml().renderLinkedParams(aVoidParameter.parameters,
-              showMetadata: true, showNames: true),
+              showMetadata: true),
           equals(
               '<span class="parameter" id="aVoidParameter-param-p1"><span class="type-annotation">Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span> <span class="parameter-name">p1</span></span>'));
     });
