@@ -394,7 +394,19 @@ class C {}
     );
   }
 
-  void test_valuesHaveAConstantValueImplementation() async {
+  void test_constantValue_implicitConstructorCall() async {
+    var library = await bootPackageWithLibrary('''
+enum E { one, two }
+''');
+
+    var oneValue = library.enums.named('E').publicEnumValues.named('one');
+    expect(oneValue.constantValueTruncated, 'const E(0)');
+
+    var twoValue = library.enums.named('E').publicEnumValues.named('two');
+    expect(twoValue.constantValueTruncated, 'const E(1)');
+  }
+
+  void test_constantValue_explicitConstructorCall() async {
     var library = await bootPackageWithLibrary('''
 enum E {
   one.named(1),
@@ -402,23 +414,33 @@ enum E {
 
   final int x;
 
-  /// A named constructor.
   const E.named(this.x);
 }
-
-enum F { one, two }
 ''');
     var eOneValue = library.enums.named('E').publicEnumValues.named('one');
-    expect(eOneValue.constantValueTruncated, 'E.named(1)');
+    expect(eOneValue.constantValueTruncated, 'const E.named(1)');
 
     var eTwoValue = library.enums.named('E').publicEnumValues.named('two');
-    expect(eTwoValue.constantValueTruncated, 'E.named(2)');
+    expect(eTwoValue.constantValueTruncated, 'const E.named(2)');
+  }
 
-    var fOneValue = library.enums.named('F').publicEnumValues.named('one');
-    expect(fOneValue.constantValueTruncated, 'F()');
+  void test_constantValue_explicitConstructorCall_zeroConstructorArgs() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  one.named1(),
+  two.named2();
 
-    var fTwoValue = library.enums.named('F').publicEnumValues.named('two');
-    expect(fTwoValue.constantValueTruncated, 'F()');
+  final int x;
+
+  const E.named1() : x = 1;
+  const E.named2() : x = 2;
+}
+''');
+    var eOneValue = library.enums.named('E').publicEnumValues.named('one');
+    expect(eOneValue.constantValueTruncated, 'const E.named1()');
+
+    var eTwoValue = library.enums.named('E').publicEnumValues.named('two');
+    expect(eTwoValue.constantValueTruncated, 'const E.named2()');
   }
 }
 
