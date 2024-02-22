@@ -133,11 +133,6 @@ abstract class GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenClassFileCount');
   }
 
-  /// Emits documentation content for the [field].
-  void generateConstant(PackageGraph packageGraph, Library library,
-          Container clazz, Field field) =>
-      generateProperty(packageGraph, library, clazz, field);
-
   /// Emits documentation content for the [constructor].
   void generateConstructor(PackageGraph packageGraph, Library library,
       Constructable constructable, Constructor constructor) {
@@ -227,11 +222,6 @@ abstract class GeneratorBackend {
     write(writer, field.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenPropertyFileCount');
   }
-
-  /// Emits documentation content for the [constant].
-  void generateTopLevelConstant(PackageGraph packageGraph, Library library,
-          TopLevelVariable constant) =>
-      generateTopLevelProperty(packageGraph, library, constant);
 
   /// Emits documentation content for the [property].
   void generateTopLevelProperty(
