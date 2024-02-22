@@ -73,15 +73,15 @@ mixin GetterSetterCombo on ModelElement {
       return original;
     }
     var target = getModelForElement(staticElement) as Constructor;
-    if (target.enclosingElement is! Class) return original;
-    var targetClass = target.enclosingElement as Class;
-    // TODO(jcollins-g): this logic really should be integrated into Constructor,
-    // but that's not trivial because of linkedName's usage.
-    if (targetClass.name == target.name) {
+    var enclosingElement = target.enclosingElement;
+    if (enclosingElement is! Class) return original;
+    // TODO(jcollins-g): this logic really should be integrated into
+    // `Constructor`, but that's not trivial because of `linkedName`'s usage.
+    if (enclosingElement.name == target.name) {
       return original.replaceAll(constructorName, target.linkedName);
     }
-    return original.replaceAll('${targetClass.name}.${target.name}',
-        '${targetClass.linkedName}.${target.linkedName}');
+    return original.replaceAll('${enclosingElement.name}.${target.name}',
+        '${enclosingElement.linkedName}.${target.linkedName}');
   }
 
   @override
@@ -110,8 +110,38 @@ mixin GetterSetterCombo on ModelElement {
   String get constantValueTruncated =>
       linkifyConstantValue(truncateString(constantValueBase, 200));
 
-  late final String constantValueBase = const HtmlEscape(HtmlEscapeMode.unknown)
-      .convert(constantInitializer?.toString() ?? '');
+  late final String constantValueBase = () {
+    final constantInitializer = this.constantInitializer;
+    if (constantInitializer == null) {
+      return '';
+    }
+
+    var initializerString = constantInitializer.toString();
+
+    final self = this;
+    if (self is! EnumField ||
+        constantInitializer is! InstanceCreationExpression) {
+      return _htmlEscape.convert(initializerString);
+    }
+
+    initializerString = 'const $initializerString';
+
+    var isImplicitConstructorCall = constantInitializer
+            .constructorName.staticElement?.isDefaultConstructor ??
+        false;
+    if (isImplicitConstructorCall) {
+      // For an enum value with an implicit constructor call (like
+      // `enum E { one, two; }`), `constantInitializer.toString()` does not
+      // include the implicit enum index argument (it is something like
+      // `const E()`). We must manually include it. See
+      // https://github.com/dart-lang/sdk/issues/54988.
+      initializerString =
+          initializerString.replaceFirst('()', '(${self.index})');
+    }
+    return _htmlEscape.convert(initializerString);
+  }();
+
+  static const _htmlEscape = HtmlEscape(HtmlEscapeMode.unknown);
 
   late final bool hasPublicGetter = hasGetter && getter!.isPublic;
 

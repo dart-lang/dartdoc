@@ -19,7 +19,7 @@ void main() async {
   late List<String> enumWithDefaultConstructorLines;
   late List<String> enumWithDefaultConstructorRightSidebarLines;
 
-  group('enhanced enums', skip: !enhancedEnumsAllowed, () {
+  group('enums', () {
     setUpAll(() async {
       final packageMetaProvider = testPackageMetaProvider;
       final resourceProvider =
@@ -31,11 +31,6 @@ name: enums
 version: 0.0.1
 environment:
   sdk: '>=2.17.0-0 <3.0.0'
-''',
-        analysisOptions: '''
-analyzer:
-  enable-experiment:
-    - enhanced-enums
 ''',
         libFiles: [
           d.file('lib.dart', '''
@@ -194,7 +189,7 @@ enum EnumWithDefaultConstructor {
           matches('<span class="name ">one</span>'),
           matches('<p>Doc comment for <a href="../lib/E.html">one</a>.</p>'),
           matches(
-              r'<span class="signature"><code>E&lt;int&gt;.named\(1\)</code></span>'),
+              r'<span class="signature"><code>const E&lt;int&gt;.named\(1\)</code></span>'),
         ]),
       );
     });
