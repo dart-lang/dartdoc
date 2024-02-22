@@ -13,12 +13,28 @@ mixin SourceCode implements Documentable {
 
   Element? get element;
 
-  bool get hasSourceCode => config.includeSource && sourceCode.isNotEmpty;
+  bool get hasSourceCode =>
+      config.includeSource && !element.isAugmentation && sourceCode.isNotEmpty;
 
   Library? get library;
 
   String get sourceCode {
     var modelNode = this.modelNode;
     return modelNode == null ? '' : modelNode.sourceCode;
+  }
+}
+
+extension on Element? {
+  /// Whether `this` is an augmentation method or property.
+  ///
+  /// This property should only be referenced for elements whose source code we
+  /// may wish to refer to.
+  bool get isAugmentation {
+    final self = this;
+    return switch (self) {
+      ExecutableElement() => self.augmentationTarget != null,
+      PropertyInducingElement() => self.augmentationTarget != null,
+      _ => false,
+    };
   }
 }

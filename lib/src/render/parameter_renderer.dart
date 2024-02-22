@@ -65,7 +65,7 @@ abstract class ParameterRenderer {
   String required(String required);
 
   String renderLinkedParams(List<Parameter> parameters,
-      {bool showMetadata = true, bool showNames = true}) {
+      {bool showMetadata = true}) {
     var positionalParams = parameters
         .where((Parameter p) => p.isRequiredPositional)
         .toList(growable: false);
@@ -77,27 +77,33 @@ abstract class ParameterRenderer {
 
     var buffer = StringBuffer();
     if (positionalParams.isNotEmpty) {
-      _renderLinkedParameterSublist(positionalParams, buffer,
-          trailingComma:
-              optionalPositionalParams.isNotEmpty || namedParams.isNotEmpty,
-          showMetadata: showMetadata,
-          showNames: showNames);
+      _renderLinkedParameterSublist(
+        positionalParams,
+        buffer,
+        trailingComma:
+            optionalPositionalParams.isNotEmpty || namedParams.isNotEmpty,
+        showMetadata: showMetadata,
+      );
     }
     if (optionalPositionalParams.isNotEmpty) {
-      _renderLinkedParameterSublist(optionalPositionalParams, buffer,
-          trailingComma: namedParams.isNotEmpty,
-          openBracket: '[',
-          closeBracket: ']',
-          showMetadata: showMetadata,
-          showNames: showNames);
+      _renderLinkedParameterSublist(
+        optionalPositionalParams,
+        buffer,
+        trailingComma: namedParams.isNotEmpty,
+        openBracket: '[',
+        closeBracket: ']',
+        showMetadata: showMetadata,
+      );
     }
     if (namedParams.isNotEmpty) {
-      _renderLinkedParameterSublist(namedParams, buffer,
-          trailingComma: false,
-          openBracket: '{',
-          closeBracket: '}',
-          showMetadata: showMetadata,
-          showNames: showNames);
+      _renderLinkedParameterSublist(
+        namedParams,
+        buffer,
+        trailingComma: false,
+        openBracket: '{',
+        closeBracket: '}',
+        showMetadata: showMetadata,
+      );
     }
     return orderedList(buffer.toString());
   }
@@ -109,7 +115,6 @@ abstract class ParameterRenderer {
     String openBracket = '',
     String closeBracket = '',
     bool showMetadata = true,
-    bool showNames = true,
   }) {
     for (var p in parameters) {
       var prefix = '';
@@ -128,7 +133,6 @@ abstract class ParameterRenderer {
         prefix: prefix,
         suffix: suffix,
         showMetadata: showMetadata,
-        showNames: showNames,
       );
       buffer.write(listItem(parameter(renderedParameter, p.htmlId)));
     }
@@ -139,7 +143,6 @@ abstract class ParameterRenderer {
     required String prefix,
     required String suffix,
     bool showMetadata = true,
-    bool showNames = true,
   }) {
     final buffer = StringBuffer(prefix);
     final modelType = param.modelType;
@@ -160,17 +163,12 @@ abstract class ParameterRenderer {
           ? modelType.linkedName
           : modelType.returnType.linkedName;
       buffer.write(typeName(returnTypeName));
-      if (showNames) {
-        buffer.write(' ${parameterName(param.name)}');
-      } else {
-        buffer.write(' ${parameterName(modelType.name)}');
-      }
+      buffer.write(' ${parameterName(param.name)}');
       if (!modelType.isTypedef && modelType is DefinedElementType) {
         buffer.write('(');
         buffer.write(renderLinkedParams(
           (modelType as DefinedElementType).modelElement.parameters,
           showMetadata: showMetadata,
-          showNames: showNames,
         ));
         buffer.write(')');
         buffer.write(modelType.nullabilitySuffix);
@@ -180,7 +178,6 @@ abstract class ParameterRenderer {
         buffer.write(renderLinkedParams(
           modelType.parameters,
           showMetadata: showMetadata,
-          showNames: showNames,
         ));
         buffer.write(')');
         buffer.write(modelType.nullabilitySuffix);
@@ -189,11 +186,11 @@ abstract class ParameterRenderer {
       final linkedTypeName = modelType.linkedName;
       if (linkedTypeName.isNotEmpty) {
         buffer.write(typeName(linkedTypeName));
-        if (showNames && param.name.isNotEmpty) {
+        if (param.name.isNotEmpty) {
           buffer.write(' ');
         }
       }
-      if (showNames && param.name.isNotEmpty) {
+      if (param.name.isNotEmpty) {
         buffer.write(parameterName(param.name));
       }
     }

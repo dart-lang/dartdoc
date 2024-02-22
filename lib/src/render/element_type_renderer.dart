@@ -176,37 +176,3 @@ class AliasedElementTypeRendererHtml
         elementType.aliasArguments,
       );
 }
-
-class CallableElementTypeRendererHtml
-    extends ElementTypeRenderer<CallableElementType> {
-  const CallableElementTypeRendererHtml();
-
-  @override
-  String renderLinkedName(CallableElementType elementType) {
-    var buffer = StringBuffer()
-      ..write(elementType.nameWithGenerics)
-      ..write('(')
-      ..write(const ParameterRendererHtml()
-          .renderLinkedParams(elementType.modelElement.parameters,
-              showNames: false)
-          .trim())
-      ..write(') → ')
-      ..write(elementType.returnType.linkedName);
-    return wrapNullabilityParens(elementType, buffer.toString());
-  }
-
-  @override
-  String renderNameWithGenerics(CallableElementType elementType) {
-    var buffer = StringBuffer()..write(elementType.name);
-    if (elementType.typeArguments.isNotEmpty &&
-        !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
-      buffer
-        ..write('&lt;')
-        ..writeAll(
-            elementType.typeArguments.map((t) => t.nameWithGenerics), ', ')
-        ..write('>');
-    }
-    buffer.write(elementType.nullabilitySuffix);
-    return buffer.toString();
-  }
-}

@@ -16881,7 +16881,6 @@ const _invisibleGetters = {
     'publicPackages',
     'referenceChildren',
     'referenceParents',
-    'rendererFactory',
     'resourceProvider',
     'runtimeType',
     'sdkLibrarySources',
