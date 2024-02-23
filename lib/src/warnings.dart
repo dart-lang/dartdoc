@@ -285,21 +285,6 @@ enum PackageWarning implements Comparable<PackageWarning> {
     shortHelp: 'An export refers to a URI that cannot be resolved.',
     defaultWarningMode: PackageWarningMode.error,
   ),
-  missingConstantConstructor(
-    'missing-constant-constructor',
-    'constant constructor missing: {0}',
-    shortHelp:
-        'Dartdoc can not show the value of a constant because its constructor '
-        'could not be resolved.',
-    longHelp:
-        'To resolve a constant into its literal value, Dartdoc relies on the '
-        "analyzer to resolve the constructor. The analyzer didn't provide the "
-        "constructor for '$_namePlaceholder', which is usually due to an error "
-        'in the code. Use the analyzer to resolve the issue.',
-    // Defaults to ignore as this doesn't impact the docs severely but is
-    // useful for debugging package structure.
-    defaultWarningMode: PackageWarningMode.ignore,
-  ),
   missingExampleFile(
     'missing-example-file',
     'example file not found: {0}',

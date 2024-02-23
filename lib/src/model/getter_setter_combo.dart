@@ -17,7 +17,6 @@ import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/utils.dart';
-import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 
 /// Mixin for top-level variables and fields (aka properties).
@@ -68,10 +67,7 @@ mixin GetterSetterCombo on ModelElement {
     var creationExpression = constantInitializer as InstanceCreationExpression;
     var constructorName = creationExpression.constructorName.toString();
     Element? staticElement = creationExpression.constructorName.staticElement;
-    if (staticElement == null) {
-      warn(PackageWarning.missingConstantConstructor, message: constructorName);
-      return original;
-    }
+    if (staticElement == null) return original;
     var target = getModelForElement(staticElement) as Constructor;
     var enclosingElement = target.enclosingElement;
     if (enclosingElement is! Class) return original;
