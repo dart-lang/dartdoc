@@ -27,11 +27,10 @@ abstract class Typedef extends ModelElement
   String get nameWithGenerics => '$name${super.genericParameters}';
 
   @override
-  String get genericParameters => _renderTypeParameters(typeParameters);
+  String get genericParameters => _renderTypeParameters();
 
   @override
-  String get linkedGenericParameters =>
-      _renderTypeParameters(typeParameters, isLinked: true);
+  String get linkedGenericParameters => _renderTypeParameters(isLinked: true);
 
   @override
   String get filePath => '${library.dirName}/${fileStructure.fileName}';
@@ -77,8 +76,7 @@ abstract class Typedef extends ModelElement
   Map<String, CommentReferable> get referenceChildren => _referenceChildren;
 
   /// Render the the generic type parameters of this typedef.
-  String _renderTypeParameters(Iterable<TypeParameter> typeParameters,
-      {bool isLinked = false}) {
+  String _renderTypeParameters({bool isLinked = false}) {
     if (typeParameters.isEmpty) {
       return '';
     }
