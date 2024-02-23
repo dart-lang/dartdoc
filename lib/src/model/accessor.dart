@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
@@ -10,7 +12,6 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/render/source_code_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 
@@ -49,8 +50,6 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   bool get isSynthetic => element.isSynthetic;
 
-  SourceCodeRenderer get _sourceCodeRenderer => const SourceCodeRendererHtml();
-
   // The [enclosingCombo] where this element was defined.
   late final GetterSetterCombo definingCombo =
       getModelForElement(element.variable) as GetterSetterCombo;
@@ -62,7 +61,7 @@ class Accessor extends ModelElement implements EnclosedElement {
     var modelNode = packageGraph.getModelNodeFor(definingCombo.element);
     return modelNode == null
         ? ''
-        : _sourceCodeRenderer.renderSourceCode(modelNode.sourceCode);
+        : const HtmlEscape().convert(modelNode.sourceCode);
   }
 
   @override
