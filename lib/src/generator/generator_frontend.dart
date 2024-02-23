@@ -4,6 +4,7 @@
 
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';
+import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
@@ -19,6 +20,14 @@ class GeneratorFrontEnd implements Generator {
 
   @override
   Future<void> generate(PackageGraph? packageGraph) async {
+    if (_generatorBackend.templates is RuntimeTemplates) {
+      packageGraph?.defaultPackage.warn(
+        PackageWarning.deprecated,
+        message: "The '--templates-dir' option is deprecated, and will soon no "
+            'longer be supported.',
+      );
+    }
+
     var indexElements = packageGraph == null
         ? const <Indexable>[]
         : _generateDocs(packageGraph);

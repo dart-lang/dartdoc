@@ -1,6 +1,7 @@
 ## 8.0.6-wip
 
 * Add troubleshooting information when the sidebars failed to load.
+* Deprecate the `--templates-dir` option.
 
 ## 8.0.5
 

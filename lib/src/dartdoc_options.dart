@@ -1409,6 +1409,7 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext {
   String? get relCanonicalPrefix =>
       optionSet['relCanonicalPrefix'].valueAt(context);
 
+  // TODO(kallentu): Remove --templates-dir completely.
   String? get templatesDir => optionSet['templatesDir'].valueAt(context);
 
   // TODO(jdkoren): duplicated temporarily so that GeneratorContext is enough for configuration.
