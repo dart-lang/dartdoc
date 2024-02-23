@@ -6,8 +6,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-class SubprocessException implements Exception {}
-
 class SubprocessLauncher {
   final String context;
   final Map<String, String> defaultEnvironment;
@@ -121,15 +119,19 @@ class SubprocessLauncher {
         workingDirectory: workingDirectory,
         environment: environment,
         includeParentEnvironment: includeParentEnvironment);
+    // Stream stdout and stderr to _this_ process's stdout and stderr.
     var stdoutFuture = _printStream(process.stdout, stdout,
         prefix: prefix, filter: jsonCallback);
     var stderrFuture = _printStream(process.stderr, stderr,
         prefix: prefix, filter: jsonCallback);
-    await Future.wait([stderrFuture, stdoutFuture, process.exitCode]);
+    var (_, _, exitCode) =
+        await (stdoutFuture, stderrFuture, process.exitCode).wait;
 
-    var exitCode = await process.exitCode;
     if (exitCode != 0) {
-      throw SubprocessException();
+      throw SubprocessException(
+          command: [executable, ...arguments].join(' '),
+          workingDirectory: workingDirectory,
+          exitCode: exitCode);
     }
     return jsonObjects;
   }
@@ -173,4 +175,22 @@ class SubprocessLauncher {
       );
 
   static final _quotables = RegExp(r'[ "\r\n\$]');
+}
+
+/// An exception that represents an issue during subprocess execution.
+class SubprocessException implements Exception {
+  final String command;
+  final String? workingDirectory;
+  final int exitCode;
+
+  SubprocessException(
+      {required this.command,
+      required this.workingDirectory,
+      required this.exitCode});
+
+  @override
+  String toString() => 'SubprocessException['
+      'command: "$command", '
+      'workingDirectory: "${workingDirectory ?? '(null)'}", '
+      'exitCode: $exitCode]';
 }
