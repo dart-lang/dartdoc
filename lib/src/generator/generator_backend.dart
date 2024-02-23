@@ -56,90 +56,16 @@ class DartdocGeneratorBackendOptions implements TemplateOptions {
         packageOrder = context.packageOrder;
 }
 
-/// An interface for classes which are responsible for outputing the generated
-/// documentation.
-abstract interface class GeneratorBackend {
-  FileWriter get writer;
-
-  /// Emits JSON describing the [categories] defined by the package.
-  void generateCategoryJson(List<Categorization> categories);
-
-  /// Emits a JSON catalog of [indexedElements] for use with a search index.
-  void generateSearchIndex(List<Indexable> indexedElements);
-
-  /// Emits documentation content for the [package].
-  void generatePackage(PackageGraph packageGraph, Package package);
-
-  /// Emits documentation content for the [category].
-  void generateCategory(PackageGraph packageGraph, Category category);
-
-  /// Emits documentation content for the [library].
-  void generateLibrary(PackageGraph packageGraph, Library library);
-
-  /// Emits documentation content for the [clazz].
-  void generateClass(PackageGraph packageGraph, Library library, Class clazz);
-
-  /// Emits documentation content for the [eNum].
-  void generateEnum(PackageGraph packageGraph, Library library, Enum eNum);
-
-  /// Emits documentation content for the [extension].
-  void generateExtension(
-      PackageGraph packageGraph, Library library, Extension extension);
-
-  /// Emits documentation content for the [extensionType].
-  void generateExtensionType(
-      PackageGraph packageGraph, Library library, ExtensionType extensionType);
-
-  /// Emits documentation content for the [mixin].
-  void generateMixin(PackageGraph packageGraph, Library library, Mixin mixin);
-
-  /// Emits documentation content for the [constructor].
-  void generateConstructor(PackageGraph packageGraph, Library library,
-      Constructable constructable, Constructor constructor);
-
-  /// Emits documentation content for the [field].
-  void generateConstant(
-      PackageGraph packageGraph, Library library, Container clazz, Field field);
-
-  /// Emits documentation content for the [field].
-  void generateProperty(
-      PackageGraph packageGraph, Library library, Container clazz, Field field);
-
-  /// Emits documentation content for the [method].
-  void generateMethod(PackageGraph packageGraph, Library library,
-      Container clazz, Method method);
-
-  /// Emits documentation content for the [function].
-  void generateFunction(
-      PackageGraph packageGraph, Library library, ModelFunction function);
-
-  /// Emits documentation content for the [constant].
-  void generateTopLevelConstant(
-      PackageGraph packageGraph, Library library, TopLevelVariable constant);
-
-  /// Emits documentation content for the [property].
-  void generateTopLevelProperty(
-      PackageGraph packageGraph, Library library, TopLevelVariable property);
-
-  /// Emits documentation content for the [typedef].
-  void generateTypeDef(
-      PackageGraph packageGraph, Library library, Typedef typedef);
-
-  /// Emits files not specific to a Dart language element (like a favicon, etc).
-  Future<void> generateAdditionalFiles();
-}
-
-/// Base [GeneratorBackend] for Dartdoc's supported formats.
-abstract class GeneratorBackendBase implements GeneratorBackend {
+/// Outputs generated documentation.
+abstract class GeneratorBackend {
   final DartdocGeneratorBackendOptions options;
   final Templates templates;
 
-  @override
   final FileWriter writer;
   final ResourceProvider resourceProvider;
   final p.Context _pathContext;
 
-  GeneratorBackendBase(
+  GeneratorBackend(
       this.options, this.templates, this.writer, this.resourceProvider)
       : _pathContext = resourceProvider.pathContext;
 
@@ -164,7 +90,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
         element: element is Warnable ? element : null);
   }
 
-  @override
+  /// Emits JSON describing the [categories] defined by the package.
   void generateCategoryJson(List<Categorization> categories) {
     var json = '[]';
     if (categories.isNotEmpty) {
@@ -178,7 +104,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     writer.write(_pathContext.join('categories.json'), '$json\n');
   }
 
-  @override
+  /// Emits a JSON catalog of [indexedElements] for use with a search index.
   void generateSearchIndex(List<Indexable> indexedElements) {
     var json = generator_util.generateSearchIndexJson(
       indexedElements,
@@ -191,7 +117,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     writer.write(_pathContext.join('index.json'), '$json\n');
   }
 
-  @override
+  /// Emits documentation content for the [category].
   void generateCategory(PackageGraph packageGraph, Category category) {
     var data = CategoryTemplateData(options, packageGraph, category);
     var content = templates.renderCategory(data);
@@ -199,7 +125,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenCategoryFileCount');
   }
 
-  @override
+  /// Emits documentation content for the [clazz].
   void generateClass(PackageGraph packageGraph, Library library, Class clazz) {
     var data = ClassTemplateData(options, packageGraph, library, clazz);
     var content = templates.renderClass(data);
@@ -207,12 +133,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenClassFileCount');
   }
 
-  @override
-  void generateConstant(PackageGraph packageGraph, Library library,
-          Container clazz, Field field) =>
-      generateProperty(packageGraph, library, clazz, field);
-
-  @override
+  /// Emits documentation content for the [constructor].
   void generateConstructor(PackageGraph packageGraph, Library library,
       Constructable constructable, Constructor constructor) {
     var data = ConstructorTemplateData(
@@ -222,7 +143,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenConstructorFileCount');
   }
 
-  @override
+  /// Emits documentation content for the [eNum].
   void generateEnum(PackageGraph packageGraph, Library library, Enum eNum) {
     var data = EnumTemplateData(options, packageGraph, library, eNum);
     var content = templates.renderEnum(data);
@@ -230,7 +151,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenEnumFileCount');
   }
 
-  @override
+  /// Emits documentation content for the [extension].
   void generateExtension(
       PackageGraph packageGraph, Library library, Extension extension) {
     var data = ExtensionTemplateData(options, packageGraph, library, extension);
@@ -239,7 +160,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenExtensionFileCount');
   }
 
-  @override
+  /// Emits documentation content for the [extensionType].
   void generateExtensionType(
       PackageGraph packageGraph, Library library, ExtensionType extensionType) {
     var data = ExtensionTypeTemplateData(
@@ -249,7 +170,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenExtensionTypeFileCount');
   }
 
-  @override
+  /// Emits documentation content for the [function].
   void generateFunction(
       PackageGraph packageGraph, Library library, ModelFunction function) {
     var data = FunctionTemplateData(options, packageGraph, library, function);
@@ -258,7 +179,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenFunctionFileCount');
   }
 
-  @override
+  /// Emits documentation content for the [library].
   void generateLibrary(PackageGraph packageGraph, Library library) {
     var data = LibraryTemplateData(options, packageGraph, library);
     var content = templates.renderLibrary(data);
@@ -266,7 +187,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenLibraryFileCount');
   }
 
-  @override
+  /// Emits documentation content for the [method].
   void generateMethod(PackageGraph packageGraph, Library library,
       Container clazz, Method method) {
     var data =
@@ -276,7 +197,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenMethodFileCount');
   }
 
-  @override
+  /// Emits documentation content for the [mixin].
   void generateMixin(PackageGraph packageGraph, Library library, Mixin mixin) {
     var data = MixinTemplateData(options, packageGraph, library, mixin);
     var content = templates.renderMixin(data);
@@ -284,7 +205,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenMixinFileCount');
   }
 
-  @override
+  /// Emits documentation content for the [package].
   void generatePackage(PackageGraph packageGraph, Package package) {
     var data = PackageTemplateData(options, packageGraph, package);
     var content = templates.renderIndex(data);
@@ -292,7 +213,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenPackageFileCount');
   }
 
-  @override
+  /// Emits documentation content for the [field].
   void generateProperty(PackageGraph packageGraph, Library library,
       Container clazz, Field field) {
     var data =
@@ -302,12 +223,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenPropertyFileCount');
   }
 
-  @override
-  void generateTopLevelConstant(PackageGraph packageGraph, Library library,
-          TopLevelVariable constant) =>
-      generateTopLevelProperty(packageGraph, library, constant);
-
-  @override
+  /// Emits documentation content for the [property].
   void generateTopLevelProperty(
       PackageGraph packageGraph, Library library, TopLevelVariable property) {
     var data =
@@ -317,7 +233,7 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenTopLevelPropertyFileCount');
   }
 
-  @override
+  /// Emits documentation content for the [typedef].
   void generateTypeDef(
       PackageGraph packageGraph, Library library, Typedef typedef) {
     var data = TypedefTemplateData(options, packageGraph, library, typedef);
@@ -326,6 +242,6 @@ abstract class GeneratorBackendBase implements GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenTypedefFileCount');
   }
 
-  @override
-  Future<void> generateAdditionalFiles() async {}
+  /// Emits files not specific to a Dart language element (like a favicon, etc).
+  Future<void> generateAdditionalFiles();
 }

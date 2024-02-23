@@ -70,7 +70,7 @@ abstract class TemplateDataBase {
   /// When not using the HTML 'base' tag (default behavior), this represents the
   /// path from this page back to the HTML base.
   ///
-  /// See [GeneratorBackendBase.write] for how this text is used in generating
+  /// See [GeneratorBackend.write] for how this text is used in generating
   /// link URLs.
   String get htmlBase;
 

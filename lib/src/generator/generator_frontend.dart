@@ -99,7 +99,7 @@ class GeneratorFrontEnd implements Generator {
             if (!constant.isCanonical) continue;
 
             indexAccumulator.add(constant);
-            _generatorBackend.generateConstant(
+            _generatorBackend.generateProperty(
                 packageGraph, lib, clazz, constant);
           }
 
@@ -149,7 +149,7 @@ class GeneratorFrontEnd implements Generator {
 
           for (var constant in filterNonDocumented(extension.constantFields)) {
             indexAccumulator.add(constant);
-            _generatorBackend.generateConstant(
+            _generatorBackend.generateProperty(
                 packageGraph, lib, extension, constant);
           }
 
@@ -206,7 +206,7 @@ class GeneratorFrontEnd implements Generator {
           for (var constant
               in filterNonDocumented(extensionType.constantFields)) {
             indexAccumulator.add(constant);
-            _generatorBackend.generateConstant(
+            _generatorBackend.generateProperty(
                 packageGraph, lib, extensionType, constant);
           }
 
@@ -254,7 +254,7 @@ class GeneratorFrontEnd implements Generator {
           for (var constant in filterNonDocumented(mixin.constantFields)) {
             if (!constant.isCanonical) continue;
             indexAccumulator.add(constant);
-            _generatorBackend.generateConstant(
+            _generatorBackend.generateProperty(
                 packageGraph, lib, mixin, constant);
           }
 
@@ -263,7 +263,7 @@ class GeneratorFrontEnd implements Generator {
             if (!property.isCanonical) continue;
 
             indexAccumulator.add(property);
-            _generatorBackend.generateConstant(
+            _generatorBackend.generateProperty(
                 packageGraph, lib, mixin, property);
           }
 
@@ -271,7 +271,7 @@ class GeneratorFrontEnd implements Generator {
             if (!property.isCanonical) continue;
 
             indexAccumulator.add(property);
-            _generatorBackend.generateConstant(
+            _generatorBackend.generateProperty(
                 packageGraph, lib, mixin, property);
           }
 
@@ -311,7 +311,7 @@ class GeneratorFrontEnd implements Generator {
             if (!constant.isCanonical) continue;
 
             indexAccumulator.add(constant);
-            _generatorBackend.generateConstant(
+            _generatorBackend.generateProperty(
                 packageGraph, lib, enum_, constant);
           }
 
@@ -325,7 +325,7 @@ class GeneratorFrontEnd implements Generator {
 
           for (var property in filterNonDocumented(enum_.instanceFields)) {
             indexAccumulator.add(property);
-            _generatorBackend.generateConstant(
+            _generatorBackend.generateProperty(
                 packageGraph, lib, enum_, property);
           }
           for (var operator in filterNonDocumented(enum_.instanceOperators)) {
@@ -341,7 +341,7 @@ class GeneratorFrontEnd implements Generator {
 
         for (var constant in filterNonDocumented(lib.constants)) {
           indexAccumulator.add(constant);
-          _generatorBackend.generateTopLevelConstant(
+          _generatorBackend.generateTopLevelProperty(
               packageGraph, lib, constant);
         }
 

@@ -31,7 +31,7 @@ Future<Generator> initHtmlGenerator(
 }
 
 /// Generator backend for HTML output.
-class HtmlGeneratorBackend extends GeneratorBackendBase {
+class HtmlGeneratorBackend extends GeneratorBackend {
   HtmlGeneratorBackend(
       super.options, super.templates, super.writer, super.resourceProvider);
 
