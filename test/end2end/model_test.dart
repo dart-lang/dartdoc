@@ -17,7 +17,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
-import 'package:dartdoc/src/render/typedef_renderer.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
@@ -4555,13 +4554,10 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
               'NewGenericTypedef&lt;<wbr><span class="type-parameter">T</span>&gt;'));
     });
 
-    // TODO(jdkoren): Not easy to call TypedefRenderer directly because Typedef
-    // inspects its element member. Find a better way when we start to isolate
-    // renderer tests.
-    test('TypedefRendererHtml renders genericParameters', () {
-      expect(TypedefRendererHtml().renderGenericParameters(processMessage),
+    test('TypedefRenderer renders genericParameters', () {
+      expect(processMessage.genericParameters,
           equals('&lt;<wbr><span class="type-parameter">T</span>&gt;'));
-      expect(TypedefRendererHtml().renderGenericParameters(generic),
+      expect(generic.genericParameters,
           equals('&lt;<wbr><span class="type-parameter">T</span>&gt;'));
     });
   });

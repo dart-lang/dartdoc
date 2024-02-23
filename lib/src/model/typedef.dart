@@ -7,7 +7,6 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/render/typedef_renderer.dart';
 
 abstract class Typedef extends ModelElement
     with TypeParameters, Categorization
@@ -28,11 +27,11 @@ abstract class Typedef extends ModelElement
   String get nameWithGenerics => '$name${super.genericParameters}';
 
   @override
-  String get genericParameters => _renderer.renderGenericParameters(this);
+  String get genericParameters => _renderTypeParameters(typeParameters);
 
   @override
   String get linkedGenericParameters =>
-      _renderer.renderLinkedGenericParameters(this);
+      _renderTypeParameters(typeParameters, isLinked: true);
 
   @override
   String get filePath => '${library.dirName}/${fileStructure.fileName}';
@@ -67,8 +66,6 @@ abstract class Typedef extends ModelElement
       .map((f) => getModelFor(f, library) as TypeParameter)
       .toList(growable: false);
 
-  TypedefRenderer get _renderer => const TypedefRendererHtml();
-
   @override
   Iterable<CommentReferable> get referenceParents => [definingLibrary];
 
@@ -78,6 +75,25 @@ abstract class Typedef extends ModelElement
 
   @override
   Map<String, CommentReferable> get referenceChildren => _referenceChildren;
+
+  /// Render the the generic type parameters of this typedef.
+  String _renderTypeParameters(Iterable<TypeParameter> typeParameters,
+      {bool isLinked = false}) {
+    if (typeParameters.isEmpty) {
+      return '';
+    }
+
+    final buffer = StringBuffer('&lt;<wbr><span class="type-parameter">');
+    buffer.writeAll(
+        typeParameters.map((t) => [
+              ...t.annotations.map((a) => a.linkedNameWithParameters),
+              isLinked ? t.linkedName : t.name,
+            ].join(' ')),
+        '</span>, <span class="type-parameter">');
+    buffer.write('</span>&gt;');
+
+    return buffer.toString();
+  }
 }
 
 /// A typedef referring to a non-function typedef that is nevertheless not
