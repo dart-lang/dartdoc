@@ -46,8 +46,7 @@ class Mixin extends InheritingContainer {
 
   @override
   @visibleForOverriding
-  Iterable<MapEntry<String, CommentReferable>> get extraReferenceChildren =>
-      const [];
+  Map<String, CommentReferable> get extraReferenceChildren => const {};
 
   @override
   bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;
