@@ -2,14 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
-import '../dartdoc_test_base.dart';
-import '../src/test_descriptor_utils.dart' as d;
 import '../src/utils.dart';
+import 'template_test_base.dart';
 
 void main() async {
   defineReflectiveSuite(() {
@@ -18,57 +15,19 @@ void main() async {
 }
 
 @reflectiveTest
-class ClassTest extends DartdocTestBase {
-  static const packageName = 'class_test';
+class ClassTest extends TemplateTestBase {
+  @override
+  String get packageName => 'class_test';
 
   @override
   String get libraryName => 'class';
 
-  Future<void> createPackage({
-    List<d.Descriptor> libFiles = const [],
-  }) async {
-    packagePath = await d.createPackage(
-      packageName,
-      pubspec: '''
-name: class_test
-version: 0.0.1
-environment:
-  sdk: '>=3.3.0-0 <4.0.0'
-''',
-      dartdocOptions: '''
-dartdoc:
-  linkToSource:
-    root: '.'
-    uriTemplate: 'https://github.com/dart-lang/TEST_PKG/%f%#L%l%'
-''',
-      libFiles: libFiles,
-      resourceProvider: resourceProvider,
-    );
-    await writeDartdocResources(resourceProvider);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, packageName, Uri.file('$packagePath/'));
-  }
-
-  Future<List<String>> createPackageAndReadLines({
-    required List<d.Descriptor> libFiles,
-    required List<String> filePath,
-  }) async {
-    await createPackage(libFiles: libFiles);
-    await (await buildDartdoc()).generateDocs();
-
-    return resourceProvider.readLines([packagePath, 'doc', ...filePath]);
-  }
-
-  void test_class_extends() async {
-    var baseLines = await createPackageAndReadLines(
-      libFiles: [
-        d.file('lib.dart', '''
+  void test_implementers_class_extends() async {
+    await createPackageWithLibrary('''
 class Base {}
 class Foo extends Base {}
-'''),
-      ],
-      filePath: ['lib', 'Base-class.html'],
-    );
+''');
+    var baseLines = readLines(['lib', 'Base-class.html']);
 
     baseLines.expectMainContentContainsAllInOrder([
       matches('<dt>Implementers</dt>'),
@@ -78,16 +37,12 @@ class Foo extends Base {}
     ]);
   }
 
-  void test_class_implements() async {
-    var baseLines = await createPackageAndReadLines(
-      libFiles: [
-        d.file('lib.dart', '''
+  void test_implementers_class_implements() async {
+    await createPackageWithLibrary('''
 class Base {}
 class Foo implements Base {}
-'''),
-      ],
-      filePath: ['lib', 'Base-class.html'],
-    );
+''');
+    var baseLines = readLines(['lib', 'Base-class.html']);
 
     baseLines.expectMainContentContainsAllInOrder([
       matches('<dt>Implementers</dt>'),
@@ -97,16 +52,12 @@ class Foo implements Base {}
     ]);
   }
 
-  void test_class_implements_withGenericType() async {
-    var baseLines = await createPackageAndReadLines(
-      libFiles: [
-        d.file('lib.dart', '''
+  void test_implementers_class_implements_withGenericType() async {
+    await createPackageWithLibrary('''
 class Base<E> {}
 class Foo<E> implements Base<E> {}
-'''),
-      ],
-      filePath: ['lib', 'Base-class.html'],
-    );
+''');
+    var baseLines = readLines(['lib', 'Base-class.html']);
 
     baseLines.expectMainContentContainsAllInOrder([
       matches('<dt>Implementers</dt>'),
@@ -116,16 +67,12 @@ class Foo<E> implements Base<E> {}
     ]);
   }
 
-  void test_class_implements_withInstantiatedType() async {
-    var baseLines = await createPackageAndReadLines(
-      libFiles: [
-        d.file('lib.dart', '''
+  void test_implementers_class_implements_withInstantiatedType() async {
+    await createPackageWithLibrary('''
 class Base<E> {}
 class Foo implements Base<int> {}
-'''),
-      ],
-      filePath: ['lib', 'Base-class.html'],
-    );
+''');
+    var baseLines = readLines(['lib', 'Base-class.html']);
 
     baseLines.expectMainContentContainsAllInOrder([
       matches('<dt>Implementers</dt>'),
@@ -135,17 +82,13 @@ class Foo implements Base<int> {}
     ]);
   }
 
-  void test_extensionType_implements() async {
-    var base1Lines = await createPackageAndReadLines(
-      libFiles: [
-        d.file('lib.dart', '''
+  void test_implementers_extensionType_implements() async {
+    await createPackageWithLibrary('''
 class Base1 {}
 class Base2 extends Base1 {}
 extension type ET(Base2 base) implements Base1 {}
-'''),
-      ],
-      filePath: ['lib', 'Base1-class.html'],
-    );
+''');
+    var base1Lines = readLines(['lib', 'Base1-class.html']);
 
     base1Lines.expectMainContentContainsAllInOrder([
       matches('<dt>Implementers</dt>'),
@@ -156,16 +99,12 @@ extension type ET(Base2 base) implements Base1 {}
     ]);
   }
 
-  void test_mixin_implements() async {
-    var baseLines = await createPackageAndReadLines(
-      libFiles: [
-        d.file('lib.dart', '''
+  void test_implementers_mixin_implements() async {
+    await createPackageWithLibrary('''
 class Base {}
 mixin M implements Base {}
-'''),
-      ],
-      filePath: ['lib', 'Base-class.html'],
-    );
+''');
+    var baseLines = readLines(['lib', 'Base-class.html']);
 
     baseLines.expectMainContentContainsAllInOrder([
       matches('<dt>Implementers</dt>'),
@@ -176,16 +115,12 @@ mixin M implements Base {}
   }
 
   @FailingTest(reason: 'Not implemented yet; should be?')
-  void test_mixin_superclassConstraint() async {
-    var baseLines = await createPackageAndReadLines(
-      libFiles: [
-        d.file('lib.dart', '''
+  void test_implementers_mixin_superclassConstraint() async {
+    await createPackageWithLibrary('''
 class Base {}
 mixin M on Base {}
-'''),
-      ],
-      filePath: ['lib', 'Base-class.html'],
-    );
+''');
+    var baseLines = readLines(['lib', 'Base-class.html']);
 
     baseLines.expectMainContentContainsAllInOrder([
       matches('<dt>Implementers</dt>'),
@@ -194,9 +129,70 @@ mixin M on Base {}
       matches('</ul></dd>'),
     ]);
   }
-}
 
-extension on MemoryResourceProvider {
-  List<String> readLines(List<String> pathParts) =>
-      getFile(path.joinAll(pathParts)).readAsStringSync().split('\n');
+  void test_constructor_named() async {
+    await createPackageWithLibrary('''
+class C {
+  /// A named constructor.
+  C.named();
+}
+''');
+    var htmlLines = readLines(['lib', 'C-class.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Constructors</h2>'),
+      matches('<a href="../lib/C/C.named.html">C.named</a>'),
+      matches('A named constructor.'),
+    ]);
+  }
+
+  void test_constructor_unnamed() async {
+    await createPackageWithLibrary('''
+class C {
+  /// An unnamed constructor.
+  C();
+}
+''');
+    var htmlLines = readLines(['lib', 'C-class.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Constructors</h2>'),
+      matches('<a href="../lib/C/C.html">C</a>'),
+      matches('An unnamed constructor.'),
+    ]);
+  }
+
+  void test_instanceMethod() async {
+    await createPackageWithLibrary('''
+class C {
+  /// An instance method.
+  void m1() {}
+}
+''');
+    var htmlLines = readLines(['lib', 'C-class.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Methods</h2>'),
+      matches('<dt id="m1" class="callable">'),
+      matches('<a href="../lib/C/m1.html">m1</a>'),
+      matches('An instance method.'),
+    ]);
+  }
+
+  void test_instanceMethod_generic() async {
+    await createPackageWithLibrary('''
+abstract class C {
+  /// An instance method.
+  T m1<T extends num>(T a);
+}
+''');
+    var htmlLines = readLines(['lib', 'C-class.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Methods</h2>'),
+      matches('<dt id="m1" class="callable">'),
+      matches('<a href="../lib/C/m1.html">m1</a>'),
+      matches('An instance method.'),
+    ]);
+  }
 }
