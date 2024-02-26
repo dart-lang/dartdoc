@@ -28,7 +28,7 @@ library foo;
 import 'annotations.dart';
 ''',
       additionalAssets: () => [
-        d.dir('lib/templates/html', [
+        d.dir('lib/templates', [
           d.file('foo.html', '{{ >foo_header }}'),
           d.file('_foo_header.html', 'EMPTY'),
         ]),
@@ -57,7 +57,7 @@ library foo;
 import 'annotations.dart';
 ''',
       additionalAssets: () => [
-        d.dir('lib/templates/html', [
+        d.dir('lib/templates', [
           d.file('foo.html', 's1 is {{ s1 }}'),
         ]),
         d.dir('md', [
@@ -84,10 +84,8 @@ import 'annotations.dart';
       additionalAssets: () => [
         d.dir('lib', [
           d.dir('templates', [
-            d.dir('html', [
-              d.file('foo.html', '{{ >foo_header }}'),
-              d.file('_foo_header.html', 's1 is {{ s1 }}'),
-            ]),
+            d.file('foo.html', '{{ >foo_header }}'),
+            d.file('_foo_header.html', 's1 is {{ s1 }}'),
           ]),
         ]),
       ],
@@ -138,7 +136,7 @@ library foo;
 import 'annotations.dart';
 ''',
       additionalAssets: () => [
-        d.dir('lib/templates/html', [
+        d.dir('lib/templates', [
           d.file('foo.html', '{{ >base }}'),
           d.file('bar.html', '{{ >base }}'),
           d.file('_base.html', 's1 is {{ s1 }}'),
@@ -149,16 +147,16 @@ import 'annotations.dart';
     expect(
       generatedContent,
       contains('String _renderFoo_partial_base_0(Foo context0) =>\n'
-          '    _deduplicated_lib_templates_html__base_html(context0);\n'),
+          '    _deduplicated_lib_templates__base_html(context0);\n'),
     );
     expect(
       generatedContent,
       contains('String _renderBar_partial_base_0(Bar context0) =>\n'
-          '    _deduplicated_lib_templates_html__base_html(context0);\n'),
+          '    _deduplicated_lib_templates__base_html(context0);\n'),
     );
     expect(
       generatedContent,
-      contains('String _deduplicated_lib_templates_html__base_html('),
+      contains('String _deduplicated_lib_templates__base_html('),
     );
   });
 
@@ -185,7 +183,7 @@ library foo;
 import 'annotations.dart';
 ''',
       additionalAssets: () => [
-        d.dir('lib/templates/html', [
+        d.dir('lib/templates', [
           d.file('foo.html', '{{ >base }}'),
           d.file('bar.html', '{{ >base }}'),
           d.file('_base.html', 's1 is {{ s1 }}'),

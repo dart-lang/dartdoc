@@ -28,12 +28,6 @@ class Renderer {
   /// render the [context] object while generating documentation in HTML.
   final String standardHtmlTemplate;
 
-  /// The unparsed, string form of the URI of the _standard_ Markdown template.
-  ///
-  /// This represents the Mustache template that dartdoc uses out-of-the-box to
-  /// render the [context] object while generating documentation in Markdown.
-  final String standardMdTemplate;
-
   /// A set of types which are "visible" to the Mustache runtime interpreter.
   /// Mustache runtime-rendering has access to all of a type's public getters if
   /// the type is visible to Mustache.
@@ -53,9 +47,7 @@ class Renderer {
     this.context,
     String standardTemplateBasename, {
     this.visibleTypes = const {},
-  })  : standardHtmlTemplate =
-            'lib/templates/html/$standardTemplateBasename.html',
-        standardMdTemplate = 'lib/templates/md/$standardTemplateBasename.md';
+  }) : standardHtmlTemplate = 'lib/templates/$standardTemplateBasename.html';
 
   @visibleForTesting
   const Renderer.forTest(
@@ -63,10 +55,8 @@ class Renderer {
     this.context,
     String standardTemplateBasename, {
     this.visibleTypes = const {},
-  })  : standardHtmlTemplate =
-            'test/mustachio/templates/$standardTemplateBasename.html',
-        standardMdTemplate =
-            'test/mustachio/templates/$standardTemplateBasename.md';
+  }) : standardHtmlTemplate =
+            'test/mustachio/templates/$standardTemplateBasename.html';
 }
 
 /// A container for a type, [T], which is the type of a context object,

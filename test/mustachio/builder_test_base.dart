@@ -38,8 +38,7 @@ class Renderer {
     this.context,
     String standardTemplateBasename, {
     this.visibleTypes = const {},
-  })  : standardHtmlTemplate = 'lib/templates/html/\${standardTemplateBasename}.html',
-        standardMdTemplate = 'lib/templates/md/\${standardTemplateBasename}.md';
+  })  : standardHtmlTemplate = 'lib/templates/\${standardTemplateBasename}.html';
 }
 
 class Context<T> {
@@ -70,16 +69,9 @@ $sourceLibraryContent
       d.file('annotations.dart', annotationsContent),
       d.file('foo.dart', sourceLibraryContent),
       d.dir('templates', [
-        d.dir('html', [
-          d.file('foo.html', 's1 is {{ s1 }}'),
-          d.file('bar.html', 'EMPTY'),
-          d.file('baz.html', 'EMPTY'),
-        ]),
-        d.dir('md', [
-          d.file('foo.md', 's1 is {{ s1 }}'),
-          d.file('bar.md', 'EMPTY'),
-          d.file('baz.md', 'EMPTY'),
-        ]),
+        d.file('foo.html', 's1 is {{ s1 }}'),
+        d.file('bar.html', 'EMPTY'),
+        d.file('baz.html', 'EMPTY'),
       ]),
     ]),
   ]).create();

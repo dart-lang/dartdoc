@@ -122,7 +122,7 @@ abstract class Templates {
           resourceProvider: context.resourceProvider);
     } else if (forceRuntimeTemplates) {
       var directory = await context.resourceProvider
-          .getResourceFolder('package:dartdoc/templates/html');
+          .getResourceFolder('package:dartdoc/templates');
       return RuntimeTemplates._create(directory,
           resourceProvider: context.resourceProvider);
     } else {
