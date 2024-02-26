@@ -145,7 +145,7 @@ class PackageGraph with CommentReferable, Nameable {
         package.warn(PackageWarning.noDocumentableLibrariesInPackage);
       }
     }
-    allImplementorsAdded = true;
+    allImplementersAdded = true;
     allExtensionsAdded = true;
 
     // We should have found all special classes by now.
@@ -280,17 +280,17 @@ class PackageGraph with CommentReferable, Nameable {
 
   ModelNode? getModelNodeFor(Element element) => _modelNodes[element];
 
-  /// It is safe to cache values derived from the [_implementors] table if this
+  /// It is safe to cache values derived from the [_implementers] table if this
   /// is true.
-  bool allImplementorsAdded = false;
+  bool allImplementersAdded = false;
 
   /// It is safe to cache values derived from the [_extensions] table if this
   /// is true.
   bool allExtensionsAdded = false;
 
-  Map<InheritingContainer, List<InheritingContainer>> get implementors {
-    assert(allImplementorsAdded);
-    return _implementors;
+  Map<InheritingContainer, List<InheritingContainer>> get implementers {
+    assert(allImplementersAdded);
+    return _implementers;
   }
 
   Iterable<Extension> get documentedExtensions =>
@@ -323,8 +323,12 @@ class PackageGraph with CommentReferable, Nameable {
   final Map<InheritableElementsKey, Set<ModelElement>> allInheritableElements =
       {};
 
-  /// A mapping of the list of classes which implement each class.
-  final Map<InheritingContainer, List<InheritingContainer>> _implementors =
+  /// A mapping of the list of classes, enums, mixins, and extension types which
+  /// "implement" each class, mixin, and extension type.
+  ///
+  /// For the purposes of the "Implementers" section in the output, this
+  /// includes elements that "implement" or "extend" another element.
+  final Map<InheritingContainer, List<InheritingContainer>> _implementers =
       LinkedHashMap<InheritingContainer, List<InheritingContainer>>(
           equals: (InheritingContainer a, InheritingContainer b) =>
               a.definingContainer == b.definingContainer,
@@ -575,7 +579,7 @@ class PackageGraph with CommentReferable, Nameable {
   }
 
   void _addToImplementers(Iterable<InheritingContainer> containers) {
-    assert(!allImplementorsAdded);
+    assert(!allImplementersAdded);
 
     // Private containers may not be included in documentation, but may still be
     // necessary links in the implementation chain. They are added here as they
@@ -589,7 +593,7 @@ class PackageGraph with CommentReferable, Nameable {
       }
       implemented = implemented.canonicalModelElement as InheritingContainer? ??
           implemented;
-      var list = _implementors.putIfAbsent(implemented, () => []);
+      var list = _implementers.putIfAbsent(implemented, () => []);
       // TODO(srawlins): This would be more efficient if we created a
       // SplayTreeSet keyed off of `.element`.
       if (!list.any((l) => l.element == implementer.element)) {

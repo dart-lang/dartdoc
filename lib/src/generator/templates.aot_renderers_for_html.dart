@@ -322,12 +322,12 @@ String renderClass(ClassTemplateData context0) {
     buffer.write('\n        ');
     buffer.write(_renderClass_partial_mixed_in_types_7(context2));
     buffer.writeln();
-    if (context2.hasPublicImplementors) {
+    if (context2.hasPublicImplementers) {
       buffer.writeln();
       buffer.write('''
           <dt>Implementers</dt>
           <dd><ul class="comma-separated clazz-relationships">''');
-      var context3 = context2.publicImplementorsSorted;
+      var context3 = context2.publicImplementersSorted;
       for (var context4 in context3) {
         buffer.writeln();
         buffer.write('''
@@ -865,6 +865,24 @@ String renderExtensionType<T extends ExtensionType>(
         ''');
   buffer.write(_renderExtensionType_partial_interfaces_5(context2));
   buffer.writeln();
+  if (context2.hasPublicImplementers) {
+    buffer.writeln();
+    buffer.write('''
+          <dt>Implementers</dt>
+          <dd><ul class="comma-separated clazz-relationships">''');
+    var context4 = context2.publicImplementersSorted;
+    for (var context5 in context4) {
+      buffer.writeln();
+      buffer.write('''
+              <li>''');
+      buffer.write(context5.linkedName);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+          </ul></dd>''');
+  }
+  buffer.writeln();
   buffer.write('''
       </dl>
       ''');
@@ -883,10 +901,10 @@ String renderExtensionType<T extends ExtensionType>(
         <h2>Properties</h2>
 
         <dl class="properties">''');
-    var context4 = context2.publicInstanceFieldsSorted;
-    for (var context5 in context4) {
+    var context6 = context2.publicInstanceFieldsSorted;
+    for (var context7 in context6) {
       buffer.write('\n            ');
-      buffer.write(_renderExtensionType_partial_property_8(context5));
+      buffer.write(_renderExtensionType_partial_property_8(context7));
     }
     buffer.writeln();
     buffer.write('''
@@ -1528,13 +1546,13 @@ String renderMixin(MixinTemplateData context0) {
     buffer.write('\n        ');
     buffer.write(_renderMixin_partial_interfaces_6(context2));
     buffer.writeln();
-    if (context2.hasPublicImplementors) {
+    if (context2.hasPublicImplementers) {
       buffer.writeln();
       buffer.write('''
           <dt>Mixin Applications</dt>
           <dd>
             <ul class="comma-separated mixin-relationships">''');
-      var context5 = context2.publicImplementorsSorted;
+      var context5 = context2.publicImplementersSorted;
       for (var context6 in context5) {
         buffer.writeln();
         buffer.write('''

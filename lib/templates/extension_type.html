@@ -22,6 +22,15 @@
           </ul>
         </dd>
         {{ >interfaces }}
+
+        {{ #hasPublicImplementers }}
+          <dt>Implementers</dt>
+          <dd><ul class="comma-separated clazz-relationships">
+            {{ #publicImplementersSorted }}
+              <li>{{{ linkedName }}}</li>
+            {{ /publicImplementersSorted }}
+          </ul></dd>
+        {{ /hasPublicImplementers }}
       </dl>
       {{ >container_annotations }}
     </section>
