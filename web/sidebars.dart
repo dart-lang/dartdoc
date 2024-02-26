@@ -6,7 +6,7 @@ import 'dart:js_interop';
 
 import 'package:web/web.dart';
 
-/// Initialize the sidenav contents and event handlers.
+/// Initialize the sidebar contents and sidenav toggle handlers.
 void init() {
   _initializeContents();
   _initializeToggles();
@@ -83,33 +83,31 @@ void _loadSidebar(
     }
 
     final responseText = (await fetchResponse.text().toDart).toDart;
-    final contentTemplate = (document.createElement('template')
-        as HTMLTemplateElement)
+    final sidebarContent = (document.createElement('div') as HTMLElement)
       ..innerHTML = responseText;
 
-    // TODO(parlough): This isn't working yet.
-    _updateLinks(baseHref, contentTemplate);
-    sidebarElement.appendChild(contentTemplate.content.cloneNode(true));
+    _updateLinks(baseHref, sidebarContent);
+    sidebarElement.appendChild(sidebarContent);
   });
 }
 
 /// Recurses down a DOM tree to adjust the links in a newly loaded sidebar
 /// if "base href" is not being used.
 void _updateLinks(String baseHref, Node node) {
-  if (node is Element && node.nodeName.toLowerCase() == 'a') {
-    final hrefString = node.getAttribute('href');
-    if (hrefString != null) {
+  // TODO(parlough): Once SDK constraint is >= 3.4, use isA extension.
+  if (node.nodeName.toLowerCase() == 'a') {
+    final element = node as HTMLAnchorElement;
+    if (element.getAttribute('href') case final hrefString?) {
       final href = Uri.parse(hrefString);
       if (!href.isAbsolute) {
-        node.setAttribute('href', '$baseHref$hrefString');
+        element.href = '$baseHref$hrefString';
       }
     }
   }
 
   final children = node.childNodes;
   for (var childIndex = 0; childIndex < children.length; childIndex += 1) {
-    final child = children.item(childIndex);
-    if (child != null) {
+    if (children.item(childIndex) case final child?) {
       _updateLinks(baseHref, child);
     }
   }

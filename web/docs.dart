@@ -4,11 +4,11 @@
 
 import 'highlight.dart' as highlight;
 import 'search.dart' as search;
-import 'sidenav.dart' as sidenav;
+import 'sidebars.dart' as sidebars;
 import 'theme.dart' as theme;
 
 void main() {
-  sidenav.init();
+  sidebars.init();
   search.init();
   highlight.init();
   theme.init();
