@@ -503,14 +503,14 @@ mixin TypeImplementing on InheritingContainer {
       getTypeFor(interface, library) as DefinedElementType
   ];
 
-  late final List<InheritingContainer> publicImplementorsSorted =
-      publicImplementors.toList(growable: false)..sort(byName);
+  late final List<InheritingContainer> publicImplementersSorted =
+      publicImplementers.toList(growable: false)..sort(byName);
 
   @override
   bool get hasModifiers =>
-      super.hasModifiers || hasPublicInterfaces || hasPublicImplementors;
+      super.hasModifiers || hasPublicInterfaces || hasPublicImplementers;
 
-  bool get hasPublicImplementors => publicImplementors.isNotEmpty;
+  bool get hasPublicImplementers => publicImplementers.isNotEmpty;
 
   bool get hasPublicInterfaces => publicInterfaces.isNotEmpty;
 
@@ -522,34 +522,34 @@ mixin TypeImplementing on InheritingContainer {
           interface.modelElement as InheritingContainer,
       ];
 
-  /// All the "immediate" public implementors of this [TypeImplementing].
+  /// All the "immediate" public implementers of this [TypeImplementing].
   ///
   /// For a [Mixin], this is actually the mixin applications using the [Mixin].
   ///
-  /// If this [InheritingContainer] has a private implementor, then that is
-  /// counted as a proxy for any public implementors of that private container.
-  Iterable<InheritingContainer> get publicImplementors {
+  /// If this [InheritingContainer] has a private implementer, then that is
+  /// counted as a proxy for any public implementers of that private container.
+  Iterable<InheritingContainer> get publicImplementers {
     var result = <InheritingContainer>{};
     var seen = <InheritingContainer>{};
 
-    // Recursively adds [implementor] if public, or the implementors of
-    // [implementor] if not.
-    void addToResult(InheritingContainer implementor) {
-      if (seen.contains(implementor)) return;
-      seen.add(implementor);
-      if (implementor.isPublicAndPackageDocumented) {
-        result.add(implementor);
+    // Recursively adds [implementer] if public, or the implementers of
+    // [implementer] if not.
+    void addToResult(InheritingContainer implementer) {
+      if (seen.contains(implementer)) return;
+      seen.add(implementer);
+      if (implementer.isPublicAndPackageDocumented) {
+        result.add(implementer);
       } else {
-        var implementors = packageGraph.implementors[implementor];
-        if (implementors != null) {
-          model_utils.findCanonicalFor(implementors).forEach(addToResult);
+        var implementers = packageGraph.implementers[implementer];
+        if (implementers != null) {
+          model_utils.findCanonicalFor(implementers).forEach(addToResult);
         }
       }
     }
 
-    var immediateImplementors = packageGraph.implementors[this];
-    if (immediateImplementors != null) {
-      model_utils.findCanonicalFor(immediateImplementors).forEach(addToResult);
+    var immediateImplementers = packageGraph.implementers[this];
+    if (immediateImplementers != null) {
+      model_utils.findCanonicalFor(immediateImplementers).forEach(addToResult);
     }
     return result;
   }

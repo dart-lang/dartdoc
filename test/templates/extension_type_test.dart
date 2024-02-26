@@ -112,6 +112,21 @@ extension type Two(List<int> it) implements One<int> {}
     ]);
   }
 
+  void test_implementers() async {
+    await createPackageWithLibrary('''
+extension type One<E>(List<E> it) {}
+extension type Two(List<int> it) implements One<int> {}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<dt>Implementers</dt>'),
+      matches('<dd><ul class="comma-separated clazz-relationships">'),
+      matches('<li><a href="../lib/Two-extension-type.html">Two</a></li>'),
+      matches('</ul></dd>'),
+    ]);
+  }
+
   void test_constructors() async {
     await createPackageWithLibrary('''
 extension type One(int it) {

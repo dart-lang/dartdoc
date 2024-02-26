@@ -15225,12 +15225,12 @@ class _Renderer_TypeImplementing extends RendererBase<TypeImplementing> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasModifiers,
                 ),
-                'hasPublicImplementors': Property(
-                  getValue: (CT_ c) => c.hasPublicImplementors,
+                'hasPublicImplementers': Property(
+                  getValue: (CT_ c) => c.hasPublicImplementers,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicImplementors,
+                  getBool: (CT_ c) => c.hasPublicImplementers,
                 ),
                 'hasPublicInterfaces': Property(
                   getValue: (CT_ c) => c.hasPublicInterfaces,
@@ -15265,28 +15265,28 @@ class _Renderer_TypeImplementing extends RendererBase<TypeImplementing> {
                         parent: r));
                   },
                 ),
-                'publicImplementors': Property(
-                  getValue: (CT_ c) => c.publicImplementors,
+                'publicImplementers': Property(
+                  getValue: (CT_ c) => c.publicImplementers,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'Iterable<InheritingContainer>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    return c.publicImplementors.map((e) =>
+                    return c.publicImplementers.map((e) =>
                         _render_InheritingContainer(e, ast, r.template, sink,
                             parent: r));
                   },
                 ),
-                'publicImplementorsSorted': Property(
-                  getValue: (CT_ c) => c.publicImplementorsSorted,
+                'publicImplementersSorted': Property(
+                  getValue: (CT_ c) => c.publicImplementersSorted,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'List<InheritingContainer>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    return c.publicImplementorsSorted.map((e) =>
+                    return c.publicImplementersSorted.map((e) =>
                         _render_InheritingContainer(e, ast, r.template, sink,
                             parent: r));
                   },
@@ -16846,7 +16846,7 @@ const _invisibleGetters = {
     'allConstructedModelElements',
     'allExtensionsAdded',
     'allHrefs',
-    'allImplementorsAdded',
+    'allImplementersAdded',
     'allInheritableElements',
     'allLibraries',
     'allLibrariesAdded',
@@ -16862,7 +16862,7 @@ const _invisibleGetters = {
     'hasEmbedderSdk',
     'hasFooterVersion',
     'hashCode',
-    'implementors',
+    'implementers',
     'inheritThrough',
     'inheritanceManager',
     'libraries',

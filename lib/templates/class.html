@@ -19,14 +19,14 @@
         {{ >interfaces }}
         {{ >mixed_in_types }}
 
-        {{ #hasPublicImplementors }}
+        {{ #hasPublicImplementers }}
           <dt>Implementers</dt>
           <dd><ul class="comma-separated clazz-relationships">
-            {{ #publicImplementorsSorted }}
+            {{ #publicImplementersSorted }}
               <li>{{{ linkedName }}}</li>
-            {{ /publicImplementorsSorted }}
+            {{ /publicImplementersSorted }}
           </ul></dd>
-        {{ /hasPublicImplementors }}
+        {{ /hasPublicImplementers }}
 
         {{ #hasPotentiallyApplicableExtensions }}
           <dt>Available Extensions</dt>
