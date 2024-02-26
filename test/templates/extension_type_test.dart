@@ -3,359 +3,436 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/src/dartdoc.dart';
-import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
+import 'package:test_reflective_loader/test_reflective_loader.dart';
 
+import '../dartdoc_test_base.dart';
 import '../src/test_descriptor_utils.dart' as d;
 import '../src/utils.dart';
 
 void main() async {
-  const packageName = 'test_package';
+  defineReflectiveSuite(() {
+    defineReflectiveTests(ExtensionTypeTest);
+  });
+}
 
-  late String packagePath;
-  late MemoryResourceProvider resourceProvider;
-  late PackageMetaProvider packageMetaProvider;
-  late DartdocGeneratorOptionContext context;
-  late List<String> oneLines;
-  late List<String> oneSidebarLines;
-  late List<String> twoLines;
-  late List<String> threeLines;
+@reflectiveTest
+class ExtensionTypeTest extends DartdocTestBase {
+  static const packageName = 'extension_type_test';
 
-  Future<PubPackageBuilder> createPackageBuilder() async {
-    context = await generatorContextFromArgv([
-      '--input',
-      packagePath,
-      '--output',
-      path.join(packagePath, 'doc'),
-      '--sdk-dir',
-      packageMetaProvider.defaultSdkDir.path,
-      '--no-link-to-remote',
-    ], packageMetaProvider);
+  @override
+  String get libraryName => 'class';
 
-    var packageConfigProvider =
-        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, packageName, Uri.file('$packagePath/'));
-    return PubPackageBuilder(
-      context,
-      packageMetaProvider,
-      packageConfigProvider,
-      skipUnreachableSdkLibraries: true,
-    );
-  }
-
-  Future<Dartdoc> buildDartdoc() async {
-    final packageBuilder = await createPackageBuilder();
-    return await Dartdoc.fromContext(context, packageBuilder);
-  }
-
-  group('extension types', () {
-    setUpAll(() async {
-      packageMetaProvider = testPackageMetaProvider;
-      resourceProvider =
-          packageMetaProvider.resourceProvider as MemoryResourceProvider;
-      packagePath = await d.createPackage(
-        packageName,
-        pubspec: '''
-name: extension_types
+  /// Creates a package on disk with the given singular library [content], and
+  /// generates the docs.
+  Future<void> createPackageWithLibrary(String content) async {
+    packagePath = await d.createPackage(
+      packageName,
+      pubspec: '''
+name: extension_type_test
 version: 0.0.1
 environment:
   sdk: '>=3.3.0-0 <4.0.0'
 ''',
-        analysisOptions: '''
-analyzer:
-  enable-experiment:
-    - inline-class
+      dartdocOptions: '''
+dartdoc:
+  linkToSource:
+    root: '.'
+    uriTemplate: 'https://github.com/dart-lang/TEST_PKG/%f%#L%l%'
 ''',
-        libFiles: [
-          d.file('lib.dart', '''
-class Base1<E> {
-  // An inherited method.
-  void m2() {}
+      libFiles: [
+        d.file('lib.dart', content),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    await writeDartdocResources(resourceProvider);
+    packageConfigProvider.addPackageToConfigFor(
+        packagePath, packageName, Uri.file('$packagePath/'));
 
-  // An inherited field.
-  int get field1 => 1;
+    await (await buildDartdoc()).generateDocs();
+  }
+
+  List<String> readLines(List<String> filePath) =>
+      resourceProvider.readLines([packagePath, 'doc', ...filePath]);
+
+  void test_extensionNameWithGenerics() async {
+    await createPackageWithLibrary('''
+extension type One<E>(List<E> it) {}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches(
+        '<span class="kind-class">One&lt;<wbr>'
+        '<span class="type-parameter">E</span>&gt;</span>',
+      )
+    ]);
+  }
+
+  void test_primaryConstructorPage() async {
+    await createPackageWithLibrary('''
+extension type One<E>(List<E> it) {}
+''');
+    var htmlLines = readLines(['lib', 'One', 'One.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches(
+        '<span class="kind-constructor">One&lt;<wbr>'
+        '<span class="type-parameter">E</span>&gt;</span> constructor',
+      )
+    ]);
+  }
+
+  void test_namedConstructorPage() async {
+    await createPackageWithLibrary('''
+extension type One<E>(List<E> it) {
+  One.named(this.e);
 }
+''');
+    var htmlLines = readLines(['lib', 'One', 'One.named.html']);
 
-class Base2 {}
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches(
+        '<span class="kind-constructor">One&lt;<wbr>'
+        '<span class="type-parameter">E</span>&gt;.named</span> constructor',
+      )
+    ]);
+  }
 
-class Foo<E> implements Base1<E>, Base2 {}
+  void test_representationType() async {
+    await createPackageWithLibrary('''
+class Foo<E> {}
+extension type One<E>(Foo<E> it) {}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
 
-class FooSub extends Foo<int> {}
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<dt>on</dt>'),
+      matches('<a href="../lib/Foo-class.html">Foo</a>'
+          '<span class="signature">&lt;<wbr>'
+          '<span class="type-parameter">E</span>&gt;</span>'),
+    ]);
+  }
 
-extension type One<E>(Foo<E> it) {
+  void test_classInterfaces() async {
+    await createPackageWithLibrary('''
+class Base<E> {}
+class Foo<E> implements Base<E> {}
+extension type One<E>(Foo<E> it) implements Base<E> {}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<dt>Implemented types</dt>'),
+      matches('<a href="../lib/Base-class.html">Base</a>'
+          '<span class="signature">&lt;<wbr>'
+          '<span class="type-parameter">E</span>&gt;</span>'),
+    ]);
+  }
+
+  void test_extensionTypeInterfaces() async {
+    await createPackageWithLibrary('''
+extension type One<E>(List<E> it) {}
+extension type Two(List<int> it) implements One<int> {}
+''');
+    var htmlLines = readLines(['lib', 'Two-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<dt>Implemented types</dt>'),
+      matches('<a href="../lib/One-extension-type.html">One</a>'
+          '<span class="signature">&lt;<wbr>'
+          '<span class="type-parameter">int</span>&gt;</span>'),
+    ]);
+  }
+
+  void test_constructors() async {
+    await createPackageWithLibrary('''
+extension type One(int it) {
   /// A named constructor.
-  One.named(Foo<E> e);
+  One.named(this.it);
+}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
 
-  /// An instance method.
-  void m1() {}
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Constructors</h2>'),
+      matches('<a href="../lib/One/One.html">One</a>'),
+      matches('<a href="../lib/One/One.named.html">'
+          'One.named</a>'),
+      matches('A named constructor.'),
+    ]);
+  }
 
-  /// An operator.
-  bool operator >(E other) => false;
-
+  void test_staticMethods() async {
+    await createPackageWithLibrary('''
+extension type One(int it) {
   /// A static method.
   static void s1() {}
+}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
 
-  /// A constant.
-  static const c1 = 1;
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Static Methods</h2>'),
+      matches('<a href="../lib/One/s1.html">s1</a>'),
+      matches('A static method.'),
+    ]);
+  }
 
+  void test_staticFields() async {
+    await createPackageWithLibrary('''
+extension type One(int it) {
   /// A static field.
   static final int sf1 = 2;
+}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
 
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Static Properties</h2>'),
+      matches('<a href="../lib/One/sf1.html">sf1</a>'),
+      matches('A static field.'),
+    ]);
+  }
+
+  void test_staticGetterSetterPairs() async {
+    await createPackageWithLibrary('''
+extension type One(int it) {
   /// A static getter.
   static int get gs1 => 3;
 
   /// A static setter.
   static void set gs1(int value) {}
 }
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
 
-extension type TwoWithBase<E>(Foo<E> it) implements Base1<E>, Base2 {}
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Static Properties</h2>'),
+      matches('<a href="../lib/One/gs1.html">gs1</a>'),
+      matches('A static getter.'),
+    ]);
+  }
 
-extension type ThreeWithOne<E>(FooSub it3) implements One<int> {}
-'''),
-        ],
-        dartdocOptions: '''
-dartdoc:
-  linkToSource:
-    root: '.'
-    uriTemplate: 'https://github.com/dart-lang/TEST_PKG/%f%#L%l%'
-''',
-        resourceProvider: resourceProvider,
-      );
-      await writeDartdocResources(resourceProvider);
-      await (await buildDartdoc()).generateDocs();
-      oneLines = resourceProvider
-          .readLines([packagePath, 'doc', 'lib', 'One-extension-type.html']);
-      oneSidebarLines = resourceProvider.readLines(
-          [packagePath, 'doc', 'lib', 'One-extension-type-sidebar.html']);
-      twoLines = resourceProvider.readLines(
-          [packagePath, 'doc', 'lib', 'TwoWithBase-extension-type.html']);
-      threeLines = resourceProvider.readLines(
-          [packagePath, 'doc', 'lib', 'ThreeWithOne-extension-type.html']);
-    });
+  void test_constants() async {
+    await createPackageWithLibrary('''
+extension type One(int it) {
+  /// A constant.
+  static const c1 = 1;
+}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
 
-    test('page contains extension name with generics', () async {
-      oneLines.expectMainContentContainsAllInOrder([
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Constants</h2>'),
+      matches('<a href="../lib/One/c1-constant.html">c1</a>'),
+      matches('A constant.'),
+    ]);
+  }
+
+  void test_representationField() async {
+    await createPackageWithLibrary('''
+extension type One(int it) {}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Properties</h2>'),
+      matches('<a href="../lib/One/it.html">it</a>'),
+    ]);
+  }
+
+  void test_inheritedRepresentationField() async {
+    await createPackageWithLibrary('''
+extension type One(int one) {}
+extension type Two(int two) implements One {}
+''');
+    var htmlLines = readLines(['lib', 'Two-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Properties</h2>'),
+      matches('<a href="../lib/One/one.html">one</a>'),
+    ]);
+  }
+
+  void test_inheritedGetters() async {
+    await createPackageWithLibrary('''
+class Base {
+  int get field1 => 1;
+}
+class Foo extends Base {}
+extension type One(int one) implements Base {}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Properties</h2>'),
+      matches('<a href="../lib/Base/field1.html">field1</a>'),
+    ]);
+  }
+
+  void test_instanceMethods() async {
+    await createPackageWithLibrary('''
+extension type One(int it) {
+  /// An instance method.
+  void m1() {}
+}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Methods</h2>'),
+      matches('<dt id="m1" class="callable">'),
+      matches('<a href="../lib/One/m1.html">m1</a>'),
+      matches('An instance method.'),
+    ]);
+  }
+
+  void test_methodsInheritedFromClassSuperInterface() async {
+    await createPackageWithLibrary('''
+class Base {
+  void m2() {}
+}
+class Foo extends Base {}
+extension type One(int it) implements Base {}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Methods</h2>'),
+      matches('<dt id="m2" class="callable inherited">'),
+      matches('<a href="../lib/Base/m2.html">m2</a>'),
+    ]);
+  }
+
+  void test_methodsInheritedFromAnExtensionTypeSuperInterface() async {
+    await createPackageWithLibrary('''
+extension type One(int one) {
+  void m1() {}
+}
+extension type Two(int two) implements One {}
+''');
+    var htmlLines = readLines(['lib', 'Two-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Methods</h2>'),
+      matches('<dt id="m1" class="callable inherited">'),
+      matches('<a href="../lib/One/m1.html">m1</a>'),
+    ]);
+  }
+
+  void test_operators() async {
+    await createPackageWithLibrary('''
+extension type One(int one) {
+  /// An operator.
+  bool operator >(E other) => false;
+}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Operators</h2>'),
+      matches('<a href="../lib/One/operator_greater.html">operator ></a>'),
+      matches('An operator.'),
+    ]);
+  }
+
+  void test_inheritedOperators() async {
+    await createPackageWithLibrary('''
+extension type One(int one) {
+  /// An operator.
+  bool operator >(E other) => false;
+}
+extension type Two(int two) implements One {}
+''');
+    var htmlLines = readLines(['lib', 'Two-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Operators</h2>'),
+      matches('<a href="../lib/One/operator_greater.html">operator ></a>'),
+      matches('An operator.'),
+    ]);
+  }
+
+  void test_sidebar_methods() async {
+    await createPackageWithLibrary('''
+extension type One(int it) {
+  void m1() {}
+}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type-sidebar.html']);
+
+    expect(
+      htmlLines,
+      containsAllInOrder([
         matches(
-          '<span class="kind-class">One&lt;<wbr>'
-          '<span class="type-parameter">E</span>&gt;</span>',
-        )
-      ]);
-    });
+          '<a href="../lib/One-extension-type.html#instance-methods">'
+          'Methods</a>',
+        ),
+        matches('<a href="../lib/One/m1.html">m1</a>'),
+      ]),
+    );
+  }
 
-    test('primary constructor page is rendered', () async {
-      var constructorPageLines = resourceProvider
-          .readLines([packagePath, 'doc', 'lib', 'One', 'One.html']);
-      constructorPageLines.expectMainContentContainsAllInOrder([
+  void test_sidebar_operators() async {
+    await createPackageWithLibrary('''
+extension type One(int it) {
+  bool operator >(E other) => false;
+}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type-sidebar.html']);
+
+    expect(
+      htmlLines,
+      containsAllInOrder([
         matches(
-          '<span class="kind-constructor">One&lt;<wbr>'
-          '<span class="type-parameter">E</span>&gt;</span> constructor',
-        )
-      ]);
-    });
+            '<a href="../lib/One-extension-type.html#operators">Operators</a>'),
+        matches('<a href="../lib/One/operator_greater.html">operator ></a>'),
+      ]),
+    );
+  }
 
-    test('named constructor page is rendered', () async {
-      var constructorPageLines = resourceProvider
-          .readLines([packagePath, 'doc', 'lib', 'One', 'One.named.html']);
-      constructorPageLines.expectMainContentContainsAllInOrder([
-        matches(
-          '<span class="kind-constructor">One&lt;<wbr>'
-          '<span class="type-parameter">E</span>&gt;.named</span> constructor',
-        )
-      ]);
-    });
+  void test_sidebar_staticProperties() async {
+    await createPackageWithLibrary('''
+extension type One(int it) {
+  static final int sf1 = 2;
 
-    test('page contains representation type', () async {
-      oneLines.expectMainContentContainsAllInOrder([
-        matches('<dt>on</dt>'),
-        matches('<a href="../lib/Foo-class.html">Foo</a>'
-            '<span class="signature">&lt;<wbr>'
-            '<span class="type-parameter">E</span>&gt;</span>'),
-      ]);
-    });
+  static int get gs1 => 3;
 
-    test('page contains class interfaces', () async {
-      twoLines.expectMainContentContainsAllInOrder([
-        matches('<dt>Implemented types</dt>'),
-        matches('<a href="../lib/Base1-class.html">Base1</a>'
-            '<span class="signature">&lt;<wbr>'
-            '<span class="type-parameter">E</span>&gt;</span>'),
-        matches('<a href="../lib/Base2-class.html">Base2</a>'),
-      ]);
-    });
+  static void set gs1(int value) {}
+}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type-sidebar.html']);
 
-    test('page contains extension type interfaces', () async {
-      threeLines.expectMainContentContainsAllInOrder([
-        matches('<dt>Implemented types</dt>'),
-        matches('<a href="../lib/One-extension-type.html">One</a>'
-            '<span class="signature">&lt;<wbr>'
-            '<span class="type-parameter">int</span>&gt;</span>'),
-      ]);
-    });
-
-    test('page contains constructors', () async {
-      oneLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Constructors</h2>'),
-        matches('<a href="../lib/One/One.html">One</a>'),
-        matches('<a href="../lib/One/One.named.html">'
-            'One.named</a>'),
-        matches('A named constructor.'),
-      ]);
-    });
-
-    test('page contains static methods', () async {
-      oneLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Static Methods</h2>'),
-        matches('<a href="../lib/One/s1.html">s1</a>'),
-        matches('A static method.'),
-      ]);
-    });
-
-    test('page contains static fields', () async {
-      oneLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Static Properties</h2>'),
-        matches('<a href="../lib/One/sf1.html">sf1</a>'),
-        matches('A static field.'),
-      ]);
-    });
-
-    test('page contains static getter/setter pairs', () async {
-      oneLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Static Properties</h2>'),
+    expect(
+      htmlLines,
+      containsAllInOrder([
+        matches('<a href="../lib/One-extension-type.html#static-properties">'
+            'Static properties</a>'),
         matches('<a href="../lib/One/gs1.html">gs1</a>'),
-        matches('A static getter.'),
-      ]);
-    });
+        matches('<a href="../lib/One/sf1.html">sf1</a>'),
+      ]),
+    );
+  }
 
-    test('page contains (static) constants', () async {
-      oneLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Constants</h2>'),
-        matches('<a href="../lib/One/c1-constant.html">c1</a>'),
-        matches('A constant.'),
-      ]);
-    });
+  void test_sidebar_staticMethods() async {
+    await createPackageWithLibrary('''
+extension type One(int it) {
+  static void s1() {}
+}
+''');
+    var htmlLines = readLines(['lib', 'One-extension-type-sidebar.html']);
 
-    test('page contains representation field', () async {
-      oneLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Properties</h2>'),
-        matches('<a href="../lib/One/it.html">it</a>'),
-        matches('An operator.'),
-      ]);
-    });
-
-    test('page contains inherited representation field', () async {
-      threeLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Properties</h2>'),
-        matches('<a href="../lib/One/it.html">it</a>'),
-      ]);
-    });
-
-    test('page contains inherited getters', () async {
-      twoLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Properties</h2>'),
-        matches('<a href="../lib/Base1/field1.html">field1</a>'),
-      ]);
-    });
-
-    test('page contains instance methods', () async {
-      oneLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Methods</h2>'),
-        matches('<dt id="m1" class="callable">'),
-        matches('<a href="../lib/One/m1.html">m1</a>'),
-        matches('An instance method.'),
-      ]);
-    });
-
-    test('page contains methods inherited from a class super-interface',
-        () async {
-      twoLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Methods</h2>'),
-        matches('<dt id="m2" class="callable inherited">'),
-        matches('<a href="../lib/Base1/m2.html">m2</a>'),
-      ]);
-    });
-
-    test(
-        'page contains methods inherited from an extension type '
-        'super-interface', () async {
-      threeLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Methods</h2>'),
-        matches('<dt id="m1" class="callable inherited">'),
-        matches('<a href="../lib/One/m1.html">m1</a>'),
-      ]);
-    });
-
-    test('page contains operators', () async {
-      oneLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Operators</h2>'),
-        matches('<a href="../lib/One/operator_greater.html">operator ></a>'),
-        matches('An operator.'),
-      ]);
-    });
-
-    test('page contains inherited operators', () async {
-      threeLines.expectMainContentContainsAllInOrder([
-        matches('<h2>Operators</h2>'),
-        matches('<a href="../lib/One/operator_greater.html">operator ></a>'),
-        matches('An operator.'),
-      ]);
-    });
-
-    test('sidebar contains methods', () async {
-      expect(
-        oneSidebarLines,
-        containsAllInOrder([
-          matches(
-            '<a href="../lib/One-extension-type.html#instance-methods">'
-            'Methods</a>',
-          ),
-          matches('<a href="../lib/One/m1.html">m1</a>'),
-        ]),
-      );
-    });
-
-    test('sidebar contains operators', () async {
-      expect(
-        oneSidebarLines,
-        containsAllInOrder([
-          matches(
-            '<a href="../lib/One-extension-type.html#operators">'
-            'Operators</a>',
-          ),
-          matches(
-            '<a href="../lib/One/operator_greater.html">operator ></a>',
-          ),
-        ]),
-      );
-    });
-
-    test('sidebar contains static properties', () async {
-      expect(
-        oneSidebarLines,
-        containsAllInOrder([
-          matches(
-              '<a href="../lib/One-extension-type.html#static-properties">Static properties</a>'),
-          matches('<a href="../lib/One/gs1.html">gs1</a>'),
-          matches('<a href="../lib/One/sf1.html">sf1</a>'),
-        ]),
-      );
-    });
-
-    test('sidebar contains static methods', () async {
-      expect(
-        oneSidebarLines,
-        containsAllInOrder([
-          matches(
-              '<a href="../lib/One-extension-type.html#static-methods">Static methods</a>'),
-          matches('<a href="../lib/One/s1.html">s1</a>'),
-        ]),
-      );
-    });
-  });
+    expect(
+      htmlLines,
+      containsAllInOrder([
+        matches('<a href="../lib/One-extension-type.html#static-methods">'
+            'Static methods</a>'),
+        matches('<a href="../lib/One/s1.html">s1</a>'),
+      ]),
+    );
+  }
 }
 
 extension on MemoryResourceProvider {

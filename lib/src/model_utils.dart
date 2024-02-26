@@ -9,11 +9,15 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:glob/glob.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 final _driveLetterMatcher = RegExp(r'^\w:\\');
 
 final Map<String, String> _fileContents = <String, String>{};
+
+@visibleForTesting
+void clearFileContentsCache() => _fileContents.clear();
 
 /// This will handle matching globs, including on Windows.
 ///
