@@ -66,7 +66,7 @@ extension type One<E>(List<E> it) {
     ]);
   }
 
-  void test_representationType() async {
+  void test_representationType_class() async {
     await createPackageWithLibrary('''
 class Foo<E> {}
 extension type One<E>(Foo<E> it) {}
@@ -78,6 +78,19 @@ extension type One<E>(Foo<E> it) {}
       matches('<a href="../lib/Foo-class.html">Foo</a>'
           '<span class="signature">&lt;<wbr>'
           '<span class="type-parameter">E</span>&gt;</span>'),
+    ]);
+  }
+
+  void test_representationType_extensionType() async {
+    await createPackageWithLibrary('''
+extension type One(int one) {}
+extension type Two(One two) {}
+''');
+    var htmlLines = readLines(['lib', 'Two-extension-type.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<dt>on</dt>'),
+      matches('<a href="../lib/One-extension-type.html">One</a>'),
     ]);
   }
 
