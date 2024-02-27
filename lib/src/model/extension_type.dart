@@ -14,7 +14,7 @@ class ExtensionType extends InheritingContainer
   final ExtensionTypeElement element;
 
   late final ElementType representationType =
-      getTypeFor(element.typeErasure, library);
+      getTypeFor(element.representation.type, library);
 
   ExtensionType(this.element, super.library, super.packageGraph);
 
