@@ -4,6 +4,7 @@
 
 import 'dart:collection';
 
+import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
@@ -32,11 +33,29 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 
 class PackageGraph with CommentReferable, Nameable {
+  /// Dartdoc's configuration flags.
+  final DartdocOptionContext config;
+
+  final bool hasEmbedderSdk;
+
+  /// [PackageMeta] provider for building [PackageMeta]s.
+  final PackageMetaProvider packageMetaProvider;
+
+  final InheritanceManager3 inheritanceManager = InheritanceManager3();
+
+  final AnalysisContext analysisContext;
+
+  /// PackageMeta for the default package.
+  final PackageMeta packageMeta;
+
+  final Map<Source?, SdkLibrary> sdkLibrarySources;
+
   PackageGraph.uninitialized(
     this.config,
     DartSdk sdk,
     this.hasEmbedderSdk,
     this.packageMetaProvider,
+    this.analysisContext,
   )   : packageMeta = config.topLevelPackageMeta,
         sdkLibrarySources = {
           for (var lib in sdk.sdkLibraries) sdk.mapDartUri(lib.shortName): lib
@@ -45,10 +64,6 @@ class PackageGraph with CommentReferable, Nameable {
     // This can happen for packages that only contain embedder SDKs.
     Package.fromPackageMeta(packageMeta, this);
   }
-
-  final InheritanceManager3 inheritanceManager = InheritanceManager3();
-
-  final Map<Source?, SdkLibrary> sdkLibrarySources;
 
   void dispose() {
     // Clear out any cached tool snapshots and temporary directories.
@@ -260,7 +275,7 @@ class PackageGraph with CommentReferable, Nameable {
       for (var field in fields) {
         var element = field.declaredElement!;
         _modelNodes.putIfAbsent(
-            element, () => ModelNode(field, element, resourceProvider));
+            element, () => ModelNode(field, element, analysisContext));
       }
       return;
     }
@@ -269,13 +284,13 @@ class PackageGraph with CommentReferable, Nameable {
       for (var field in fields) {
         var element = field.declaredElement!;
         _modelNodes.putIfAbsent(
-            element, () => ModelNode(field, element, resourceProvider));
+            element, () => ModelNode(field, element, analysisContext));
       }
       return;
     }
     var element = declaration.declaredElement!;
     _modelNodes.putIfAbsent(
-        element, () => ModelNode(declaration, element, resourceProvider));
+        element, () => ModelNode(declaration, element, analysisContext));
   }
 
   ModelNode? getModelNodeFor(Element element) => _modelNodes[element];
@@ -338,22 +353,11 @@ class PackageGraph with CommentReferable, Nameable {
   /// A list of extensions that exist in the package graph.
   final List<Extension> _extensions = [];
 
-  /// PackageMeta for the default package.
-  final PackageMeta packageMeta;
-
   /// Name of the default package.
   String get defaultPackageName => packageMeta.name;
 
-  /// Dartdoc's configuration flags.
-  final DartdocOptionContext config;
-
-  /// PackageMeta Provider for building [PackageMeta]s.
-  final PackageMetaProvider packageMetaProvider;
-
   late final Package defaultPackage =
       Package.fromPackageMeta(packageMeta, this);
-
-  final bool hasEmbedderSdk;
 
   bool get hasFooterVersion => !config.excludeFooterVersion;
 

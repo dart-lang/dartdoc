@@ -217,6 +217,7 @@ class Dartdoc {
     if (config.showStats) {
       logInfo(runtimeStats.buildReport());
     }
+    await packageBuilder.dispose();
     return DartdocResults(config.topLevelPackageMeta, packageGraph, _outputDir);
   }
 

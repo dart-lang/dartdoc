@@ -16851,6 +16851,7 @@ const _invisibleGetters = {
     'allLibraries',
     'allLibrariesAdded',
     'allLocalModelElements',
+    'analysisContext',
     'breadcrumbName',
     'config',
     'dartCoreObject',
