@@ -11,7 +11,6 @@ import 'package:dartdoc/src/model/container_modifiers.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
-import 'package:dartdoc/src/render/language_feature_renderer.dart';
 import 'package:meta/meta.dart';
 
 /// A mixin to build an [InheritingContainer] capable of being constructed
@@ -99,9 +98,7 @@ abstract class InheritingContainer extends Container
 
   @override
   late final List<LanguageFeature> displayedLanguageFeatures =
-      containerModifiers
-          .asLanguageFeatureSet(const LanguageFeatureRendererHtml())
-          .toList();
+      containerModifiers.asLanguageFeatureSet.toList();
 
   late final List<ModelElement> _allModelElements = () {
     _inheritedElementsCache = _inheritedElements;
