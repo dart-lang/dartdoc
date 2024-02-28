@@ -1652,13 +1652,13 @@ List<DartdocOption> createDartdocOptions(
             help: 'Allow links to be generated for packages outside this one.',
             negatable: true),
       ]),
-    // TODO(srawlins): Deprecate; with the advent of the unnamed library, this
-    // should be applied in each file, on the `library;` directive.
+    // Deprecated. Use of this option is reported.
+    // TODO(srawlins): Remove.
     DartdocOptionFileOnly<List<String>>('nodoc', [], resourceProvider,
         optionIs: OptionKind.glob,
-        help: 'Dart symbols declared in these files will be treated as though '
-            'they have the @nodoc directive added to their documentation '
-            'comment.'),
+        help: '(deprecated) Dart symbols declared in these files will be '
+            'treated as though they have the @nodoc directive added to their '
+            'documentation comment.'),
     DartdocOptionArgOnly<String>('output',
         resourceProvider.pathContext.join('doc', 'api'), resourceProvider,
         optionIs: OptionKind.dir, help: 'Path to the output directory.'),
@@ -1690,13 +1690,10 @@ List<DartdocOption> createDartdocOptions(
           (option.root['topLevelPackageMeta'].valueAt(dir) as PackageMeta)
               .requiresFlutter) {
         String? flutterRoot = option.root['flutterRoot'].valueAt(dir);
-        if (flutterRoot == null) {
-          // For now, return null. An error is reported in
-          // [PackageBuilder.buildPackageGraph].
-          return null;
-        }
-        return resourceProvider.pathContext
-            .join(flutterRoot, 'bin', 'cache', 'dart-sdk');
+        return flutterRoot == null
+            ? null
+            : resourceProvider.pathContext
+                .join(flutterRoot, 'bin', 'cache', 'dart-sdk');
       }
       return packageMetaProvider.defaultSdkDir.path;
     }, packageMetaProvider.resourceProvider,
