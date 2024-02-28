@@ -5,19 +5,12 @@
 import 'dart:io' show Platform;
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:glob/glob.dart';
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 final _driveLetterMatcher = RegExp(r'^\w:\\');
-
-final Map<String, String> _fileContents = <String, String>{};
-
-@visibleForTesting
-void clearFileContentsCache() => _fileContents.clear();
 
 /// This will handle matching globs, including on Windows.
 ///
@@ -76,23 +69,6 @@ Iterable<InheritingContainer> findCanonicalFor(
       c.packageGraph.findCanonicalModelElementFor(c.element)
           as InheritingContainer? ??
       c);
-}
-
-/// Uses direct file access to get the contents of a file.  Cached.
-///
-/// Direct reading of source code via a [PhysicalResourceProvider] is not
-/// allowed in some environments, so avoid using this.
-// TODO(jcollins-g): consider deprecating this and the `--include-source`
-// feature that uses it now that source code linking is possible.
-// TODO(srawlins): Evaluate whether this leads to a ton of memory usage.
-// An LRU of size 1 might be just fine.
-String getFileContentsFor(Element e, ResourceProvider resourceProvider) {
-  var location = e.source?.fullName;
-  if (location != null && !_fileContents.containsKey(location)) {
-    var contents = resourceProvider.getFile(location).readAsStringSync();
-    _fileContents.putIfAbsent(location, () => contents);
-  }
-  return _fileContents[location]!;
 }
 
 bool hasPrivateName(Element e) {

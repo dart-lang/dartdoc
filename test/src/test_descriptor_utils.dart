@@ -5,7 +5,6 @@
 import 'dart:convert';
 
 import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/src/model_utils.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:yaml/yaml.dart' as yaml;
 
@@ -85,7 +84,6 @@ Future<String> createPackage(
       ],
     ),
   ]);
-  clearFileContentsCache();
   if (resourceProvider == null) {
     await packageDir.create();
     return packageDir.io.path;

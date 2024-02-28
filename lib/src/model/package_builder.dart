@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
@@ -36,6 +37,8 @@ import 'package:path/path.dart' as p show Context;
 abstract class PackageBuilder {
   // Builds package graph to be used by documentation generator.
   Future<PackageGraph> buildPackageGraph();
+
+  Future<void> dispose();
 }
 
 /// A package builder that understands pub package format.
@@ -44,12 +47,49 @@ class PubPackageBuilder implements PackageBuilder {
   final PackageMetaProvider _packageMetaProvider;
   final PackageConfigProvider _packageConfigProvider;
 
-  PubPackageBuilder(
+  final AnalysisContextCollectionImpl _contextCollection;
+  final AnalysisContext _analysisContext;
+
+  factory PubPackageBuilder(
+    DartdocOptionContext config,
+    PackageMetaProvider packageMetaProvider,
+    PackageConfigProvider packageConfigProvider, {
+    @visibleForTesting bool skipUnreachableSdkLibraries = false,
+  }) {
+    var contextCollection = AnalysisContextCollectionImpl(
+      includedPaths: [config.inputDir],
+      // TODO(jcollins-g): should we pass excluded directories here instead
+      // of handling it ourselves?
+      resourceProvider: packageMetaProvider.resourceProvider,
+      sdkPath: config.sdkDir,
+      updateAnalysisOptions2: ({
+        required AnalysisOptionsImpl analysisOptions,
+        required ContextRoot contextRoot,
+        required DartSdk sdk,
+      }) =>
+          analysisOptions
+            ..warning = false
+            ..lint = false,
+    );
+    return PubPackageBuilder._(
+      config,
+      packageMetaProvider,
+      packageConfigProvider,
+      contextCollection,
+      analysisContext: contextCollection.contextFor(config.inputDir),
+      skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
+    );
+  }
+
+  PubPackageBuilder._(
     this._config,
     this._packageMetaProvider,
-    this._packageConfigProvider, {
-    @visibleForTesting bool skipUnreachableSdkLibraries = false,
-  }) : _skipUnreachableSdkLibraries = skipUnreachableSdkLibraries;
+    this._packageConfigProvider,
+    this._contextCollection, {
+    required AnalysisContext analysisContext,
+    required bool skipUnreachableSdkLibraries,
+  })  : _analysisContext = analysisContext,
+        _skipUnreachableSdkLibraries = skipUnreachableSdkLibraries;
 
   @override
   Future<PackageGraph> buildPackageGraph() async {
@@ -68,6 +108,7 @@ class PubPackageBuilder implements PackageBuilder {
       _sdk,
       _embedderSdkUris.isNotEmpty,
       _packageMetaProvider,
+      _analysisContext,
     );
     await _getLibraries(newGraph);
     runtimeStats.endPerfTask();
@@ -82,6 +123,12 @@ class PubPackageBuilder implements PackageBuilder {
     runtimeStats.endPerfTask();
 
     return newGraph;
+  }
+
+  @override
+  Future<void> dispose() async {
+    // Shutdown macro support.
+    await _contextCollection.dispose();
   }
 
   late final DartSdk _sdk = _packageMetaProvider.defaultSdk ??
@@ -122,22 +169,6 @@ class PubPackageBuilder implements PackageBuilder {
   }
 
   late final Map<String, List<Folder>> _packageMap;
-
-  late final _contextCollection = AnalysisContextCollectionImpl(
-    includedPaths: [_config.inputDir],
-    // TODO(jcollins-g): should we pass excluded directories here instead of
-    // handling it ourselves?
-    resourceProvider: _resourceProvider,
-    sdkPath: _config.sdkDir,
-    updateAnalysisOptions2: ({
-      required AnalysisOptionsImpl analysisOptions,
-      required ContextRoot contextRoot,
-      required DartSdk sdk,
-    }) =>
-        analysisOptions
-          ..warning = false
-          ..lint = false,
-  );
 
   List<String> get _sdkFilesToDocument => [
         for (var sdkLib in _sdk.sdkLibraries)
@@ -236,6 +267,8 @@ class PubPackageBuilder implements PackageBuilder {
         }
         var resolvedLibrary = await _resolveLibrary(file);
         if (resolvedLibrary == null) {
+          // `file` did not resolve to a _library_; could be a part, an
+          // augmentation, or some other invalid result.
           _knownParts.add(file);
           continue;
         }
@@ -450,8 +483,6 @@ class PubPackageBuilder implements PackageBuilder {
       specialFiles.difference(files),
       addingSpecials: true,
     );
-    // Shutdown macro support.
-    await _contextCollection.dispose();
   }
 
   /// Throws an exception if any configured-to-be-included files were not found
@@ -502,21 +533,28 @@ class DartDocResolvedLibrary {
 extension on Set<String> {
   /// Adds [element]'s path and all of its part files' paths to `this`, and
   /// recursively adds the paths of all imported and exported libraries.
-  void addFilesReferencedBy(LibraryElement? element) {
-    if (element != null) {
-      var path = element.source.fullName;
-      if (add(path)) {
-        for (var import in element.libraryImports) {
-          addFilesReferencedBy(import.importedLibrary);
-        }
-        for (var export in element.libraryExports) {
-          addFilesReferencedBy(export.exportedLibrary);
-        }
+  void addFilesReferencedBy(LibraryOrAugmentationElement? element) {
+    if (element == null) return;
+
+    var path = element.source?.fullName;
+    if (path == null) return;
+
+    if (add(path)) {
+      for (var import in element.libraryImports) {
+        addFilesReferencedBy(import.importedLibrary);
+      }
+      for (var export in element.libraryExports) {
+        addFilesReferencedBy(export.exportedLibrary);
+      }
+      if (element is LibraryElement) {
         for (var part in element.parts
             .map((e) => e.uri)
             .whereType<DirectiveUriWithUnit>()) {
           add(part.source.fullName);
         }
+      }
+      for (var augmentation in element.augmentationImports) {
+        addFilesReferencedBy(augmentation.importedAugmentation);
       }
     }
   }
