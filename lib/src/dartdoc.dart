@@ -188,6 +188,14 @@ class Dartdoc {
     runtimeStats.startPerfTask('buildPackageGraph');
     var packageGraph = await packageBuilder.buildPackageGraph();
     runtimeStats.endPerfTask();
+    if (packageBuilder.includeExternalsWasSpecified) {
+      packageGraph.defaultPackage.warn(
+        PackageWarning.deprecated,
+        message:
+            "The '--include-externals' option is deprecated, and will soon be "
+            'removed.',
+      );
+    }
     var libs = packageGraph.libraryCount;
     logInfo("Initialized dartdoc with $libs librar${libs == 1 ? 'y' : 'ies'}");
 
