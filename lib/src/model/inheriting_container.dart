@@ -100,15 +100,10 @@ abstract class InheritingContainer extends Container
   late final List<LanguageFeature> displayedLanguageFeatures =
       containerModifiers.asLanguageFeatureSet.toList();
 
-  late final List<ModelElement> _allModelElements = () {
-    _inheritedElementsCache = _inheritedElements;
-    var result = [
-      ...super.allModelElements,
-      ...typeParameters,
-    ];
-    _inheritedElementsCache = null;
-    return result;
-  }();
+  late final List<ModelElement> _allModelElements = [
+    ...super.allModelElements,
+    ...typeParameters,
+  ];
 
   Iterable<Method> get inheritedMethods {
     var methodNames = declaredMethods.map((m) => m.element.name).toSet();
@@ -145,55 +140,69 @@ abstract class InheritingContainer extends Container
   late final List<DefinedElementType> publicSuperChain =
       model_utils.filterNonPublic(superChain).toList(growable: false);
 
-  List<ExecutableElement>? _inheritedElementsCache;
-  List<ExecutableElement> get _inheritedElements {
-    if (_inheritedElementsCache != null) return _inheritedElementsCache!;
-    if (element is ClassElement && (element as ClassElement).isDartCoreObject) {
+  /// A list of the inherited executable elements, one element per inherited
+  /// `Name`.
+  ///
+  /// In this list, elements that are "closer" in the inheritance chain to
+  /// _this_ element are preferred over elements that are further away. In the
+  /// case of ties, concrete inherited elements are prefered to non-concrete
+  /// ones.
+  late final List<ExecutableElement> _inheritedElements = () {
+    if (element case ClassElement classElement
+        when classElement.isDartCoreObject) {
       return const <ExecutableElement>[];
     }
 
-    final concreteInheritenceMap =
+    // The mapping of all of the inherited element names to their _concrete_
+    // implementation element.
+    var concreteInheritanceMap =
         packageGraph.inheritanceManager.getInheritedConcreteMap2(element);
-    final inheritenceMap =
+    // The mapping of all inherited element names to the nearest inherited
+    // element that they resolve to.
+    var inheritanceMap =
         packageGraph.inheritanceManager.getInheritedMap2(element);
 
-    List<InterfaceElement>? inheritanceChainElements;
+    var inheritanceChainElements =
+        inheritanceChain.map((c) => c.element).toList(growable: false);
 
-    final combinedMap = {
-      for (final name in concreteInheritenceMap.keys)
-        name.name: concreteInheritenceMap[name]!,
+    // A combined map of names to inherited _concrete_ Elements, and other
+    // inherited Elements.
+    var combinedMap = {
+      for (var MapEntry(:key, :value) in concreteInheritanceMap.entries)
+        key.name: value,
     };
-    for (final name in inheritenceMap.keys) {
-      final inheritenceElement = inheritenceMap[name]!;
-      final combinedMapElement = combinedMap[name.name];
+    for (var MapEntry(key: name, value: inheritedElement)
+        in inheritanceMap.entries) {
+      var combinedMapElement = combinedMap[name.name];
       if (combinedMapElement == null) {
-        combinedMap[name.name] = inheritenceElement;
+        combinedMap[name.name] = inheritedElement;
         continue;
       }
 
-      // Elements in the inheritance chain starting from `this.element` down to,
-      // but not including, [Object].
-      inheritanceChainElements ??=
-          inheritanceChain.map((c) => c.element).toList(growable: false);
-      final enclosingElement =
-          inheritenceElement.enclosingElement as InterfaceElement;
+      // Elements in the inheritance chain starting from `this.element` up to,
+      // but not including, `Object`.
+      var enclosingElement =
+          inheritedElement.enclosingElement as InterfaceElement;
       assert(inheritanceChainElements.contains(enclosingElement) ||
           enclosingElement.isDartCoreObject);
 
-      // If the concrete object from
-      // [InheritanceManager3.getInheritedConcreteMap2] is farther from this
-      // class in the inheritance chain than the one provided by
-      // `inheritedMap2`, prefer `inheritedMap2`. This correctly accounts for
-      // intermediate abstract classes that have method/field implementations.
-      if (inheritanceChainElements.indexOf(
-              combinedMapElement.enclosingElement as InterfaceElement) <
+      // If the concrete element from `getInheritedConcreteMap2` is farther in
+      // the inheritance chain from this class than the (non-concrete) one
+      // provided by `getInheritedMap2`, prefer the latter. This correctly
+      // accounts for intermediate abstract classes that have method/field
+      // implementations.
+      var enclosingElementFromCombined =
+          combinedMapElement.enclosingElement as InterfaceElement;
+      if (inheritanceChainElements.indexOf(enclosingElementFromCombined) <
           inheritanceChainElements.indexOf(enclosingElement)) {
-        combinedMap[name.name] = inheritenceElement;
+        combinedMap[name.name] = inheritedElement;
       }
     }
 
+    // Finally, return all of the elements ultimately collected in the combined
+    // map.
     return combinedMap.values.toList(growable: false);
-  }
+  }();
 
   /// All fields defined on this container, _including inherited fields_.
   late List<Field> allFields = () {
@@ -308,12 +317,13 @@ abstract class InheritingContainer extends Container
 
   bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
 
-  /// Not the same as [superChain] as it may include mixins.
+  /// A sorted list of [element]'s inheritance chain, including interfaces and
+  /// mixins.
   ///
-  /// It's really not even the same as ordinary Dart inheritance, either,
+  /// Note: this list is really not even the same as ordinary Dart inheritance,
   /// because we pretend that interfaces are part of the inheritance chain
   /// to include them in the set of things we might link to for documentation
-  /// purposes in abstract classes.
+  /// purposes.
   List<InheritingContainer> get inheritanceChain;
 
   @visibleForTesting
@@ -376,6 +386,8 @@ abstract class InheritingContainer extends Container
   Iterable<DefinedElementType> get publicSuperChainReversed =>
       publicSuperChain.reversed;
 
+  /// The chain of super-types, starting with [supertype], up to, but not
+  /// including, `Object`.
   List<DefinedElementType> get superChain {
     var typeChain = <DefinedElementType>[];
     var parent = supertype;
@@ -383,12 +395,12 @@ abstract class InheritingContainer extends Container
       typeChain.add(parent);
       final parentType = parent.type;
       if (parentType is! InterfaceType) {
-        throw StateError('ancestor of $this is $parent with model element '
-            '${parent.modelElement}');
+        throw StateError("ancestor of '$this' is '$parent' with model element "
+            "'${parent.modelElement}'");
       }
 
       var superclass = parentType.superclass;
-      // Avoid adding [Object] to the [superChain] ([_supertype] already has
+      // Avoid adding `Object` to the `superChain` (`_supertype` already has
       // this check).
       if (superclass == null || superclass.superclass == null) {
         break;

@@ -29,14 +29,12 @@ class Mixin extends InheritingContainer with TypeImplementing {
   @override
   late final List<InheritingContainer> inheritanceChain = [
     this,
-
-    // Mix-in interfaces come before other interfaces.
     ...superclassConstraints.modelElements.expandInheritanceChain,
 
     for (var container in superChain.modelElements)
       ...container.inheritanceChain,
 
-    // Interfaces need to come last, because classes in the superChain might
+    // Interfaces need to come last, because classes in the `superChain` might
     // implement them even when they aren't mentioned.
     ...interfaceElements.expandInheritanceChain,
   ];
