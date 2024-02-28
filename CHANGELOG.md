@@ -1,3 +1,7 @@
+## 8.0.7-wip
+
+* Deprecate the `--nodoc` option. (#3690)
+
 ## 8.0.6
 
 * Add troubleshooting information when the sidebars failed to load. (#3643)
