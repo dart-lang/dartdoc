@@ -103,15 +103,10 @@ abstract class InheritingContainer extends Container
           .asLanguageFeatureSet(const LanguageFeatureRendererHtml())
           .toList();
 
-  late final List<ModelElement> _allModelElements = () {
-    _inheritedElementsCache = _inheritedElements;
-    var result = [
-      ...super.allModelElements,
-      ...typeParameters,
-    ];
-    _inheritedElementsCache = null;
-    return result;
-  }();
+  late final List<ModelElement> _allModelElements = [
+    ...super.allModelElements,
+    ...typeParameters,
+  ];
 
   Iterable<Method> get inheritedMethods {
     var methodNames = declaredMethods.map((m) => m.element.name).toSet();
@@ -148,55 +143,63 @@ abstract class InheritingContainer extends Container
   late final List<DefinedElementType> publicSuperChain =
       model_utils.filterNonPublic(superChain).toList(growable: false);
 
-  List<ExecutableElement>? _inheritedElementsCache;
-  List<ExecutableElement> get _inheritedElements {
-    if (_inheritedElementsCache != null) return _inheritedElementsCache!;
+  /// A list of the inherited executable elements, one element per inherited
+  /// `Name`.
+  ///
+  /// In this list, elements that are "closer" in the inheritance chain to
+  /// _this_ element are preferred over elements that are further away. In the
+  /// case of ties, concrete inherited elements are prefered to non-concrete
+  /// ones.
+  late final List<ExecutableElement> _inheritedElements = () {
     if (element is ClassElement && (element as ClassElement).isDartCoreObject) {
       return const <ExecutableElement>[];
     }
 
-    final concreteInheritenceMap =
+    var concreteInheritanceMap =
         packageGraph.inheritanceManager.getInheritedConcreteMap2(element);
-    final inheritenceMap =
+    var inheritanceMap =
         packageGraph.inheritanceManager.getInheritedMap2(element);
 
-    List<InterfaceElement>? inheritanceChainElements;
+    var inheritanceChainElements =
+        inheritanceChain.map((c) => c.element).toList(growable: false);
 
-    final combinedMap = {
-      for (final name in concreteInheritenceMap.keys)
-        name.name: concreteInheritenceMap[name]!,
+    // A combined map of names to inherited _concrete_ Elements, and other
+    // inherited Elements.
+    var combinedMap = {
+      for (var MapEntry(:key, :value) in concreteInheritanceMap.entries)
+        key.name: value,
     };
-    for (final name in inheritenceMap.keys) {
-      final inheritenceElement = inheritenceMap[name]!;
-      final combinedMapElement = combinedMap[name.name];
+    for (var MapEntry(key: name, value: inheritedElement)
+        in inheritanceMap.entries) {
+      var combinedMapElement = combinedMap[name.name];
       if (combinedMapElement == null) {
-        combinedMap[name.name] = inheritenceElement;
+        combinedMap[name.name] = inheritedElement;
         continue;
       }
 
-      // Elements in the inheritance chain starting from `this.element` down to,
-      // but not including, [Object].
-      inheritanceChainElements ??=
-          inheritanceChain.map((c) => c.element).toList(growable: false);
-      final enclosingElement =
-          inheritenceElement.enclosingElement as InterfaceElement;
+      // Elements in the inheritance chain starting from `this.element` up to,
+      // but not including, `Object`.
+      var enclosingElement =
+          inheritedElement.enclosingElement as InterfaceElement;
       assert(inheritanceChainElements.contains(enclosingElement) ||
           enclosingElement.isDartCoreObject);
 
-      // If the concrete object from
-      // [InheritanceManager3.getInheritedConcreteMap2] is farther from this
-      // class in the inheritance chain than the one provided by
+      // If the concrete object from `getInheritedConcreteMap2` is farther in
+      // the inheritance chain from this class than the one provided by
       // `inheritedMap2`, prefer `inheritedMap2`. This correctly accounts for
       // intermediate abstract classes that have method/field implementations.
-      if (inheritanceChainElements.indexOf(
-              combinedMapElement.enclosingElement as InterfaceElement) <
+      var enclosingElementFromCombined =
+          combinedMapElement.enclosingElement as InterfaceElement;
+      if (inheritanceChainElements.indexOf(enclosingElementFromCombined) <
           inheritanceChainElements.indexOf(enclosingElement)) {
-        combinedMap[name.name] = inheritenceElement;
+        combinedMap[name.name] = inheritedElement;
       }
     }
 
+    // Finally, return all of the elements ultimately collected in the combined
+    // map.
     return combinedMap.values.toList(growable: false);
-  }
+  }();
 
   /// All fields defined on this container, _including inherited fields_.
   late List<Field> allFields = () {
