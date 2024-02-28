@@ -151,12 +151,17 @@ abstract class InheritingContainer extends Container
   /// case of ties, concrete inherited elements are prefered to non-concrete
   /// ones.
   late final List<ExecutableElement> _inheritedElements = () {
-    if (element is ClassElement && (element as ClassElement).isDartCoreObject) {
+    if (element case ClassElement classElement
+        when classElement.isDartCoreObject) {
       return const <ExecutableElement>[];
     }
 
+    // The mapping of all of the inherited element names to their _concrete_
+    // implementation element.
     var concreteInheritanceMap =
         packageGraph.inheritanceManager.getInheritedConcreteMap2(element);
+    // The mapping of all inherited element names to the nearest inherited
+    // element that they resolve to.
     var inheritanceMap =
         packageGraph.inheritanceManager.getInheritedMap2(element);
 
@@ -184,10 +189,11 @@ abstract class InheritingContainer extends Container
       assert(inheritanceChainElements.contains(enclosingElement) ||
           enclosingElement.isDartCoreObject);
 
-      // If the concrete object from `getInheritedConcreteMap2` is farther in
-      // the inheritance chain from this class than the one provided by
-      // `inheritedMap2`, prefer `inheritedMap2`. This correctly accounts for
-      // intermediate abstract classes that have method/field implementations.
+      // If the concrete element from `getInheritedConcreteMap2` is farther in
+      // the inheritance chain from this class than the (non-concrete) one
+      // provided by `getInheritedMap2`, prefer the latter. This correctly
+      // accounts for intermediate abstract classes that have method/field
+      // implementations.
       var enclosingElementFromCombined =
           combinedMapElement.enclosingElement as InterfaceElement;
       if (inheritanceChainElements.indexOf(enclosingElementFromCombined) <
@@ -314,12 +320,13 @@ abstract class InheritingContainer extends Container
 
   bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
 
-  /// Not the same as [superChain] as it may include mixins.
+  /// A sorted list of [element]'s inheritance chain, including interfaces and
+  /// mixins.
   ///
-  /// It's really not even the same as ordinary Dart inheritance, either,
+  /// Note: this list is really not even the same as ordinary Dart inheritance,
   /// because we pretend that interfaces are part of the inheritance chain
   /// to include them in the set of things we might link to for documentation
-  /// purposes in abstract classes.
+  /// purposes.
   List<InheritingContainer> get inheritanceChain;
 
   @visibleForTesting
@@ -382,6 +389,8 @@ abstract class InheritingContainer extends Container
   Iterable<DefinedElementType> get publicSuperChainReversed =>
       publicSuperChain.reversed;
 
+  /// The chain of super-types, starting with [supertype], up to, but not
+  /// including, `Object`.
   List<DefinedElementType> get superChain {
     var typeChain = <DefinedElementType>[];
     var parent = supertype;
@@ -389,12 +398,12 @@ abstract class InheritingContainer extends Container
       typeChain.add(parent);
       final parentType = parent.type;
       if (parentType is! InterfaceType) {
-        throw StateError('ancestor of $this is $parent with model element '
-            '${parent.modelElement}');
+        throw StateError("ancestor of '$this' is '$parent' with model element "
+            "'${parent.modelElement}'");
       }
 
       var superclass = parentType.superclass;
-      // Avoid adding [Object] to the [superChain] ([_supertype] already has
+      // Avoid adding `Object` to the `superChain` (`_supertype` already has
       // this check).
       if (superclass == null || superclass.superclass == null) {
         break;
