@@ -55,7 +55,7 @@ class FlutterRepo {
     return FlutterRepo._(flutterPath, env, cacheDart, launcher);
   }
 
-  /// Copies an existing, initialized flutter repo.
+  /// Copies an existing, initialized flutter repo to [flutterPath].
   static Future<FlutterRepo> copyFromExistingFlutterRepo(
       FlutterRepo originalRepo, String flutterPath, Map<String, String> env,
       [String? label]) async {
