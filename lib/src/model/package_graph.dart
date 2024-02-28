@@ -927,6 +927,13 @@ class PackageGraph with CommentReferable, Nameable {
       // a context is again, slow.
       var globs = (config.optionSet['nodoc'].valueAt(file.parent) as List)
           .cast<String>();
+      if (globs.isNotEmpty) {
+        packageGraph.defaultPackage.warn(
+          PackageWarning.deprecated,
+          message:
+              "The '--nodoc' option is deprecated, and will soon be removed.",
+        );
+      }
       return utils.matchGlobs(globs, fullName);
     });
   }
