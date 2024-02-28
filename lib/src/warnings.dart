@@ -218,7 +218,7 @@ enum PackageWarning implements Comparable<PackageWarning> {
   ),
   duplicateFile(
     'duplicate-file',
-    'failed to write file at: {0}',
+    'file already written at "{0}"',
     shortHelp:
         'Dartdoc is trying to write to a duplicate filename based on the names '
         'of Dart symbols.',
