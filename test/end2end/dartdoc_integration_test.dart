@@ -7,7 +7,6 @@ library;
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:mirrors';
 
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
@@ -16,11 +15,6 @@ import 'package:test_process/test_process.dart';
 
 import '../src/test_descriptor_utils.dart' as d;
 import '../src/utils.dart';
-
-Uri get _currentFileUri =>
-    (reflect(main) as ClosureMirror).function.location!.sourceUri;
-String get _testPackageFlutterPluginPath => path.fromUri(_currentFileUri
-    .resolve('../../testing/flutter_packages/test_package_flutter_plugin'));
 
 var _dartdocPath = path.canonicalize(path.join('bin', 'dartdoc.dart'));
 
@@ -100,30 +94,6 @@ void main() {
         '--output=$tempDir',
       ],
       workingDirectory: packagePath,
-    );
-    await process.shouldExit(1);
-  });
-
-  test('with missing FLUTTER_ROOT exception reports an error', () async {
-    // TODO(srawlins): Remove test_package_flutter_plugin and generate afresh.
-    var dartTool =
-        Directory(path.join(_testPackageFlutterPluginPath, '.dart_tool'));
-    if (dartTool.existsSync()) dartTool.deleteSync(recursive: true);
-    var process = await runDartdoc(
-      [],
-      workingDirectory: _testPackageFlutterPluginPath,
-      environment: {...Platform.environment}..remove('FLUTTER_ROOT'),
-      includeParentEnvironment: false,
-    );
-    await expectLater(
-      process.stderr,
-      emitsThrough(
-        matches(
-          'Top level package requires Flutter but FLUTTER_ROOT environment '
-          'variable not set|test_package_flutter_plugin requires the Flutter '
-          'SDK, version solving failed',
-        ),
-      ),
     );
     await process.shouldExit(1);
   });
