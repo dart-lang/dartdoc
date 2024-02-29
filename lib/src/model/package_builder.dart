@@ -39,6 +39,10 @@ abstract class PackageBuilder {
   Future<PackageGraph> buildPackageGraph();
 
   Future<void> dispose();
+
+  /// The `include-external` option is deprecated, so we track whether it was
+  /// used, to report it.
+  bool get includeExternalsWasSpecified;
 }
 
 /// A package builder that understands pub package format.
@@ -283,7 +287,11 @@ class PubPackageBuilder implements PackageBuilder {
       }
       files.addAll(newFiles);
       if (!addingSpecials) {
-        files.addAll(_includedExternalsFrom(newFiles));
+        var externals = _includedExternalsFrom(newFiles);
+        if (externals.isNotEmpty) {
+          includeExternalsWasSpecified = true;
+        }
+        files.addAll(externals);
       }
 
       var packages = _packageMetasForFiles(files.difference(_knownParts));
@@ -437,13 +445,20 @@ class PubPackageBuilder implements PackageBuilder {
             includeDependencies: _config.autoIncludeDependencies,
             filterExcludes: true,
           ).toList();
-    files = [...files, ..._includedExternalsFrom(files)];
+    var externals = _includedExternalsFrom(files);
+    if (externals.isNotEmpty) {
+      includeExternalsWasSpecified = true;
+    }
+    files = [...files, ...externals];
     return {
       ...files
           .map((s) => _pathContext.absolute(_resourceProvider.getFile(s).path)),
       ..._embedderSdkFiles,
     };
   }
+
+  @override
+  bool includeExternalsWasSpecified = false;
 
   Iterable<String> get _embedderSdkFiles => [
         for (var dartUri in _embedderSdkUris)
