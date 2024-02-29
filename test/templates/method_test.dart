@@ -2,99 +2,207 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/src/dartdoc.dart';
-import 'package:dartdoc/src/model/model.dart';
-import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
+import 'package:test_reflective_loader/test_reflective_loader.dart';
 
-import '../src/test_descriptor_utils.dart' as d;
 import '../src/utils.dart';
 
+import 'template_test_base.dart';
+
 void main() async {
-  const packageName = 'test_package';
+  defineReflectiveSuite(() {
+    defineReflectiveTests(MethodTest);
+  });
+}
 
-  late List<String> m1Lines;
+@reflectiveTest
+class MethodTest extends TemplateTestBase {
+  @override
+  String get packageName => 'method_test';
 
-  group('methods', () {
-    setUpAll(() async {
-      final packageMetaProvider = testPackageMetaProvider;
-      final resourceProvider =
-          packageMetaProvider.resourceProvider as MemoryResourceProvider;
-      final packagePath = await d.createPackage(
-        packageName,
-        pubspec: '''
-name: methods
-version: 0.0.1
-environment:
-  sdk: '>=2.18.0 <3.0.0'
-''',
-        libFiles: [
-          d.file('lib.dart', '''
+  @override
+  String get libraryName => 'method';
+
+  void test_methodName() async {
+    await createPackageWithLibrary('''
+class C {
+  void m1() {}
+}
+''');
+    var m1Lines = readLines(['lib', 'C', 'm1.html']);
+    m1Lines.expectMainContentContainsAllInOrder([
+      matches('<h1><span class="kind-method">m1</span> method'),
+    ]);
+  }
+
+  void test_annotations() async {
+    await createPackageWithLibrary('''
 class A {
   const A(String m);
 }
 
-class B {
+class C {
   @deprecated
   @A('message')
   void m1() {}
 }
-'''),
-        ],
-        resourceProvider: resourceProvider,
-      );
-      await writeDartdocResources(resourceProvider);
-      final context = await generatorContextFromArgv([
-        '--input',
-        packagePath,
-        '--output',
-        path.join(packagePath, 'doc'),
-        '--sdk-dir',
-        packageMetaProvider.defaultSdkDir.path,
-        '--no-link-to-remote',
-      ], packageMetaProvider);
+''');
+    var m1Lines = readLines(['lib', 'C', 'm1.html']);
+    m1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<ol class="annotation-list">'),
+        matches('<li>@deprecated</li>'),
+        matches(
+            r'<li>@<a href="../../lib/A-class.html">A</a>\(&#39;message&#39;\)</li>'),
+        matches('</ol>'),
+      ],
+    );
+  }
 
-      final packageConfigProvider =
-          getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-      packageConfigProvider.addPackageToConfigFor(
-          packagePath, packageName, Uri.file('$packagePath/'));
-      final packageBuilder = PubPackageBuilder(
-        context,
-        packageMetaProvider,
-        packageConfigProvider,
-        skipUnreachableSdkLibraries: true,
-      );
-      await (await Dartdoc.fromContext(context, packageBuilder)).generateDocs();
-      m1Lines = resourceProvider
-          .getFile(path.join(packagePath, 'doc', 'lib', 'B', 'm1.html'))
-          .readAsStringSync()
-          .split('\n');
-    });
+  void test_onClass() async {
+    await createPackageWithLibrary('''
+class C {
+  void m1() {}
+}
+''');
+    var m1Lines = readLines(['lib', 'C', 'm1.html']);
+    m1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-method">m1</span> method'),
+      ],
+    );
+  }
 
-    test('method page contains method name', () async {
-      m1Lines.expectMainContentContainsAllInOrder(
-        [
-          matches('<h1><span class="kind-method">m1</span> method'),
-        ],
-      );
-    });
+  void test_onClass_static() async {
+    await createPackageWithLibrary('''
+class C {
+  static void m1() {}
+}
+''');
+    var m1Lines = readLines(['lib', 'C', 'm1.html']);
+    m1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-method">m1</span> static method'),
+      ],
+    );
+  }
 
-    test('method page contains annotations', () async {
-      m1Lines.expectMainContentContainsAllInOrder(
-        [
-          matches('<ol class="annotation-list">'),
-          matches('<li>@deprecated</li>'),
-          matches(
-              r'<li>@<a href="../../lib/A-class.html">A</a>\(&#39;message&#39;\)</li>'),
-          matches('</ol>'),
-        ],
-      );
-    });
+  void test_onEnum() async {
+    await createPackageWithLibrary('''
+enum E {
+  one, two;
+  void m1() {}
+}
+''');
+    var m1Lines = readLines(['lib', 'E', 'm1.html']);
+    m1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-method">m1</span> method'),
+      ],
+    );
+  }
 
-    // TODO(srawlins): Add rendering tests.
-    // * how inherited members look on subclass page ('inherited' feature)
-    // * generic methods, static methods
-    // * linked elements in signature
-  });
+  void test_onEnum_static() async {
+    await createPackageWithLibrary('''
+enum E {
+  one, two;
+  static void m1() {}
+}
+''');
+    var m1Lines = readLines(['lib', 'E', 'm1.html']);
+    m1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-method">m1</span> static method'),
+      ],
+    );
+  }
+
+  void test_onExtension() async {
+    await createPackageWithLibrary('''
+extension E on int {
+  void m1() {}
+}
+''');
+    var m1Lines = readLines(['lib', 'E', 'm1.html']);
+    m1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-method">m1</span> method'),
+      ],
+    );
+  }
+
+  void test_onExtension_static() async {
+    await createPackageWithLibrary('''
+extension E on int {
+  static void m1() {}
+}
+''');
+    var m1Lines = readLines(['lib', 'E', 'm1.html']);
+    m1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-method">m1</span> static method'),
+      ],
+    );
+  }
+
+  void test_onMixin() async {
+    await createPackageWithLibrary('''
+mixin M {
+  void m1() {}
+}
+''');
+    var m1Lines = readLines(['lib', 'M', 'm1.html']);
+    m1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-method">m1</span> method'),
+      ],
+    );
+  }
+
+  void test_onMixin_static() async {
+    await createPackageWithLibrary('''
+mixin M {
+  static void m1() {}
+}
+''');
+    var m1Lines = readLines(['lib', 'M', 'm1.html']);
+    m1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-method">m1</span> static method'),
+      ],
+    );
+  }
+
+  void test_onExtensionType() async {
+    await createPackageWithLibrary('''
+extension type E(int it) {
+  void m1() {}
+}
+''');
+    var m1Lines = readLines(['lib', 'E', 'm1.html']);
+    m1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-method">m1</span> method'),
+      ],
+    );
+  }
+
+  void test_onExtensionType_static() async {
+    await createPackageWithLibrary('''
+extension type E(int it) {
+  static void m1() {}
+}
+''');
+    var m1Lines = readLines(['lib', 'E', 'm1.html']);
+    m1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-method">m1</span> static method'),
+      ],
+    );
+  }
+
+  // TODO(srawlins): Add rendering tests.
+  // * how inherited members look on subclass page ('inherited' feature)
+  // * generic methods
+  // * linked elements in signature
 }

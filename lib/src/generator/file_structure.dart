@@ -24,7 +24,8 @@ abstract class FileStructure {
         // This should be the common case.
         FileStructure._fromModelElement(documentable),
       _ => throw UnimplementedError(
-          'Tried to build a FileStructure for an unknown subtype of Documentable:  ${documentable.runtimeType}')
+          'Tried to build a FileStructure for an unknown subtype of '
+          "Documentable: '${documentable.runtimeType}'")
     };
   }
 
@@ -42,6 +43,8 @@ abstract class FileStructure {
     return switch (modelElement) {
       Library() => FileStructureImpl(modelElement.dirName, 'library'),
       Mixin() => FileStructureImpl(modelElement.name, 'mixin'),
+      // Probably just an archaic state, but enums do not have a file suffix.
+      Enum() => FileStructureImpl(modelElement.name, null),
       Class() => FileStructureImpl(modelElement.name, 'class'),
       ExtensionType() => FileStructureImpl(modelElement.name, 'extension-type'),
       Operator() => FileStructureImpl(

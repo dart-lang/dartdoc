@@ -125,11 +125,11 @@ abstract class GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenCategoryFileCount');
   }
 
-  /// Emits documentation content for the [clazz].
-  void generateClass(PackageGraph packageGraph, Library library, Class clazz) {
-    var data = ClassTemplateData(options, packageGraph, library, clazz);
+  /// Emits documentation content for the [class_].
+  void generateClass(PackageGraph packageGraph, Library library, Class class_) {
+    var data = ClassTemplateData(options, packageGraph, library, class_);
     var content = templates.renderClass(data);
-    write(writer, clazz.filePath, data, content);
+    write(writer, class_.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenClassFileCount');
   }
 
@@ -143,11 +143,11 @@ abstract class GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenConstructorFileCount');
   }
 
-  /// Emits documentation content for the [eNum].
-  void generateEnum(PackageGraph packageGraph, Library library, Enum eNum) {
-    var data = EnumTemplateData(options, packageGraph, library, eNum);
+  /// Emits documentation content for the [enum_].
+  void generateEnum(PackageGraph packageGraph, Library library, Enum enum_) {
+    var data = EnumTemplateData(options, packageGraph, library, enum_);
     var content = templates.renderEnum(data);
-    write(writer, eNum.filePath, data, content);
+    write(writer, enum_.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenEnumFileCount');
   }
 
@@ -189,9 +189,9 @@ abstract class GeneratorBackend {
 
   /// Emits documentation content for the [method].
   void generateMethod(PackageGraph packageGraph, Library library,
-      Container clazz, Method method) {
+      Container container, Method method) {
     var data =
-        MethodTemplateData(options, packageGraph, library, clazz, method);
+        MethodTemplateData(options, packageGraph, library, container, method);
     var content = templates.renderMethod(data);
     write(writer, method.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenMethodFileCount');
@@ -215,9 +215,9 @@ abstract class GeneratorBackend {
 
   /// Emits documentation content for the [field].
   void generateProperty(PackageGraph packageGraph, Library library,
-      Container clazz, Field field) {
+      Container container, Field field) {
     var data =
-        PropertyTemplateData(options, packageGraph, library, clazz, field);
+        PropertyTemplateData(options, packageGraph, library, container, field);
     var content = templates.renderProperty(data);
     write(writer, field.filePath, data, content);
     runtimeStats.incrementAccumulator('writtenPropertyFileCount');

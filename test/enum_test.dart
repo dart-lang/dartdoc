@@ -400,10 +400,16 @@ enum E { one, two }
 ''');
 
     var oneValue = library.enums.named('E').publicEnumValues.named('one');
-    expect(oneValue.constantValueTruncated, 'const E(0)');
+    expect(
+      oneValue.constantValueTruncated,
+      'const <a href="$linkPrefix/E/E.html">E</a>(0)',
+    );
 
     var twoValue = library.enums.named('E').publicEnumValues.named('two');
-    expect(twoValue.constantValueTruncated, 'const E(1)');
+    expect(
+      twoValue.constantValueTruncated,
+      'const <a href="$linkPrefix/E/E.html">E</a>(1)',
+    );
   }
 
   void test_constantValue_explicitConstructorCall() async {
@@ -605,9 +611,18 @@ enum E {
     var threeValue =
         library.enums.named('E').publicEnumValues.named('three') as EnumField;
 
-    expect(oneValue.constantValue, equals('const E(0)'));
-    expect(twoValue.constantValue, equals('const E(1)'));
-    expect(threeValue.constantValue, equals('const E(2)'));
+    expect(
+      oneValue.constantValue,
+      equals('const <a href="$linkPrefix/E/E.html">E</a>(0)'),
+    );
+    expect(
+      twoValue.constantValue,
+      equals('const <a href="$linkPrefix/E/E.html">E</a>(1)'),
+    );
+    expect(
+      threeValue.constantValue,
+      equals('const <a href="$linkPrefix/E/E.html">E</a>(2)'),
+    );
   }
 
   void test_valuesConstant() async {

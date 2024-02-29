@@ -2661,32 +2661,8 @@ String _renderClass_partial_interfaces_6(Class context1) {
   return buffer.toString();
 }
 
-String _renderClass_partial_mixed_in_types_7(Class context1) {
-  final buffer = StringBuffer();
-  if (context1.hasPublicMixedInTypes) {
-    buffer.writeln();
-    buffer.write('''
-  <dt>Mixed in types</dt>
-  <dd>
-    <ul class="comma-separated ''');
-    buffer.writeEscaped(context1.relationshipsClass);
-    buffer.write('''">''');
-    var context2 = context1.publicMixedInTypes;
-    for (var context3 in context2) {
-      buffer.writeln();
-      buffer.write('''
-        <li>''');
-      buffer.write(context3.linkedName);
-      buffer.write('''</li>''');
-    }
-    buffer.writeln();
-    buffer.write('''
-    </ul>
-  </dd>''');
-  }
-
-  return buffer.toString();
-}
+String _renderClass_partial_mixed_in_types_7(Class context1) =>
+    _deduplicated_lib_templates__mixed_in_types_html(context1);
 
 String _renderClass_partial_container_annotations_8(Class context1) =>
     _deduplicated_lib_templates__container_annotations_html(context1);
@@ -2788,32 +2764,8 @@ String _renderEnum_partial_interfaces_6(Enum context1) {
   return buffer.toString();
 }
 
-String _renderEnum_partial_mixed_in_types_7(Enum context1) {
-  final buffer = StringBuffer();
-  if (context1.hasPublicMixedInTypes) {
-    buffer.writeln();
-    buffer.write('''
-  <dt>Mixed in types</dt>
-  <dd>
-    <ul class="comma-separated ''');
-    buffer.writeEscaped(context1.relationshipsClass);
-    buffer.write('''">''');
-    var context2 = context1.publicMixedInTypes;
-    for (var context3 in context2) {
-      buffer.writeln();
-      buffer.write('''
-        <li>''');
-      buffer.write(context3.linkedName);
-      buffer.write('''</li>''');
-    }
-    buffer.writeln();
-    buffer.write('''
-    </ul>
-  </dd>''');
-  }
-
-  return buffer.toString();
-}
+String _renderEnum_partial_mixed_in_types_7(Enum context1) =>
+    _deduplicated_lib_templates__mixed_in_types_html(context1);
 
 String _renderEnum_partial_container_annotations_8(Enum context1) =>
     _deduplicated_lib_templates__container_annotations_html(context1);
@@ -4484,7 +4436,7 @@ String _deduplicated_lib_templates__feature_set_html(ModelElement context0) {
 }
 
 String _deduplicated_lib_templates__super_chain_html(
-    InheritingContainer context0) {
+    TypeImplementing context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicSuperChainReversed) {
     buffer.writeln();
@@ -4514,6 +4466,33 @@ String _deduplicated_lib_templates__super_chain_html(
   </dd>''');
   }
   buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _deduplicated_lib_templates__mixed_in_types_html(Class context0) {
+  final buffer = StringBuffer();
+  if (context0.hasPublicMixedInTypes) {
+    buffer.writeln();
+    buffer.write('''
+  <dt>Mixed in types</dt>
+  <dd>
+    <ul class="comma-separated ''');
+    buffer.writeEscaped(context0.relationshipsClass);
+    buffer.write('''">''');
+    var context1 = context0.publicMixedInTypes;
+    for (var context2 in context1) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context2.linkedName);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+    </ul>
+  </dd>''');
+  }
 
   return buffer.toString();
 }
