@@ -1,6 +1,7 @@
 ## 8.0.7-wip
 
 * Deprecate the `--nodoc` option. (#3690)
+* Deprecate the `--resources-dir` option. (#3696)
 
 ## 8.0.6
 

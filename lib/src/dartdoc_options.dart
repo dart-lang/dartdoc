@@ -1679,9 +1679,11 @@ List<DartdocOption> createDartdocOptions(
         help:
             'A list of package names to place first when grouping libraries in '
             'packages. Unmentioned packages are placed after these.'),
-    // TODO(srawlins): Deprecate this option.
+    // Deprecated. Use of this option is reported.
+    // TODO(kallentu): Remove this option.
     DartdocOptionArgOnly<String?>('resourcesDir', null, resourceProvider,
-        help: "An absolute path to dartdoc's resources directory.", hide: true),
+        help: "(deprecated) An absolute path to dartdoc's resources directory.",
+        hide: true),
     DartdocOptionArgOnly<bool>('sdkDocs', false, resourceProvider,
         help: 'Generate ONLY the docs for the Dart SDK.'),
     DartdocOptionArgSynth<String?>('sdkDir',
