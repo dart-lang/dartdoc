@@ -233,10 +233,10 @@ class PubPackageBuilder implements PackageBuilder {
     // a set of files (starting with the ones passed into the function), resolve
     // them, add them to the package graph via `addLibrary`, and then discover
     // which additional files need to be processed in the next loop. This
-    // discovery depends on various options (TODO: which?), but the basic idea
-    // is to take a file we've just processed, and add all of the files which
-    // that file references via imports or exports, and add them to the set of
-    // files to be processed.
+    // discovery depends on various options (TODO: which?). The basic idea is
+    // to take a file we've just processed, and add all of the files which that
+    // file references (via imports, augmentation imports, exports, and parts),
+    // and add them to the set of files to be processed.
     //
     // This loop may execute a few times. We know to stop looping when we have
     // added zero new files to process. This is tracked with `filesInLastPass`
@@ -251,9 +251,11 @@ class PubPackageBuilder implements PackageBuilder {
     if (!addingSpecials) {
       progressBarStart(files.length);
     }
+    // The set of files that are discovered while iterating in the below
+    // do-while loop, which are then added to `files`, as they are found.
+    var newFiles = <String>{};
     do {
       filesInLastPass = filesInCurrentPass;
-      var newFiles = <String>{};
       if (!addingSpecials) {
         progressBarUpdateTickCount(files.length);
       }
