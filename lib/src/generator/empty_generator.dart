@@ -18,13 +18,14 @@ class EmptyGenerator implements Generator {
       packageGraph.defaultPackage,
       ...packageGraph.localPackages
     }) {
-      for (var category in filterNonDocumented(package.categories)) {
+      for (var category in package.categories.whereDocumented) {
         logProgress(category.documentationAsHtml);
       }
 
-      for (var lib in filterNonDocumented(package.libraries)) {
-        filterNonDocumented(lib.allModelElements)
-            .forEach((m) => logProgress(m.documentationAsHtml));
+      for (var lib in package.libraries.whereDocumented) {
+        for (var e in lib.allModelElements.whereDocumented) {
+          logProgress(e.documentationAsHtml);
+        }
       }
     }
     return Future.value();

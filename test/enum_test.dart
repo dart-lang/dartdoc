@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
@@ -551,7 +552,7 @@ class C {}
 
   void test_publicEnums() async {
     var library = await bootPackageWithLibrary('enum E { one, two, three }');
-    expect(library.publicEnums, isNotEmpty);
+    expect(library.enums.wherePublic, isNotEmpty);
   }
 
   void test_publicEnumValues() async {

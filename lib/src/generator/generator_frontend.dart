@@ -79,7 +79,7 @@ class GeneratorFrontEnd implements Generator {
     var multiplePackages = packageGraph.localPackages.length > 1;
 
     void generateConstants(Container container) {
-      for (var constant in filterNonDocumented(container.constantFields)) {
+      for (var constant in container.constantFields.whereDocumented) {
         if (!constant.isCanonical) continue;
         indexAccumulator.add(constant);
         _generatorBackend.generateProperty(
@@ -88,7 +88,7 @@ class GeneratorFrontEnd implements Generator {
     }
 
     void generateConstructors(Constructable constructable) {
-      for (var constructor in filterNonDocumented(constructable.constructors)) {
+      for (var constructor in constructable.constructors.whereDocumented) {
         if (!constructor.isCanonical) continue;
         indexAccumulator.add(constructor);
         _generatorBackend.generateConstructor(
@@ -97,7 +97,7 @@ class GeneratorFrontEnd implements Generator {
     }
 
     void generateInstanceMethods(Container container) {
-      for (var method in filterNonDocumented(container.instanceMethods)) {
+      for (var method in container.instanceMethods.whereDocumented) {
         if (!method.isCanonical) continue;
         indexAccumulator.add(method);
         _generatorBackend.generateMethod(
@@ -106,7 +106,7 @@ class GeneratorFrontEnd implements Generator {
     }
 
     void generateInstanceOperators(Container container) {
-      for (var operator in filterNonDocumented(container.instanceOperators)) {
+      for (var operator in container.instanceOperators.whereDocumented) {
         if (!operator.isCanonical) continue;
         indexAccumulator.add(operator);
         _generatorBackend.generateMethod(
@@ -115,7 +115,7 @@ class GeneratorFrontEnd implements Generator {
     }
 
     void generateInstanceProperty(Container container) {
-      for (var property in filterNonDocumented(container.instanceFields)) {
+      for (var property in container.instanceFields.whereDocumented) {
         if (!property.isCanonical) continue;
         indexAccumulator.add(property);
         _generatorBackend.generateProperty(
@@ -124,7 +124,7 @@ class GeneratorFrontEnd implements Generator {
     }
 
     void generateStaticMethods(Container container) {
-      for (var method in filterNonDocumented(container.staticMethods)) {
+      for (var method in container.staticMethods.whereDocumented) {
         if (!method.isCanonical) continue;
         indexAccumulator.add(method);
         _generatorBackend.generateMethod(
@@ -133,8 +133,7 @@ class GeneratorFrontEnd implements Generator {
     }
 
     void generateStaticProperty(Container container) {
-      for (var property
-          in filterNonDocumented(container.variableStaticFields)) {
+      for (var property in container.variableStaticFields.whereDocumented) {
         if (!property.isCanonical) continue;
         indexAccumulator.add(property);
         _generatorBackend.generateProperty(
@@ -146,14 +145,14 @@ class GeneratorFrontEnd implements Generator {
       if (multiplePackages) {
         logInfo('Generating docs for package ${package.name}...');
       }
-      for (var category in filterNonDocumented(package.categories)) {
+      for (var category in package.categories.whereDocumented) {
         logInfo('Generating docs for category ${category.name} from '
             '${category.package.fullyQualifiedName}...');
         indexAccumulator.add(category);
         _generatorBackend.generateCategory(packageGraph, category);
       }
 
-      for (var lib in filterNonDocumented(package.libraries)) {
+      for (var lib in package.libraries.whereDocumented) {
         if (!multiplePackages) {
           logInfo('Generating docs for library ${lib.breadcrumbName} from '
               '${lib.element.source.uri}...');
@@ -164,7 +163,7 @@ class GeneratorFrontEnd implements Generator {
         indexAccumulator.add(lib);
         _generatorBackend.generateLibrary(packageGraph, lib);
 
-        for (var class_ in filterNonDocumented(lib.allClasses)) {
+        for (var class_ in lib.allClasses.whereDocumented) {
           indexAccumulator.add(class_);
           _generatorBackend.generateClass(packageGraph, lib, class_);
 
@@ -177,7 +176,7 @@ class GeneratorFrontEnd implements Generator {
           generateStaticProperty(class_);
         }
 
-        for (var extension in filterNonDocumented(lib.extensions)) {
+        for (var extension in lib.extensions.whereDocumented) {
           indexAccumulator.add(extension);
           _generatorBackend.generateExtension(packageGraph, lib, extension);
 
@@ -189,7 +188,7 @@ class GeneratorFrontEnd implements Generator {
           generateStaticProperty(extension);
         }
 
-        for (var extensionType in filterNonDocumented(lib.extensionTypes)) {
+        for (var extensionType in lib.extensionTypes.whereDocumented) {
           indexAccumulator.add(extensionType);
           _generatorBackend.generateExtensionType(
               packageGraph, lib, extensionType);
@@ -203,7 +202,7 @@ class GeneratorFrontEnd implements Generator {
           generateStaticProperty(extensionType);
         }
 
-        for (var mixin in filterNonDocumented(lib.mixins)) {
+        for (var mixin in lib.mixins.whereDocumented) {
           indexAccumulator.add(mixin);
           _generatorBackend.generateMixin(packageGraph, lib, mixin);
 
@@ -215,7 +214,7 @@ class GeneratorFrontEnd implements Generator {
           generateStaticProperty(mixin);
         }
 
-        for (var enum_ in filterNonDocumented(lib.enums)) {
+        for (var enum_ in lib.enums.whereDocumented) {
           indexAccumulator.add(enum_);
           _generatorBackend.generateEnum(packageGraph, lib, enum_);
 
@@ -228,24 +227,24 @@ class GeneratorFrontEnd implements Generator {
           generateStaticProperty(enum_);
         }
 
-        for (var constant in filterNonDocumented(lib.constants)) {
+        for (var constant in lib.constants.whereDocumented) {
           indexAccumulator.add(constant);
           _generatorBackend.generateTopLevelProperty(
               packageGraph, lib, constant);
         }
 
-        for (var property in filterNonDocumented(lib.properties)) {
+        for (var property in lib.properties.whereDocumented) {
           indexAccumulator.add(property);
           _generatorBackend.generateTopLevelProperty(
               packageGraph, lib, property);
         }
 
-        for (var function in filterNonDocumented(lib.functions)) {
+        for (var function in lib.functions.whereDocumented) {
           indexAccumulator.add(function);
           _generatorBackend.generateFunction(packageGraph, lib, function);
         }
 
-        for (var typeDef in filterNonDocumented(lib.typedefs)) {
+        for (var typeDef in lib.typedefs.whereDocumented) {
           indexAccumulator.add(typeDef);
           _generatorBackend.generateTypeDef(packageGraph, lib, typeDef);
         }

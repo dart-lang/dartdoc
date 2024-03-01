@@ -28,86 +28,60 @@ mixin TopLevelContainer implements Nameable {
 
   Iterable<TopLevelVariable> get properties;
 
-  Iterable<ModelFunction>? get functions;
+  Iterable<ModelFunction> get functions;
 
   Iterable<Typedef> get typedefs;
 
-  bool get hasPublicClasses => publicClasses.isNotEmpty;
+  bool get hasPublicClasses => classes.any((e) => e.isPublic);
 
-  bool get hasPublicExtensions => publicExtensions.isNotEmpty;
+  bool get hasPublicExtensions => extensions.any((e) => e.isPublic);
 
-  bool get hasPublicExtensionTypes => publicExtensionTypes.isNotEmpty;
+  bool get hasPublicExtensionTypes => extensionTypes.any((e) => e.isPublic);
 
-  bool get hasPublicConstants => publicConstants.isNotEmpty;
+  bool get hasPublicConstants => constants.any((e) => e.isPublic);
 
-  bool get hasPublicEnums => publicEnums.isNotEmpty;
+  bool get hasPublicEnums => enums.any((e) => e.isPublic);
 
-  bool get hasPublicExceptions => _publicExceptions.isNotEmpty;
+  bool get hasPublicExceptions => exceptions.any((e) => e.isPublic);
 
-  bool get hasPublicFunctions => publicFunctions.isNotEmpty;
+  bool get hasPublicFunctions => functions.any((e) => e.isPublic);
 
-  bool get hasPublicMixins => publicMixins.isNotEmpty;
+  bool get hasPublicMixins => mixins.any((e) => e.isPublic);
 
-  bool get hasPublicProperties => publicProperties.isNotEmpty;
+  bool get hasPublicProperties => properties.any((e) => e.isPublic);
 
-  bool get hasPublicTypedefs => publicTypedefs.isNotEmpty;
-
-  Iterable<Class> get publicClasses => model_utils.filterNonPublic(classes);
+  bool get hasPublicTypedefs => typedefs.any((e) => e.isPublic);
 
   // TODO(jcollins-g):  Setting this type parameter to `Container` magically
   // fixes a number of type problems in the AOT compiler, but I am mystified as
   // to why that should be the case.
   late final List<Container> publicClassesSorted =
-      publicClasses.toList(growable: false)..sort();
-
-  Iterable<Extension> get publicExtensions =>
-      model_utils.filterNonPublic(extensions);
+      classes.wherePublic.toList(growable: false)..sort();
 
   late final List<Extension> publicExtensionsSorted =
-      publicExtensions.toList(growable: false)..sort();
-
-  Iterable<ExtensionType> get publicExtensionTypes =>
-      model_utils.filterNonPublic(extensionTypes);
+      extensions.wherePublic.toList(growable: false)..sort();
 
   late final List<ExtensionType> publicExtensionTypesSorted =
-      publicExtensionTypes.toList(growable: false)..sort();
-
-  Iterable<TopLevelVariable> get publicConstants =>
-      model_utils.filterNonPublic(constants);
+      extensionTypes.wherePublic.toList(growable: false)..sort();
 
   Iterable<TopLevelVariable> get publicConstantsSorted =>
-      publicConstants.toList(growable: false)..sort();
+      constants.wherePublic.toList(growable: false)..sort();
 
-  Iterable<Enum> get publicEnums => model_utils.filterNonPublic(enums);
-
-  late final List<Enum> publicEnumsSorted = publicEnums.toList(growable: false)
-    ..sort();
-
-  Iterable<Class> get _publicExceptions =>
-      model_utils.filterNonPublic(exceptions);
+  late final List<Enum> publicEnumsSorted =
+      enums.wherePublic.toList(growable: false)..sort();
 
   late final List<Class> publicExceptionsSorted =
-      _publicExceptions.toList(growable: false)..sort();
-
-  Iterable<ModelFunctionTyped> get publicFunctions =>
-      model_utils.filterNonPublic(functions!);
+      exceptions.wherePublic.toList(growable: false)..sort();
 
   late final List<ModelFunctionTyped> publicFunctionsSorted =
-      publicFunctions.toList(growable: false)..sort();
-
-  Iterable<Mixin> get publicMixins => model_utils.filterNonPublic(mixins);
+      functions.wherePublic.toList(growable: false)..sort();
 
   late final List<Mixin> publicMixinsSorted =
-      publicMixins.toList(growable: false)..sort();
-
-  Iterable<TopLevelVariable> get publicProperties =>
-      model_utils.filterNonPublic(properties);
+      mixins.wherePublic.toList(growable: false)..sort();
 
   late final List<TopLevelVariable> publicPropertiesSorted =
-      publicProperties.toList(growable: false)..sort();
-
-  Iterable<Typedef> get publicTypedefs => model_utils.filterNonPublic(typedefs);
+      properties.wherePublic.toList(growable: false)..sort();
 
   late final List<Typedef> publicTypedefsSorted =
-      publicTypedefs.toList(growable: false)..sort();
+      typedefs.wherePublic.toList(growable: false)..sort();
 }
