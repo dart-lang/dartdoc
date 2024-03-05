@@ -326,7 +326,7 @@ Future<Iterable<Map<String, Object?>>> _docFlutter({
   }
   await flutterRepo.launcher.runStreamed(
     flutterRepo.dartCmd,
-    ['pub', 'global', 'activate', 'snippets', '0.4.0'],
+    ['pub', 'global', 'activate', 'snippets', '0.4.3'],
   );
   // TODO(jcollins-g): flutter's dart SDK pub tries to precompile the universe
   // when using -spath.  Why?
