@@ -541,6 +541,14 @@ Future<Iterable<Map<String, Object?>>> _docSdk({
       '--sdk-docs',
       '--json',
       '--show-progress',
+      // Use some local assets for the header and footers, to override the SDK
+      // values, from an options file, which includes not-shipped files.
+      '--header',
+      'lib/resources/blank.txt',
+      '--footer',
+      'lib/resources/blank.txt',
+      '--footer-text',
+      'lib/resources/blank.txt',
     ],
     workingDirectory: dartdocPath,
   );
