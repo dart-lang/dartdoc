@@ -8158,18 +8158,6 @@ class _Renderer_Library extends RendererBase<Library> {
                         parent: r));
                   },
                 ),
-                'allOriginalModelElementNames': Property(
-                  getValue: (CT_ c) => c.allOriginalModelElementNames,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<String>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.allOriginalModelElementNames.map((e) =>
-                        _render_String(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'belowSidebarPath': Property(
                   getValue: (CT_ c) => c.belowSidebarPath,
                   renderVariable:

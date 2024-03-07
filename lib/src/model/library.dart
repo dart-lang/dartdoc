@@ -96,35 +96,6 @@ class Library extends ModelElement
 
   bool get isInSdk => element.isInSdk;
 
-  /// [allModelElements] resolved to their original names.
-  ///
-  /// A collection of [ModelElement.fullyQualifiedName]s for [ModelElement]s
-  /// documented with this library, but these ModelElements and names correspond
-  /// to the defining library where each originally came from with respect
-  /// to inheritance and reexporting.  Most useful for error reporting.
-  late final List<String> allOriginalModelElementNames =
-      allModelElements.map((e) {
-    if (e is GetterSetterCombo) {
-      Accessor? getter;
-      Accessor? setter;
-      var elementGetter = e.getter;
-      if (elementGetter != null) {
-        getter = getModelForElement(elementGetter.element) as Accessor;
-      }
-      var elementSetter = e.setter;
-      if (elementSetter != null) {
-        setter = getModelForElement(elementSetter.element) as Accessor;
-      }
-      return getModelForPropertyInducingElement(
-              e.element as PropertyInducingElement,
-              getModelForElement(e.element.library!) as Library,
-              getter: getter,
-              setter: setter)
-          .fullyQualifiedName;
-    }
-    return getModelForElement(e.element).fullyQualifiedName;
-  }).toList(growable: false);
-
   @override
   CharacterLocation? get characterLocation {
     if (element.nameOffset == -1) {
@@ -455,8 +426,9 @@ class Library extends ModelElement
   String buildDocumentationAddition(String rawDocs) {
     rawDocs = super.buildDocumentationAddition(rawDocs);
     var notFoundInAllModelElements = <String>{};
+    var elementNames = _allOriginalModelElementNames;
     for (var elementName in canonicalFor) {
-      if (!allOriginalModelElementNames.contains(elementName)) {
+      if (!elementNames.contains(elementName)) {
         notFoundInAllModelElements.add(elementName);
       }
     }
@@ -467,4 +439,45 @@ class Library extends ModelElement
     // canonicalFor?
     return rawDocs;
   }
+
+  /// [allModelElements] resolved to their original names.
+  ///
+  /// A collection of [ModelElement.fullyQualifiedName]s for [ModelElement]s
+  /// documented with this library, but these ModelElements and names correspond
+  /// to the defining library where each originally came from with respect
+  /// to inheritance and re-exporting. Used for error reporting.
+  late final Set<String> _allOriginalModelElementNames = () {
+    // Instead of using `allModelElements`, which includes deeper elements like
+    // methods on classes, gather up only the library's immediate members.
+    var libraryMembers = [
+      ...library.extensions,
+      ...library.extensionTypes,
+      ...library.allClasses,
+      ...library.enums,
+      ...library.mixins,
+      ...library.constants,
+      ...library.functions,
+      ...library.properties,
+      ...library.typedefs,
+    ];
+    return libraryMembers.map((member) {
+      if (member is! GetterSetterCombo) {
+        return getModelForElement(member.element).fullyQualifiedName;
+      }
+      var getter = switch (member.getter) {
+        Accessor accessor => getModelForElement(accessor.element) as Accessor,
+        _ => null,
+      };
+      var setter = switch (member.setter) {
+        Accessor accessor => getModelForElement(accessor.element) as Accessor,
+        _ => null,
+      };
+      return getModelForPropertyInducingElement(
+        member.element as PropertyInducingElement,
+        getModelForElement(member.element.library!) as Library,
+        getter: getter,
+        setter: setter,
+      ).fullyQualifiedName;
+    }).toSet();
+  }();
 }
