@@ -11,11 +11,12 @@ import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:dartdoc/src/model/privacy.dart';
 
 import 'locatable.dart';
 
 /// Something that has a name.
-mixin Nameable {
+mixin Nameable implements Privacy {
   String get name;
 
   String get fullyQualifiedName => name;
@@ -34,6 +35,9 @@ mixin Nameable {
   // TODO(jcollins-g): This should really be the same as 'name', but isn't
   // because of accessors and operators.
   late final String namePart = fullyQualifiedName.split('.').last;
+
+  @override
+  bool get isPublic => name.isNotEmpty && !name.startsWith('_');
 
   @override
   String toString() => name;

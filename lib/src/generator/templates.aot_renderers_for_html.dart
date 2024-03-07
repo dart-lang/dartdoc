@@ -1584,7 +1584,7 @@ String renderMixin(MixinTemplateData context0) {
       <h2>Properties</h2>
 
       <dl class="properties">''');
-    var context7 = context2.publicInstanceFields;
+    var context7 = context2.publicInstanceFieldsSorted;
     for (var context8 in context7) {
       buffer.write('\n          ');
       buffer.write(_renderMixin_partial_property_8(context8));

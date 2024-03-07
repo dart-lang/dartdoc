@@ -308,9 +308,6 @@ class PackageGraph with CommentReferable, Nameable {
     return _implementers;
   }
 
-  Iterable<Extension> get documentedExtensions =>
-      utils.filterNonDocumented(extensions).toList(growable: false);
-
   Iterable<Extension> get extensions {
     assert(allExtensionsAdded);
     return _extensions;
@@ -645,7 +642,7 @@ class PackageGraph with CommentReferable, Nameable {
 
   late final Set<Library> publicLibraries = () {
     assert(allLibrariesAdded);
-    return utils.filterNonPublic(libraries).toSet();
+    return libraries.wherePublic.toSet();
   }();
 
   late final List<Library> _localLibraries = () {
@@ -656,7 +653,7 @@ class PackageGraph with CommentReferable, Nameable {
 
   late final Set<Library> localPublicLibraries = () {
     assert(allLibrariesAdded);
-    return utils.filterNonPublic(_localLibraries).toSet();
+    return _localLibraries.wherePublic.toSet();
   }();
 
   /// The String name representing the `Object` type.
@@ -1000,15 +997,15 @@ class PackageGraph with CommentReferable, Nameable {
     children.addEntriesIfAbsent(sortedDocumentedPackages
         .expand((p) => p.publicLibrariesSorted)
         .expand((l) => [
-              ...l.publicConstants,
-              ...l.publicFunctions,
-              ...l.publicProperties,
-              ...l.publicTypedefs,
-              ...l.publicExtensions,
-              ...l.publicExtensionTypes,
-              ...l.publicClasses,
-              ...l.publicEnums,
-              ...l.publicMixins
+              ...l.constants.wherePublic,
+              ...l.functions.wherePublic,
+              ...l.properties.wherePublic,
+              ...l.typedefs.wherePublic,
+              ...l.extensions.wherePublic,
+              ...l.extensionTypes.wherePublic,
+              ...l.classes.wherePublic,
+              ...l.enums.wherePublic,
+              ...l.mixins.wherePublic,
             ])
         .generateEntries());
 

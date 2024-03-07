@@ -25,7 +25,7 @@ mixin Constructable on InheritingContainer {
 
   @override
   late final List<Constructor> publicConstructorsSorted =
-      model_utils.filterNonPublic(constructors).toList(growable: false)..sort();
+      constructors.wherePublic.toList(growable: false)..sort();
 
   @override
   @visibleForOverriding
@@ -34,8 +34,9 @@ mixin Constructable on InheritingContainer {
     yield* _constructorGenerator(constructors);
     // TODO(jcollins-g): wean important users off of relying on static method
     // inheritance (dart-lang/dartdoc#2698)
-    for (var container
-        in publicSuperChain.map((t) => t.modelElement).whereType<Container>()) {
+    for (var container in superChain.wherePublic
+        .map((t) => t.modelElement)
+        .whereType<Container>()) {
       for (var modelElement in [
         ...container.staticFields,
         ...container.staticMethods,
@@ -136,9 +137,6 @@ abstract class InheritingContainer extends Container
 
   late final DefinedElementType modelType =
       getTypeFor(element.thisType, library) as DefinedElementType;
-
-  late final List<DefinedElementType> publicSuperChain =
-      model_utils.filterNonPublic(superChain).toList(growable: false);
 
   /// A list of the inherited executable elements, one element per inherited
   /// `Name`.
@@ -280,7 +278,7 @@ abstract class InheritingContainer extends Container
   /// defined by [element] can exist where this extension applies, not including
   /// any extension that applies to every type.
   late final List<Extension> potentiallyApplicableExtensionsSorted =
-      packageGraph.documentedExtensions
+      packageGraph.extensions.whereDocumented
           .where((e) => !e.alwaysApplies)
           .where((e) => e.couldApplyTo(this))
           .toList(growable: false)
@@ -313,9 +311,9 @@ abstract class InheritingContainer extends Container
       hasPotentiallyApplicableExtensions;
 
   @visibleForTesting
-  bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
+  bool get hasPublicInheritedMethods => inheritedMethods.any((e) => e.isPublic);
 
-  bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
+  bool get hasPublicSuperChainReversed => superChain.any((e) => e.isPublic);
 
   /// A sorted list of [element]'s inheritance chain, including interfaces and
   /// mixins.
@@ -356,13 +354,12 @@ abstract class InheritingContainer extends Container
 
   bool get isSealed;
 
-  @visibleForTesting
-  Iterable<Field> get publicInheritedFields =>
-      model_utils.filterNonPublic(inheritedFields);
-
   @override
+  // TODO(srawlins): Rename this, and `publicInheritedInstanceMethods` and
+  // `publicInheritedInstanceOperators` after custom template support is
+  // removed. Maybe `areAllInstanceFieldsInherited`.
   bool get publicInheritedInstanceFields =>
-      publicInstanceFields.every((f) => f.isInherited);
+      instanceFields.wherePublic.every((f) => f.isInherited);
 
   @override
   bool get publicInheritedInstanceMethods =>
@@ -370,11 +367,7 @@ abstract class InheritingContainer extends Container
 
   @override
   bool get publicInheritedInstanceOperators =>
-      publicInstanceOperators.every((f) => f.isInherited);
-
-  @visibleForTesting
-  Iterable<Method> get publicInheritedMethods =>
-      model_utils.filterNonPublic(inheritedMethods);
+      instanceOperators.wherePublic.every((f) => f.isInherited);
 
   Iterable<DefinedElementType> get publicInterfaces;
 
@@ -384,11 +377,11 @@ abstract class InheritingContainer extends Container
       ];
 
   Iterable<DefinedElementType> get publicSuperChainReversed =>
-      publicSuperChain.reversed;
+      [...superChain.wherePublic].reversed;
 
   /// The chain of super-types, starting with [supertype], up to, but not
   /// including, `Object`.
-  List<DefinedElementType> get superChain {
+  late final List<DefinedElementType> superChain = () {
     var typeChain = <DefinedElementType>[];
     var parent = supertype;
     while (parent != null) {
@@ -408,7 +401,7 @@ abstract class InheritingContainer extends Container
       parent = getTypeFor(superclass, library) as DefinedElementType?;
     }
     return typeChain;
-  }
+  }();
 
   /// Add a single Field to _fields.
   ///
@@ -498,10 +491,10 @@ mixin MixedInTypes on InheritingContainer {
   @override
   bool get hasModifiers => super.hasModifiers || hasPublicMixedInTypes;
 
-  bool get hasPublicMixedInTypes => publicMixedInTypes.isNotEmpty;
+  bool get hasPublicMixedInTypes => mixedInTypes.any((e) => e.isPublic);
 
   Iterable<DefinedElementType> get publicMixedInTypes =>
-      model_utils.filterNonPublic(mixedInTypes);
+      mixedInTypes.wherePublic;
 }
 
 /// Add the ability for an [InheritingContainer] to be implemented by other
@@ -596,8 +589,9 @@ mixin TypeImplementing on InheritingContainer {
         );
         continue;
       }
-      if (interfaceElement.publicSuperChain.isNotEmpty) {
-        interfaces.add(interfaceElement.publicSuperChain.first);
+      var publicSuperChain = interfaceElement.superChain.wherePublic;
+      if (publicSuperChain.isNotEmpty) {
+        interfaces.add(publicSuperChain.first);
       }
       interfaces.addAll(interfaceElement.publicInterfaces);
     }
