@@ -8,8 +8,28 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
 
-class Enum extends Class {
-  Enum(super.element, super.library, super.packageGraph);
+class Enum extends InheritingContainer
+    with Constructable, TypeImplementing, MixedInTypes {
+  @override
+  final EnumElement element;
+
+  Enum(this.element, super.library, super.packageGraph);
+
+  @override
+  late final List<ModelElement> allModelElements = [
+    ...super.allModelElements,
+    ...constructors,
+  ];
+
+  @override
+  late final List<InheritingContainer> inheritanceChain = [
+    this,
+    for (var container in mixedInElements.reversed)
+      ...container.inheritanceChain,
+    for (var container in superChain.modelElements)
+      ...container.inheritanceChain,
+    ...interfaceElements.expandInheritanceChain,
+  ];
 
   @override
   String get sidebarPath => '${library.dirName}/$name-enum-sidebar.html';
@@ -22,12 +42,30 @@ class Enum extends Class {
 
   @override
   Iterable<Field> get constantFields =>
-      super.constantFields.where((f) => f is! EnumField);
+      declaredFields.where((f) => f is! EnumField && f.isConst);
 
   @override
   late final List<Field> publicEnumValues = model_utils
       .filterNonPublic(allFields.whereType<EnumField>())
       .toList(growable: false);
+
+  @override
+  bool get hasPublicEnumValues => publicEnumValues.isNotEmpty;
+
+  @override
+  bool get isAbstract => false;
+
+  @override
+  bool get isBase => false;
+
+  @override
+  bool get isInterface => false;
+
+  @override
+  bool get isMixinClass => false;
+
+  @override
+  bool get isSealed => false;
 }
 
 /// A field specific to an enum's values.

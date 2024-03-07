@@ -422,8 +422,8 @@ abstract class ModelElement extends Canonicalization
     final enclosingElement = this.enclosingElement;
     var preferredClass = switch (enclosingElement) {
       // TODO(srawlins): Add mixin.
-      Enum() => enclosingElement,
       Class() => enclosingElement,
+      Enum() => enclosingElement,
       Extension() => enclosingElement,
       ExtensionType() => enclosingElement,
       _ => null,

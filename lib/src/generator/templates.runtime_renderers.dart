@@ -4569,7 +4569,23 @@ class _Renderer_Enum extends RendererBase<Enum> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                ..._Renderer_Class.propertyMap<CT_>(),
+                ..._Renderer_InheritingContainer.propertyMap<CT_>(),
+                ..._Renderer_Constructable.propertyMap<CT_>(),
+                ..._Renderer_TypeImplementing.propertyMap<CT_>(),
+                ..._Renderer_MixedInTypes.propertyMap<CT_>(),
+                'allModelElements': Property(
+                  getValue: (CT_ c) => c.allModelElements,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<ModelElement>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.allModelElements.map((e) => _render_ModelElement(
+                        e, ast, r.template, sink,
+                        parent: r));
+                  },
+                ),
                 'constantFields': Property(
                   getValue: (CT_ c) => c.constantFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4581,6 +4597,74 @@ class _Renderer_Enum extends RendererBase<Enum> {
                     return c.constantFields.map((e) =>
                         _render_Field(e, ast, r.template, sink, parent: r));
                   },
+                ),
+                'element': Property(
+                  getValue: (CT_ c) => c.element,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'EnumElement'),
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    renderSimple(c.element, ast, r.template, sink,
+                        parent: r, getters: _invisibleGetters['EnumElement']!);
+                  },
+                ),
+                'hasPublicEnumValues': Property(
+                  getValue: (CT_ c) => c.hasPublicEnumValues,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasPublicEnumValues,
+                ),
+                'inheritanceChain': Property(
+                  getValue: (CT_ c) => c.inheritanceChain,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<InheritingContainer>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.inheritanceChain.map((e) =>
+                        _render_InheritingContainer(e, ast, r.template, sink,
+                            parent: r));
+                  },
+                ),
+                'isAbstract': Property(
+                  getValue: (CT_ c) => c.isAbstract,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isAbstract,
+                ),
+                'isBase': Property(
+                  getValue: (CT_ c) => c.isBase,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isBase,
+                ),
+                'isInterface': Property(
+                  getValue: (CT_ c) => c.isInterface,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isInterface,
+                ),
+                'isMixinClass': Property(
+                  getValue: (CT_ c) => c.isMixinClass,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isMixinClass,
+                ),
+                'isSealed': Property(
+                  getValue: (CT_ c) => c.isSealed,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isSealed,
                 ),
                 'kind': Property(
                   getValue: (CT_ c) => c.kind,
@@ -12455,7 +12539,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12693,7 +12777,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -16376,6 +16460,13 @@ const _invisibleGetters = {
     'isVisibleForTemplate',
     'isVisibleForTesting',
     'isVisibleOutsideTemplate',
+    'runtimeType'
+  },
+  'EnumElement': {
+    'augmentation',
+    'augmentationTarget',
+    'augmented',
+    'hashCode',
     'runtimeType'
   },
   'ExecutableMember': {
