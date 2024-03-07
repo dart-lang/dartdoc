@@ -3123,18 +3123,6 @@ class _Renderer_Container extends RendererBase<Container> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isMixin,
                 ),
-                'publicConstantFields': Property(
-                  getValue: (CT_ c) => c.publicConstantFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Field>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicConstantFields.map((e) =>
-                        _render_Field(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'publicConstantFieldsSorted': Property(
                   getValue: (CT_ c) => c.publicConstantFieldsSorted,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3193,18 +3181,6 @@ class _Renderer_Container extends RendererBase<Container> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.publicInheritedInstanceOperators,
                 ),
-                'publicInstanceFields': Property(
-                  getValue: (CT_ c) => c.publicInstanceFields,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Field>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicInstanceFields.map((e) =>
-                        _render_Field(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'publicInstanceFieldsSorted': Property(
                   getValue: (CT_ c) => c.publicInstanceFieldsSorted,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3217,18 +3193,6 @@ class _Renderer_Container extends RendererBase<Container> {
                         _render_Field(e, ast, r.template, sink, parent: r));
                   },
                 ),
-                'publicInstanceMethods': Property(
-                  getValue: (CT_ c) => c.publicInstanceMethods,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Method>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicInstanceMethods.map((e) =>
-                        _render_Method(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'publicInstanceMethodsSorted': Property(
                   getValue: (CT_ c) => c.publicInstanceMethodsSorted,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3239,18 +3203,6 @@ class _Renderer_Container extends RendererBase<Container> {
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicInstanceMethodsSorted.map((e) =>
                         _render_Method(e, ast, r.template, sink, parent: r));
-                  },
-                ),
-                'publicInstanceOperators': Property(
-                  getValue: (CT_ c) => c.publicInstanceOperators,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Operator>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicInstanceOperators.map((e) =>
-                        _render_Operator(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'publicInstanceOperatorsSorted': Property(
@@ -7808,19 +7760,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                             parent: r));
                   },
                 ),
-                'publicSuperChain': Property(
-                  getValue: (CT_ c) => c.publicSuperChain,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<DefinedElementType>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicSuperChain.map((e) =>
-                        _render_DefinedElementType(e, ast, r.template, sink,
-                            parent: r));
-                  },
-                ),
                 'publicSuperChainReversed': Property(
                   getValue: (CT_ c) => c.publicSuperChainReversed,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -8914,18 +8853,6 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.libraries.map((e) =>
-                        _render_Library(e, ast, r.template, sink, parent: r));
-                  },
-                ),
-                'publicLibraries': Property(
-                  getValue: (CT_ c) => c.publicLibraries,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Library>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicLibraries.map((e) =>
                         _render_Library(e, ast, r.template, sink, parent: r));
                   },
                 ),
@@ -11570,6 +11497,13 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
                         parent: r);
                   },
                 ),
+                'isPublic': Property(
+                  getValue: (CT_ c) => c.isPublic,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isPublic,
+                ),
                 'name': Property(
                   getValue: (CT_ c) => c.name,
                   renderVariable:
@@ -12060,18 +11994,6 @@ class _Renderer_Package extends RendererBase<Package> {
                     return c.documentationFrom.map((e) => renderSimple(
                         e, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['Locatable']!));
-                  },
-                ),
-                'documentedCategories': Property(
-                  getValue: (CT_ c) => c.documentedCategories,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Category>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.documentedCategories.map((e) =>
-                        _render_Category(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'documentedCategoriesSorted': Property(
@@ -14349,11 +14271,11 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
                           c, remainingNames, 'Iterable<ModelFunction>'),
-                  isNullValue: (CT_ c) => c.functions == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.functions, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Iterable']!);
+                    return c.functions.map((e) => _render_ModelFunction(
+                        e, ast, r.template, sink,
+                        parent: r));
                   },
                 ),
                 'hasPublicClasses': Property(
@@ -14451,18 +14373,6 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                         parent: r));
                   },
                 ),
-                'publicClasses': Property(
-                  getValue: (CT_ c) => c.publicClasses,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Class>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicClasses.map((e) =>
-                        _render_Class(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'publicClassesSorted': Property(
                   getValue: (CT_ c) => c.publicClassesSorted,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -14473,19 +14383,6 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicClassesSorted.map((e) =>
                         _render_Container(e, ast, r.template, sink, parent: r));
-                  },
-                ),
-                'publicConstants': Property(
-                  getValue: (CT_ c) => c.publicConstants,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<TopLevelVariable>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicConstants.map((e) =>
-                        _render_TopLevelVariable(e, ast, r.template, sink,
-                            parent: r));
                   },
                 ),
                 'publicConstantsSorted': Property(
@@ -14499,18 +14396,6 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                     return c.publicConstantsSorted.map((e) =>
                         _render_TopLevelVariable(e, ast, r.template, sink,
                             parent: r));
-                  },
-                ),
-                'publicEnums': Property(
-                  getValue: (CT_ c) => c.publicEnums,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Enum>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicEnums.map((e) =>
-                        _render_Enum(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'publicEnumsSorted': Property(
@@ -14537,19 +14422,6 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                         _render_Class(e, ast, r.template, sink, parent: r));
                   },
                 ),
-                'publicExtensionTypes': Property(
-                  getValue: (CT_ c) => c.publicExtensionTypes,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<ExtensionType>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicExtensionTypes.map((e) =>
-                        _render_ExtensionType(e, ast, r.template, sink,
-                            parent: r));
-                  },
-                ),
                 'publicExtensionTypesSorted': Property(
                   getValue: (CT_ c) => c.publicExtensionTypesSorted,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -14563,18 +14435,6 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                             parent: r));
                   },
                 ),
-                'publicExtensions': Property(
-                  getValue: (CT_ c) => c.publicExtensions,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Extension>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicExtensions.map((e) =>
-                        _render_Extension(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'publicExtensionsSorted': Property(
                   getValue: (CT_ c) => c.publicExtensionsSorted,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -14585,19 +14445,6 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicExtensionsSorted.map((e) =>
                         _render_Extension(e, ast, r.template, sink, parent: r));
-                  },
-                ),
-                'publicFunctions': Property(
-                  getValue: (CT_ c) => c.publicFunctions,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<ModelFunctionTyped>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicFunctions.map((e) =>
-                        _render_ModelFunctionTyped(e, ast, r.template, sink,
-                            parent: r));
                   },
                 ),
                 'publicFunctionsSorted': Property(
@@ -14613,18 +14460,6 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                             parent: r));
                   },
                 ),
-                'publicMixins': Property(
-                  getValue: (CT_ c) => c.publicMixins,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Mixin>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicMixins.map((e) =>
-                        _render_Mixin(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'publicMixinsSorted': Property(
                   getValue: (CT_ c) => c.publicMixinsSorted,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -14635,19 +14470,6 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicMixinsSorted.map((e) =>
                         _render_Mixin(e, ast, r.template, sink, parent: r));
-                  },
-                ),
-                'publicProperties': Property(
-                  getValue: (CT_ c) => c.publicProperties,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<TopLevelVariable>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicProperties.map((e) =>
-                        _render_TopLevelVariable(e, ast, r.template, sink,
-                            parent: r));
                   },
                 ),
                 'publicPropertiesSorted': Property(
@@ -14661,18 +14483,6 @@ class _Renderer_TopLevelContainer extends RendererBase<TopLevelContainer> {
                     return c.publicPropertiesSorted.map((e) =>
                         _render_TopLevelVariable(e, ast, r.template, sink,
                             parent: r));
-                  },
-                ),
-                'publicTypedefs': Property(
-                  getValue: (CT_ c) => c.publicTypedefs,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Typedef>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicTypedefs.map((e) =>
-                        _render_Typedef(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'publicTypedefsSorted': Property(
@@ -16753,7 +16563,6 @@ const _invisibleGetters = {
     'defaultPackage',
     'defaultPackageName',
     'displayName',
-    'documentedExtensions',
     'extensions',
     'hasEmbedderSdk',
     'hasFooterVersion',

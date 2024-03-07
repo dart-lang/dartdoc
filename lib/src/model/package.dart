@@ -7,6 +7,7 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
@@ -313,10 +314,7 @@ class Package extends LibraryContainer
     ..sort();
 
   Iterable<Category> get categoriesWithPublicLibraries =>
-      categories.where((c) => c.publicLibraries.isNotEmpty);
-
-  Iterable<Category> get documentedCategories =>
-      categories.where((c) => c.isDocumented);
+      categories.where((c) => c.libraries.any((e) => e.isPublic));
 
   /// The documented categories, sorted either by the 'categoryOrder' option, or
   /// by name.
@@ -325,36 +323,36 @@ class Package extends LibraryContainer
   /// are not found in 'categoryOrder' are listed after the ones which are,
   /// ordered by name.
   Iterable<Category> get documentedCategoriesSorted {
-    if (config.categoryOrder.isNotEmpty) {
-      final documentedCategories =
-          this.documentedCategories.toList(growable: false);
-      return documentedCategories
-        ..sort((a, b) {
-          var aIndex = config.categoryOrder.indexOf(a.name);
-          var bIndex = config.categoryOrder.indexOf(b.name);
-          if (aIndex >= 0 && bIndex >= 0) {
-            return aIndex.compareTo(bIndex);
-          } else if (aIndex < 0 && bIndex >= 0) {
-            // `a` is not found in the category order, but `b` is.
-            return 1;
-          } else if (bIndex < 0 && aIndex >= 0) {
-            // `b` is not found in the category order, but `a` is.
-            return -1;
-          } else {
-            // Neither is found in the category order.
-            return documentedCategories
-                .indexOf(a)
-                .compareTo(documentedCategories.indexOf(b));
-          }
-        });
-    } else {
+    if (config.categoryOrder.isEmpty) {
       // Category display order is configurable; leave the category order
       // as defined if the order is specified.
-      return documentedCategories;
+      return categories.whereDocumented;
     }
+
+    var documentedCategories =
+        categories.whereDocumented.toList(growable: false);
+    return documentedCategories
+      ..sort((a, b) {
+        var aIndex = config.categoryOrder.indexOf(a.name);
+        var bIndex = config.categoryOrder.indexOf(b.name);
+        if (aIndex >= 0 && bIndex >= 0) {
+          return aIndex.compareTo(bIndex);
+        } else if (aIndex < 0 && bIndex >= 0) {
+          // `a` is not found in the category order, but `b` is.
+          return 1;
+        } else if (bIndex < 0 && aIndex >= 0) {
+          // `b` is not found in the category order, but `a` is.
+          return -1;
+        } else {
+          // Neither is found in the category order.
+          return documentedCategories
+              .indexOf(a)
+              .compareTo(documentedCategories.indexOf(b));
+        }
+      });
   }
 
-  bool get hasDocumentedCategories => documentedCategories.isNotEmpty;
+  bool get hasDocumentedCategories => categories.any((e) => e.isDocumented);
 
   @override
   final DartdocOptionContext config;

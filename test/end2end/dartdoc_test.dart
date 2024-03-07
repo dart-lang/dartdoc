@@ -12,6 +12,7 @@ import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/package_builder.dart';
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -135,7 +136,7 @@ void main() {
         expect(p.packageMeta.getReadmeContents(), isNotNull);
         // Total number of public libraries in test_package.
         // +2 since we are not manually excluding anything.
-        expect(packageGraph.defaultPackage.publicLibraries,
+        expect(packageGraph.defaultPackage.libraries.wherePublic.wherePublic,
             hasLength(kTestPackagePublicLibraries + 2));
         expect(packageGraph.localPackages.length, equals(1));
       });
@@ -183,7 +184,7 @@ void main() {
           dartPackage.libraries.firstWhere((lib) => lib.name == 'dart:bear');
       expect(
           dartBear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
-      expect(dartPackage.publicLibraries, hasLength(3));
+      expect(dartPackage.libraries.wherePublic, hasLength(3));
     });
 
     test('rel canonical prefix does not include base href', () async {
