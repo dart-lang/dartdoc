@@ -12,8 +12,7 @@ import 'package:dartdoc/src/model/model.dart';
 ///
 /// **instance**: As with [Container], but also includes inherited children.
 /// **inherited**: Filtered getters giving only inherited children.
-class Class extends InheritingContainer
-    with Constructable, TypeImplementing, MixedInTypes {
+class Class extends InheritingContainer with Constructable, MixedInTypes {
   @override
   final InterfaceElement element;
 

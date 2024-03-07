@@ -1690,16 +1690,23 @@ void main() async {
       var ImplementBase = implementorsLibrary.classes
           .firstWhere((c) => c.name == 'ImplementBase');
 
-      expect(ImplementerOfThings.publicInterfaces.first.modelElement,
-          equals(ImplementBase));
       expect(
-          ImplementerOfDeclaredPrivateClasses
-              .publicInterfaces.first.modelElement,
-          equals(ImplementBase));
+        ImplementerOfThings.publicInterfaceElements.first,
+        equals(ImplementBase),
+      );
+      expect(
+        ImplementerOfDeclaredPrivateClasses.publicInterfaceElements.first,
+        equals(ImplementBase),
+      );
 
-      expect(ImplementBase.publicImplementers,
-          contains(ImplementerOfDeclaredPrivateClasses));
-      expect(ImplementBase.publicImplementers, contains(ImplementerOfThings));
+      expect(
+        ImplementBase.publicImplementersSorted,
+        contains(ImplementerOfDeclaredPrivateClasses),
+      );
+      expect(
+        ImplementBase.publicImplementersSorted,
+        contains(ImplementerOfThings),
+      );
     });
 
     test('Overrides from intermediate abstract classes are picked up correctly',
@@ -1803,15 +1810,20 @@ void main() async {
       expect(ThingToImplementInMixin.hasModifiers, isTrue);
       expect(MixInImplementation.hasModifiers, isTrue);
       expect(MixedInImplementation.hasModifiers, isTrue);
-      expect(ThingToImplementInMixin.publicImplementers,
-          orderedEquals([MixInImplementation]));
-      expect(MixInImplementation.publicImplementers,
-          orderedEquals([MixedInImplementation]));
       expect(
-          MixedInImplementation.allFields
-              .firstWhere((f) => f.name == 'mixinGetter')
-              .canonicalModelElement,
-          equals(mixinGetter));
+        ThingToImplementInMixin.publicImplementersSorted,
+        orderedEquals([MixInImplementation]),
+      );
+      expect(
+        MixInImplementation.publicImplementersSorted,
+        orderedEquals([MixedInImplementation]),
+      );
+      expect(
+        MixedInImplementation.allFields
+            .firstWhere((f) => f.name == 'mixinGetter')
+            .canonicalModelElement,
+        equals(mixinGetter),
+      );
     });
 
     test('does have a line number and column', () {
@@ -4424,8 +4436,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           '<a href="${htmlBasePlaceholder}fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>',
         ),
       );
-      var FutureVoid =
-          ImplementsFutureVoid.interfaces.firstWhere((e) => e.name == 'Future');
+      var FutureVoid = ImplementsFutureVoid.directInterfaces
+          .firstWhere((e) => e.name == 'Future');
       expect(
         FutureVoid.linkedName,
         equals(
@@ -4717,16 +4729,16 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       b = exLibrary.classes.firstWhere((c) => c.name == 'B');
-      implA = apple.publicImplementers.toList();
+      implA = apple.publicImplementersSorted;
       implC = exLibrary.classes
           .firstWhere((c) => c.name == 'Cat')
-          .publicImplementers
-          .toList();
+          .publicImplementersSorted;
     });
 
     test('private classes do not break the implementor chain', () {
       var Super1 = fakeLibrary.classes.singleWhere((c) => c.name == 'Super1');
-      var publicImplementors = Super1.publicImplementers.map((i) => i.name);
+      var publicImplementors =
+          Super1.publicImplementersSorted.map((i) => i.name);
       expect(publicImplementors, hasLength(3));
       // A direct implementor.
       expect(publicImplementors, contains('Super4'));
@@ -4742,7 +4754,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       var GenericSuperProperty = fakeLibrary.classes
           .singleWhere((c) => c.name == 'GenericSuperProperty');
       var publicImplementors =
-          GenericSuperProperty.publicImplementers.map((i) => i.name);
+          GenericSuperProperty.publicImplementersSorted.map((i) => i.name);
       expect(publicImplementors, hasLength(1));
       // A direct implementor.
       expect(publicImplementors, contains('GenericSuperValue'));
@@ -4750,7 +4762,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       var GenericSuperValue =
           fakeLibrary.classes.singleWhere((c) => c.name == 'GenericSuperValue');
       publicImplementors =
-          GenericSuperValue.publicImplementers.map((i) => i.name);
+          GenericSuperValue.publicImplementersSorted.map((i) => i.name);
       expect(publicImplementors, hasLength(1));
       // A direct implementor.
       expect(publicImplementors, contains('GenericSuperNum'));
@@ -4758,7 +4770,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       var GenericSuperNum =
           fakeLibrary.classes.singleWhere((c) => c.name == 'GenericSuperNum');
       publicImplementors =
-          GenericSuperNum.publicImplementers.map((i) => i.name);
+          GenericSuperNum.publicImplementersSorted.map((i) => i.name);
       expect(publicImplementors, hasLength(1));
       expect(publicImplementors, contains('GenericSuperInt'));
     });
@@ -4785,7 +4797,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('B does not have implementors', () {
       expect(b, isNotNull);
       expect(b.name, equals('B'));
-      expect(b.publicImplementers, hasLength(0));
+      expect(b.publicImplementersSorted, hasLength(0));
     });
   });
 

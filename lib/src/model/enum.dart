@@ -8,8 +8,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
 
-class Enum extends InheritingContainer
-    with Constructable, TypeImplementing, MixedInTypes {
+class Enum extends InheritingContainer with Constructable, MixedInTypes {
   @override
   final EnumElement element;
 
