@@ -77,6 +77,71 @@ class GeneratorFrontEnd implements Generator {
 
     var indexAccumulator = <Indexable>[];
     var multiplePackages = packageGraph.localPackages.length > 1;
+
+    void generateConstants(Container container) {
+      for (var constant in filterNonDocumented(container.constantFields)) {
+        if (!constant.isCanonical) continue;
+        indexAccumulator.add(constant);
+        _generatorBackend.generateProperty(
+            packageGraph, container.library, container, constant);
+      }
+    }
+
+    void generateConstructors(Constructable constructable) {
+      for (var constructor in filterNonDocumented(constructable.constructors)) {
+        if (!constructor.isCanonical) continue;
+        indexAccumulator.add(constructor);
+        _generatorBackend.generateConstructor(
+            packageGraph, constructable.library, constructable, constructor);
+      }
+    }
+
+    void generateInstanceMethods(Container container) {
+      for (var method in filterNonDocumented(container.instanceMethods)) {
+        if (!method.isCanonical) continue;
+        indexAccumulator.add(method);
+        _generatorBackend.generateMethod(
+            packageGraph, container.library, container, method);
+      }
+    }
+
+    void generateInstanceOperators(Container container) {
+      for (var operator in filterNonDocumented(container.instanceOperators)) {
+        if (!operator.isCanonical) continue;
+        indexAccumulator.add(operator);
+        _generatorBackend.generateMethod(
+            packageGraph, container.library, container, operator);
+      }
+    }
+
+    void generateInstanceProperty(Container container) {
+      for (var property in filterNonDocumented(container.instanceFields)) {
+        if (!property.isCanonical) continue;
+        indexAccumulator.add(property);
+        _generatorBackend.generateProperty(
+            packageGraph, container.library, container, property);
+      }
+    }
+
+    void generateStaticMethods(Container container) {
+      for (var method in filterNonDocumented(container.staticMethods)) {
+        if (!method.isCanonical) continue;
+        indexAccumulator.add(method);
+        _generatorBackend.generateMethod(
+            packageGraph, container.library, container, method);
+      }
+    }
+
+    void generateStaticProperty(Container container) {
+      for (var property
+          in filterNonDocumented(container.variableStaticFields)) {
+        if (!property.isCanonical) continue;
+        indexAccumulator.add(property);
+        _generatorBackend.generateProperty(
+            packageGraph, container.library, container, property);
+      }
+    }
+
     for (var package in packageGraph.localPackages) {
       if (multiplePackages) {
         logInfo('Generating docs for package ${package.name}...');
@@ -99,110 +164,29 @@ class GeneratorFrontEnd implements Generator {
         indexAccumulator.add(lib);
         _generatorBackend.generateLibrary(packageGraph, lib);
 
-        for (var clazz in filterNonDocumented(lib.allClasses)) {
-          indexAccumulator.add(clazz);
-          _generatorBackend.generateClass(packageGraph, lib, clazz);
+        for (var class_ in filterNonDocumented(lib.allClasses)) {
+          indexAccumulator.add(class_);
+          _generatorBackend.generateClass(packageGraph, lib, class_);
 
-          for (var constructor in filterNonDocumented(clazz.constructors)) {
-            if (!constructor.isCanonical) continue;
-
-            indexAccumulator.add(constructor);
-            _generatorBackend.generateConstructor(
-                packageGraph, lib, clazz, constructor);
-          }
-
-          for (var constant in filterNonDocumented(clazz.constantFields)) {
-            if (!constant.isCanonical) continue;
-
-            indexAccumulator.add(constant);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, clazz, constant);
-          }
-
-          for (var property
-              in filterNonDocumented(clazz.variableStaticFields)) {
-            if (!property.isCanonical) continue;
-
-            indexAccumulator.add(property);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, clazz, property);
-          }
-
-          for (var property in filterNonDocumented(clazz.instanceFields)) {
-            if (!property.isCanonical) continue;
-
-            indexAccumulator.add(property);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, clazz, property);
-          }
-
-          for (var method in filterNonDocumented(clazz.instanceMethods)) {
-            if (!method.isCanonical) continue;
-
-            indexAccumulator.add(method);
-            _generatorBackend.generateMethod(packageGraph, lib, clazz, method);
-          }
-
-          for (var operator in filterNonDocumented(clazz.instanceOperators)) {
-            if (!operator.isCanonical) continue;
-
-            indexAccumulator.add(operator);
-            _generatorBackend.generateMethod(
-                packageGraph, lib, clazz, operator);
-          }
-
-          for (var method in filterNonDocumented(clazz.staticMethods)) {
-            if (!method.isCanonical) continue;
-
-            indexAccumulator.add(method);
-            _generatorBackend.generateMethod(packageGraph, lib, clazz, method);
-          }
+          generateConstants(class_);
+          generateConstructors(class_);
+          generateInstanceMethods(class_);
+          generateInstanceOperators(class_);
+          generateInstanceProperty(class_);
+          generateStaticMethods(class_);
+          generateStaticProperty(class_);
         }
 
         for (var extension in filterNonDocumented(lib.extensions)) {
           indexAccumulator.add(extension);
           _generatorBackend.generateExtension(packageGraph, lib, extension);
 
-          for (var constant in filterNonDocumented(extension.constantFields)) {
-            indexAccumulator.add(constant);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, extension, constant);
-          }
-
-          for (var method
-              in filterNonDocumented(extension.publicInstanceMethods)) {
-            indexAccumulator.add(method);
-            _generatorBackend.generateMethod(
-                packageGraph, lib, extension, method);
-          }
-
-          for (var operator
-              in filterNonDocumented(extension.instanceOperators)) {
-            indexAccumulator.add(operator);
-            _generatorBackend.generateMethod(
-                packageGraph, lib, extension, operator);
-          }
-
-          for (var property in filterNonDocumented(extension.instanceFields)) {
-            indexAccumulator.add(property);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, extension, property);
-          }
-
-          for (var staticField
-              in filterNonDocumented(extension.variableStaticFields)) {
-            indexAccumulator.add(staticField);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, extension, staticField);
-          }
-
-          for (var method in filterNonDocumented(extension.staticMethods)) {
-            if (!method.isCanonical) continue;
-
-            indexAccumulator.add(method);
-            _generatorBackend.generateMethod(
-                packageGraph, lib, extension, method);
-          }
+          generateConstants(extension);
+          generateInstanceMethods(extension);
+          generateInstanceOperators(extension);
+          generateInstanceProperty(extension);
+          generateStaticMethods(extension);
+          generateStaticProperty(extension);
         }
 
         for (var extensionType in filterNonDocumented(lib.extensionTypes)) {
@@ -210,149 +194,38 @@ class GeneratorFrontEnd implements Generator {
           _generatorBackend.generateExtensionType(
               packageGraph, lib, extensionType);
 
-          for (var constructor
-              in filterNonDocumented(extensionType.constructors)) {
-            if (!constructor.isCanonical) continue;
-
-            indexAccumulator.add(constructor);
-            _generatorBackend.generateConstructor(
-                packageGraph, lib, extensionType, constructor);
-          }
-
-          for (var constant
-              in filterNonDocumented(extensionType.constantFields)) {
-            indexAccumulator.add(constant);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, extensionType, constant);
-          }
-
-          for (var method
-              in filterNonDocumented(extensionType.publicInstanceMethods)) {
-            indexAccumulator.add(method);
-            _generatorBackend.generateMethod(
-                packageGraph, lib, extensionType, method);
-          }
-
-          for (var operator
-              in filterNonDocumented(extensionType.instanceOperators)) {
-            indexAccumulator.add(operator);
-            _generatorBackend.generateMethod(
-                packageGraph, lib, extensionType, operator);
-          }
-
-          for (var property
-              in filterNonDocumented(extensionType.instanceFields)) {
-            indexAccumulator.add(property);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, extensionType, property);
-          }
-
-          for (var staticField
-              in filterNonDocumented(extensionType.variableStaticFields)) {
-            indexAccumulator.add(staticField);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, extensionType, staticField);
-          }
-
-          for (var method in filterNonDocumented(extensionType.staticMethods)) {
-            if (!method.isCanonical) continue;
-
-            indexAccumulator.add(method);
-            _generatorBackend.generateMethod(
-                packageGraph, lib, extensionType, method);
-          }
+          generateConstants(extensionType);
+          generateConstructors(extensionType);
+          generateInstanceMethods(extensionType);
+          generateInstanceOperators(extensionType);
+          generateInstanceProperty(extensionType);
+          generateStaticMethods(extensionType);
+          generateStaticProperty(extensionType);
         }
 
         for (var mixin in filterNonDocumented(lib.mixins)) {
           indexAccumulator.add(mixin);
           _generatorBackend.generateMixin(packageGraph, lib, mixin);
 
-          for (var constant in filterNonDocumented(mixin.constantFields)) {
-            if (!constant.isCanonical) continue;
-            indexAccumulator.add(constant);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, mixin, constant);
-          }
-
-          for (var property
-              in filterNonDocumented(mixin.variableStaticFields)) {
-            if (!property.isCanonical) continue;
-
-            indexAccumulator.add(property);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, mixin, property);
-          }
-
-          for (var property in filterNonDocumented(mixin.instanceFields)) {
-            if (!property.isCanonical) continue;
-
-            indexAccumulator.add(property);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, mixin, property);
-          }
-
-          for (var method in filterNonDocumented(mixin.instanceMethods)) {
-            if (!method.isCanonical) continue;
-
-            indexAccumulator.add(method);
-            _generatorBackend.generateMethod(packageGraph, lib, mixin, method);
-          }
-
-          for (var operator in filterNonDocumented(mixin.instanceOperators)) {
-            if (!operator.isCanonical) continue;
-
-            indexAccumulator.add(operator);
-            _generatorBackend.generateMethod(
-                packageGraph, lib, mixin, operator);
-          }
-
-          for (var method in filterNonDocumented(mixin.staticMethods)) {
-            if (!method.isCanonical) continue;
-
-            indexAccumulator.add(method);
-            _generatorBackend.generateMethod(packageGraph, lib, mixin, method);
-          }
+          generateConstants(mixin);
+          generateInstanceProperty(mixin);
+          generateInstanceMethods(mixin);
+          generateInstanceOperators(mixin);
+          generateStaticMethods(mixin);
+          generateStaticProperty(mixin);
         }
 
         for (var enum_ in filterNonDocumented(lib.enums)) {
           indexAccumulator.add(enum_);
           _generatorBackend.generateEnum(packageGraph, lib, enum_);
 
-          for (var constant in filterNonDocumented(enum_.constantFields)) {
-            if (constant is EnumField) {
-              // Enum values don't get their own page; just any additional
-              // constants.
-              continue;
-            }
-            if (!constant.isCanonical) continue;
-
-            indexAccumulator.add(constant);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, enum_, constant);
-          }
-
-          for (var constructor in filterNonDocumented(enum_.constructors)) {
-            if (!constructor.isCanonical) continue;
-
-            indexAccumulator.add(constructor);
-            _generatorBackend.generateConstructor(
-                packageGraph, lib, enum_, constructor);
-          }
-
-          for (var property in filterNonDocumented(enum_.instanceFields)) {
-            indexAccumulator.add(property);
-            _generatorBackend.generateProperty(
-                packageGraph, lib, enum_, property);
-          }
-          for (var operator in filterNonDocumented(enum_.instanceOperators)) {
-            indexAccumulator.add(operator);
-            _generatorBackend.generateMethod(
-                packageGraph, lib, enum_, operator);
-          }
-          for (var method in filterNonDocumented(enum_.instanceMethods)) {
-            indexAccumulator.add(method);
-            _generatorBackend.generateMethod(packageGraph, lib, enum_, method);
-          }
+          generateConstants(enum_);
+          generateConstructors(enum_);
+          generateInstanceMethods(enum_);
+          generateInstanceOperators(enum_);
+          generateInstanceProperty(enum_);
+          generateStaticMethods(enum_);
+          generateStaticProperty(enum_);
         }
 
         for (var constant in filterNonDocumented(lib.constants)) {

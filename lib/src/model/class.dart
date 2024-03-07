@@ -5,7 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-/// A [Container] defined with a `class` declaration in Dart.
+/// A [Container] defined with a `class` or `enum` declaration.
 ///
 /// Members follow similar naming rules to [Container], with the following
 /// additions:
@@ -15,7 +15,7 @@ import 'package:dartdoc/src/model/model.dart';
 class Class extends InheritingContainer
     with Constructable, TypeImplementing, MixedInTypes {
   @override
-  final ClassElement element;
+  final InterfaceElement element;
 
   @override
   late final List<ModelElement> allModelElements = [
@@ -48,10 +48,16 @@ class Class extends InheritingContainer
   }
 
   @override
-  bool get isAbstract => element.isAbstract;
+  bool get isAbstract => switch (element) {
+        ClassElement class_ when class_.isAbstract => true,
+        _ => false,
+      };
 
   @override
-  bool get isBase => element.isBase && !element.isSealed;
+  bool get isBase => switch (element) {
+        ClassElement class_ when class_.isBase && !class_.isSealed => true,
+        _ => false,
+      };
 
   bool get isErrorOrException {
     bool isError(InterfaceElement element) =>
@@ -64,16 +70,28 @@ class Class extends InheritingContainer
   }
 
   @override
-  bool get isFinal => element.isFinal && !element.isSealed;
+  bool get isFinal => switch (element) {
+        ClassElement class_ when class_.isFinal && !class_.isSealed => true,
+        _ => false,
+      };
 
   @override
-  bool get isInterface => element.isInterface && !element.isSealed;
+  bool get isInterface => switch (element) {
+        ClassElement class_ when class_.isInterface && !class_.isSealed => true,
+        _ => false,
+      };
 
   @override
-  bool get isMixinClass => element.isMixinClass;
+  bool get isMixinClass => switch (element) {
+        ClassElement class_ when class_.isMixinClass => true,
+        _ => false,
+      };
 
   @override
-  bool get isSealed => element.isSealed;
+  bool get isSealed => switch (element) {
+        ClassElement class_ when class_.isSealed => true,
+        _ => false,
+      };
 
   @override
   Kind get kind => Kind.class_;

@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:path/path.dart' as path;
 
@@ -40,6 +41,34 @@ environment:
 }
 
 extension on MemoryResourceProvider {
-  List<String> readLines(List<String> pathParts) =>
-      getFile(path.joinAll(pathParts)).readAsStringSync().split('\n');
+  List<String> readLines(List<String> pathParts) {
+    try {
+      return getFile(path.joinAll(pathParts)).readAsStringSync().split('\n');
+    } on FileSystemException {
+      void listRecursive(Folder folder, {required int indentDepth}) {
+        var indent = '   ${'│  ' * indentDepth}';
+        var children = folder.getChildren();
+        for (var child in children) {
+          var pipes = child == children.last ? '└─' : '├─';
+          if (child is File) {
+            print('$indent$pipes ${child.shortName}');
+          } else if (child is Folder) {
+            print('$indent$pipes ${child.shortName}/');
+            listRecursive(child, indentDepth: indentDepth + 1);
+          }
+        }
+      }
+
+      // Attempt to show the files listed in the generated `doc/` directory.
+      var docIndex = pathParts.indexOf('doc');
+      if (docIndex > -1) {
+        var docPath = path.joinAll(pathParts.getRange(0, docIndex + 1));
+        print('$docPath/');
+        var docFolder = getFolder(docPath);
+        listRecursive(docFolder, indentDepth: 0);
+      }
+
+      rethrow;
+    }
+  }
 }

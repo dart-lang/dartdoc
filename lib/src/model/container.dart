@@ -153,8 +153,16 @@ abstract class Container extends ModelElement
   late final List<Field> publicConstantFieldsSorted =
       publicConstantFields.toList(growable: false)..sort(byName);
 
+  /// The total list of public enum values.
+  ///
+  /// This is defined on [Container] instead of just [Enum], because the
+  /// `ContainerSidebar` Mustache template needs to refer to this field.
   Iterable<Field> get publicEnumValues => const [];
 
+  /// Whether this container has any public enum values.
+  ///
+  /// This is defined on [Container] instead of just [Enum], because the
+  /// `ContainerSidebar` Mustache template needs to refer to this field.
   bool get hasPublicEnumValues => publicEnumValues.isNotEmpty;
 
   Iterable<Accessor> get instanceAccessors =>
