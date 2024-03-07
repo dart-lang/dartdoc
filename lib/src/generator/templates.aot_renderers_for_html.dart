@@ -2634,32 +2634,8 @@ String _renderClass_partial_documentation_4(Class context1) =>
 String _renderClass_partial_super_chain_5(Class context1) =>
     _deduplicated_lib_templates__super_chain_html(context1);
 
-String _renderClass_partial_interfaces_6(Class context1) {
-  final buffer = StringBuffer();
-  if (context1.hasPublicInterfaces) {
-    buffer.writeln();
-    buffer.write('''
-  <dt>Implemented types</dt>
-  <dd>
-    <ul class="comma-separated ''');
-    buffer.writeEscaped(context1.relationshipsClass);
-    buffer.write('''">''');
-    var context2 = context1.publicInterfaces;
-    for (var context3 in context2) {
-      buffer.writeln();
-      buffer.write('''
-        <li>''');
-      buffer.write(context3.linkedName);
-      buffer.write('''</li>''');
-    }
-    buffer.writeln();
-    buffer.write('''
-    </ul>
-  </dd>''');
-  }
-
-  return buffer.toString();
-}
+String _renderClass_partial_interfaces_6(Class context1) =>
+    _deduplicated_lib_templates__interfaces_html(context1);
 
 String _renderClass_partial_mixed_in_types_7(Class context1) {
   final buffer = StringBuffer();
@@ -2761,32 +2737,8 @@ String _renderEnum_partial_documentation_4(Enum context1) =>
 String _renderEnum_partial_super_chain_5(Enum context1) =>
     _deduplicated_lib_templates__super_chain_html(context1);
 
-String _renderEnum_partial_interfaces_6(Enum context1) {
-  final buffer = StringBuffer();
-  if (context1.hasPublicInterfaces) {
-    buffer.writeln();
-    buffer.write('''
-  <dt>Implemented types</dt>
-  <dd>
-    <ul class="comma-separated ''');
-    buffer.writeEscaped(context1.relationshipsClass);
-    buffer.write('''">''');
-    var context2 = context1.publicInterfaces;
-    for (var context3 in context2) {
-      buffer.writeln();
-      buffer.write('''
-        <li>''');
-      buffer.write(context3.linkedName);
-      buffer.write('''</li>''');
-    }
-    buffer.writeln();
-    buffer.write('''
-    </ul>
-  </dd>''');
-  }
-
-  return buffer.toString();
-}
+String _renderEnum_partial_interfaces_6(Enum context1) =>
+    _deduplicated_lib_templates__interfaces_html(context1);
 
 String _renderEnum_partial_mixed_in_types_7(Enum context1) {
   final buffer = StringBuffer();
@@ -2921,32 +2873,8 @@ String _renderExtensionType_partial_categorization_3(ExtensionType context1) =>
 String _renderExtensionType_partial_documentation_4(ExtensionType context1) =>
     _deduplicated_lib_templates__documentation_html(context1);
 
-String _renderExtensionType_partial_interfaces_5(ExtensionType context1) {
-  final buffer = StringBuffer();
-  if (context1.hasPublicInterfaces) {
-    buffer.writeln();
-    buffer.write('''
-  <dt>Implemented types</dt>
-  <dd>
-    <ul class="comma-separated ''');
-    buffer.writeEscaped(context1.relationshipsClass);
-    buffer.write('''">''');
-    var context2 = context1.publicInterfaces;
-    for (var context3 in context2) {
-      buffer.writeln();
-      buffer.write('''
-        <li>''');
-      buffer.write(context3.linkedName);
-      buffer.write('''</li>''');
-    }
-    buffer.writeln();
-    buffer.write('''
-    </ul>
-  </dd>''');
-  }
-
-  return buffer.toString();
-}
+String _renderExtensionType_partial_interfaces_5(ExtensionType context1) =>
+    _deduplicated_lib_templates__interfaces_html(context1);
 
 String _renderExtensionType_partial_container_annotations_6(
         ExtensionType context1) =>
@@ -3270,32 +3198,8 @@ String _renderMixin_partial_documentation_4(Mixin context1) =>
 String _renderMixin_partial_super_chain_5(Mixin context1) =>
     _deduplicated_lib_templates__super_chain_html(context1);
 
-String _renderMixin_partial_interfaces_6(Mixin context1) {
-  final buffer = StringBuffer();
-  if (context1.hasPublicInterfaces) {
-    buffer.writeln();
-    buffer.write('''
-  <dt>Implemented types</dt>
-  <dd>
-    <ul class="comma-separated ''');
-    buffer.writeEscaped(context1.relationshipsClass);
-    buffer.write('''">''');
-    var context2 = context1.publicInterfaces;
-    for (var context3 in context2) {
-      buffer.writeln();
-      buffer.write('''
-        <li>''');
-      buffer.write(context3.linkedName);
-      buffer.write('''</li>''');
-    }
-    buffer.writeln();
-    buffer.write('''
-    </ul>
-  </dd>''');
-  }
-
-  return buffer.toString();
-}
+String _renderMixin_partial_interfaces_6(Mixin context1) =>
+    _deduplicated_lib_templates__interfaces_html(context1);
 
 String _renderMixin_partial_annotations_7(Mixin context1) =>
     _deduplicated_lib_templates__annotations_html(context1);
@@ -4514,6 +4418,34 @@ String _deduplicated_lib_templates__super_chain_html(
   </dd>''');
   }
   buffer.writeln();
+
+  return buffer.toString();
+}
+
+String _deduplicated_lib_templates__interfaces_html(
+    InheritingContainer context0) {
+  final buffer = StringBuffer();
+  if (context0.hasPublicInterfaces) {
+    buffer.writeln();
+    buffer.write('''
+  <dt>Implemented types</dt>
+  <dd>
+    <ul class="comma-separated ''');
+    buffer.writeEscaped(context0.relationshipsClass);
+    buffer.write('''">''');
+    var context1 = context0.publicInterfaces;
+    for (var context2 in context1) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context2.linkedName);
+      buffer.write('''</li>''');
+    }
+    buffer.writeln();
+    buffer.write('''
+    </ul>
+  </dd>''');
+  }
 
   return buffer.toString();
 }

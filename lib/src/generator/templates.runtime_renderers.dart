@@ -1745,7 +1745,6 @@ class _Renderer_Class extends RendererBase<Class> {
           () => {
                 ..._Renderer_InheritingContainer.propertyMap<CT_>(),
                 ..._Renderer_Constructable.propertyMap<CT_>(),
-                ..._Renderer_TypeImplementing.propertyMap<CT_>(),
                 ..._Renderer_MixedInTypes.propertyMap<CT_>(),
                 'allModelElements': Property(
                   getValue: (CT_ c) => c.allModelElements,
@@ -4571,7 +4570,6 @@ class _Renderer_Enum extends RendererBase<Enum> {
           () => {
                 ..._Renderer_InheritingContainer.propertyMap<CT_>(),
                 ..._Renderer_Constructable.propertyMap<CT_>(),
-                ..._Renderer_TypeImplementing.propertyMap<CT_>(),
                 ..._Renderer_MixedInTypes.propertyMap<CT_>(),
                 'allModelElements': Property(
                   getValue: (CT_ c) => c.allModelElements,
@@ -5311,7 +5309,6 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
           () => {
                 ..._Renderer_InheritingContainer.propertyMap<CT_>(),
                 ..._Renderer_Constructable.propertyMap<CT_>(),
-                ..._Renderer_TypeImplementing.propertyMap<CT_>(),
                 'allModelElements': Property(
                   getValue: (CT_ c) => c.allModelElements,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7559,6 +7556,20 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasPotentiallyApplicableExtensions,
                 ),
+                'hasPublicImplementers': Property(
+                  getValue: (CT_ c) => c.hasPublicImplementers,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasPublicImplementers,
+                ),
+                'hasPublicInterfaces': Property(
+                  getValue: (CT_ c) => c.hasPublicInterfaces,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.hasPublicInterfaces,
+                ),
                 'hasPublicSuperChainReversed': Property(
                   getValue: (CT_ c) => c.hasPublicSuperChainReversed,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7637,6 +7648,19 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                       List<MustachioNode> ast, StringSink sink) {
                     return c.instanceOperators.map((e) =>
                         _render_Operator(e, ast, r.template, sink, parent: r));
+                  },
+                ),
+                'interfaceElements': Property(
+                  getValue: (CT_ c) => c.interfaceElements,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<InheritingContainer>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.interfaceElements.map((e) =>
+                        _render_InheritingContainer(e, ast, r.template, sink,
+                            parent: r));
                   },
                 ),
                 'isAbstract': Property(
@@ -7724,6 +7748,19 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                         _render_Extension(e, ast, r.template, sink, parent: r));
                   },
                 ),
+                'publicImplementersSorted': Property(
+                  getValue: (CT_ c) => c.publicImplementersSorted,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<InheritingContainer>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.publicImplementersSorted.map((e) =>
+                        _render_InheritingContainer(e, ast, r.template, sink,
+                            parent: r));
+                  },
+                ),
                 'publicInheritedInstanceFields': Property(
                   getValue: (CT_ c) => c.publicInheritedInstanceFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -7763,7 +7800,7 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<DefinedElementType>'),
+                          c, remainingNames, 'List<DefinedElementType>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.publicInterfaces.map((e) =>
@@ -9990,7 +10027,6 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
           CT_,
           () => {
                 ..._Renderer_InheritingContainer.propertyMap<CT_>(),
-                ..._Renderer_TypeImplementing.propertyMap<CT_>(),
                 'element': Property(
                   getValue: (CT_ c) => c.element,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -12777,13 +12813,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -15194,115 +15230,6 @@ class _Renderer_TwoDirectoriesDown<T extends Documentable>
   Property<TwoDirectoriesDown<T>>? getProperty(String key) {
     if (propertyMap<T, TwoDirectoriesDown<T>>().containsKey(key)) {
       return propertyMap<T, TwoDirectoriesDown<T>>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
-class _Renderer_TypeImplementing extends RendererBase<TypeImplementing> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<
-          CT_ extends TypeImplementing>() =>
-      _propertyMapCache.putIfAbsent(
-          CT_,
-          () => {
-                'hasModifiers': Property(
-                  getValue: (CT_ c) => c.hasModifiers,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasModifiers,
-                ),
-                'hasPublicImplementers': Property(
-                  getValue: (CT_ c) => c.hasPublicImplementers,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicImplementers,
-                ),
-                'hasPublicInterfaces': Property(
-                  getValue: (CT_ c) => c.hasPublicInterfaces,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasPublicInterfaces,
-                ),
-                'interfaceElements': Property(
-                  getValue: (CT_ c) => c.interfaceElements,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<InheritingContainer>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.interfaceElements.map((e) =>
-                        _render_InheritingContainer(e, ast, r.template, sink,
-                            parent: r));
-                  },
-                ),
-                'interfaces': Property(
-                  getValue: (CT_ c) => c.interfaces,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<DefinedElementType>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.interfaces.map((e) => _render_DefinedElementType(
-                        e, ast, r.template, sink,
-                        parent: r));
-                  },
-                ),
-                'publicImplementers': Property(
-                  getValue: (CT_ c) => c.publicImplementers,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<InheritingContainer>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicImplementers.map((e) =>
-                        _render_InheritingContainer(e, ast, r.template, sink,
-                            parent: r));
-                  },
-                ),
-                'publicImplementersSorted': Property(
-                  getValue: (CT_ c) => c.publicImplementersSorted,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<InheritingContainer>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicImplementersSorted.map((e) =>
-                        _render_InheritingContainer(e, ast, r.template, sink,
-                            parent: r));
-                  },
-                ),
-                'publicInterfaces': Property(
-                  getValue: (CT_ c) => c.publicInterfaces,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<DefinedElementType>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.publicInterfaces.map((e) =>
-                        _render_DefinedElementType(e, ast, r.template, sink,
-                            parent: r));
-                  },
-                ),
-              }) as Map<String, Property<CT_>>;
-
-  _Renderer_TypeImplementing(TypeImplementing context,
-      RendererBase<Object>? parent, Template template, StringSink sink)
-      : super(context, parent, template, sink);
-
-  @override
-  Property<TypeImplementing>? getProperty(String key) {
-    if (propertyMap<TypeImplementing>().containsKey(key)) {
-      return propertyMap<TypeImplementing>()[key];
     } else {
       return null;
     }

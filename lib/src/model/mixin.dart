@@ -11,7 +11,7 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
 
-class Mixin extends InheritingContainer with TypeImplementing {
+class Mixin extends InheritingContainer {
   @override
   final MixinElement element;
 
