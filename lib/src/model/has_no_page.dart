@@ -5,7 +5,7 @@
 import 'package:dartdoc/src/model/model.dart';
 
 /// An element which has no page documenting itself.
-mixin HasNoPage on ModelElement {
+mixin HasNoPage implements ModelElement {
   @override
   String get filePath =>
       throw UnimplementedError('This element has no generated page');

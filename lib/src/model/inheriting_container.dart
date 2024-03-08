@@ -18,7 +18,7 @@ import 'package:meta/meta.dart';
 ///
 /// Note that [Constructor]s are not considered to be modifiers so a
 /// [hasModifiers] override is not necessary for this mixin.
-mixin Constructable on InheritingContainer {
+mixin Constructable implements InheritingContainer {
   late final List<Constructor> constructors = element.constructors
       .map((e) => getModelFor(e, library) as Constructor)
       .toList(growable: false);
