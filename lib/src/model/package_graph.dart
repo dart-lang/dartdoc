@@ -459,7 +459,6 @@ class PackageGraph with CommentReferable, Nameable {
       PackageWarning.invalidParameter ||
       PackageWarning.toolError ||
       PackageWarning.deprecated ||
-      PackageWarning.unresolvedExport ||
       PackageWarning.missingExampleFile ||
       PackageWarning.missingCodeBlockLanguage =>
         kind.messageFor([message])
@@ -513,19 +512,7 @@ class PackageGraph with CommentReferable, Nameable {
       return;
     }
     _reexportsTagged.add(key);
-    if (libraryElement == null) {
-      lastExportedElement!;
-      final lastExportedElementUri = lastExportedElement.uri;
-      final uri = lastExportedElementUri is DirectiveUriWithRelativeUriString
-          ? lastExportedElementUri.relativeUriString
-          : null;
-      warnOnElement(
-          findButDoNotCreateLibraryFor(lastExportedElement.enclosingElement!),
-          PackageWarning.unresolvedExport,
-          message: '"$uri"',
-          referredFrom: <Locatable>[topLevelLibrary]);
-      return;
-    }
+    if (libraryElement == null) return;
     _libraryExports.putIfAbsent(libraryElement, () => {}).add(topLevelLibrary);
     for (var exportedElement in libraryElement.libraryExports) {
       _tagReexportsFor(
