@@ -13842,6 +13842,13 @@ class _Renderer_TemplateDataBase extends RendererBase<TemplateDataBase> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.includeVersion,
                 ),
+                'isParentExtension': Property(
+                  getValue: (CT_ c) => c.isParentExtension,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isParentExtension,
+                ),
                 'layoutTitle': Property(
                   getValue: (CT_ c) => c.layoutTitle,
                   renderVariable:
@@ -13942,6 +13949,29 @@ class _Renderer_TemplateDataBase extends RendererBase<TemplateDataBase> {
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     _render_Documentable(c.parent!, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
+                'parentAsExtension': Property(
+                  getValue: (CT_ c) => c.parentAsExtension,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_Extension.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as Extension,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_Extension(
+                        c.parentAsExtension, ast, r.template, sink,
                         parent: r);
                   },
                 ),
