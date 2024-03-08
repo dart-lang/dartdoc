@@ -60,6 +60,10 @@ abstract class TemplateDataBase {
     return navLinksWithGenerics.last;
   }
 
+  bool get isParentExtension => parent is Extension;
+
+  Extension get parentAsExtension => parent as Extension;
+
   bool get hasHomepage => false;
 
   String? get homepage => null;
