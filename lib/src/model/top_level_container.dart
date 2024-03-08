@@ -55,33 +55,33 @@ mixin TopLevelContainer implements Nameable {
   // TODO(jcollins-g):  Setting this type parameter to `Container` magically
   // fixes a number of type problems in the AOT compiler, but I am mystified as
   // to why that should be the case.
-  late final List<Container> publicClassesSorted =
+  List<Container> get publicClassesSorted =>
       classes.wherePublic.toList(growable: false)..sort();
 
-  late final List<Extension> publicExtensionsSorted =
+  List<Extension> get publicExtensionsSorted =>
       extensions.wherePublic.toList(growable: false)..sort();
 
-  late final List<ExtensionType> publicExtensionTypesSorted =
+  List<ExtensionType> get publicExtensionTypesSorted =>
       extensionTypes.wherePublic.toList(growable: false)..sort();
 
-  Iterable<TopLevelVariable> get publicConstantsSorted =>
+  List<TopLevelVariable> get publicConstantsSorted =>
       constants.wherePublic.toList(growable: false)..sort();
 
-  late final List<Enum> publicEnumsSorted =
+  List<Enum> get publicEnumsSorted =>
       enums.wherePublic.toList(growable: false)..sort();
 
-  late final List<Class> publicExceptionsSorted =
+  List<Class> get publicExceptionsSorted =>
       exceptions.wherePublic.toList(growable: false)..sort();
 
-  late final List<ModelFunctionTyped> publicFunctionsSorted =
+  List<ModelFunctionTyped> get publicFunctionsSorted =>
       functions.wherePublic.toList(growable: false)..sort();
 
-  late final List<Mixin> publicMixinsSorted =
+  List<Mixin> get publicMixinsSorted =>
       mixins.wherePublic.toList(growable: false)..sort();
 
-  late final List<TopLevelVariable> publicPropertiesSorted =
+  List<TopLevelVariable> get publicPropertiesSorted =>
       properties.wherePublic.toList(growable: false)..sort();
 
-  late final List<Typedef> publicTypedefsSorted =
+  List<Typedef> get publicTypedefsSorted =>
       typedefs.wherePublic.toList(growable: false)..sort();
 }

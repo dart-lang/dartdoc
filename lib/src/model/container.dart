@@ -97,7 +97,7 @@ abstract class Container extends ModelElement
   @nonVirtual
   bool get hasPublicInstanceMethods => instanceMethods.any((e) => e.isPublic);
 
-  late final List<Method> publicInstanceMethodsSorted =
+  List<Method> get publicInstanceMethodsSorted =>
       instanceMethods.wherePublic.toList(growable: false)..sort();
 
   @nonVirtual
@@ -113,7 +113,7 @@ abstract class Container extends ModelElement
   bool get hasPublicInstanceOperators =>
       instanceOperators.any((e) => e.isPublic);
 
-  late final List<Operator> publicInstanceOperatorsSorted =
+  List<Operator> get publicInstanceOperatorsSorted =>
       instanceOperators.wherePublic.toList(growable: false)..sort();
 
   /// Fields fully declared in this [Container].
@@ -128,14 +128,14 @@ abstract class Container extends ModelElement
   @nonVirtual
   bool get hasPublicInstanceFields => instanceFields.any((e) => e.isPublic);
 
-  late final List<Field> publicInstanceFieldsSorted =
+  List<Field> get publicInstanceFieldsSorted =>
       instanceFields.wherePublic.toList(growable: false)..sort(byName);
 
   Iterable<Field> get constantFields => declaredFields.where((f) => f.isConst);
 
   bool get hasPublicConstantFields => constantFields.any((e) => e.isPublic);
 
-  late final List<Field> publicConstantFieldsSorted =
+  List<Field> get publicConstantFieldsSorted =>
       constantFields.wherePublic.toList(growable: false)..sort(byName);
 
   /// The total list of public enum values.
@@ -194,7 +194,7 @@ abstract class Container extends ModelElement
 
   bool get hasPublicStaticFields => staticFields.any((e) => e.isPublic);
 
-  late final List<Field> publicStaticFieldsSorted =
+  List<Field> get publicStaticFieldsSorted =>
       staticFields.wherePublic.toList(growable: false)..sort();
 
   Iterable<Field> get staticFields => declaredFields.where((f) => f.isStatic);
@@ -205,7 +205,7 @@ abstract class Container extends ModelElement
   bool get hasPublicVariableStaticFields =>
       variableStaticFields.any((e) => e.isPublic);
 
-  late final List<Field> publicVariableStaticFieldsSorted =
+  List<Field> get publicVariableStaticFieldsSorted =>
       variableStaticFields.wherePublic.toList(growable: false)..sort();
 
   Iterable<Method> get staticMethods =>
@@ -213,7 +213,7 @@ abstract class Container extends ModelElement
 
   bool get hasPublicStaticMethods => staticMethods.any((e) => e.isPublic);
 
-  late final List<Method> publicStaticMethodsSorted =
+  List<Method> get publicStaticMethodsSorted =>
       staticMethods.wherePublic.toList(growable: false)..sort();
 
   /// For subclasses to add items after the main pass but before the
