@@ -279,12 +279,6 @@ enum PackageWarning implements Comparable<PackageWarning> {
     'deprecated dartdoc usage: {0}',
     shortHelp: 'A dartdoc directive has a deprecated format.',
   ),
-  unresolvedExport(
-    'unresolved-export',
-    'unresolved export uri: {0}',
-    shortHelp: 'An export refers to a URI that cannot be resolved.',
-    defaultWarningMode: PackageWarningMode.error,
-  ),
   missingExampleFile(
     'missing-example-file',
     'example file not found: {0}',
