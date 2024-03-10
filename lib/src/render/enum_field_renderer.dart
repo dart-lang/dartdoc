@@ -14,15 +14,11 @@ class EnumFieldRendererHtml implements EnumFieldRenderer {
   const EnumFieldRendererHtml();
 
   @override
-  String renderValue(EnumField field) {
-    if (field.name == 'values') {
-      return 'const List&lt;<wbr>'
+  String renderValue(EnumField field) => field.name == 'values'
+      ? 'const List&lt;<wbr>'
           '<span class="type-parameter">${field.enclosingElement.name}</span>'
-          '&gt;';
-    } else {
-      return 'const ${field.enclosingElement.name}(${field.index})';
-    }
-  }
+          '&gt;'
+      : field.constantValue;
 
   @override
   String renderLinkedName(EnumField field) {

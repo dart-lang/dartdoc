@@ -8,11 +8,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
 
-/// The [Enum] class only inherits from [InheritingContainer] because declared
-/// `enum`s inherit methods from [Object].  It can't actually participate
-/// meaningfully in other inheritance or have class modifiers.
-class Enum extends InheritingContainer
-    with Constructable, TypeImplementing, MixedInTypes {
+class Enum extends InheritingContainer with Constructable, MixedInTypes {
   @override
   final EnumElement element;
 
@@ -48,12 +44,12 @@ class Enum extends InheritingContainer
       declaredFields.where((f) => f is! EnumField && f.isConst);
 
   @override
-  late final List<Field> publicEnumValues = model_utils
-      .filterNonPublic(allFields.whereType<EnumField>())
-      .toList(growable: false);
+  late final List<Field> publicEnumValues =
+      allFields.whereType<EnumField>().wherePublic.toList(growable: false);
 
   @override
-  bool get hasPublicEnumValues => publicEnumValues.isNotEmpty;
+  bool get hasPublicEnumValues =>
+      allFields.whereType<EnumField>().any((e) => e.isPublic);
 
   @override
   bool get isAbstract => false;

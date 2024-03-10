@@ -11,7 +11,7 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
 
-class Mixin extends InheritingContainer with TypeImplementing {
+class Mixin extends InheritingContainer {
   @override
   final MixinElement element;
 
@@ -29,14 +29,12 @@ class Mixin extends InheritingContainer with TypeImplementing {
   @override
   late final List<InheritingContainer> inheritanceChain = [
     this,
-
-    // Mix-in interfaces come before other interfaces.
     ...superclassConstraints.modelElements.expandInheritanceChain,
 
     for (var container in superChain.modelElements)
       ...container.inheritanceChain,
 
-    // Interfaces need to come last, because classes in the superChain might
+    // Interfaces need to come last, because classes in the `superChain` might
     // implement them even when they aren't mentioned.
     ...interfaceElements.expandInheritanceChain,
   ];
@@ -78,7 +76,7 @@ class Mixin extends InheritingContainer with TypeImplementing {
   Kind get kind => Kind.mixin;
 
   Iterable<ParameterizedElementType> get publicSuperclassConstraints =>
-      model_utils.filterNonPublic(superclassConstraints);
+      superclassConstraints.wherePublic;
 
   @override
   String get relationshipsClass => 'mixin-relationships';

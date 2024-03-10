@@ -26,14 +26,15 @@ void main(List<String> args) async {
     ..addCommand('buildbot')
     ..addCommand('clean')
     ..addCommand('compare')
+    ..addCommand('help')
     ..addCommand('test')
     ..addCommand('try-publish')
     ..addCommand('validate');
-  parser.addCommand('doc')
-    ..addOption('name')
-    ..addOption('version')
-    ..addFlag('stats');
-  parser.addCommand('serve')
+  var docCommand = parser.addCommand('doc')
+    ..addOption('name', help: 'package name')
+    ..addOption('version', help: 'package version')
+    ..addFlag('stats', help: 'print runtime stats');
+  var serveCommand = parser.addCommand('serve')
     ..addOption('name')
     ..addOption('version');
 
@@ -43,6 +44,9 @@ void main(List<String> args) async {
     return;
   }
 
+  docUsage = docCommand.usage;
+  serveUsage = serveCommand.usage;
+
   return await switch (commandResults.name) {
     'analyze' => runAnalyze(commandResults),
     'build' => runBuild(commandResults),
@@ -50,6 +54,7 @@ void main(List<String> args) async {
     'clean' => runClean(),
     'compare' => runCompare(commandResults),
     'doc' => runDoc(commandResults),
+    'help' => runHelp(commandResults),
     'serve' => runServe(commandResults),
     'test' => runTest(),
     'try-publish' => runTryPublish(),
@@ -57,6 +62,9 @@ void main(List<String> args) async {
     _ => throw ArgumentError(),
   };
 }
+
+late String docUsage;
+late String serveUsage;
 
 String _getPackageVersion() {
   var pubspec = File('pubspec.yaml');
@@ -288,6 +296,7 @@ Future<void> runDoc(ArgResults commandResults) async {
   var stats = commandResults['stats'];
   await switch (target) {
     'flutter' => docFlutter(withStats: stats),
+    'help' => _docHelp(),
     'package' => _docPackage(commandResults, withStats: stats),
     'sdk' => docSdk(),
     'testing-package' => docTestingPackage(),
@@ -326,7 +335,7 @@ Future<Iterable<Map<String, Object?>>> _docFlutter({
   }
   await flutterRepo.launcher.runStreamed(
     flutterRepo.dartCmd,
-    ['pub', 'global', 'activate', 'snippets', '0.4.0'],
+    ['pub', 'global', 'activate', 'snippets', '0.4.3'],
   );
   // TODO(jcollins-g): flutter's dart SDK pub tries to precompile the universe
   // when using -spath.  Why?
@@ -359,6 +368,14 @@ Future<Iterable<Map<String, Object?>>> _docFlutter({
 
 final Directory flutterDir =
     Directory.systemTemp.createTempSync('flutter').absolute;
+
+Future<void> _docHelp() async {
+  print('''
+Usage:
+dart tool/task.dart doc [flutter|package|sdk|testing-package]
+$docUsage
+''');
+}
 
 Future<void> _docPackage(
   ArgResults commandResults, {
@@ -541,6 +558,14 @@ Future<Iterable<Map<String, Object?>>> _docSdk({
       '--sdk-docs',
       '--json',
       '--show-progress',
+      // Use some local assets for the header and footers, to override the SDK
+      // values, from an options file, which includes not-shipped files.
+      '--header',
+      'lib/resources/blank.txt',
+      '--footer',
+      'lib/resources/blank.txt',
+      '--footer-text',
+      'lib/resources/blank.txt',
     ],
     workingDirectory: dartdocPath,
   );
@@ -569,6 +594,30 @@ String get _dartdocOriginalBranch {
   return branch;
 }
 
+Future<void> runHelp(ArgResults commandResults) async {
+  if (commandResults.rest.isEmpty) {
+    // TODO(srawlins): Add more help for more individual commands.
+    print('''
+Usage:
+    dart tool/task.dart [analyze|build|buildbot|clean|compare|doc|help|serve|test|tryp-publish|validate] options...
+
+Help usage:
+    dart tool/task.dart help [doc|serve]
+''');
+    return;
+  }
+  if (commandResults.rest.length != 1) {
+    throw ArgumentError('"help" command requires a single command name.');
+  }
+  var command = commandResults.rest.single;
+  return switch (command) {
+    'doc' => _docHelp(),
+    'serve' => _serveHelp(),
+    _ => throw UnimplementedError(
+        'Unknown command: "$command", or no specific help text'),
+  };
+}
+
 Future<void> runServe(ArgResults commandResults) async {
   if (commandResults.rest.length != 1) {
     throw ArgumentError('"serve" command requires a single target.');
@@ -576,6 +625,7 @@ Future<void> runServe(ArgResults commandResults) async {
   var target = commandResults.rest.single;
   await switch (target) {
     'flutter' => serveFlutterDocs(),
+    'help' => _serveHelp(),
     'package' => _servePackageDocs(commandResults),
     'sdk' => serveSdkDocs(),
     'testing-package' => serveTestingPackageDocs(),
@@ -598,6 +648,14 @@ Future<void> serveFlutterDocs() async {
     '--path',
     path.join(flutterDir.path, 'dev', 'docs', 'doc'),
   ]);
+}
+
+Future<void> _serveHelp() async {
+  print('''
+Usage:
+dart tool/task.dart serve [flutter|package|sdk|testing-package]
+$docUsage
+''');
 }
 
 Future<void> _servePackageDocs(ArgResults commandResults) async {

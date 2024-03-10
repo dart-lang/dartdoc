@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
@@ -36,6 +37,12 @@ import 'package:path/path.dart' as p show Context;
 abstract class PackageBuilder {
   // Builds package graph to be used by documentation generator.
   Future<PackageGraph> buildPackageGraph();
+
+  Future<void> dispose();
+
+  /// The `include-external` option is deprecated, so we track whether it was
+  /// used, to report it.
+  bool get includeExternalsWasSpecified;
 }
 
 /// A package builder that understands pub package format.
@@ -44,24 +51,52 @@ class PubPackageBuilder implements PackageBuilder {
   final PackageMetaProvider _packageMetaProvider;
   final PackageConfigProvider _packageConfigProvider;
 
-  PubPackageBuilder(
+  final AnalysisContextCollectionImpl _contextCollection;
+  final AnalysisContext _analysisContext;
+
+  factory PubPackageBuilder(
+    DartdocOptionContext config,
+    PackageMetaProvider packageMetaProvider,
+    PackageConfigProvider packageConfigProvider, {
+    @visibleForTesting bool skipUnreachableSdkLibraries = false,
+  }) {
+    var contextCollection = AnalysisContextCollectionImpl(
+      includedPaths: [config.inputDir],
+      // TODO(jcollins-g): should we pass excluded directories here instead
+      // of handling it ourselves?
+      resourceProvider: packageMetaProvider.resourceProvider,
+      sdkPath: config.sdkDir,
+      updateAnalysisOptions2: ({
+        required AnalysisOptionsImpl analysisOptions,
+        required ContextRoot contextRoot,
+        required DartSdk sdk,
+      }) =>
+          analysisOptions
+            ..warning = false
+            ..lint = false,
+    );
+    return PubPackageBuilder._(
+      config,
+      packageMetaProvider,
+      packageConfigProvider,
+      contextCollection,
+      analysisContext: contextCollection.contextFor(config.inputDir),
+      skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
+    );
+  }
+
+  PubPackageBuilder._(
     this._config,
     this._packageMetaProvider,
-    this._packageConfigProvider, {
-    @visibleForTesting bool skipUnreachableSdkLibraries = false,
-  }) : _skipUnreachableSdkLibraries = skipUnreachableSdkLibraries;
+    this._packageConfigProvider,
+    this._contextCollection, {
+    required AnalysisContext analysisContext,
+    required bool skipUnreachableSdkLibraries,
+  })  : _analysisContext = analysisContext,
+        _skipUnreachableSdkLibraries = skipUnreachableSdkLibraries;
 
   @override
   Future<PackageGraph> buildPackageGraph() async {
-    if (!_config.sdkDocs) {
-      if (_config.topLevelPackageMeta.requiresFlutter &&
-          _config.flutterRoot == null) {
-        // TODO(devoncarew): We may no longer need to emit this error.
-        throw DartdocOptionError(
-            'Top level package requires Flutter but FLUTTER_ROOT environment variable not set');
-      }
-    }
-
     runtimeStats.resetAccumulators([
       'elementTypeInstantiation',
       'modelElementCacheInsertion',
@@ -77,6 +112,7 @@ class PubPackageBuilder implements PackageBuilder {
       _sdk,
       _embedderSdkUris.isNotEmpty,
       _packageMetaProvider,
+      _analysisContext,
     );
     await _getLibraries(newGraph);
     runtimeStats.endPerfTask();
@@ -91,6 +127,12 @@ class PubPackageBuilder implements PackageBuilder {
     runtimeStats.endPerfTask();
 
     return newGraph;
+  }
+
+  @override
+  Future<void> dispose() async {
+    // Shutdown macro support.
+    await _contextCollection.dispose();
   }
 
   late final DartSdk _sdk = _packageMetaProvider.defaultSdk ??
@@ -131,22 +173,6 @@ class PubPackageBuilder implements PackageBuilder {
   }
 
   late final Map<String, List<Folder>> _packageMap;
-
-  late final _contextCollection = AnalysisContextCollectionImpl(
-    includedPaths: [_config.inputDir],
-    // TODO(jcollins-g): should we pass excluded directories here instead of
-    // handling it ourselves?
-    resourceProvider: _resourceProvider,
-    sdkPath: _config.sdkDir,
-    updateAnalysisOptions2: ({
-      required AnalysisOptionsImpl analysisOptions,
-      required ContextRoot contextRoot,
-      required DartSdk sdk,
-    }) =>
-        analysisOptions
-          ..warning = false
-          ..lint = false,
-  );
 
   List<String> get _sdkFilesToDocument => [
         for (var sdkLib in _sdk.sdkLibraries)
@@ -207,10 +233,10 @@ class PubPackageBuilder implements PackageBuilder {
     // a set of files (starting with the ones passed into the function), resolve
     // them, add them to the package graph via `addLibrary`, and then discover
     // which additional files need to be processed in the next loop. This
-    // discovery depends on various options (TODO: which?), but the basic idea
-    // is to take a file we've just processed, and add all of the files which
-    // that file references via imports or exports, and add them to the set of
-    // files to be processed.
+    // discovery depends on various options (TODO: which?). The basic idea is
+    // to take a file we've just processed, and add all of the files which that
+    // file references (via imports, augmentation imports, exports, and parts),
+    // and add them to the set of files to be processed.
     //
     // This loop may execute a few times. We know to stop looping when we have
     // added zero new files to process. This is tracked with `filesInLastPass`
@@ -225,9 +251,11 @@ class PubPackageBuilder implements PackageBuilder {
     if (!addingSpecials) {
       progressBarStart(files.length);
     }
+    // The set of files that are discovered while iterating in the below
+    // do-while loop, which are then added to `files`, as they are found.
+    var newFiles = <String>{};
     do {
       filesInLastPass = filesInCurrentPass;
-      var newFiles = <String>{};
       if (!addingSpecials) {
         progressBarUpdateTickCount(files.length);
       }
@@ -245,6 +273,8 @@ class PubPackageBuilder implements PackageBuilder {
         }
         var resolvedLibrary = await _resolveLibrary(file);
         if (resolvedLibrary == null) {
+          // `file` did not resolve to a _library_; could be a part, an
+          // augmentation, or some other invalid result.
           _knownParts.add(file);
           continue;
         }
@@ -259,7 +289,11 @@ class PubPackageBuilder implements PackageBuilder {
       }
       files.addAll(newFiles);
       if (!addingSpecials) {
-        files.addAll(_includedExternalsFrom(newFiles));
+        var externals = _includedExternalsFrom(newFiles);
+        if (externals.isNotEmpty) {
+          includeExternalsWasSpecified = true;
+        }
+        files.addAll(externals);
       }
 
       var packages = _packageMetasForFiles(files.difference(_knownParts));
@@ -413,13 +447,20 @@ class PubPackageBuilder implements PackageBuilder {
             includeDependencies: _config.autoIncludeDependencies,
             filterExcludes: true,
           ).toList();
-    files = [...files, ..._includedExternalsFrom(files)];
+    var externals = _includedExternalsFrom(files);
+    if (externals.isNotEmpty) {
+      includeExternalsWasSpecified = true;
+    }
+    files = [...files, ...externals];
     return {
       ...files
           .map((s) => _pathContext.absolute(_resourceProvider.getFile(s).path)),
       ..._embedderSdkFiles,
     };
   }
+
+  @override
+  bool includeExternalsWasSpecified = false;
 
   Iterable<String> get _embedderSdkFiles => [
         for (var dartUri in _embedderSdkUris)
@@ -459,8 +500,6 @@ class PubPackageBuilder implements PackageBuilder {
       specialFiles.difference(files),
       addingSpecials: true,
     );
-    // Shutdown macro support.
-    await _contextCollection.dispose();
   }
 
   /// Throws an exception if any configured-to-be-included files were not found
@@ -511,21 +550,28 @@ class DartDocResolvedLibrary {
 extension on Set<String> {
   /// Adds [element]'s path and all of its part files' paths to `this`, and
   /// recursively adds the paths of all imported and exported libraries.
-  void addFilesReferencedBy(LibraryElement? element) {
-    if (element != null) {
-      var path = element.source.fullName;
-      if (add(path)) {
-        for (var import in element.libraryImports) {
-          addFilesReferencedBy(import.importedLibrary);
-        }
-        for (var export in element.libraryExports) {
-          addFilesReferencedBy(export.exportedLibrary);
-        }
+  void addFilesReferencedBy(LibraryOrAugmentationElement? element) {
+    if (element == null) return;
+
+    var path = element.source?.fullName;
+    if (path == null) return;
+
+    if (add(path)) {
+      for (var import in element.libraryImports) {
+        addFilesReferencedBy(import.importedLibrary);
+      }
+      for (var export in element.libraryExports) {
+        addFilesReferencedBy(export.exportedLibrary);
+      }
+      if (element is LibraryElement) {
         for (var part in element.parts
             .map((e) => e.uri)
             .whereType<DirectiveUriWithUnit>()) {
           add(part.source.fullName);
         }
+      }
+      for (var augmentation in element.augmentationImports) {
+        addFilesReferencedBy(augmentation.importedAugmentation);
       }
     }
   }

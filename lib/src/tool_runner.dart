@@ -98,12 +98,18 @@ class ToolRunner {
       var result =
           await Process.run(commandPath, args, environment: environment);
       if (result.exitCode != 0) {
-        toolErrorCallback('Tool "$name" returned non-zero exit code '
-            '(${result.exitCode}) when run as "${commandString()}" from '
-            '${pathContext.current}\n'
-            'Input to $name was:\n'
-            '$content\n'
-            'Stderr output was:\n${result.stderr}\n');
+        var envString =
+            environment.entries.map((e) => '${e.key}: ${e.value}').join(', ');
+        toolErrorCallback(
+          'Tool "$name" returned non-zero exit code '
+          '(${result.exitCode}) when run as "${commandString()}".\n'
+          '  Working directory: "${pathContext.current}"\n'
+          '  Env: $envString\n'
+          '  Input to $name was:\n'
+          '    $content\n'
+          '  Stderr output was:\n'
+          '    ${result.stderr}\n',
+        );
         return '';
       } else {
         return result.stdout as String;

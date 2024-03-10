@@ -1,7 +1,24 @@
-## 8.0.6-wip
+## 8.0.7-wip
 
-* Add troubleshooting information when the sidebars failed to load.
-* Deprecate the `--templates-dir` option.
+* Deprecate the `--nodoc` option. (#3690)
+* Deprecate the `--resources-dir` option. (#3696)
+
+## 8.0.6
+
+* Add troubleshooting information when the sidebars failed to load. (#3643)
+* Deprecate the `--templates-dir` option. (#3667)
+* In the "implementers" section of a class/mixin, include extension types that
+  "implement" said class/mixin. (#3658)
+* Add the "implementers" section to the extension type page. (#3682)
+* Display the exact type of an extension type's representation, not any erasure
+  of an extension type. (#3685)
+* Reduce the time to document with a few improvements. (#3659, #3660)
+* Correct the "constant initializer" view of some enums. (#3669)
+* Render generic type parameters in function-typed parameters. (#3670)
+* Stop warning on a missing constructor; dartdoc expects code to be valid.
+  (#3674)
+* Do not require the `FLUTTER_ROOT` env variable when documenting a package
+  that requires Flutter. (#3688)
 
 ## 8.0.5
 

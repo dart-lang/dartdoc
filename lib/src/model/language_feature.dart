@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/render/language_feature_renderer.dart';
-
 const Map<String, String> _featureDescriptions = {
   'sealed':
       'The direct subtypes of this class will be checked for exhaustiveness in switches.',
@@ -35,13 +33,36 @@ class LanguageFeature {
   String? get featureUrl => _featureUrls[name];
 
   /// The rendered label for this language feature.
-  String get featureLabel => _featureRenderer.renderLanguageFeatureLabel(this);
+  String get featureLabel {
+    final buffer = StringBuffer();
+    final url = featureUrl;
+
+    if (url != null) {
+      buffer.write('<a href="');
+      buffer.write(url);
+      buffer.write('"');
+    } else {
+      buffer.write('<span');
+    }
+
+    buffer.write(' class="feature feature-');
+    buffer.writeAll(name.toLowerCase().split(' '), '-');
+    buffer.write('" title="');
+    buffer.write(featureDescription);
+    buffer.write('">');
+    buffer.write(name);
+
+    if (url != null) {
+      buffer.write('</a>');
+    } else {
+      buffer.write('</span>');
+    }
+
+    return buffer.toString();
+  }
 
   /// The name of this language feature.
   final String name;
 
-  final LanguageFeatureRenderer _featureRenderer;
-
-  LanguageFeature(this.name, this._featureRenderer)
-      : assert(_featureDescriptions.containsKey(name));
+  LanguageFeature(this.name) : assert(_featureDescriptions.containsKey(name));
 }

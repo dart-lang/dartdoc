@@ -14,6 +14,7 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
@@ -306,14 +307,14 @@ void main() async {
           .firstWhere((c) => c.name == 'B');
       c = nullSafetyClassMemberDeclarations.allClasses
           .firstWhere((c) => c.name == 'C');
-      oddAsyncFunction = nullableElements.publicFunctions
-          .firstWhere((f) => f.name == 'oddAsyncFunction') as ModelFunction;
-      anotherOddFunction = nullableElements.publicFunctions
-          .firstWhere((f) => f.name == 'oddAsyncFunction') as ModelFunction;
-      neverReturns = nullableElements.publicFunctions
-          .firstWhere((f) => f.name == 'neverReturns') as ModelFunction;
-      almostNeverReturns = nullableElements.publicFunctions
-          .firstWhere((f) => f.name == 'almostNeverReturns') as ModelFunction;
+      oddAsyncFunction = nullableElements.functions.wherePublic
+          .firstWhere((f) => f.name == 'oddAsyncFunction');
+      anotherOddFunction = nullableElements.functions.wherePublic
+          .firstWhere((f) => f.name == 'oddAsyncFunction');
+      neverReturns = nullableElements.functions.wherePublic
+          .firstWhere((f) => f.name == 'neverReturns');
+      almostNeverReturns = nullableElements.functions.wherePublic
+          .firstWhere((f) => f.name == 'almostNeverReturns');
     });
 
     test('Never types are allowed to have nullability markers', () {
@@ -420,7 +421,7 @@ void main() async {
     });
 
     test('Late final top level variables', () {
-      var initializeMe = lateFinalWithoutInitializer.publicProperties
+      var initializeMe = lateFinalWithoutInitializer.properties.wherePublic
           .firstWhere((v) => v.name == 'initializeMe');
       expect(initializeMe.modelType.name, equals('String'));
       expect(initializeMe.isLate, isTrue);
@@ -441,9 +442,9 @@ void main() async {
     test('simple nullable elements are detected and rendered correctly', () {
       var nullableMembers = nullableElements.allClasses
           .firstWhere((c) => c.name == 'NullableMembers');
-      var methodWithNullables = nullableMembers.publicInstanceMethods
+      var methodWithNullables = nullableMembers.instanceMethods.wherePublic
           .firstWhere((f) => f.name == 'methodWithNullables');
-      var operatorStar = nullableMembers.publicInstanceOperators
+      var operatorStar = nullableMembers.instanceOperators.wherePublic
           .firstWhere((f) => f.name == 'operator *');
       expect(
           methodWithNullables.linkedParams,
@@ -759,7 +760,7 @@ void main() async {
     test('Verify that libraries without categories get handled', () {
       expect(
           packageGraph
-              .localPackages.first.defaultCategory.publicLibraries.length,
+              .localPackages.first.defaultCategory.libraries.wherePublic.length,
           // Only 5 libraries have categories, the rest belong in default.
           equals(kTestPackagePublicLibraries - 5));
     });
@@ -1629,7 +1630,8 @@ void main() async {
         () {
       var notAMethodFromPrivateClass = fakeLibrary.allClasses
           .firstWhere((Class c) => c.name == 'ReferringClass')
-          .publicInstanceMethods
+          .instanceMethods
+          .wherePublic
           .firstWhere((Method m) => m.name == 'notAMethodFromPrivateClass');
       expect(
           notAMethodFromPrivateClass.documentationAsHtml,
@@ -1688,16 +1690,23 @@ void main() async {
       var ImplementBase = implementorsLibrary.classes
           .firstWhere((c) => c.name == 'ImplementBase');
 
-      expect(ImplementerOfThings.publicInterfaces.first.modelElement,
-          equals(ImplementBase));
       expect(
-          ImplementerOfDeclaredPrivateClasses
-              .publicInterfaces.first.modelElement,
-          equals(ImplementBase));
+        ImplementerOfThings.publicInterfaceElements.first,
+        equals(ImplementBase),
+      );
+      expect(
+        ImplementerOfDeclaredPrivateClasses.publicInterfaceElements.first,
+        equals(ImplementBase),
+      );
 
-      expect(ImplementBase.publicImplementors,
-          contains(ImplementerOfDeclaredPrivateClasses));
-      expect(ImplementBase.publicImplementors, contains(ImplementerOfThings));
+      expect(
+        ImplementBase.publicImplementersSorted,
+        contains(ImplementerOfDeclaredPrivateClasses),
+      );
+      expect(
+        ImplementBase.publicImplementersSorted,
+        contains(ImplementerOfThings),
+      );
     });
 
     test('Overrides from intermediate abstract classes are picked up correctly',
@@ -1751,7 +1760,7 @@ void main() async {
     test(
         'ExecutableElements from private classes and from public interfaces (#1561)',
         () {
-      var MIEEMixinWithOverride = fakeLibrary.publicClasses
+      var MIEEMixinWithOverride = fakeLibrary.classes.wherePublic
           .firstWhere((c) => c.name == 'MIEEMixinWithOverride');
       var problematicOperator = MIEEMixinWithOverride.inheritedOperators
           .firstWhere((o) => o.name == 'operator []=');
@@ -1771,11 +1780,11 @@ void main() async {
         overrideByModifierClass;
 
     setUpAll(() {
-      var classes = fakeLibrary.publicClasses;
+      var classes = fakeLibrary.classes.wherePublic;
       GenericClass = classes.firstWhere((c) => c.name == 'GenericClass');
       ModifierClass = classes.firstWhere((c) => c.name == 'ModifierClass');
-      GenericMixin =
-          fakeLibrary.publicMixins.firstWhere((m) => m.name == 'GenericMixin');
+      GenericMixin = fakeLibrary.mixins.wherePublic
+          .firstWhere((m) => m.name == 'GenericMixin');
       TypeInferenceMixedIn =
           classes.firstWhere((c) => c.name == 'TypeInferenceMixedIn');
       overrideByEverything = TypeInferenceMixedIn.instanceFields
@@ -1789,9 +1798,9 @@ void main() async {
     });
 
     test('computes interfaces and implementors correctly', () {
-      var ThingToImplementInMixin = fakeLibrary.publicClasses
+      var ThingToImplementInMixin = fakeLibrary.classes.wherePublic
           .firstWhere((c) => c.name == 'ThingToImplementInMixin');
-      var MixedInImplementation = fakeLibrary.publicClasses
+      var MixedInImplementation = fakeLibrary.classes.wherePublic
           .firstWhere((c) => c.name == 'MixedInImplementation');
       var MixInImplementation =
           fakeLibrary.mixins.firstWhere((m) => m.name == 'MixInImplementation');
@@ -1801,15 +1810,20 @@ void main() async {
       expect(ThingToImplementInMixin.hasModifiers, isTrue);
       expect(MixInImplementation.hasModifiers, isTrue);
       expect(MixedInImplementation.hasModifiers, isTrue);
-      expect(ThingToImplementInMixin.publicImplementors,
-          orderedEquals([MixInImplementation]));
-      expect(MixInImplementation.publicImplementors,
-          orderedEquals([MixedInImplementation]));
       expect(
-          MixedInImplementation.allFields
-              .firstWhere((f) => f.name == 'mixinGetter')
-              .canonicalModelElement,
-          equals(mixinGetter));
+        ThingToImplementInMixin.publicImplementersSorted,
+        orderedEquals([MixInImplementation]),
+      );
+      expect(
+        MixInImplementation.publicImplementersSorted,
+        orderedEquals([MixedInImplementation]),
+      );
+      expect(
+        MixedInImplementation.allFields
+            .firstWhere((f) => f.name == 'mixinGetter')
+            .canonicalModelElement,
+        equals(mixinGetter),
+      );
     });
 
     test('does have a line number and column', () {
@@ -1923,7 +1937,7 @@ void main() async {
     late final Class ExtendingClass, CatString;
 
     setUpAll(() {
-      classes = exLibrary.publicClasses.toList();
+      classes = exLibrary.classes.wherePublic.toList();
       Apple = classes.firstWhere((c) => c.name == 'Apple');
       B = classes.firstWhere((c) => c.name == 'B');
       Cat = classes.firstWhere((c) => c.name == 'Cat');
@@ -2013,29 +2027,37 @@ void main() async {
     });
 
     test('get constants', () {
-      expect(Apple.publicConstantFields, hasLength(1));
-      expect(Apple.publicConstantFields.first.kind, equals(Kind.constant));
+      expect(Apple.constantFields.wherePublic, hasLength(1));
+      expect(
+        Apple.constantFields.wherePublic.first.kind,
+        equals(Kind.constant),
+      );
     });
 
     test('get instance fields', () {
-      expect(Apple.publicInstanceFields.where((f) => !f.isInherited),
-          hasLength(3));
-      expect(Apple.publicInstanceFields.first.kind, equals(Kind.property));
+      expect(
+        Apple.instanceFields.wherePublic.where((f) => !f.isInherited),
+        hasLength(3),
+      );
+      expect(
+        Apple.instanceFields.wherePublic.first.kind,
+        equals(Kind.property),
+      );
     });
 
     test('get inherited properties, including properties of Object', () {
-      expect(B.publicInheritedFields, hasLength(4));
+      expect(B.inheritedFields.wherePublic, hasLength(4));
     });
 
     test('get methods', () {
-      expect(Dog.publicInstanceMethods.where((m) => !m.isInherited),
+      expect(Dog.instanceMethods.wherePublic.where((m) => !m.isInherited),
           hasLength(16));
     });
 
     test('get operators', () {
-      expect(Dog.publicInstanceOperators, hasLength(2));
-      expect(Dog.publicInstanceOperators.first.name, 'operator ==');
-      expect(Dog.publicInstanceOperators.last.name, 'operator +');
+      expect(Dog.instanceOperators.wherePublic, hasLength(2));
+      expect(Dog.instanceOperators.wherePublic.first.name, 'operator ==');
+      expect(Dog.instanceOperators.wherePublic.last.name, 'operator +');
     });
 
     test('has non-inherited instance operators', () {
@@ -2047,15 +2069,15 @@ void main() async {
     });
 
     test('inherited methods, including from Object ', () {
-      expect(B.publicInheritedMethods, hasLength(7));
+      expect(B.inheritedMethods.wherePublic, hasLength(7));
       expect(B.hasPublicInheritedMethods, isTrue);
     });
 
     test('all instance methods', () {
-      var methods = B.publicInstanceMethods.where((m) => !m.isInherited);
+      var methods = B.instanceMethods.wherePublic.where((m) => !m.isInherited);
       expect(methods, isNotEmpty);
-      expect(B.publicInstanceMethods,
-          hasLength(methods.length + B.publicInheritedMethods.length));
+      expect(B.instanceMethods.wherePublic,
+          hasLength(methods.length + B.inheritedMethods.wherePublic.length));
     });
 
     test('inherited methods exist', () {
@@ -2074,14 +2096,18 @@ void main() async {
 
     test('F has a single instance method', () {
       expect(
-          F.publicInstanceMethods.where((m) => !m.isInherited), hasLength(1));
+        F.instanceMethods.wherePublic.where((m) => !m.isInherited),
+        hasLength(1),
+      );
       expect(
-          F.publicInstanceMethods.first.name, equals('methodWithGenericParam'));
+        F.instanceMethods.wherePublic.first.name,
+        equals('methodWithGenericParam'),
+      );
     });
 
     test('F has many inherited methods', () {
       expect(
-          F.publicInheritedMethods.map((im) => im.name),
+          F.inheritedMethods.wherePublic.map((im) => im.name),
           containsAll([
             'abstractMethod',
             'foo',
@@ -2106,13 +2132,16 @@ void main() async {
     });
 
     test('F has zero declared instance properties', () {
-      expect(F.publicInstanceFields.where((f) => !f.isInherited), hasLength(0));
+      expect(
+        F.instanceFields.wherePublic.where((f) => !f.isInherited),
+        hasLength(0),
+      );
     });
 
     test('F has a few inherited properties', () {
-      expect(F.publicInheritedFields, hasLength(10));
+      expect(F.inheritedFields.wherePublic, hasLength(10));
       expect(
-          F.publicInheritedFields.map((ip) => ip.name),
+          F.inheritedFields.wherePublic.map((ip) => ip.name),
           containsAll([
             'aFinalField',
             'aGetterReturningRandomThings',
@@ -2128,12 +2157,13 @@ void main() async {
     });
 
     test('SpecialList has zero instance methods', () {
-      expect(SpecialList.publicInstanceMethods.where((m) => !m.isInherited),
+      expect(
+          SpecialList.instanceMethods.wherePublic.where((m) => !m.isInherited),
           hasLength(0));
     });
 
     test('SpecialList has many inherited methods', () {
-      expect(SpecialList.publicInheritedMethods, hasLength(49));
+      expect(SpecialList.inheritedMethods.wherePublic, hasLength(49));
       var methods = SpecialList.publicInstanceMethodsSorted
           .where((m) => m.isInherited)
           .toList();
@@ -2157,11 +2187,15 @@ void main() async {
           ExtendingClass.superChain.first.modelElement.isPublic, equals(false));
       // And it should still show up in the publicSuperChain, because it is
       // exported.
-      expect(ExtendingClass.publicSuperChain.first.name, equals('BaseClass'));
       expect(
-          ExtendingClass
-              .publicSuperChain.first.modelElement.canonicalLibrary!.name,
-          equals('two_exports'));
+        ExtendingClass.superChain.wherePublic.first.name,
+        equals('BaseClass'),
+      );
+      expect(
+        ExtendingClass
+            .superChain.wherePublic.first.modelElement.canonicalLibrary!.name,
+        equals('two_exports'),
+      );
     });
 
     test(
@@ -2895,7 +2929,7 @@ void main() async {
           .firstWhere((m) => m.name == 'doStuff');
       staticFieldExtension = exLibrary.extensions
           .firstWhere((e) => e.name == 'StaticFieldExtension');
-      extensions = exLibrary.publicExtensions.toList();
+      extensions = exLibrary.extensions.wherePublic.toList();
       baseTest = fakeLibrary.classes.firstWhere((e) => e.name == 'BaseTest');
       bigAnotherExtended =
           fakeLibrary.classes.firstWhere((e) => e.name == 'BigAnotherExtended');
@@ -3076,11 +3110,11 @@ void main() async {
     });
 
     test('get methods', () {
-      expect(fancyList.publicInstanceMethods, hasLength(1));
+      expect(fancyList.instanceMethods.wherePublic, hasLength(1));
     });
 
     test('get operators', () {
-      expect(fancyList.publicInstanceOperators, hasLength(1));
+      expect(fancyList.instanceOperators.wherePublic, hasLength(1));
     });
 
     test('get static methods', () {
@@ -3088,11 +3122,11 @@ void main() async {
     });
 
     test('get properties', () {
-      expect(fancyList.publicInstanceFields, hasLength(1));
+      expect(fancyList.instanceFields.wherePublic, hasLength(1));
     });
 
     test('get constants', () {
-      expect(fancyList.publicConstantFields, hasLength(0));
+      expect(fancyList.constantFields.wherePublic, hasLength(0));
     });
 
     test('correctly finds all the extensions', () {
@@ -3618,7 +3652,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     setUpAll(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       f1 = c.publicVariableStaticFieldsSorted.first; // n
-      f2 = c.publicInstanceFields.first;
+      f2 = c.instanceFields.wherePublic.first;
       constField = c.constantFields.first; // string
       LongFirstLine =
           fakeLibrary.classes.firstWhere((c) => c.name == 'LongFirstLine');
@@ -4092,13 +4126,13 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('@nodoc on simple property works', () {
-      var nodocSimple = fakeLibrary.publicProperties
+      var nodocSimple = fakeLibrary.properties.wherePublic
           .firstWhereOrNull((p) => p.name == 'simplePropertyHidden');
       expect(nodocSimple, isNull);
     });
 
     test('@nodoc on both hides both', () {
-      var nodocBoth = fakeLibrary.publicProperties
+      var nodocBoth = fakeLibrary.properties.wherePublic
           .firstWhereOrNull((p) => p.name == 'getterSetterNodocBoth');
       expect(nodocBoth, isNull);
     });
@@ -4133,7 +4167,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('found five properties', () {
-      expect(exLibrary.publicProperties, hasLength(7));
+      expect(exLibrary.properties.wherePublic, hasLength(7));
     });
 
     test('linked return type is a double', () {
@@ -4219,7 +4253,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('found all the constants', () {
-      expect(exLibrary.publicConstants, hasLength(9));
+      expect(exLibrary.constants.wherePublic, hasLength(9));
     });
 
     test('COLOR_GREEN is constant', () {
@@ -4387,7 +4421,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           ExtendsFutureVoid.linkedName,
           equals(
               '<a href="${htmlBasePlaceholder}fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a>'));
-      var FutureVoid = ExtendsFutureVoid.publicSuperChain
+      var FutureVoid = ExtendsFutureVoid.superChain.wherePublic
           .firstWhere((c) => c.name == 'Future');
       expect(
           FutureVoid.linkedName,
@@ -4402,8 +4436,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           '<a href="${htmlBasePlaceholder}fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>',
         ),
       );
-      var FutureVoid =
-          ImplementsFutureVoid.interfaces.firstWhere((e) => e.name == 'Future');
+      var FutureVoid = ImplementsFutureVoid.directInterfaces
+          .firstWhere((e) => e.name == 'Future');
       expect(
         FutureVoid.linkedName,
         equals(
@@ -4594,8 +4628,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'methodWithGenericParam');
       methodWithTypedefParam = c.instanceMethods
           .singleWhere((m) => m.name == 'methodWithTypedefParam');
-      doAComplicatedThing = fakeLibrary.publicFunctions
-          .firstWhere((m) => m.name == 'doAComplicatedThing') as ModelFunction;
+      doAComplicatedThing = fakeLibrary.functions.wherePublic
+          .firstWhere((m) => m.name == 'doAComplicatedThing');
     });
 
     test('covariant parameters render correctly', () {
@@ -4695,16 +4729,16 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       b = exLibrary.classes.firstWhere((c) => c.name == 'B');
-      implA = apple.publicImplementors.toList();
+      implA = apple.publicImplementersSorted;
       implC = exLibrary.classes
           .firstWhere((c) => c.name == 'Cat')
-          .publicImplementors
-          .toList();
+          .publicImplementersSorted;
     });
 
     test('private classes do not break the implementor chain', () {
       var Super1 = fakeLibrary.classes.singleWhere((c) => c.name == 'Super1');
-      var publicImplementors = Super1.publicImplementors.map((i) => i.name);
+      var publicImplementors =
+          Super1.publicImplementersSorted.map((i) => i.name);
       expect(publicImplementors, hasLength(3));
       // A direct implementor.
       expect(publicImplementors, contains('Super4'));
@@ -4720,7 +4754,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       var GenericSuperProperty = fakeLibrary.classes
           .singleWhere((c) => c.name == 'GenericSuperProperty');
       var publicImplementors =
-          GenericSuperProperty.publicImplementors.map((i) => i.name);
+          GenericSuperProperty.publicImplementersSorted.map((i) => i.name);
       expect(publicImplementors, hasLength(1));
       // A direct implementor.
       expect(publicImplementors, contains('GenericSuperValue'));
@@ -4728,7 +4762,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       var GenericSuperValue =
           fakeLibrary.classes.singleWhere((c) => c.name == 'GenericSuperValue');
       publicImplementors =
-          GenericSuperValue.publicImplementors.map((i) => i.name);
+          GenericSuperValue.publicImplementersSorted.map((i) => i.name);
       expect(publicImplementors, hasLength(1));
       // A direct implementor.
       expect(publicImplementors, contains('GenericSuperNum'));
@@ -4736,7 +4770,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       var GenericSuperNum =
           fakeLibrary.classes.singleWhere((c) => c.name == 'GenericSuperNum');
       publicImplementors =
-          GenericSuperNum.publicImplementors.map((i) => i.name);
+          GenericSuperNum.publicImplementersSorted.map((i) => i.name);
       expect(publicImplementors, hasLength(1));
       expect(publicImplementors, contains('GenericSuperInt'));
     });
@@ -4746,7 +4780,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('apple has some implementors', () {
-      expect(apple.hasPublicImplementors, isTrue);
+      expect(apple.hasPublicImplementers, isTrue);
       expect(implA, isNotNull);
       expect(implA, hasLength(1));
       expect(implA[0].name, equals('B'));
@@ -4763,7 +4797,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('B does not have implementors', () {
       expect(b, isNotNull);
       expect(b.name, equals('B'));
-      expect(b.publicImplementors, hasLength(0));
+      expect(b.publicImplementersSorted, hasLength(0));
     });
   });
 

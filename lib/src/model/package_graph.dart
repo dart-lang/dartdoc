@@ -4,6 +4,7 @@
 
 import 'dart:collection';
 
+import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
@@ -32,11 +33,29 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 
 class PackageGraph with CommentReferable, Nameable {
+  /// Dartdoc's configuration flags.
+  final DartdocOptionContext config;
+
+  final bool hasEmbedderSdk;
+
+  /// [PackageMeta] provider for building [PackageMeta]s.
+  final PackageMetaProvider packageMetaProvider;
+
+  final InheritanceManager3 inheritanceManager = InheritanceManager3();
+
+  final AnalysisContext analysisContext;
+
+  /// PackageMeta for the default package.
+  final PackageMeta packageMeta;
+
+  final Map<Source?, SdkLibrary> sdkLibrarySources;
+
   PackageGraph.uninitialized(
     this.config,
     DartSdk sdk,
     this.hasEmbedderSdk,
     this.packageMetaProvider,
+    this.analysisContext,
   )   : packageMeta = config.topLevelPackageMeta,
         sdkLibrarySources = {
           for (var lib in sdk.sdkLibraries) sdk.mapDartUri(lib.shortName): lib
@@ -45,10 +64,6 @@ class PackageGraph with CommentReferable, Nameable {
     // This can happen for packages that only contain embedder SDKs.
     Package.fromPackageMeta(packageMeta, this);
   }
-
-  final InheritanceManager3 inheritanceManager = InheritanceManager3();
-
-  final Map<Source?, SdkLibrary> sdkLibrarySources;
 
   void dispose() {
     // Clear out any cached tool snapshots and temporary directories.
@@ -145,7 +160,7 @@ class PackageGraph with CommentReferable, Nameable {
         package.warn(PackageWarning.noDocumentableLibrariesInPackage);
       }
     }
-    allImplementorsAdded = true;
+    allImplementersAdded = true;
     allExtensionsAdded = true;
 
     // We should have found all special classes by now.
@@ -260,7 +275,7 @@ class PackageGraph with CommentReferable, Nameable {
       for (var field in fields) {
         var element = field.declaredElement!;
         _modelNodes.putIfAbsent(
-            element, () => ModelNode(field, element, resourceProvider));
+            element, () => ModelNode(field, element, analysisContext));
       }
       return;
     }
@@ -269,32 +284,29 @@ class PackageGraph with CommentReferable, Nameable {
       for (var field in fields) {
         var element = field.declaredElement!;
         _modelNodes.putIfAbsent(
-            element, () => ModelNode(field, element, resourceProvider));
+            element, () => ModelNode(field, element, analysisContext));
       }
       return;
     }
     var element = declaration.declaredElement!;
     _modelNodes.putIfAbsent(
-        element, () => ModelNode(declaration, element, resourceProvider));
+        element, () => ModelNode(declaration, element, analysisContext));
   }
 
   ModelNode? getModelNodeFor(Element element) => _modelNodes[element];
 
-  /// It is safe to cache values derived from the [_implementors] table if this
+  /// It is safe to cache values derived from the [_implementers] table if this
   /// is true.
-  bool allImplementorsAdded = false;
+  bool allImplementersAdded = false;
 
   /// It is safe to cache values derived from the [_extensions] table if this
   /// is true.
   bool allExtensionsAdded = false;
 
-  Map<InheritingContainer, List<InheritingContainer>> get implementors {
-    assert(allImplementorsAdded);
-    return _implementors;
+  Map<InheritingContainer, List<InheritingContainer>> get implementers {
+    assert(allImplementersAdded);
+    return _implementers;
   }
-
-  Iterable<Extension> get documentedExtensions =>
-      utils.filterNonDocumented(extensions).toList(growable: false);
 
   Iterable<Extension> get extensions {
     assert(allExtensionsAdded);
@@ -323,8 +335,12 @@ class PackageGraph with CommentReferable, Nameable {
   final Map<InheritableElementsKey, Set<ModelElement>> allInheritableElements =
       {};
 
-  /// A mapping of the list of classes which implement each class.
-  final Map<InheritingContainer, List<InheritingContainer>> _implementors =
+  /// A mapping of the list of classes, enums, mixins, and extension types which
+  /// "implement" each class, mixin, and extension type.
+  ///
+  /// For the purposes of the "Implementers" section in the output, this
+  /// includes elements that "implement" or "extend" another element.
+  final Map<InheritingContainer, List<InheritingContainer>> _implementers =
       LinkedHashMap<InheritingContainer, List<InheritingContainer>>(
           equals: (InheritingContainer a, InheritingContainer b) =>
               a.definingContainer == b.definingContainer,
@@ -334,22 +350,11 @@ class PackageGraph with CommentReferable, Nameable {
   /// A list of extensions that exist in the package graph.
   final List<Extension> _extensions = [];
 
-  /// PackageMeta for the default package.
-  final PackageMeta packageMeta;
-
   /// Name of the default package.
   String get defaultPackageName => packageMeta.name;
 
-  /// Dartdoc's configuration flags.
-  final DartdocOptionContext config;
-
-  /// PackageMeta Provider for building [PackageMeta]s.
-  final PackageMetaProvider packageMetaProvider;
-
   late final Package defaultPackage =
       Package.fromPackageMeta(packageMeta, this);
-
-  final bool hasEmbedderSdk;
 
   bool get hasFooterVersion => !config.excludeFooterVersion;
 
@@ -454,7 +459,6 @@ class PackageGraph with CommentReferable, Nameable {
       PackageWarning.invalidParameter ||
       PackageWarning.toolError ||
       PackageWarning.deprecated ||
-      PackageWarning.unresolvedExport ||
       PackageWarning.missingExampleFile ||
       PackageWarning.missingCodeBlockLanguage =>
         kind.messageFor([message])
@@ -508,19 +512,7 @@ class PackageGraph with CommentReferable, Nameable {
       return;
     }
     _reexportsTagged.add(key);
-    if (libraryElement == null) {
-      lastExportedElement!;
-      final lastExportedElementUri = lastExportedElement.uri;
-      final uri = lastExportedElementUri is DirectiveUriWithRelativeUriString
-          ? lastExportedElementUri.relativeUriString
-          : null;
-      warnOnElement(
-          findButDoNotCreateLibraryFor(lastExportedElement.enclosingElement!),
-          PackageWarning.unresolvedExport,
-          message: '"$uri"',
-          referredFrom: <Locatable>[topLevelLibrary]);
-      return;
-    }
+    if (libraryElement == null) return;
     _libraryExports.putIfAbsent(libraryElement, () => {}).add(topLevelLibrary);
     for (var exportedElement in libraryElement.libraryExports) {
       _tagReexportsFor(
@@ -575,7 +567,7 @@ class PackageGraph with CommentReferable, Nameable {
   }
 
   void _addToImplementers(Iterable<InheritingContainer> containers) {
-    assert(!allImplementorsAdded);
+    assert(!allImplementersAdded);
 
     // Private containers may not be included in documentation, but may still be
     // necessary links in the implementation chain. They are added here as they
@@ -589,7 +581,7 @@ class PackageGraph with CommentReferable, Nameable {
       }
       implemented = implemented.canonicalModelElement as InheritingContainer? ??
           implemented;
-      var list = _implementors.putIfAbsent(implemented, () => []);
+      var list = _implementers.putIfAbsent(implemented, () => []);
       // TODO(srawlins): This would be more efficient if we created a
       // SplayTreeSet keyed off of `.element`.
       if (!list.any((l) => l.element == implementer.element)) {
@@ -637,7 +629,7 @@ class PackageGraph with CommentReferable, Nameable {
 
   late final Set<Library> publicLibraries = () {
     assert(allLibrariesAdded);
-    return utils.filterNonPublic(libraries).toSet();
+    return libraries.wherePublic.toSet();
   }();
 
   late final List<Library> _localLibraries = () {
@@ -648,7 +640,7 @@ class PackageGraph with CommentReferable, Nameable {
 
   late final Set<Library> localPublicLibraries = () {
     assert(allLibrariesAdded);
-    return utils.filterNonPublic(_localLibraries).toSet();
+    return _localLibraries.wherePublic.toSet();
   }();
 
   /// The String name representing the `Object` type.
@@ -923,6 +915,13 @@ class PackageGraph with CommentReferable, Nameable {
       // a context is again, slow.
       var globs = (config.optionSet['nodoc'].valueAt(file.parent) as List)
           .cast<String>();
+      if (globs.isNotEmpty) {
+        packageGraph.defaultPackage.warn(
+          PackageWarning.deprecated,
+          message:
+              "The '--nodoc' option is deprecated, and will soon be removed.",
+        );
+      }
       return utils.matchGlobs(globs, fullName);
     });
   }
@@ -985,15 +984,15 @@ class PackageGraph with CommentReferable, Nameable {
     children.addEntriesIfAbsent(sortedDocumentedPackages
         .expand((p) => p.publicLibrariesSorted)
         .expand((l) => [
-              ...l.publicConstants,
-              ...l.publicFunctions,
-              ...l.publicProperties,
-              ...l.publicTypedefs,
-              ...l.publicExtensions,
-              ...l.publicExtensionTypes,
-              ...l.publicClasses,
-              ...l.publicEnums,
-              ...l.publicMixins
+              ...l.constants.wherePublic,
+              ...l.functions.wherePublic,
+              ...l.properties.wherePublic,
+              ...l.typedefs.wherePublic,
+              ...l.extensions.wherePublic,
+              ...l.extensionTypes.wherePublic,
+              ...l.classes.wherePublic,
+              ...l.enums.wherePublic,
+              ...l.mixins.wherePublic,
             ])
         .generateEntries());
 

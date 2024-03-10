@@ -218,7 +218,7 @@ enum PackageWarning implements Comparable<PackageWarning> {
   ),
   duplicateFile(
     'duplicate-file',
-    'failed to write file at: {0}',
+    'file already written at "{0}"',
     shortHelp:
         'Dartdoc is trying to write to a duplicate filename based on the names '
         'of Dart symbols.',
@@ -278,12 +278,6 @@ enum PackageWarning implements Comparable<PackageWarning> {
     'deprecated',
     'deprecated dartdoc usage: {0}',
     shortHelp: 'A dartdoc directive has a deprecated format.',
-  ),
-  unresolvedExport(
-    'unresolved-export',
-    'unresolved export uri: {0}',
-    shortHelp: 'An export refers to a URI that cannot be resolved.',
-    defaultWarningMode: PackageWarningMode.error,
   ),
   missingExampleFile(
     'missing-example-file',

@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -55,7 +56,7 @@ int one(int Function<T>(T)? f) {
   return 1;
 }
 ''');
-    var one = library.publicFunctions.firstWhere((c) => c.name == 'one');
+    var one = library.functions.wherePublic.firstWhere((c) => c.name == 'one');
     expect(one.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="one-param-f">
           <span class="type-annotation">

@@ -15,13 +15,10 @@ abstract mixin class LibraryContainer
     implements Nameable, Comparable<LibraryContainer>, Documentable {
   final List<Library> libraries = [];
 
-  Iterable<Library> get publicLibraries =>
-      model_utils.filterNonPublic(libraries);
-
   late final List<Library> publicLibrariesSorted =
-      publicLibraries.sorted(byName);
+      libraries.wherePublic.sorted(byName);
 
-  bool get hasPublicLibraries => publicLibraries.isNotEmpty;
+  bool get hasPublicLibraries => libraries.any((e) => e.isPublic);
 
   /// The name of the container or object that this LibraryContainer is a part
   /// of.  Used for sorting in [containerOrder].

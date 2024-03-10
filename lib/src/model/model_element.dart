@@ -25,7 +25,6 @@ import 'package:dartdoc/src/model/prefix.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
-import 'package:dartdoc/src/render/source_code_renderer.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/special_elements.dart';
@@ -686,8 +685,6 @@ abstract class ModelElement extends Canonicalization
   ParameterRenderer get _parameterRendererDetailed =>
       const ParameterRendererHtmlList();
 
-  SourceCodeRenderer get _sourceCodeRenderer => const SourceCodeRendererHtml();
-
   String get linkedParams => _parameterRenderer.renderLinkedParams(parameters);
 
   String get linkedParamsLines =>
@@ -757,8 +754,7 @@ abstract class ModelElement extends Canonicalization
   }();
 
   @override
-  late final String sourceCode =
-      _sourceCodeRenderer.renderSourceCode(super.sourceCode);
+  late final String sourceCode = const HtmlEscape().convert(super.sourceCode);
 
   @override
   int compareTo(Object other) {

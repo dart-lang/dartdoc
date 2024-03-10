@@ -6,7 +6,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 
 class TypeParameter extends ModelElement with HasNoPage {
   @override
@@ -73,14 +72,28 @@ mixin TypeParameters implements ModelElement {
 
   bool get hasGenericParameters => typeParameters.isNotEmpty;
 
-  String get genericParameters =>
-      _typeParametersRenderer.renderGenericParameters(this);
+  String get genericParameters => _renderTypeParameters();
 
-  String get linkedGenericParameters =>
-      _typeParametersRenderer.renderLinkedGenericParameters(this);
+  String get linkedGenericParameters => _renderTypeParameters(isLinked: true);
 
   List<TypeParameter> get typeParameters;
 
-  TypeParametersRenderer get _typeParametersRenderer =>
-      const TypeParametersRendererHtml();
+  String _renderTypeParameters({bool isLinked = false}) {
+    if (typeParameters.isEmpty) {
+      return '';
+    }
+    var joined = typeParameters
+        .map((t) => [
+              ...t.annotations.map((a) => a.linkedNameWithParameters),
+              isLinked ? t.linkedName : t.name
+            ].join(' '))
+        .join('</span>, <span class="type-parameter">');
+    var typeParametersString =
+        '&lt;<wbr><span class="type-parameter">$joined</span>&gt;';
+    if (isLinked) {
+      typeParametersString =
+          '<span class="signature">$typeParametersString</span>';
+    }
+    return typeParametersString;
+  }
 }

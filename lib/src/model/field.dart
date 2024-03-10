@@ -2,10 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/render/source_code_renderer.dart';
 
 class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable
@@ -149,8 +150,6 @@ class Field extends ModelElement
   @override
   String? get belowSidebarPath => null;
 
-  SourceCodeRenderer get _sourceCodeRenderer => const SourceCodeRendererHtml();
-
   late final String _sourceCode = () {
     // We could use a set to figure the dupes out, but that would lose ordering.
     var fieldSourceCode = modelNode?.sourceCode ?? '';
@@ -158,7 +157,7 @@ class Field extends ModelElement
     var setterSourceCode = setter?.sourceCode ?? '';
     var buffer = StringBuffer();
     if (fieldSourceCode.isNotEmpty) {
-      fieldSourceCode = _sourceCodeRenderer.renderSourceCode(fieldSourceCode);
+      fieldSourceCode = const HtmlEscape().convert(fieldSourceCode);
       buffer.write(fieldSourceCode);
     }
     if (buffer.isNotEmpty) buffer.write('\n\n');

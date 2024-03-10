@@ -36,20 +36,20 @@ class HtmlGeneratorBackend extends GeneratorBackend {
       super.options, super.templates, super.writer, super.resourceProvider);
 
   @override
-  void generateClass(PackageGraph packageGraph, Library library, Class clazz) {
-    super.generateClass(packageGraph, library, clazz);
-    var data = ClassTemplateData(options, packageGraph, library, clazz);
+  void generateClass(PackageGraph packageGraph, Library library, Class class_) {
+    super.generateClass(packageGraph, library, class_);
+    var data = ClassTemplateData(options, packageGraph, library, class_);
     var sidebarContent = templates.renderSidebarForContainer(data);
-    write(writer, clazz.sidebarPath, data, sidebarContent, isSidebar: true);
+    write(writer, class_.sidebarPath, data, sidebarContent, isSidebar: true);
     runtimeStats.incrementAccumulator('writtenSidebarFileCount');
   }
 
   @override
-  void generateEnum(PackageGraph packageGraph, Library library, Enum eNum) {
-    super.generateEnum(packageGraph, library, eNum);
-    var data = EnumTemplateData(options, packageGraph, library, eNum);
+  void generateEnum(PackageGraph packageGraph, Library library, Enum enum_) {
+    super.generateEnum(packageGraph, library, enum_);
+    var data = EnumTemplateData(options, packageGraph, library, enum_);
     var sidebarContent = templates.renderSidebarForContainer(data);
-    write(writer, eNum.sidebarPath, data, sidebarContent, isSidebar: true);
+    write(writer, enum_.sidebarPath, data, sidebarContent, isSidebar: true);
     runtimeStats.incrementAccumulator('writtenSidebarFileCount');
   }
 

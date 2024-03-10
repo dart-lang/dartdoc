@@ -12,7 +12,7 @@ void main() {
 
     test('load from packages', () async {
       var contents = await resourceProvider
-          .loadResourceAsString('package:dartdoc/templates/html/index.html');
+          .loadResourceAsString('package:dartdoc/templates/index.html');
       expect(contents, isNotNull);
     });
 

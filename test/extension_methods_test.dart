@@ -6,6 +6,7 @@ import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/model/extension.dart';
 import 'package:dartdoc/src/model/method.dart';
 import 'package:dartdoc/src/model/model_element.dart';
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -52,7 +53,7 @@ var aPublicFunction() {}
         reexportedContent, libraryContent,
         reexportPrivate: true, show: ['AClassNeedingExtending', 'AnExtension']);
     var aPublicFunction = library.functions.named('aPublicFunction');
-    var anExtension = library.package.publicLibraries
+    var anExtension = library.package.libraries.wherePublic
         .named('${libraryName}_lib')
         .extensions
         .named('AnExtension');
@@ -74,7 +75,7 @@ var aPublicFunction() {}
         reexportedContent, libraryContent,
         reexportPrivate: true, hide: ['AClassNotNeedingExtending']);
     var aPublicFunction = library.functions.named('aPublicFunction');
-    var anExtension = library.package.publicLibraries
+    var anExtension = library.package.libraries.wherePublic
         .named('${libraryName}_lib')
         .extensions
         .named('AnExtension');
@@ -96,7 +97,7 @@ var aPublicFunction() {}
         reexportedContent, libraryContent,
         reexportPrivate: true);
     var aPublicFunction = library.functions.named('aPublicFunction');
-    var anExtension = library.package.publicLibraries
+    var anExtension = library.package.libraries.wherePublic
         .named('${libraryName}_lib')
         .extensions
         .named('AnExtension');

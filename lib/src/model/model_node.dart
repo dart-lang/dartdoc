@@ -4,24 +4,24 @@
 
 import 'dart:convert';
 
+import 'package:analyzer/dart/analysis/analysis_context.dart';
+import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:meta/meta.dart';
 
 /// Stripped down information derived from [AstNode] containing only information
 /// needed to resurrect the source code of [element].
 class ModelNode {
   final Element _element;
-  final ResourceProvider _resourceProvider;
+  final AnalysisContext _analysisContext;
   final int _sourceEnd;
   final int _sourceOffset;
 
   factory ModelNode(
-      AstNode? sourceNode, Element element, ResourceProvider resourceProvider) {
+      AstNode? sourceNode, Element element, AnalysisContext analysisContext) {
     if (sourceNode == null) {
-      return ModelNode._(element, resourceProvider,
+      return ModelNode._(element, analysisContext,
           sourceEnd: -1, sourceOffset: -1);
     } else {
       // Get a node higher up the syntax tree that includes the semicolon.
@@ -32,12 +32,12 @@ class ModelNode {
         assert(sourceNode is FieldDeclaration ||
             sourceNode is TopLevelVariableDeclaration);
       }
-      return ModelNode._(element, resourceProvider,
+      return ModelNode._(element, analysisContext,
           sourceEnd: sourceNode.end, sourceOffset: sourceNode.offset);
     }
   }
 
-  ModelNode._(this._element, this._resourceProvider,
+  ModelNode._(this._element, this._analysisContext,
       {required int sourceEnd, required int sourceOffset})
       : _sourceEnd = sourceEnd,
         _sourceOffset = sourceOffset;
@@ -46,14 +46,21 @@ class ModelNode {
 
   /// The text of the source code of this node, stripped of the leading
   /// indentation, and stripped of the doc comments.
-  late final String sourceCode = _isSynthetic
-      ? ''
-      : model_utils
-          .getFileContentsFor(_element, _resourceProvider)
-          .substringFromLineStart(_sourceOffset, _sourceEnd)
-          .stripIndent
-          .stripDocComments
-          .trim();
+  late final String sourceCode = () {
+    if (_isSynthetic) return '';
+
+    var path = _element.source?.fullName;
+    if (path == null) return '';
+
+    var fileResult = _analysisContext.currentSession.getFile(path);
+    if (fileResult is! FileResult) return '';
+
+    return fileResult.content
+        .substringFromLineStart(_sourceOffset, _sourceEnd)
+        .stripIndent
+        .stripDocComments
+        .trim();
+  }();
 }
 
 @visibleForTesting

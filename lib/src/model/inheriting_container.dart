@@ -11,7 +11,6 @@ import 'package:dartdoc/src/model/container_modifiers.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
-import 'package:dartdoc/src/render/language_feature_renderer.dart';
 import 'package:meta/meta.dart';
 
 /// A mixin to build an [InheritingContainer] capable of being constructed
@@ -19,14 +18,14 @@ import 'package:meta/meta.dart';
 ///
 /// Note that [Constructor]s are not considered to be modifiers so a
 /// [hasModifiers] override is not necessary for this mixin.
-mixin Constructable on InheritingContainer {
+mixin Constructable implements InheritingContainer {
   late final List<Constructor> constructors = element.constructors
       .map((e) => getModelFor(e, library) as Constructor)
       .toList(growable: false);
 
   @override
   late final List<Constructor> publicConstructorsSorted =
-      model_utils.filterNonPublic(constructors).toList(growable: false)..sort();
+      constructors.wherePublic.toList(growable: false)..sort();
 
   @override
   @visibleForOverriding
@@ -35,8 +34,9 @@ mixin Constructable on InheritingContainer {
     yield* _constructorGenerator(constructors);
     // TODO(jcollins-g): wean important users off of relying on static method
     // inheritance (dart-lang/dartdoc#2698)
-    for (var container
-        in publicSuperChain.map((t) => t.modelElement).whereType<Container>()) {
+    for (var container in superChain.wherePublic
+        .map((t) => t.modelElement)
+        .whereType<Container>()) {
       for (var modelElement in [
         ...container.staticFields,
         ...container.staticMethods,
@@ -99,19 +99,12 @@ abstract class InheritingContainer extends Container
 
   @override
   late final List<LanguageFeature> displayedLanguageFeatures =
-      containerModifiers
-          .asLanguageFeatureSet(const LanguageFeatureRendererHtml())
-          .toList();
+      containerModifiers.asLanguageFeatureSet.toList();
 
-  late final List<ModelElement> _allModelElements = () {
-    _inheritedElementsCache = _inheritedElements;
-    var result = [
-      ...super.allModelElements,
-      ...typeParameters,
-    ];
-    _inheritedElementsCache = null;
-    return result;
-  }();
+  late final List<ModelElement> _allModelElements = [
+    ...super.allModelElements,
+    ...typeParameters,
+  ];
 
   Iterable<Method> get inheritedMethods {
     var methodNames = declaredMethods.map((m) => m.element.name).toSet();
@@ -145,58 +138,69 @@ abstract class InheritingContainer extends Container
   late final DefinedElementType modelType =
       getTypeFor(element.thisType, library) as DefinedElementType;
 
-  late final List<DefinedElementType> publicSuperChain =
-      model_utils.filterNonPublic(superChain).toList(growable: false);
-
-  List<ExecutableElement>? _inheritedElementsCache;
-  List<ExecutableElement> get _inheritedElements {
-    if (_inheritedElementsCache != null) return _inheritedElementsCache!;
-    if (element is ClassElement && (element as ClassElement).isDartCoreObject) {
+  /// A list of the inherited executable elements, one element per inherited
+  /// `Name`.
+  ///
+  /// In this list, elements that are "closer" in the inheritance chain to
+  /// _this_ element are preferred over elements that are further away. In the
+  /// case of ties, concrete inherited elements are prefered to non-concrete
+  /// ones.
+  late final List<ExecutableElement> _inheritedElements = () {
+    if (element case ClassElement classElement
+        when classElement.isDartCoreObject) {
       return const <ExecutableElement>[];
     }
 
-    final concreteInheritenceMap =
+    // The mapping of all of the inherited element names to their _concrete_
+    // implementation element.
+    var concreteInheritanceMap =
         packageGraph.inheritanceManager.getInheritedConcreteMap2(element);
-    final inheritenceMap =
+    // The mapping of all inherited element names to the nearest inherited
+    // element that they resolve to.
+    var inheritanceMap =
         packageGraph.inheritanceManager.getInheritedMap2(element);
 
-    List<InterfaceElement>? inheritanceChainElements;
+    var inheritanceChainElements =
+        inheritanceChain.map((c) => c.element).toList(growable: false);
 
-    final combinedMap = {
-      for (final name in concreteInheritenceMap.keys)
-        name.name: concreteInheritenceMap[name]!,
+    // A combined map of names to inherited _concrete_ Elements, and other
+    // inherited Elements.
+    var combinedMap = {
+      for (var MapEntry(:key, :value) in concreteInheritanceMap.entries)
+        key.name: value,
     };
-    for (final name in inheritenceMap.keys) {
-      final inheritenceElement = inheritenceMap[name]!;
-      final combinedMapElement = combinedMap[name.name];
+    for (var MapEntry(key: name, value: inheritedElement)
+        in inheritanceMap.entries) {
+      var combinedMapElement = combinedMap[name.name];
       if (combinedMapElement == null) {
-        combinedMap[name.name] = inheritenceElement;
+        combinedMap[name.name] = inheritedElement;
         continue;
       }
 
-      // Elements in the inheritance chain starting from `this.element` down to,
-      // but not including, [Object].
-      inheritanceChainElements ??=
-          inheritanceChain.map((c) => c.element).toList(growable: false);
-      final enclosingElement =
-          inheritenceElement.enclosingElement as InterfaceElement;
+      // Elements in the inheritance chain starting from `this.element` up to,
+      // but not including, `Object`.
+      var enclosingElement =
+          inheritedElement.enclosingElement as InterfaceElement;
       assert(inheritanceChainElements.contains(enclosingElement) ||
           enclosingElement.isDartCoreObject);
 
-      // If the concrete object from
-      // [InheritanceManager3.getInheritedConcreteMap2] is farther from this
-      // class in the inheritance chain than the one provided by
-      // `inheritedMap2`, prefer `inheritedMap2`. This correctly accounts for
-      // intermediate abstract classes that have method/field implementations.
-      if (inheritanceChainElements.indexOf(
-              combinedMapElement.enclosingElement as InterfaceElement) <
+      // If the concrete element from `getInheritedConcreteMap2` is farther in
+      // the inheritance chain from this class than the (non-concrete) one
+      // provided by `getInheritedMap2`, prefer the latter. This correctly
+      // accounts for intermediate abstract classes that have method/field
+      // implementations.
+      var enclosingElementFromCombined =
+          combinedMapElement.enclosingElement as InterfaceElement;
+      if (inheritanceChainElements.indexOf(enclosingElementFromCombined) <
           inheritanceChainElements.indexOf(enclosingElement)) {
-        combinedMap[name.name] = inheritenceElement;
+        combinedMap[name.name] = inheritedElement;
       }
     }
 
+    // Finally, return all of the elements ultimately collected in the combined
+    // map.
     return combinedMap.values.toList(growable: false);
-  }
+  }();
 
   /// All fields defined on this container, _including inherited fields_.
   late List<Field> allFields = () {
@@ -274,7 +278,7 @@ abstract class InheritingContainer extends Container
   /// defined by [element] can exist where this extension applies, not including
   /// any extension that applies to every type.
   late final List<Extension> potentiallyApplicableExtensionsSorted =
-      packageGraph.documentedExtensions
+      packageGraph.extensions.whereDocumented
           .where((e) => !e.alwaysApplies)
           .where((e) => e.couldApplyTo(this))
           .toList(growable: false)
@@ -301,22 +305,32 @@ abstract class InheritingContainer extends Container
 
   String get fullkind => kind.toString();
 
+  /// Whether this container has any "modifiers" that should be displayed on the
+  /// container's page, above it's members.
+  // TODO(srawlins): This name is confusing, especially after the language
+  // feature, "new class modifiers." I think the only purpose is to avoid
+  // writing a `<section>` and a `<dl>` tag, if they would be empty. But with
+  // CSS, we should be able to just always write those tags, and visually make
+  // them take up zero space if they are empty.
   bool get hasModifiers =>
       hasAnnotations ||
       hasPublicSuperChainReversed ||
-      hasPotentiallyApplicableExtensions;
+      hasPotentiallyApplicableExtensions ||
+      hasPublicInterfaces ||
+      hasPublicImplementers;
 
   @visibleForTesting
-  bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
+  bool get hasPublicInheritedMethods => inheritedMethods.any((e) => e.isPublic);
 
-  bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
+  bool get hasPublicSuperChainReversed => superChain.any((e) => e.isPublic);
 
-  /// Not the same as [superChain] as it may include mixins.
+  /// A sorted list of [element]'s inheritance chain, including interfaces and
+  /// mixins.
   ///
-  /// It's really not even the same as ordinary Dart inheritance, either,
+  /// Note: this list is really not even the same as ordinary Dart inheritance,
   /// because we pretend that interfaces are part of the inheritance chain
   /// to include them in the set of things we might link to for documentation
-  /// purposes in abstract classes.
+  /// purposes.
   List<InheritingContainer> get inheritanceChain;
 
   @visibleForTesting
@@ -349,13 +363,12 @@ abstract class InheritingContainer extends Container
 
   bool get isSealed;
 
-  @visibleForTesting
-  Iterable<Field> get publicInheritedFields =>
-      model_utils.filterNonPublic(inheritedFields);
-
   @override
+  // TODO(srawlins): Rename this, and `publicInheritedInstanceMethods` and
+  // `publicInheritedInstanceOperators` after custom template support is
+  // removed. Maybe `areAllInstanceFieldsInherited`.
   bool get publicInheritedInstanceFields =>
-      publicInstanceFields.every((f) => f.isInherited);
+      instanceFields.wherePublic.every((f) => f.isInherited);
 
   @override
   bool get publicInheritedInstanceMethods =>
@@ -363,13 +376,97 @@ abstract class InheritingContainer extends Container
 
   @override
   bool get publicInheritedInstanceOperators =>
-      publicInstanceOperators.every((f) => f.isInherited);
+      instanceOperators.wherePublic.every((f) => f.isInherited);
 
   @visibleForTesting
-  Iterable<Method> get publicInheritedMethods =>
-      model_utils.filterNonPublic(inheritedMethods);
+  late final List<DefinedElementType> directInterfaces = [
+    for (var interface in element.interfaces)
+      getTypeFor(interface, library) as DefinedElementType
+  ];
 
-  Iterable<DefinedElementType> get publicInterfaces;
+  bool get hasPublicImplementers => publicImplementersSorted.isNotEmpty;
+
+  /// All the "immediate" public implementers of this container.
+  ///
+  /// For a [Mixin], this is actually the mixin applications using the [Mixin].
+  ///
+  /// If this container has a private implementer, then that is counted as a
+  /// proxy for any public implementers of that private container.
+  List<InheritingContainer> get publicImplementersSorted {
+    var result = <InheritingContainer>{};
+    var seen = <InheritingContainer>{};
+
+    // Recursively adds [implementer] if public, or just the implementers of
+    // [implementer] if not.
+    void addToResult(InheritingContainer implementer) {
+      if (seen.contains(implementer)) return;
+      seen.add(implementer);
+      if (implementer.isPublicAndPackageDocumented) {
+        result.add(implementer);
+      } else {
+        var implementers = packageGraph.implementers[implementer];
+        if (implementers != null) {
+          model_utils.findCanonicalFor(implementers).forEach(addToResult);
+        }
+      }
+    }
+
+    var immediateImplementers = packageGraph.implementers[this];
+    if (immediateImplementers != null) {
+      model_utils.findCanonicalFor(immediateImplementers).forEach(addToResult);
+    }
+    return result.toList(growable: false)..sort(byName);
+  }
+
+  bool get hasPublicInterfaces => publicInterfaces.isNotEmpty;
+
+  List<InheritingContainer> get interfaceElements => [
+        for (var interface in directInterfaces)
+          interface.modelElement as InheritingContainer,
+      ];
+
+  /// The public interfaces of this container.
+  ///
+  /// This list may include substitutions for intermediate private interfaces,
+  /// and so unlike other `public*` methods, is not a strict subset of
+  /// [directInterfaces] (the direct interfaces).
+  List<DefinedElementType> get publicInterfaces {
+    var interfaces = <DefinedElementType>[];
+    for (var interface in directInterfaces) {
+      var interfaceElement = interface.modelElement;
+
+      /// Do not recurse if we can find an element here.
+      if (interfaceElement.canonicalModelElement != null) {
+        interfaces.add(interface);
+        continue;
+      }
+      // Public types used to be unconditionally exposed here.  However,
+      // if the packages are [DocumentLocation.missing] we generally treat types
+      // defined in them as actually defined in a documented package.
+      // That translates to them being defined here, but in 'src/' or similar,
+      // and so, are now always hidden.
+
+      // This type is not backed by a canonical Class; search
+      // the superchain and publicInterfaces of this interface to pretend
+      // as though the hidden class didn't exist and this class was declared
+      // directly referencing the canonical classes further up the chain.
+      if (interfaceElement is! InheritingContainer) {
+        assert(
+          false,
+          'Can not handle intermediate non-public interfaces created by '
+          "ModelElements that are not classes or mixins: '$fullyQualifiedName' "
+          "contains an interface '$interface', defined by '$interfaceElement'",
+        );
+        continue;
+      }
+      var publicSuperChain = interfaceElement.superChain.wherePublic;
+      if (publicSuperChain.isNotEmpty) {
+        interfaces.add(publicSuperChain.first);
+      }
+      interfaces.addAll(interfaceElement.publicInterfaces);
+    }
+    return interfaces;
+  }
 
   Iterable<InheritingContainer> get publicInterfaceElements => [
         for (var interface in publicInterfaces)
@@ -377,21 +474,23 @@ abstract class InheritingContainer extends Container
       ];
 
   Iterable<DefinedElementType> get publicSuperChainReversed =>
-      publicSuperChain.reversed;
+      [...superChain.wherePublic].reversed;
 
-  List<DefinedElementType> get superChain {
+  /// The chain of super-types, starting with [supertype], up to, but not
+  /// including, `Object`.
+  late final List<DefinedElementType> superChain = () {
     var typeChain = <DefinedElementType>[];
     var parent = supertype;
     while (parent != null) {
       typeChain.add(parent);
       final parentType = parent.type;
       if (parentType is! InterfaceType) {
-        throw StateError('ancestor of $this is $parent with model element '
-            '${parent.modelElement}');
+        throw StateError("ancestor of '$this' is '$parent' with model element "
+            "'${parent.modelElement}'");
       }
 
       var superclass = parentType.superclass;
-      // Avoid adding [Object] to the [superChain] ([_supertype] already has
+      // Avoid adding `Object` to the `superChain` (`_supertype` already has
       // this check).
       if (superclass == null || superclass.superclass == null) {
         break;
@@ -399,7 +498,7 @@ abstract class InheritingContainer extends Container
       parent = getTypeFor(superclass, library) as DefinedElementType?;
     }
     return typeChain;
-  }
+  }();
 
   /// Add a single Field to _fields.
   ///
@@ -446,7 +545,7 @@ abstract class InheritingContainer extends Container
         // Pick the one closest to this class on the inheritance chain.
         if (setterEnclosingElement is Class &&
             setterEnclosingElement._isInheritingFrom(
-                getter.enclosingElement as InheritingContainer?)) {
+                getter.enclosingElement as InheritingContainer)) {
           field = setterElement!.variable as FieldElement;
         } else {
           field = getterElement!.variable as FieldElement;
@@ -470,7 +569,7 @@ abstract class InheritingContainer extends Container
   }
 
   /// Returns true if [other] is a parent class for this class.
-  bool _isInheritingFrom(InheritingContainer? other) => superChain
+  bool _isInheritingFrom(InheritingContainer other) => superChain
       .map((et) => et.modelElement as InheritingContainer)
       .contains(other);
 }
@@ -489,111 +588,10 @@ mixin MixedInTypes on InheritingContainer {
   @override
   bool get hasModifiers => super.hasModifiers || hasPublicMixedInTypes;
 
-  bool get hasPublicMixedInTypes => publicMixedInTypes.isNotEmpty;
+  bool get hasPublicMixedInTypes => mixedInTypes.any((e) => e.isPublic);
 
   Iterable<DefinedElementType> get publicMixedInTypes =>
-      model_utils.filterNonPublic(mixedInTypes);
-}
-
-/// Add the ability for an [InheritingContainer] to be implemented by other
-/// InheritingContainers and to reference what it itself implements.
-mixin TypeImplementing on InheritingContainer {
-  late final List<DefinedElementType> _directInterfaces = [
-    for (var interface in element.interfaces)
-      getTypeFor(interface, library) as DefinedElementType
-  ];
-
-  late final List<InheritingContainer> publicImplementorsSorted =
-      publicImplementors.toList(growable: false)..sort(byName);
-
-  @override
-  bool get hasModifiers =>
-      super.hasModifiers || hasPublicInterfaces || hasPublicImplementors;
-
-  bool get hasPublicImplementors => publicImplementors.isNotEmpty;
-
-  bool get hasPublicInterfaces => publicInterfaces.isNotEmpty;
-
-  /// Interfaces directly implemented by this container.
-  List<DefinedElementType> get interfaces => _directInterfaces;
-
-  List<InheritingContainer> get interfaceElements => [
-        for (var interface in interfaces)
-          interface.modelElement as InheritingContainer,
-      ];
-
-  /// All the "immediate" public implementors of this [TypeImplementing].
-  ///
-  /// For a [Mixin], this is actually the mixin applications using the [Mixin].
-  ///
-  /// If this [InheritingContainer] has a private implementor, then that is
-  /// counted as a proxy for any public implementors of that private container.
-  Iterable<InheritingContainer> get publicImplementors {
-    var result = <InheritingContainer>{};
-    var seen = <InheritingContainer>{};
-
-    // Recursively adds [implementor] if public, or the implementors of
-    // [implementor] if not.
-    void addToResult(InheritingContainer implementor) {
-      if (seen.contains(implementor)) return;
-      seen.add(implementor);
-      if (implementor.isPublicAndPackageDocumented) {
-        result.add(implementor);
-      } else {
-        var implementors = packageGraph.implementors[implementor];
-        if (implementors != null) {
-          model_utils.findCanonicalFor(implementors).forEach(addToResult);
-        }
-      }
-    }
-
-    var immediateImplementors = packageGraph.implementors[this];
-    if (immediateImplementors != null) {
-      model_utils.findCanonicalFor(immediateImplementors).forEach(addToResult);
-    }
-    return result;
-  }
-
-  /// The public interfaces may include substitutions for intermediate
-  /// private interfaces, and so unlike other public* methods, is not
-  /// a strict subset of [interfaces].
-  @override
-  Iterable<DefinedElementType> get publicInterfaces {
-    var interfaces = <DefinedElementType>[];
-    for (var interface in _directInterfaces) {
-      var interfaceElement = interface.modelElement;
-
-      /// Do not recurse if we can find an element here.
-      if (interfaceElement.canonicalModelElement != null) {
-        interfaces.add(interface);
-        continue;
-      }
-      // Public types used to be unconditionally exposed here.  However,
-      // if the packages are [DocumentLocation.missing] we generally treat types
-      // defined in them as actually defined in a documented package.
-      // That translates to them being defined here, but in 'src/' or similar,
-      // and so, are now always hidden.
-
-      // This type is not backed by a canonical Class; search
-      // the superchain and publicInterfaces of this interface to pretend
-      // as though the hidden class didn't exist and this class was declared
-      // directly referencing the canonical classes further up the chain.
-      if (interfaceElement is! InheritingContainer) {
-        assert(
-          false,
-          'Can not handle intermediate non-public interfaces created by '
-          "ModelElements that are not classes or mixins: '$fullyQualifiedName' "
-          "contains an interface '$interface', defined by '$interfaceElement'",
-        );
-        continue;
-      }
-      if (interfaceElement.publicSuperChain.isNotEmpty) {
-        interfaces.add(interfaceElement.publicSuperChain.first);
-      }
-      interfaces.addAll(interfaceElement.publicInterfaces);
-    }
-    return interfaces;
-  }
+      mixedInTypes.wherePublic;
 }
 
 extension on InterfaceElement {

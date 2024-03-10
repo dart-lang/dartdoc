@@ -4,16 +4,10 @@
 
 import 'package:dartdoc/src/model/container_modifiers.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
-import 'package:dartdoc/src/render/language_feature_renderer.dart';
 import 'package:test/test.dart';
 
-class TestChipRenderer extends LanguageFeatureRenderer {
-  @override
-  String renderLanguageFeatureLabel(LanguageFeature l) => l.name;
-}
-
 extension TestChipsRenderer on Iterable<LanguageFeature> {
-  String asRenderedString() => map((l) => l.featureLabel).join(' ');
+  String asRenderedString() => map((l) => l.name).join(' ');
 }
 
 void main() {
@@ -24,20 +18,18 @@ void main() {
         ContainerModifier.interface,
         ContainerModifier.abstract
       ]..sort();
-      expect(l.asLanguageFeatureSet(TestChipRenderer()).asRenderedString(),
+      expect(l.asLanguageFeatureSet.asRenderedString(),
           equals('abstract base interface'));
     });
 
     test('hide abstract on sealed', () {
       var l = [ContainerModifier.abstract, ContainerModifier.sealed]..sort();
-      expect(l.asLanguageFeatureSet(TestChipRenderer()).asRenderedString(),
-          equals('sealed'));
+      expect(l.asLanguageFeatureSet.asRenderedString(), equals('sealed'));
     });
 
     test('empty', () {
       var l = <ContainerModifier>[];
-      expect(l.asLanguageFeatureSet(TestChipRenderer()).asRenderedString(),
-          equals(''));
+      expect(l.asLanguageFeatureSet.asRenderedString(), equals(''));
     });
   });
 }

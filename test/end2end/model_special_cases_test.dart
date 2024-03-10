@@ -12,6 +12,7 @@ library;
 import 'package:async/async.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/special_elements.dart';
@@ -360,9 +361,11 @@ void main() {
         () {
       var IAmAClassWithCategories = ginormousPackageGraph.localPackages
           .firstWhere((Package p) => p.name == 'test_package_imported')
-          .publicLibraries
+          .libraries
+          .wherePublic
           .firstWhere((Library l) => l.name == 'categoriesExported')
-          .publicClasses
+          .classes
+          .wherePublic
           .firstWhere((Class c) => c.name == 'IAmAClassWithCategories');
       expect(IAmAClassWithCategories.hasCategoryNames, isTrue);
       expect(IAmAClassWithCategories.categories, hasLength(1));
@@ -376,9 +379,11 @@ void main() {
     test('Verify that reexported classes pick up categories', () {
       var IAmAClassWithCategoriesReexport = ginormousPackageGraph.localPackages
           .firstWhere((Package p) => p.name == 'test_package')
-          .publicLibraries
+          .libraries
+          .wherePublic
           .firstWhere((Library l) => l.name == 'fake')
-          .publicClasses
+          .classes
+          .wherePublic
           .firstWhere((Class c) => c.name == 'IAmAClassWithCategories');
       expect(IAmAClassWithCategoriesReexport.hasCategoryNames, isTrue);
       expect(IAmAClassWithCategoriesReexport.categories, hasLength(1));
@@ -393,11 +398,12 @@ void main() {
     test('Verify that multiple categories work correctly', () {
       var fakeLibrary = ginormousPackageGraph.localPackages
           .firstWhere((Package p) => p.name == 'test_package')
-          .publicLibraries
+          .libraries
+          .wherePublic
           .firstWhere((Library l) => l.name == 'fake');
-      var BaseForDocComments = fakeLibrary.publicClasses
+      var BaseForDocComments = fakeLibrary.classes.wherePublic
           .firstWhere((Class c) => c.name == 'BaseForDocComments');
-      var SubForDocComments = fakeLibrary.publicClasses
+      var SubForDocComments = fakeLibrary.classes.wherePublic
           .firstWhere((Class c) => c.name == 'SubForDocComments');
       expect(BaseForDocComments.hasCategoryNames, isTrue);
       // Display both, with the correct order and display name.
@@ -428,7 +434,7 @@ void main() {
           sdkAsPackageGraph.libraries.singleWhere((l) => l.name == 'dart:html');
       var eventTarget =
           htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
-      var hashCode = eventTarget.publicInstanceFields
+      var hashCode = eventTarget.instanceFields.wherePublic
           .singleWhere((f) => f.name == 'hashCode');
       var objectModelElement =
           sdkAsPackageGraph.specialClasses[SpecialClass.object];

@@ -8,13 +8,12 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
 
-class ExtensionType extends InheritingContainer
-    with Constructable, TypeImplementing {
+class ExtensionType extends InheritingContainer with Constructable {
   @override
   final ExtensionTypeElement element;
 
   late final ElementType representationType =
-      getTypeFor(element.typeErasure, library);
+      getTypeFor(element.representation.type, library);
 
   ExtensionType(this.element, super.library, super.packageGraph);
 

@@ -283,7 +283,7 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
     'typedef',
   ]) {
     await resourceProvider.writeDartdocResource(
-        'templates/html/$template.html', 'CONTENT');
+        'templates/$template.html', 'CONTENT');
   }
 
   for (var resource in [
@@ -331,13 +331,6 @@ Matcher matchesCompressed(String text) => matches(RegExp(text.replaceAll(
 /// We can not use [ExperimentalFeature.releaseVersion] or even
 /// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
 /// even when partial analyzer implementations are available.
-bool get enhancedEnumsAllowed =>
-    VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
-        .allows(platformVersion);
-
-/// We can not use [ExperimentalFeature.releaseVersion] or even
-/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
-/// even when partial analyzer implementations are available.
 bool get namedArgumentsAnywhereAllowed =>
     VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
         .allows(platformVersion);
@@ -361,13 +354,6 @@ bool get extensionTypesAllowed =>
 /// even when partial analyzer implementations are available.
 bool get classModifiersAllowed =>
     VersionRange(min: Version.parse('3.0.0-0.0-dev'), includeMin: true)
-        .allows(platformVersion);
-
-/// We can not use [ExperimentalFeature.releaseVersion] or even
-/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
-/// even when partial analyzer implementations are available.
-bool get superParametersAllowed =>
-    VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
         .allows(platformVersion);
 
 extension ModelElementIterableExtensions<T extends ModelElement>

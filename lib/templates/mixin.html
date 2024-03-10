@@ -27,16 +27,16 @@
         {{ >super_chain }}
         {{ >interfaces }}
 
-        {{ #hasPublicImplementors }}
+        {{ #hasPublicImplementers }}
           <dt>Mixin Applications</dt>
           <dd>
             <ul class="comma-separated mixin-relationships">
-              {{ #publicImplementorsSorted }}
+              {{ #publicImplementersSorted }}
               <li>{{{ linkedName }}}</li>
-              {{ /publicImplementorsSorted }}
+              {{ /publicImplementersSorted }}
             </ul>
           </dd>
-        {{ /hasPublicImplementors }}
+        {{ /hasPublicImplementers }}
 
         {{ >annotations }}
       </dl>
@@ -48,9 +48,9 @@
       <h2>Properties</h2>
 
       <dl class="properties">
-        {{ #publicInstanceFields }}
+        {{ #publicInstanceFieldsSorted }}
           {{ >property }}
-        {{ /publicInstanceFields }}
+        {{ /publicInstanceFieldsSorted }}
       </dl>
     </section>
     {{ /hasPublicInstanceFields }}
