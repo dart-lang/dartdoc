@@ -14,35 +14,47 @@ class Field extends ModelElement
   @override
   final FieldElement element;
 
-  bool _isInherited = false;
-  late final Container _enclosingContainer;
   @override
   final ContainerAccessor? getter;
+
   @override
   final ContainerAccessor? setter;
 
+  @override
+  final bool isInherited;
+
+  @override
+  final Container enclosingElement;
+
   Field(
-      this.element, super.library, super.packageGraph, this.getter, this.setter)
-      : assert(getter != null || setter != null) {
+    this.element,
+    super.library,
+    super.packageGraph,
+    this.getter,
+    this.setter,
+  )   : isInherited = false,
+        enclosingElement =
+            ModelElement.for_(element.enclosingElement, library, packageGraph)
+                as Container,
+        assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
     setter?.enclosingCombo = this;
   }
 
-  factory Field.inherited(
-      FieldElement element,
-      Container enclosingContainer,
-      Library library,
-      PackageGraph packageGraph,
-      Accessor? getter,
-      Accessor? setter) {
-    var newField = Field(element, library, packageGraph,
-        getter as ContainerAccessor?, setter as ContainerAccessor?);
-    newField._isInherited = true;
-    newField._enclosingContainer = enclosingContainer;
-    // Can't set _isInherited to true if this is the defining element, because
+  Field.inherited(
+    this.element,
+    this.enclosingElement,
+    super.library,
+    super.packageGraph,
+    this.getter,
+    this.setter,
+  )   : isInherited = true,
+        assert(getter != null || setter != null) {
+    // Can't set `isInherited` to true if this is the defining element, because
     // that would mean it isn't inherited.
-    assert(newField.enclosingElement != newField.definingEnclosingContainer);
-    return newField;
+    assert(enclosingElement != definingEnclosingContainer);
+    getter?.enclosingCombo = this;
+    setter?.enclosingCombo = this;
   }
 
   @override
@@ -66,11 +78,6 @@ class Field extends ModelElement
   }
 
   @override
-  Container get enclosingElement => isInherited
-      ? _enclosingContainer
-      : getModelFor(element.enclosingElement, library) as Container;
-
-  @override
   String get filePath =>
       '${enclosingElement.library.dirName}/${enclosingElement.name}/${fileStructure.fileName}';
 
@@ -84,8 +91,8 @@ class Field extends ModelElement
   @override
   bool get isConst => element.isConst;
 
-  /// Returns true if the FieldElement is covariant, or if the first parameter
-  /// for the setter is covariant.
+  /// Whether the [FieldElement] is covariant, or the first parameter for the
+  /// setter is covariant.
   @override
   bool get isCovariant => setter?.isCovariant == true || element.isCovariant;
 
@@ -101,9 +108,6 @@ class Field extends ModelElement
 
   @override
   bool get isLate => isFinal && element.isLate;
-
-  @override
-  bool get isInherited => _isInherited;
 
   bool get isStatic => element.isStatic;
 
