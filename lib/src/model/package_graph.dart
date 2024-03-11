@@ -459,7 +459,6 @@ class PackageGraph with CommentReferable, Nameable {
       PackageWarning.invalidParameter ||
       PackageWarning.toolError ||
       PackageWarning.deprecated ||
-      PackageWarning.missingExampleFile ||
       PackageWarning.missingCodeBlockLanguage =>
         kind.messageFor([message])
     };

@@ -151,43 +151,6 @@ dartdoc:
     expect(version.hasMatch(match.group(0)!), false, reason: indexContent);
   }
 
-  void test_examplePathPrefixOption_findsExamplesInACustomPath() async {
-    await createPackage(
-      dartdocOptions: '''
-dartdoc:
-  examplePathPrefix: 'package_examples'
-''',
-      libFiles: [
-        d.file('lib.dart', '''
-/// An example in a non-default location:
-///
-/// {@example foo.dart}
-class Foo {}
-'''),
-      ],
-      files: [
-        d.dir('package_examples', [
-          d.file('foo.dart.md', '''
-```
-An example in an unusual dir.
-```
-'''),
-        ]),
-      ],
-    );
-    final packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
-    final classFoo = packageGraph.allLocalModelElements
-        .where((e) => e.isCanonical)
-        .whereType<Class>()
-        .firstWhere((c) => c.name == 'Foo');
-    expect(classFoo.documentationAsHtml,
-        contains('<code class="language-dart">An example in an unusual dir.'));
-  }
-
   void test_includeOption_canBeSpecifiedInOptionsFile() async {
     await createPackage(
       dartdocOptions: '''

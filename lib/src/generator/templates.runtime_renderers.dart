@@ -16097,7 +16097,6 @@ const _invisibleGetters = {
     'categories',
     'categoryOrder',
     'context',
-    'examplePathPrefix',
     'exclude',
     'excludeFooterVersion',
     'flutterRoot',

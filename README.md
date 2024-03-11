@@ -124,7 +124,6 @@ dartdoc:
       markdown: doc/Second.md
       name: Great
   categoryOrder: ["First Category", "Second Category"]
-  examplePathPrefix: 'subdir/with/examples'
   includeExternal: ['bin/unusually_located_library.dart']
   nodoc: ['lib/sekret/*.dart']
   linkTo:
@@ -150,8 +149,6 @@ Unrecognized options will be ignored.  Supported options:
     defined in dartdoc_options.yaml, those declared categories in the source code will be invisible.
   * **categoryOrder**:  Specify the order of topics for display in the sidebar and
     the package page.
-  * **examplePathPrefix**: Specify the location of the example directory for resolving `@example`
-    directives.
   * **exclude**:  Specify a list of library names to avoid generating docs for,
     overriding any specified in include.  All libraries listed must be local to this package, unlike
     the command line `--exclude`.  See also `nodoc`.

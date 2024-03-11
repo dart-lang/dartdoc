@@ -279,13 +279,6 @@ enum PackageWarning implements Comparable<PackageWarning> {
     'deprecated dartdoc usage: {0}',
     shortHelp: 'A dartdoc directive has a deprecated format.',
   ),
-  missingExampleFile(
-    'missing-example-file',
-    'example file not found: {0}',
-    shortHelp:
-        "A file which is indicated by an '{@example}' directive could not be "
-        'found',
-  ),
   missingCodeBlockLanguage(
     'missing-code-block-language',
     'missing code block language: {0}',

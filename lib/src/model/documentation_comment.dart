@@ -24,8 +24,6 @@ final _htmlPattern =
 final _basicToolPattern =
     RegExp(r'[ ]*{@tool\s+([^\s}][^}]*)}\n?([^]+?)\n?{@end-tool}[ ]*\n?');
 
-final _examplePattern = RegExp(r'{@example\s+([^\s}][^}]*)}');
-
 final _macroRegExp = RegExp(r'{@macro\s+([^\s}][^}]*)}');
 
 final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
@@ -97,7 +95,6 @@ mixin DocumentationComment
   String _processCommentWithoutTools(String documentationComment) {
     var docs = stripComments(documentationComment);
     if (docs.contains('{@')) {
-      docs = _injectExamples(docs);
       docs = _injectYouTube(docs);
       docs = _injectAnimations(docs);
       // TODO(srawlins): Processing templates here causes #2281. But leaving
@@ -126,7 +123,6 @@ mixin DocumentationComment
       return docs;
     }
     _checkForUnknownDirectives(docs);
-    docs = _injectExamples(docs);
     docs = _injectYouTube(docs);
     docs = _injectAnimations(docs);
     docs = _stripMacroTemplatesAndAddToIndex(docs);
@@ -147,7 +143,6 @@ mixin DocumentationComment
     'end-inject-html',
     'end-tool',
     'endtemplate',
-    'example',
     'macro',
     'inject-html',
     'template',
@@ -282,105 +277,6 @@ mixin DocumentationComment
     };
     return (env..removeWhere((key, value) => value == null))
         .cast<String, String>();
-  }
-
-  /// Replace &#123;@example ...&#125; in API comments with the content of named file.
-  ///
-  /// Syntax:
-  ///
-  ///     &#123;@example PATH [region=NAME] [lang=NAME]&#125;
-  ///
-  /// If PATH is `dir/file.ext` and region is `r` then we'll look for the file
-  /// named `dir/file-r.ext.md`, relative to the project root directory of the
-  /// project for which the docs are being generated.
-  ///
-  /// Examples: (escaped in this comment to show literal values in dartdoc's
-  ///            dartdoc)
-  ///
-  ///     &#123;@example examples/angular/quickstart/web/main.dart&#125;
-  ///     &#123;@example abc/def/xyz_component.dart region=template lang=html&#125;
-  ///
-  String _injectExamples(String rawdocs) {
-    final dirPath = package.packageMeta.dir.path;
-    return rawdocs.replaceAllMapped(_examplePattern, (match) {
-      var args = _getExampleArgs(match[1]!);
-      if (args == null) {
-        // Already warned about an invalid parameter if this happens.
-        return '';
-      }
-      warn(
-        PackageWarning.deprecated,
-        message:
-            "The '@example' directive is deprecated, and will soon no longer "
-            'be supported.',
-      );
-      var lang = args['lang'] ??
-          pathContext.extension(args['src']!).replaceFirst('.', '');
-
-      var replacement = match[0]!; // default to fully matched string.
-
-      var fragmentFile = packageGraph.resourceProvider.getFile(
-          pathContext.canonicalize(pathContext.join(dirPath, args['file'])));
-
-      if (fragmentFile.exists) {
-        replacement = fragmentFile.readAsStringSync();
-        if (lang.isNotEmpty) {
-          replacement = replacement.replaceFirst('```', '```$lang');
-        }
-      } else {
-        var filePath = element.source!.fullName.substring(dirPath.length + 1);
-
-        // TODO(srawlins): If a file exists at the location without the
-        // appended 'md' extension, note this.
-        warn(PackageWarning.missingExampleFile,
-            message: '${fragmentFile.path}; path listed at $filePath');
-      }
-      return replacement;
-    });
-  }
-
-  /// An argument parser used in [_getExampleArgs] to parse an `{@example}`
-  /// directive.
-  static final ArgParser _exampleArgParser = ArgParser()
-    ..addOption('lang')
-    ..addOption('region');
-
-  /// Helper for [_injectExamples] used to process `@example` arguments.
-  ///
-  /// Returns a map of arguments. The first unnamed argument will have key
-  /// 'src'. The computed file path, constructed from 'src' and 'region' will
-  /// have key 'file'.
-  Map<String, String?>? _getExampleArgs(String argsAsString) {
-    var results = _parseArgs(argsAsString, _exampleArgParser, 'example');
-    if (results == null) {
-      return null;
-    }
-
-    // Extract PATH and fix the path separators.
-    var src = results.rest.isEmpty
-        ? ''
-        : results.rest.first.replaceAll('/', pathContext.separator);
-    var args = <String, String?>{
-      'src': src,
-      'lang': results['lang'],
-      'region': results['region'] ?? '',
-    };
-
-    // Compute 'file' from region and src.
-    final fragExtension = '.md';
-    var file = src + fragExtension;
-    var region = args['region'] ?? '';
-    if (region.isNotEmpty) {
-      var dir = pathContext.dirname(src);
-      var basename = pathContext.basenameWithoutExtension(src);
-      var ext = pathContext.extension(src);
-      file = pathContext.join(dir, '$basename-$region$ext$fragExtension');
-    }
-    var examplePathPrefix = config.examplePathPrefix;
-    args['file'] = examplePathPrefix == null
-        ? file
-        : pathContext.join(examplePathPrefix, file);
-    return args;
   }
 
   /// Matches all youtube directives (even some invalid ones). This is so
