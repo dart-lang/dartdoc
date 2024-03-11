@@ -28,27 +28,6 @@ own documentation page, listing all of the categorized elements.
 
 TODO(srawlins): Document.
 
-## `{@example}` - Examples (deprecated)
-
-Examples from the file system can be inlined by using the `{@example}`
-directive. The file path, the region, and the example language can all be
-specified with the following syntax:
-
-```none
-/// {@example PATH [region=NAME] [lang=NAME]}
-```
-
-All example file names must have the extension, `.md`, and this extension must
-not be specified in the example `PATH`. `PATH` must be specified as a relative
-path from the root of the project for which documentation is being generated.
-Given `dir/file.dart` as `PATH`, an example will be extracted from
-`dir/file.dart.md`, relative to the project root directory.
-
-During doc generation, dartdoc will replace the `{@example}` directive with the
-contents of the example file, verbatim.
-
-TODO(srawlins): Document region, lang, `--example-path-prefix`.
-
 ## `{@inject-html}` - Injected HTML
 
 HTML can be rendered unmodified by including it between `{@inject-html}` and
