@@ -38,8 +38,6 @@ abstract class PackageBuilder {
   // Builds package graph to be used by documentation generator.
   Future<PackageGraph> buildPackageGraph();
 
-  Future<void> dispose();
-
   /// The `include-external` option is deprecated, so we track whether it was
   /// used, to report it.
   bool get includeExternalsWasSpecified;
@@ -119,7 +117,11 @@ class PubPackageBuilder implements PackageBuilder {
 
     logDebug('${DateTime.now()}: Initializing package graph...');
     runtimeStats.startPerfTask('initializePackageGraph');
-    await newGraph.initializePackageGraph();
+    try {
+      await newGraph.initializePackageGraph();
+    } finally {
+      await _dispose();
+    }
     runtimeStats.endPerfTask();
 
     runtimeStats.startPerfTask('initializeCategories');
@@ -129,8 +131,7 @@ class PubPackageBuilder implements PackageBuilder {
     return newGraph;
   }
 
-  @override
-  Future<void> dispose() async {
+  Future<void> _dispose() async {
     // Shutdown macro support.
     await _contextCollection.dispose();
   }
