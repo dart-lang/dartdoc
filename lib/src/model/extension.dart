@@ -65,7 +65,7 @@ class Extension extends Container implements EnclosedElement {
 
   @override
   late final List<Field> declaredFields = element.fields.map((field) {
-    Accessor? getter, setter;
+    ContainerAccessor? getter, setter;
     final fieldGetter = field.getter;
     if (fieldGetter != null) {
       getter = ContainerAccessor(fieldGetter, library, packageGraph);

@@ -160,9 +160,14 @@ abstract class ModelElement extends Canonicalization
         }
       } else {
         // EnumFields can't be inherited, so this case is simpler.
-        // TODO(srawlins): Correct this? Is this dead?
         newModelElement = Field.inherited(
-            e, enclosingContainer, library, packageGraph, getter, setter);
+          e,
+          enclosingContainer,
+          library,
+          packageGraph,
+          getter as ContainerAccessor?,
+          setter as ContainerAccessor?,
+        );
       }
     } else if (e is TopLevelVariableElement) {
       assert(getter != null || setter != null);

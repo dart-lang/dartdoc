@@ -31,39 +31,30 @@ class Field extends ModelElement
     super.library,
     super.packageGraph,
     this.getter,
-    this.setter, {
-    this.isInherited = false,
-    Container? enclosingElement,
-  })  : enclosingElement = isInherited
-            ? enclosingElement!
-            : ModelElement.for_(element.enclosingElement, library, packageGraph)
+    this.setter,
+  )   : isInherited = false,
+        enclosingElement =
+            ModelElement.for_(element.enclosingElement, library, packageGraph)
                 as Container,
         assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
     setter?.enclosingCombo = this;
   }
 
-  factory Field.inherited(
-    FieldElement element,
-    Container enclosingContainer,
-    Library library,
-    PackageGraph packageGraph,
-    Accessor? getter,
-    Accessor? setter,
-  ) {
-    var newField = Field(
-      element,
-      library,
-      packageGraph,
-      getter as ContainerAccessor?,
-      setter as ContainerAccessor?,
-      isInherited: true,
-      enclosingElement: enclosingContainer,
-    );
-    // Can't set `_isInherited` to true if this is the defining element, because
+  Field.inherited(
+    this.element,
+    this.enclosingElement,
+    super.library,
+    super.packageGraph,
+    this.getter,
+    this.setter,
+  )   : isInherited = true,
+        assert(getter != null || setter != null) {
+    // Can't set `isInherited` to true if this is the defining element, because
     // that would mean it isn't inherited.
-    assert(newField.enclosingElement != newField.definingEnclosingContainer);
-    return newField;
+    assert(enclosingElement != definingEnclosingContainer);
+    getter?.enclosingCombo = this;
+    setter?.enclosingCombo = this;
   }
 
   @override
