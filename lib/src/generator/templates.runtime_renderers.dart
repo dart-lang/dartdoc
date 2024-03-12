@@ -4215,20 +4215,6 @@ class _Renderer_DocumentationComment
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasNodoc,
                 ),
-                'modelElementRenderer': Property(
-                  getValue: (CT_ c) => c.modelElementRenderer,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'ModelElementRenderer'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.modelElementRenderer, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['ModelElementRenderer']!);
-                  },
-                ),
                 'needsPrecache': Property(
                   getValue: (CT_ c) => c.needsPrecache,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -16140,7 +16126,6 @@ const _invisibleGetters = {
     'fullyQualifiedNameWithoutLibrary',
     'hasDocumentationComment',
     'hasNodoc',
-    'modelElementRenderer',
     'needsPrecache',
     'pathContext',
     'sourceFileName'
@@ -16574,7 +16559,6 @@ const _invisibleGetters = {
     'runtimeType',
     'superclassConstraints'
   },
-  'ModelElementRenderer': {'hashCode', 'runtimeType'},
   'ModelNode': {'hashCode', 'runtimeType', 'sourceCode'},
   'PackageGraph': {
     'allConstructedModelElements',
