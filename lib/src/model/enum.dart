@@ -6,7 +6,7 @@ import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
-import 'package:dartdoc/src/render/enum_field_renderer.dart';
+import 'package:meta/meta.dart';
 
 class Enum extends InheritingContainer with Constructable, MixedInTypes {
   @override
@@ -97,7 +97,7 @@ class EnumField extends Field {
   String get constantValueBase =>
       element.library.featureSet.isEnabled(Feature.enhanced_enums)
           ? super.constantValueBase
-          : _fieldRenderer.renderValue(this);
+          : renderedName;
 
   @override
   List<DocumentationComment> get documentationFrom {
@@ -118,7 +118,10 @@ class EnumField extends Field {
   }
 
   @override
-  String get linkedName => _fieldRenderer.renderLinkedName(this);
+  String get linkedName {
+    var cssClass = isDeprecated ? ' class="deprecated"' : '';
+    return '<a$cssClass href="$href#$htmlId">$name</a>';
+  }
 
   @override
   bool get isCanonical {
@@ -137,5 +140,10 @@ class EnumField extends Field {
   @override
   Inheritable? get overriddenElement => null;
 
-  EnumFieldRenderer get _fieldRenderer => const EnumFieldRendererHtml();
+  @visibleForTesting
+  String get renderedName => name == 'values'
+      ? 'const List&lt;<wbr>'
+          '<span class="type-parameter">${enclosingElement.name}</span>'
+          '&gt;'
+      : constantValue;
 }
