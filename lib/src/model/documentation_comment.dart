@@ -7,7 +7,6 @@ import 'package:dartdoc/src/model/documentation.dart';
 import 'package:dartdoc/src/model/inheritable.dart';
 import 'package:dartdoc/src/model/locatable.dart';
 import 'package:dartdoc/src/model/source_code_mixin.dart';
-import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
@@ -135,8 +134,6 @@ mixin DocumentationComment
   String? get fullyQualifiedNameWithoutLibrary;
 
   p.Context get pathContext;
-
-  ModelElementRenderer get modelElementRenderer;
 
   static const _allDirectiveNames = {
     'animation',
@@ -360,7 +357,29 @@ mixin DocumentationComment
       }
       var youTubeId = url.group(url.groupCount)!;
 
-      return modelElementRenderer.renderYoutubeUrl(youTubeId, width, height);
+      // Blank lines before and after, and no indenting at the beginning and end
+      // is needed so that Markdown doesn't confuse this with code, so be
+      // careful of whitespace here.
+      return '''
+
+<iframe src="https://www.youtube.com/embed/$youTubeId?rel=0" 
+        title="YouTube video player" 
+        frameborder="0" 
+        allow="accelerometer; 
+               autoplay; 
+               clipboard-write; 
+               encrypted-media; 
+               gyroscope; 
+               picture-in-picture" 
+        allowfullscreen="" 
+        style="max-width: ${width}px;
+               max-height: ${height}px;
+               width: 100%;
+               height: 100%;
+               aspect-ratio: $width / $height;">
+</iframe>
+
+'''; // Must end at start of line, or following inline text will be indented.
     });
   }
 
@@ -477,8 +496,41 @@ mixin DocumentationComment
       }
       var overlayId = '${uniqueId}_play_button_';
 
-      return modelElementRenderer.renderAnimation(
-          uniqueId, width, height, movieUrl, overlayId);
+      return '''
+
+<div style="position: relative;">
+  <div id="$overlayId"
+       onclick="var $uniqueId = document.getElementById('$uniqueId');
+                if ($uniqueId.paused) {
+                  $uniqueId.play();
+                  this.style.display = 'none';
+                } else {
+                  $uniqueId.pause();
+                  this.style.display = 'block';
+                }"
+       style="position:absolute;
+              width:${width}px;
+              height:${height}px;
+              z-index:100000;
+              background-position: center;
+              background-repeat: no-repeat;
+              background-image: url(static-assets/play_button.svg);">
+  </div>
+  <video id="$uniqueId"
+         style="width:${width}px; height:${height}px;"
+         onclick="var $overlayId = document.getElementById('$overlayId');
+                  if (this.paused) {
+                    this.play();
+                    $overlayId.style.display = 'none';
+                  } else {
+                    this.pause();
+                    $overlayId.style.display = 'block';
+                  }" loop>
+    <source src="$movieUrl" type="video/mp4"/>
+  </video>
+</div>
+
+'''; // Must end at start of line, or following inline text will be indented.
     });
   }
 

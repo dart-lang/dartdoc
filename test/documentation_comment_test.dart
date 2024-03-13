@@ -111,16 +111,43 @@ More text.'''));
 ''');
 
     expectNoWarnings();
-    var rendered = libraryModel.modelElementRenderer.renderAnimation(
-        'barHerderAnimation',
-        100,
-        200,
-        Uri.parse('http://host/path/to/video.mp4'),
-        'barHerderAnimation_play_button_');
     expect(doc, equals('''
 Text.
 
-$rendered
+
+<div style="position: relative;">
+  <div id="barHerderAnimation_play_button_"
+       onclick="var barHerderAnimation = document.getElementById('barHerderAnimation');
+                if (barHerderAnimation.paused) {
+                  barHerderAnimation.play();
+                  this.style.display = 'none';
+                } else {
+                  barHerderAnimation.pause();
+                  this.style.display = 'block';
+                }"
+       style="position:absolute;
+              width:100px;
+              height:200px;
+              z-index:100000;
+              background-position: center;
+              background-repeat: no-repeat;
+              background-image: url(static-assets/play_button.svg);">
+  </div>
+  <video id="barHerderAnimation"
+         style="width:100px; height:200px;"
+         onclick="var barHerderAnimation_play_button_ = document.getElementById('barHerderAnimation_play_button_');
+                  if (this.paused) {
+                    this.play();
+                    barHerderAnimation_play_button_.style.display = 'none';
+                  } else {
+                    this.pause();
+                    barHerderAnimation_play_button_.style.display = 'block';
+                  }" loop>
+    <source src="http://host/path/to/video.mp4" type="video/mp4"/>
+  </video>
+</div>
+
+
 
 End text.'''));
   }

@@ -23,7 +23,6 @@ import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/prefix.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
-import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/source_linker.dart';
@@ -413,7 +412,14 @@ abstract class ModelElement extends Canonicalization
     };
   }
 
-  String get attributesAsString => modelElementRenderer.renderAttributes(this);
+  String get attributesAsString {
+    var allAttributes = attributes.toList(growable: false)
+      ..sort(byAttributeOrdering);
+    return allAttributes
+        .map((f) =>
+            '<span class="${f.cssClassName}">${f.linkedNameWithParameters}</span>')
+        .join();
+  }
 
   // True if this is a function, or if it is an type alias to a function.
   bool get isCallable =>
@@ -677,13 +683,9 @@ abstract class ModelElement extends Canonicalization
       return htmlEscape.convert(name);
     }
 
-    return modelElementRenderer.renderLinkedName(this);
+    var cssClass = isDeprecated ? ' class="deprecated"' : '';
+    return '<a$cssClass href="$href">$displayName</a>';
   }();
-
-  @visibleForTesting
-  @override
-  ModelElementRenderer get modelElementRenderer =>
-      const ModelElementRendererHtml();
 
   ParameterRenderer get _parameterRenderer => const ParameterRendererHtml();
 
