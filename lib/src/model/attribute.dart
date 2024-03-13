@@ -49,7 +49,7 @@ abstract class Attribute implements Privacy {
   static const overrideSetter = Attribute._builtIn('override-setter', 3);
 }
 
-class _BuiltInAttribute extends Attribute {
+final class _BuiltInAttribute extends Attribute {
   const _BuiltInAttribute(super.name, super.sortGroup);
 
   @override

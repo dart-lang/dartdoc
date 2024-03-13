@@ -425,20 +425,6 @@ class _Renderer_Annotation extends RendererBase<Annotation> {
           CT_,
           () => {
                 ..._Renderer_Attribute.propertyMap<CT_>(),
-                'annotation': Property(
-                  getValue: (CT_ c) => c.annotation,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'ElementAnnotation'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.annotation, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['ElementAnnotation']!);
-                  },
-                ),
                 'cssClassName': Property(
                   getValue: (CT_ c) => c.cssClassName,
                   renderVariable:
@@ -479,28 +465,6 @@ class _Renderer_Annotation extends RendererBase<Annotation> {
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isPublic,
-                ),
-                'library': Property(
-                  getValue: (CT_ c) => c.library,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Library.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Library,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Library(c.library, ast, r.template, sink,
-                        parent: r);
-                  },
                 ),
                 'linkedName': Property(
                   getValue: (CT_ c) => c.linkedName,
@@ -544,63 +508,6 @@ class _Renderer_Annotation extends RendererBase<Annotation> {
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(
                         c.linkedNameWithParameters, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
-                'modelType': Property(
-                  getValue: (CT_ c) => c.modelType,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_ElementType.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as ElementType,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_ElementType(c.modelType, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
-                'packageGraph': Property(
-                  getValue: (CT_ c) => c.packageGraph,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'PackageGraph'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.packageGraph, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['PackageGraph']!);
-                  },
-                ),
-                'parameterText': Property(
-                  getValue: (CT_ c) => c.parameterText,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.parameterText, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -16194,39 +16101,6 @@ const _invisibleGetters = {
     'session',
     'sinceSdkVersion',
     'source'
-  },
-  'ElementAnnotation': {
-    'constantEvaluationErrors',
-    'element',
-    'hashCode',
-    'isAlwaysThrows',
-    'isDeprecated',
-    'isDoNotStore',
-    'isFactory',
-    'isImmutable',
-    'isInternal',
-    'isIsTest',
-    'isIsTestGroup',
-    'isJS',
-    'isLiteral',
-    'isMustBeOverridden',
-    'isMustCallSuper',
-    'isNonVirtual',
-    'isOptionalTypeArgs',
-    'isOverride',
-    'isProtected',
-    'isProxy',
-    'isRedeclare',
-    'isReopen',
-    'isRequired',
-    'isSealed',
-    'isTarget',
-    'isUseResult',
-    'isVisibleForOverriding',
-    'isVisibleForTemplate',
-    'isVisibleForTesting',
-    'isVisibleOutsideTemplate',
-    'runtimeType'
   },
   'EnumElement': {
     'augmentation',
