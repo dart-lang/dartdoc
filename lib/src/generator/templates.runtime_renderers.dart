@@ -1680,6 +1680,28 @@ class _Renderer_Class extends RendererBase<Class> {
                         getters: _invisibleGetters['InterfaceElement']!);
                   },
                 ),
+                'fileName': Property(
+                  getValue: (CT_ c) => c.fileName,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.fileName, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'inheritanceChain': Property(
                   getValue: (CT_ c) => c.inheritanceChain,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -3833,20 +3855,6 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.documentationAsHtml, ast, r.template, sink,
                         parent: r);
-                  },
-                ),
-                'fileStructure': Property(
-                  getValue: (CT_ c) => c.fileStructure,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'FileStructure'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.fileStructure, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['FileStructure']!);
                   },
                 ),
                 'hasDocumentation': Property(
@@ -8709,20 +8717,6 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
                         parent: r);
                   },
                 ),
-                'fileStructure': Property(
-                  getValue: (CT_ c) => c.fileStructure,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'FileStructure'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.fileStructure, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['FileStructure']!);
-                  },
-                ),
                 'hasPublicLibraries': Property(
                   getValue: (CT_ c) => c.hasPublicLibraries,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10400,20 +10394,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.filePath, ast, r.template, sink,
                         parent: r);
-                  },
-                ),
-                'fileStructure': Property(
-                  getValue: (CT_ c) => c.fileStructure,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'FileStructure'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.fileStructure, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['FileStructure']!);
                   },
                 ),
                 'fullyQualifiedName': Property(
@@ -16208,15 +16188,6 @@ const _invisibleGetters = {
     'hashCode',
     'lengthSync',
     'modificationStamp',
-    'runtimeType'
-  },
-  'FileStructure': {
-    'dirName',
-    'fileName',
-    'hasIndependentFile',
-    'hashCode',
-    'href',
-    'htmlId',
     'runtimeType'
   },
   'FunctionElement': {

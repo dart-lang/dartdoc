@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:collection/collection.dart';
-import 'package:dartdoc/src/generator/file_structure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 
@@ -60,7 +59,4 @@ abstract mixin class LibraryContainer
     }
     return Comparable.compare(_group, other._group);
   }
-
-  @override
-  late final FileStructure fileStructure = FileStructure.fromDocumentable(this);
 }

@@ -66,7 +66,7 @@ class ExtensionType extends InheritingContainer with Constructable {
   ];
 
   @override
-  String get filePath => '${library.dirName}/${fileStructure.fileName}';
+  String get filePath => '${library.dirName}/$fileName';
 
   @override
   String get sidebarPath =>
