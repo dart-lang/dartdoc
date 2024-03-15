@@ -24,6 +24,9 @@ class Mixin extends InheritingContainer {
   ];
 
   @override
+  String get fileName => '$name-mixin.html';
+
+  @override
   String get sidebarPath => '${library.dirName}/$name-mixin-sidebar.html';
 
   @override

@@ -5,6 +5,7 @@
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member;
+import 'package:dartdoc/src/comment_references/parser.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Operator extends Method {
@@ -29,6 +30,9 @@ class Operator extends Method {
     // is removed.
     return 'operator ${super.name}';
   }
+
+  @override
+  String get fileName => 'operator_${operatorNames[referenceName]}.html';
 
   @override
   String get referenceName => super.name;

@@ -5223,6 +5223,28 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                         parent: r);
                   },
                 ),
+                'fileName': Property(
+                  getValue: (CT_ c) => c.fileName,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.fileName, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'filePath': Property(
                   getValue: (CT_ c) => c.filePath,
                   renderVariable:
@@ -6612,6 +6634,28 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                       List<MustachioNode> ast, StringSink sink) {
                     _render_ModelElement(
                         c.enclosingElement, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
+                'fileName': Property(
+                  getValue: (CT_ c) => c.fileName,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.fileName, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -8346,6 +8390,28 @@ class _Renderer_Library extends RendererBase<Library> {
                         _render_Extension(e, ast, r.template, sink, parent: r));
                   },
                 ),
+                'fileName': Property(
+                  getValue: (CT_ c) => c.fileName,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.fileName, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'filePath': Property(
                   getValue: (CT_ c) => c.filePath,
                   renderVariable:
@@ -9852,6 +9918,28 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.element, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['MixinElement']!);
+                  },
+                ),
+                'fileName': Property(
+                  getValue: (CT_ c) => c.fileName,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.fileName, ast, r.template, sink,
+                        parent: r);
                   },
                 ),
                 'hasModifiers': Property(
@@ -11555,6 +11643,28 @@ class _Renderer_Operator extends RendererBase<Operator> {
           CT_,
           () => {
                 ..._Renderer_Method.propertyMap<CT_>(),
+                'fileName': Property(
+                  getValue: (CT_ c) => c.fileName,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.fileName, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'fullyQualifiedName': Property(
                   getValue: (CT_ c) => c.fullyQualifiedName,
                   renderVariable:
@@ -16232,6 +16342,7 @@ const _invisibleGetters = {
     'documentationComment',
     'documentationFrom',
     'enclosingElement',
+    'fileName',
     'getter',
     'getterSetterBothAvailable',
     'hasAccessorsWithDocs',

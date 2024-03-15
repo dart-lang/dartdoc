@@ -56,6 +56,9 @@ mixin GetterSetterCombo on ModelElement {
 
   bool get isInherited;
 
+  @override
+  String get fileName => isConst ? '$name-constant.html' : '$name.html';
+
   /// Whether this has a constant value which should be displayed.
   bool get hasConstantValueForDisplay => false;
 

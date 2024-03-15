@@ -69,6 +69,9 @@ class ExtensionType extends InheritingContainer with Constructable {
   String get filePath => '${library.dirName}/$fileName';
 
   @override
+  String get fileName => '$name-extension-type.html';
+
+  @override
   String get sidebarPath =>
       '${library.dirName}/$name-extension-type-sidebar.html';
 
