@@ -498,8 +498,6 @@ Future<String> docTestingPackage() async {
       path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
       '--output',
       outputPath,
-      '--example-path-prefix',
-      'examples',
       '--include-source',
       '--json',
       '--link-to-remote',
