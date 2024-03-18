@@ -1650,13 +1650,12 @@ class _Renderer_Class extends RendererBase<Class> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'InterfaceElement'),
+                          c, remainingNames, 'ClassElement'),
                   isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.element, ast, r.template, sink,
-                        parent: r,
-                        getters: _invisibleGetters['InterfaceElement']!);
+                        parent: r, getters: _invisibleGetters['ClassElement']!);
                   },
                 ),
                 'fileName': Property(
@@ -15958,6 +15957,27 @@ const _invisibleGetters = {
     'columnNumber',
     'hashCode',
     'lineNumber',
+    'runtimeType'
+  },
+  'ClassElement': {
+    'augmentation',
+    'augmentationTarget',
+    'augmented',
+    'hasNonFinalField',
+    'hashCode',
+    'isAbstract',
+    'isBase',
+    'isConstructable',
+    'isDartCoreEnum',
+    'isDartCoreObject',
+    'isExhaustive',
+    'isFinal',
+    'isInline',
+    'isInterface',
+    'isMixinApplication',
+    'isMixinClass',
+    'isSealed',
+    'isValidMixin',
     'runtimeType'
   },
   'CommentReferable': {
