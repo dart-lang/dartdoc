@@ -107,7 +107,7 @@ class Category
   @override
   String get fullyQualifiedName => name;
 
-  String get filePath => 'topics/${fileStructure.fileName}';
+  String get filePath => 'topics/$name-topic.html';
 
   @override
   String? get href => isCanonical ? '${package.baseHref}$filePath' : null;

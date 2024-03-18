@@ -47,6 +47,9 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   }
 
   @override
+  String get fileName => '$name-class.html';
+
+  @override
   bool get isAbstract => switch (element) {
         ClassElement class_ when class_.isAbstract => true,
         _ => false,

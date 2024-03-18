@@ -15,7 +15,6 @@ import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/generator/file_structure.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -566,8 +565,7 @@ abstract class ModelElement extends Canonicalization
 
   /// The name of the output file in which this element will be primarily
   /// documented.
-  @Deprecated('replace with fileStructure.fileName')
-  String get fileName => fileStructure.fileName;
+  String get fileName => '$name.html';
 
   /// The full path of the output file in which this element will be primarily
   /// documented.
@@ -791,9 +789,6 @@ abstract class ModelElement extends Canonicalization
   }
 
   String get linkedObjectType => _packageGraph.dartCoreObject;
-
-  @override
-  late final FileStructure fileStructure = FileStructure.fromDocumentable(this);
 }
 
 extension on MultiplyInheritedExecutableElement {

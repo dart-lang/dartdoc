@@ -93,7 +93,7 @@ class Extension extends Container implements EnclosedElement {
   ];
 
   @override
-  String get filePath => '${library.dirName}/${fileStructure.fileName}';
+  String get filePath => '${library.dirName}/$fileName';
 
   @override
   String get sidebarPath => '${library.dirName}/$name-extension-sidebar.html';

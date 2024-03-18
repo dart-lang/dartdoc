@@ -33,7 +33,7 @@ abstract class Typedef extends ModelElement
   String get linkedGenericParameters => _renderTypeParameters(isLinked: true);
 
   @override
-  String get filePath => '${library.dirName}/${fileStructure.fileName}';
+  String get filePath => '${library.dirName}/$fileName';
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;
