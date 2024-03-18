@@ -895,6 +895,7 @@ class PackageGraph with CommentReferable, Nameable {
     return allElements;
   }
 
+  @visibleForTesting
   late final List<ModelElement> allLocalModelElements = [
     for (var library in _localLibraries) ...library.allModelElements
   ];
