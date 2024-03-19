@@ -12,11 +12,27 @@ class ParameterRendererHtmlList extends ParameterRendererHtml {
   const ParameterRendererHtmlList();
 
   @override
+  bool get isBlock => true;
+
+  @override
   String listItem(String item) => '<li>$item</li>\n';
+
   @override
   // TODO(jcollins-g): consider comma separated lists and more advanced CSS.
-  String orderedList(String listItems) =>
-      '<ol class="parameter-list">$listItems</ol>\n';
+  String orderedList(
+    String listItems, {
+    bool multiLine = false,
+    String openingBracket = '',
+    String closingBracket = '',
+  }) {
+    var classes = [
+      'parameter-list',
+      if (!multiLine) 'single-line',
+    ];
+    return '$openingBracket'
+        '<ol class="${classes.join(' ')}"> $listItems</ol>'
+        '$closingBracket';
+  }
 }
 
 /// Render HTML suitable for a single, wrapped line.
@@ -24,13 +40,26 @@ class ParameterRendererHtml extends ParameterRenderer {
   const ParameterRendererHtml();
 
   @override
-  String listItem(String item) => item;
+  bool get isBlock => false;
+
   @override
-  String orderedList(String listItems) => listItems;
+  String listItem(String item) => item;
+
+  @override
+  String orderedList(
+    String listItems, {
+    bool multiLine = false,
+    String openingBracket = '',
+    String closingBracket = '',
+  }) =>
+      '$openingBracket$listItems$closingBracket';
+
   @override
   String annotation(String annotation) => '<span>$annotation</span>';
+
   @override
   String covariant(String covariant) => '<span>$covariant</span>';
+
   @override
   String defaultValue(String defaultValue) {
     var escaped =
@@ -41,12 +70,15 @@ class ParameterRendererHtml extends ParameterRenderer {
   @override
   String parameter(String parameter, String id) =>
       '<span class="parameter" id="$id">$parameter</span>';
+
   @override
   String parameterName(String parameterName) =>
       '<span class="parameter-name">$parameterName</span>';
+
   @override
   String typeName(String typeName) =>
       '<span class="type-annotation">$typeName</span>';
+
   @override
   String required(String required) => '<span>$required</span>';
 }
@@ -54,8 +86,15 @@ class ParameterRendererHtml extends ParameterRenderer {
 abstract class ParameterRenderer {
   const ParameterRenderer();
 
+  bool get isBlock;
+
   String listItem(String item);
-  String orderedList(String listItems);
+  String orderedList(
+    String listItems, {
+    bool multiLine = false,
+    String openingBracket = '',
+    String closingBracket = '',
+  });
   String annotation(String annotation);
   String covariant(String covariant);
   String defaultValue(String defaultValue);
@@ -66,6 +105,10 @@ abstract class ParameterRenderer {
 
   String renderLinkedParams(List<Parameter> parameters,
       {bool showMetadata = true}) {
+    if (parameters.isEmpty) {
+      return '';
+    }
+
     var positionalParams = parameters
         .where((Parameter p) => p.isRequiredPositional)
         .toList(growable: false);
@@ -74,77 +117,81 @@ abstract class ParameterRenderer {
         .toList(growable: false);
     var namedParams =
         parameters.where((Parameter p) => p.isNamed).toList(growable: false);
+    var isMultiline =
+        isBlock && (namedParams.isNotEmpty || parameters.length > 3);
 
     var buffer = StringBuffer();
-    if (positionalParams.isNotEmpty) {
-      _renderLinkedParameterSublist(
-        positionalParams,
-        buffer,
-        trailingComma:
-            optionalPositionalParams.isNotEmpty || namedParams.isNotEmpty,
-        showMetadata: showMetadata,
-      );
+
+    // If there are no required parameters, but optional positional or named
+    // parameters, then we start with an opening bracket.
+    var openingBracket = '';
+    // If there are any optional positional or named parameters, then we end
+    // with a closing bracket.
+    var closingBracket = '';
+
+    if (positionalParams.isEmpty) {
+      if (optionalPositionalParams.isNotEmpty) {
+        openingBracket = '[';
+      } else if (namedParams.isNotEmpty) {
+        openingBracket = '{';
+      }
+    } else {
+      // Determine whether the line should end with an opening delimiter for
+      // optional parameters.
+      String trailingText;
+      if (optionalPositionalParams.isNotEmpty) {
+        trailingText = ', [';
+      } else if (namedParams.isNotEmpty) {
+        trailingText = ', {';
+      } else if (isMultiline) {
+        trailingText = ', ';
+      } else {
+        trailingText = '';
+      }
+
+      for (var p in positionalParams) {
+        var renderedParameter = _renderParameter(p, showMetadata: showMetadata);
+        var suffix = identical(p, positionalParams.last) ? trailingText : ', ';
+        var wrappedParameter = parameter('$renderedParameter$suffix', p.htmlId);
+        buffer.write(listItem(wrappedParameter));
+      }
     }
     if (optionalPositionalParams.isNotEmpty) {
-      _renderLinkedParameterSublist(
-        optionalPositionalParams,
-        buffer,
-        trailingComma: namedParams.isNotEmpty,
-        openBracket: '[',
-        closeBracket: ']',
-        showMetadata: showMetadata,
-      );
+      closingBracket = ']';
+
+      for (var p in optionalPositionalParams) {
+        var renderedParameter = _renderParameter(p, showMetadata: showMetadata);
+        var suffix = isMultiline || !identical(p, optionalPositionalParams.last)
+            ? ', '
+            : '';
+        var wrappedParameter = parameter('$renderedParameter$suffix', p.htmlId);
+        buffer.write(listItem(wrappedParameter));
+      }
     }
     if (namedParams.isNotEmpty) {
-      _renderLinkedParameterSublist(
-        namedParams,
-        buffer,
-        trailingComma: false,
-        openBracket: '{',
-        closeBracket: '}',
-        showMetadata: showMetadata,
-      );
-    }
-    return orderedList(buffer.toString());
-  }
+      closingBracket = '}';
 
-  void _renderLinkedParameterSublist(
-    List<Parameter> parameters,
-    StringBuffer buffer, {
-    required bool trailingComma,
-    String openBracket = '',
-    String closeBracket = '',
-    bool showMetadata = true,
-  }) {
-    for (var p in parameters) {
-      var prefix = '';
-      var suffix = '';
-      if (identical(p, parameters.first)) {
-        prefix = openBracket;
+      for (var p in namedParams) {
+        var renderedParameter = _renderParameter(p, showMetadata: showMetadata);
+        var suffix = isMultiline || !identical(p, namedParams.last) ? ', ' : '';
+        var wrappedParameter = parameter('$renderedParameter$suffix', p.htmlId);
+        buffer.write(listItem(wrappedParameter));
       }
-      if (identical(p, parameters.last)) {
-        suffix += closeBracket;
-        if (trailingComma) suffix += ', ';
-      } else {
-        suffix += ', ';
-      }
-      final renderedParameter = _renderParameter(
-        p,
-        prefix: prefix,
-        suffix: suffix,
-        showMetadata: showMetadata,
-      );
-      buffer.write(listItem(parameter(renderedParameter, p.htmlId)));
     }
+
+    return orderedList(
+      buffer.toString(),
+      multiLine: isMultiline,
+      openingBracket: openingBracket,
+      closingBracket: closingBracket,
+    );
   }
 
   String _renderParameter(
     Parameter param, {
-    required String prefix,
-    required String suffix,
     bool showMetadata = true,
   }) {
-    final buffer = StringBuffer(prefix);
+    final buffer = StringBuffer();
     final modelType = param.modelType;
 
     if (showMetadata && param.hasAnnotations) {
@@ -216,7 +263,6 @@ abstract class ParameterRenderer {
       buffer.write(defaultValue(param.defaultValue!));
     }
 
-    buffer.write(suffix);
     return buffer.toString();
   }
 }

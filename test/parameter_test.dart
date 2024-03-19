@@ -85,13 +85,12 @@ class A {
 
     expect(named.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="named-param-f">
-          \{
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
           </span>
           <span class="parameter-name">f</span>
-          \}
         </span>
+        \}
       '''));
   }
 
@@ -106,15 +105,14 @@ class A {
 
     expect(namedWithDefault.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="namedWithDefault-param-f">
-          \{
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
           </span>
           <span class="parameter-name">f</span>
           =
           <span class="default-value">0</span>
-          \}
         </span>
+        \}
       '''));
   }
 
@@ -129,14 +127,13 @@ class A {
 
     expect(requiredNamed.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="requiredNamed-param-f">
-          \{
           <span>required</span>
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
           </span>
           <span class="parameter-name">f</span>
-          \}
         </span>
+        \}
       '''));
   }
 
@@ -151,13 +148,12 @@ class A {
 
     expect(optionalPositional.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="optionalPositional-param-f">
-          \[
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
           </span>
           <span class="parameter-name">f</span>
-          \]
         </span>
+        \]
       '''));
   }
 
@@ -172,15 +168,14 @@ class A {
 
     expect(defaultValue.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="defaultValue-param-f">
-          \[
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
           </span>
           <span class="parameter-name">f</span>
           =
           <span class="default-value">0</span>
-          \]
         </span>
+        \]
       '''));
   }
 
@@ -283,13 +278,12 @@ class D extends C {
 
     expect(named.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="named-param-a">
-          \{
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
           </span>
           <span class="parameter-name">a</span>
-          \}
         </span>
+        \}
       '''));
   }
 
@@ -306,15 +300,14 @@ class D extends C {
 
     expect(namedWithDefault.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="namedWithDefault-param-a">
-          \{
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>
           </span>
           <span class="parameter-name">a</span>
           =
           <span class="default-value">0</span>
-          \}
         </span>
+        \}
       '''));
   }
 
@@ -331,14 +324,13 @@ class D extends C {
 
     expect(requiredNamed.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="requiredNamed-param-a">
-          \{
           <span>required</span>
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>
           </span>
           <span class="parameter-name">a</span>
-          \}
         </span>
+        \}
       '''));
   }
 
@@ -355,13 +347,12 @@ class D extends C {
 
     expect(optionalPositional.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="optionalPositional-param-a">
-          \[
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
           </span>
           <span class="parameter-name">a</span>
-          \]
         </span>
+        \]
       '''));
   }
 
@@ -378,15 +369,14 @@ class D extends C {
 
     expect(defaultValue.linkedParams, matchesCompressed(r'''
         <span class="parameter" id="defaultValue-param-a">
-          \[
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>
           </span>
           <span class="parameter-name">a</span>
           =
           <span class="default-value">0</span>
-          \]
         </span>
+        \]
       '''));
   }
 
