@@ -177,7 +177,11 @@ class PubPackageBuilder implements PackageBuilder {
 
   List<String> get _sdkFilesToDocument => [
         for (var sdkLib in _sdk.sdkLibraries)
-          _sdk.mapDartUri(sdkLib.shortName)!.fullName,
+          // TODO(srawlins): This bit is temporary, here in order to unblock some
+          // unfortunate CI in the Dart SDK which is not designed well for when
+          // SDK libraries are _removed_.
+          if (!sdkLib.shortName.contains('macros'))
+            _sdk.mapDartUri(sdkLib.shortName)!.fullName,
       ];
 
   /// Resolves a single library at [filePath] using the current analysis driver.
