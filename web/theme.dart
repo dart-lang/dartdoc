@@ -2,7 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:html';
+import 'dart:js_interop';
+
+import 'package:web/web.dart';
 
 void init() {
   var bodyElement = document.body;
@@ -11,30 +13,29 @@ void init() {
     return;
   }
 
-  var theme = document.getElementById('theme') as InputElement;
+  var theme = document.getElementById('theme') as HTMLInputElement;
 
-  theme.addEventListener('change', (event) {
-    if (theme.checked == true) {
+  void switchThemes() {
+    if (theme.checked) {
       bodyElement.setAttribute('class', 'dark-theme');
       theme.setAttribute('value', 'dark-theme');
-      window.localStorage['colorTheme'] = 'true';
+      window.localStorage.setItem('colorTheme', 'true');
     } else {
       bodyElement.setAttribute('class', 'light-theme');
       theme.setAttribute('value', 'light-theme');
-      window.localStorage['colorTheme'] = 'false';
+      window.localStorage.setItem('colorTheme', 'false');
     }
-  });
+  }
 
-  if (window.localStorage['colorTheme'] != null) {
-    theme.checked = window.localStorage['colorTheme'] == 'true';
-    if (theme.checked == true) {
-      bodyElement.setAttribute('class', 'dark-theme');
-      theme.setAttribute('value', 'dark-theme');
-      window.localStorage['colorTheme'] = 'true';
-    } else {
-      bodyElement.setAttribute('class', 'light-theme');
-      theme.setAttribute('value', 'light-theme');
-      window.localStorage['colorTheme'] = 'false';
-    }
+  theme.addEventListener(
+    'change',
+    (Event _) {
+      switchThemes();
+    }.toJS,
+  );
+
+  if (window.localStorage.getItem('colorTheme') case var colorTheme?) {
+    theme.checked = colorTheme == 'true';
+    switchThemes();
   }
 }

@@ -3,29 +3,30 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:convert';
-import 'dart:html';
-import 'package:dartdoc/src/search.dart';
+import 'dart:js_interop';
 
-import 'web_interop.dart';
+import 'package:dartdoc/src/search.dart';
+import 'package:web/web.dart';
 
 final String _htmlBase = () {
-  final body = document.querySelector('body')!;
+  final body = document.body;
+  if (body == null) return '';
 
   // If dartdoc did not add a base-href tag, we will need to add the relative
   // path ourselves.
-  if (body.attributes['data-using-base-href'] == 'false') {
+  if (body.getAttribute('data-using-base-href') == 'false') {
     // Dartdoc stores the htmlBase in 'body[data-base-href]'.
-    return body.attributes['data-base-href'] ?? '';
+    return body.getAttribute('data-base-href') ?? '';
   } else {
     return '';
   }
 }();
 
 void init() {
-  var searchBox = document.getElementById('search-box') as InputElement?;
-  var searchBody = document.getElementById('search-body') as InputElement?;
+  var searchBox = document.getElementById('search-box') as HTMLInputElement?;
+  var searchBody = document.getElementById('search-body') as HTMLInputElement?;
   var searchSidebar =
-      document.getElementById('search-sidebar') as InputElement?;
+      document.getElementById('search-sidebar') as HTMLInputElement?;
 
   void disableSearch() {
     print('Could not activate search functionality.');
@@ -35,14 +36,16 @@ void init() {
     searchSidebar?.placeholder = 'Failed to initialize search';
   }
 
-  window.fetch('${_htmlBase}index.json').then((response) async {
-    final fetchResponse = response as FetchResponse;
+  window
+      .fetch('${_htmlBase}index.json'.toJS)
+      .toDart
+      .then((fetchResponse) async {
     if (fetchResponse.status != 200) {
       disableSearch();
       return;
     }
 
-    final text = await fetchResponse.text;
+    final text = (await fetchResponse.text().toDart).toDart;
     final index = Index.fromJson(text);
 
     // Navigate to the first result from the 'search' query parameter
@@ -89,56 +92,59 @@ class _Search {
   final Index index;
   final Uri uri;
 
-  late final listBox = document.createElement('div')
+  late final listBox = document.createElement('div') as HTMLElement
     ..setAttribute('role', 'listbox')
     ..setAttribute('aria-expanded', 'false')
     ..style.display = 'none'
-    ..classes.add('tt-menu')
-    ..append(moreResults)
-    ..append(searchResults);
+    ..classList.add('tt-menu')
+    ..appendChild(moreResults)
+    ..appendChild(searchResults);
 
   /// Element used in [listBox] to inform the functionality of hitting enter in
   /// search box.
   late final moreResults = document.createElement('div')
-    ..classes.add('enter-search-message');
+    ..classList.add('enter-search-message');
 
   /// Element that contains the search suggestions in a new format.
   late final searchResults = document.createElement('div')
-    ..classes.add('tt-search-results');
+    ..classList.add('tt-search-results');
 
   String? storedValue;
   String actualValue = '';
-  final List<Element> suggestionElements = <Element>[];
+  final List<HTMLElement> suggestionElements = <HTMLElement>[];
   List<IndexItem> suggestionsInfo = <IndexItem>[];
   int selectedElement = -1;
 
   _Search(this.index) : uri = Uri.parse(window.location.href);
 
-  void initialize(InputElement inputElement) {
+  void initialize(HTMLInputElement inputElement) {
     inputElement.disabled = false;
     inputElement.setAttribute('placeholder', 'Search API Docs');
     // Handle grabbing focus when the user types '/' outside of the input.
-    document.addEventListener('keydown', (Event event) {
-      if (event is! KeyboardEvent) {
-        return;
-      }
-      if (event.key == '/' && document.activeElement is! InputElement) {
-        event.preventDefault();
-        inputElement.focus();
-      }
-    });
+    document.addEventListener(
+      'keydown',
+      (Event event) {
+        if (event is! KeyboardEvent) {
+          return;
+        }
+        if (event.key == '/' && document.activeElement is! HTMLInputElement) {
+          event.preventDefault();
+          inputElement.focus();
+        }
+      }.toJS,
+    );
 
     // Prepare elements.
-    var wrapper = document.createElement('div')..classes.add('tt-wrapper');
+    var wrapper = document.createElement('div')..classList.add('tt-wrapper');
     inputElement
       ..replaceWith(wrapper)
       ..setAttribute('autocomplete', 'off')
       ..setAttribute('spellcheck', 'false')
-      ..classes.add('tt-input');
+      ..classList.add('tt-input');
 
     wrapper
-      ..append(inputElement)
-      ..append(listBox);
+      ..appendChild(inputElement)
+      ..appendChild(listBox);
 
     setEventListeners(inputElement);
 
@@ -177,21 +183,27 @@ class _Search {
     }
 
     mainContent
-      ..text = ''
-      ..append(document.createElement('section')..classes.add('search-summary'))
-      ..append(document.createElement('h2')..innerHtml = 'Search Results')
-      ..append(document.createElement('div')
-        ..classes.add('search-summary')
-        ..innerHtml = '$_suggestionLength results for "$searchText"');
+      ..textContent = ''
+      ..appendChild(
+        document.createElement('section')..classList.add('search-summary'),
+      )
+      ..appendChild(
+        document.createElement('h2')..innerHTML = 'Search Results',
+      )
+      ..appendChild(
+        document.createElement('div')
+          ..classList.add('search-summary')
+          ..innerHTML = '$_suggestionLength results for "$searchText"',
+      );
 
     if (_containerMap.isNotEmpty) {
       for (final element in _containerMap.values) {
-        mainContent.append(element);
+        mainContent.appendChild(element);
       }
     } else {
       var noResults = document.createElement('div')
-        ..classes.add('search-summary')
-        ..innerHtml =
+        ..classList.add('search-summary')
+        ..innerHTML =
             'There was not a match for "$searchText". Want to try searching '
                 'from additional Dart-related sites? ';
 
@@ -200,9 +212,9 @@ class _Search {
           .replace(queryParameters: {'q': searchText});
       var link = document.createElement('a')
         ..setAttribute('href', buildLink.toString())
-        ..text = 'Search on dart.dev.';
-      noResults.append(link);
-      mainContent.append(noResults);
+        ..textContent = 'Search on dart.dev.';
+      noResults.appendChild(link);
+      mainContent.appendChild(noResults);
     }
   }
 
@@ -210,7 +222,7 @@ class _Search {
     ..style.display = 'none'
     ..setAttribute('aria-expanded', 'false');
 
-  void showEnterMessage() => moreResults.text = _suggestionLength > 10
+  void showEnterMessage() => moreResults.textContent = _suggestionLength > 10
       ? 'Press "Enter" key to see all $_suggestionLength results'
       : '';
 
@@ -223,7 +235,7 @@ class _Search {
     suggestionsInfo = [];
     suggestionElements.clear();
     _containerMap.clear();
-    searchResults.text = '';
+    searchResults.textContent = '';
 
     if (suggestions.isEmpty) {
       hideSuggestions();
@@ -237,7 +249,7 @@ class _Search {
     var suggestionSource =
         isSearchPage ? _containerMap.values : suggestionElements;
     for (final element in suggestionSource) {
-      searchResults.append(element);
+      searchResults.appendChild(element);
     }
     suggestionsInfo = suggestions;
 
@@ -270,158 +282,179 @@ class _Search {
   }
 
   /// Clears the search box and suggestions.
-  void clearSearch(InputElement inputElement) {
+  void clearSearch(HTMLInputElement inputElement) {
     removeSelectedElement();
-    if (storedValue != null) {
-      inputElement.value = storedValue;
+    if (storedValue case var value?) {
+      inputElement.value = value;
       storedValue = null;
     }
     hideSuggestions();
   }
 
-  void setEventListeners(InputElement inputElement) {
-    inputElement.addEventListener('focus', (Event event) {
-      handleSearch(inputElement.value, forceUpdate: true);
-    });
+  void setEventListeners(HTMLInputElement inputElement) {
+    inputElement.addEventListener(
+      'focus',
+      (Event event) {
+        handleSearch(inputElement.value, forceUpdate: true);
+      }.toJS,
+    );
 
-    inputElement.addEventListener('blur', (Event event) {
-      clearSearch(inputElement);
-    });
-
-    inputElement.addEventListener('input', (event) {
-      handleSearch(inputElement.value);
-    });
-
-    inputElement.addEventListener('keydown', (Event event) {
-      if (event.type != 'keydown') {
-        return;
-      }
-
-      event = event as KeyboardEvent;
-
-      if (event.code == 'Enter') {
-        event.preventDefault();
-        if (!selectedElement.isBlurred) {
-          var href = suggestionElements[selectedElement].dataset['href'];
-          if (href != null) {
-            window.location.assign('$_htmlBase$href');
-          }
-          return;
-        }
-        // If there is no search suggestion selected, then change the window
-        // location to `search.html`.
-        else {
-          var query = _htmlEscape.convert(actualValue);
-          var searchPath = Uri.parse('${_htmlBase}search.html')
-              .replace(queryParameters: {'q': query});
-          window.location.assign(searchPath.toString());
-          return;
-        }
-      }
-
-      var lastIndex = suggestionElements.length - 1;
-      var previousSelectedElement = selectedElement;
-
-      if (event.code == 'ArrowUp') {
-        if (selectedElement.isBlurred) {
-          selectedElement = lastIndex;
-        } else {
-          selectedElement = selectedElement - 1;
-        }
-      } else if (event.code == 'ArrowDown') {
-        if (selectedElement == lastIndex) {
-          removeSelectedElement();
-        } else {
-          selectedElement = selectedElement + 1;
-        }
-      } else if (event.code == 'Escape') {
+    inputElement.addEventListener(
+      'blur',
+      (Event event) {
         clearSearch(inputElement);
-      } else {
-        if (storedValue != null) {
-          storedValue = null;
-          handleSearch(inputElement.value);
+      }.toJS,
+    );
+
+    inputElement.addEventListener(
+      'input',
+      (Event event) {
+        handleSearch(inputElement.value);
+      }.toJS,
+    );
+
+    inputElement.addEventListener(
+      'keydown',
+      (Event event) {
+        if (event.type != 'keydown') {
+          return;
         }
-        return;
-      }
 
-      if (!previousSelectedElement.isBlurred) {
-        suggestionElements[previousSelectedElement].classes.remove('tt-cursor');
-      }
+        event = event as KeyboardEvent;
 
-      if (!selectedElement.isBlurred) {
-        var selected = suggestionElements[selectedElement];
-        selected.classes.add('tt-cursor');
-
-        // Guarantee the selected element is visible.
-        if (selectedElement == 0) {
-          listBox.scrollTop = 0;
-        } else if (selectedElement == lastIndex) {
-          listBox.scrollTop = listBox.scrollHeight;
-        } else {
-          var offsetTop = selected.offsetTop;
-          var parentOffsetHeight = listBox.offsetHeight;
-          if (offsetTop < parentOffsetHeight ||
-              parentOffsetHeight < (offsetTop + selected.offsetHeight)) {
-            selected.scrollIntoView();
+        if (event.code == 'Enter') {
+          event.preventDefault();
+          if (!selectedElement.isBlurred) {
+            if (suggestionElements[selectedElement].getAttribute('data-href')
+                case var href?) {
+              window.location.assign('$_htmlBase$href');
+            }
+            return;
+          } else {
+            // If there is no search suggestion selected, then change the
+            // window location to `search.html`.
+            var query = _htmlEscape.convert(actualValue);
+            var searchPath = Uri.parse('${_htmlBase}search.html')
+                .replace(queryParameters: {'q': query});
+            window.location.assign(searchPath.toString());
+            return;
           }
         }
 
-        // Store the actual input value to display their currently selected
-        // item.
-        storedValue ??= inputElement.value;
-        inputElement.value = suggestionsInfo[selectedElement].name;
-      } else if (storedValue != null && !previousSelectedElement.isBlurred) {
-        // They are moving back to the input field, so return the stored value.
-        inputElement.value = storedValue;
-        storedValue = null;
-      }
+        var lastIndex = suggestionElements.length - 1;
+        var previousSelectedElement = selectedElement;
 
-      event.preventDefault();
-    });
+        if (event.code == 'ArrowUp') {
+          if (selectedElement.isBlurred) {
+            selectedElement = lastIndex;
+          } else {
+            selectedElement = selectedElement - 1;
+          }
+        } else if (event.code == 'ArrowDown') {
+          if (selectedElement == lastIndex) {
+            removeSelectedElement();
+          } else {
+            selectedElement = selectedElement + 1;
+          }
+        } else if (event.code == 'Escape') {
+          clearSearch(inputElement);
+        } else {
+          if (storedValue != null) {
+            storedValue = null;
+            handleSearch(inputElement.value);
+          }
+          return;
+        }
+
+        if (!previousSelectedElement.isBlurred) {
+          suggestionElements[previousSelectedElement]
+              .classList
+              .remove('tt-cursor');
+        }
+
+        if (!selectedElement.isBlurred) {
+          var selected = suggestionElements[selectedElement];
+          selected.classList.add('tt-cursor');
+
+          // Guarantee the selected element is visible.
+          if (selectedElement == 0) {
+            listBox.scrollTop = 0;
+          } else if (selectedElement == lastIndex) {
+            listBox.scrollTop = listBox.scrollHeight;
+          } else {
+            var offsetTop = selected.offsetTop;
+            var parentOffsetHeight = listBox.offsetHeight;
+            if (offsetTop < parentOffsetHeight ||
+                parentOffsetHeight < (offsetTop + selected.offsetHeight)) {
+              selected.scrollIntoView();
+            }
+          }
+
+          // Store the actual input value to
+          // display their currently selected item.
+          storedValue ??= inputElement.value;
+          inputElement.value = suggestionsInfo[selectedElement].name;
+        } else if (storedValue case var value?
+            when !previousSelectedElement.isBlurred) {
+          // They are moving back to the input field,
+          // so return the stored value.
+          inputElement.value = value;
+          storedValue = null;
+        }
+
+        event.preventDefault();
+      }.toJS,
+    );
   }
 
   /// Sets the selection index to `-1`.
   void removeSelectedElement() => selectedElement = -1;
 }
 
-Element _createSuggestion(String query, IndexItem match) {
-  final suggestion = document.createElement('div')
+HTMLElement _createSuggestion(String query, IndexItem match) {
+  final suggestion = document.createElement('div') as HTMLElement
     ..setAttribute('data-href', match.href ?? '')
-    ..classes.add('tt-suggestion');
+    ..classList.add('tt-suggestion');
 
   final suggestionTitle = document.createElement('span')
-    ..classes.add('tt-suggestion-title')
-    ..innerHtml = _highlight(
+    ..classList.add('tt-suggestion-title')
+    ..innerHTML = _highlight(
         '${match.name} ${match.kind.toString().toLowerCase()}', query);
-  suggestion.append(suggestionTitle);
+  suggestion.appendChild(suggestionTitle);
 
   final enclosingElement = match.enclosedBy;
   if (enclosingElement != null) {
-    suggestion.append(document.createElement('span')
-      ..classes.add('tt-suggestion-container')
-      ..innerHtml = '(in ${_highlight(enclosingElement.name, query)})');
+    suggestion.appendChild(document.createElement('span') as HTMLElement
+      ..classList.add('tt-suggestion-container')
+      ..innerHTML = '(in ${_highlight(enclosingElement.name, query)})');
   }
 
   // The one line description to use in the search suggestions.
   final matchDescription = match.desc;
   if (matchDescription != null && matchDescription.isNotEmpty) {
-    final inputDescription = document.createElement('blockquote')
-      ..classes.add('one-line-description')
-      ..attributes['title'] = _decodeHtml(matchDescription)
-      ..innerHtml = _highlight(matchDescription, query);
-    suggestion.append(inputDescription);
+    final inputDescription = document.createElement('blockquote') as HTMLElement
+      ..classList.add('one-line-description')
+      ..setAttribute('title', _decodeHtml(matchDescription))
+      ..innerHTML = _highlight(matchDescription, query);
+    suggestion.appendChild(inputDescription);
   }
 
-  suggestion.addEventListener('mousedown', (event) {
-    event.preventDefault();
-  });
-
-  suggestion.addEventListener('click', (event) {
-    if (match.href != null) {
-      window.location.assign('$_htmlBase${match.href}');
+  suggestion.addEventListener(
+    'mousedown',
+    (Event event) {
       event.preventDefault();
-    }
-  });
+    }.toJS,
+  );
+
+  suggestion.addEventListener(
+    'click',
+    (Event event) {
+      if (match.href case var matchHref?) {
+        window.location.assign('$_htmlBase$matchHref');
+        event.preventDefault();
+      }
+    }.toJS,
+  );
 
   if (enclosingElement != null) {
     _mapToContainer(
@@ -436,32 +469,32 @@ Element _createSuggestion(String query, IndexItem match) {
 }
 
 /// Maps a suggestion library/class [Element] to the other suggestions, if any.
-void _mapToContainer(Element containerElement, Element suggestion) {
-  final containerInnerHtml = containerElement.innerHtml;
+void _mapToContainer(HTMLElement containerElement, HTMLElement suggestion) {
+  final containerInnerHtml = containerElement.innerHTML;
 
-  if (containerInnerHtml == null) {
+  if (containerInnerHtml.isEmpty) {
     return;
   }
 
   final element = _containerMap[containerInnerHtml];
   if (element != null) {
-    element.append(suggestion);
+    element.appendChild(suggestion);
   } else {
-    containerElement.append(suggestion);
+    containerElement.appendChild(suggestion);
     _containerMap[containerInnerHtml] = containerElement;
   }
 }
 
 /// Creates an `<a>` [Element] for the enclosing library/class.
-Element _createContainer(String encloser, String href) =>
-    document.createElement('div')
-      ..classes.add('tt-container')
-      ..append(document.createElement('p')
-        ..text = 'Results from '
-        ..classes.add('tt-container-text')
-        ..append(document.createElement('a')
+HTMLElement _createContainer(String encloser, String href) =>
+    document.createElement('div') as HTMLElement
+      ..classList.add('tt-container')
+      ..appendChild(document.createElement('p')
+        ..textContent = 'Results from '
+        ..classList.add('tt-container-text')
+        ..appendChild(document.createElement('a')
           ..setAttribute('href', href)
-          ..innerHtml = encloser));
+          ..innerHTML = encloser));
 
 /// Wraps each instance of [query] in [text] with a `<strong>` tag, as HTML
 /// text.
@@ -474,9 +507,9 @@ String _highlight(String text, String query) => text.replaceAllMapped(
 ///
 /// This is safe for use in an HTML attribute like `title`.
 String _decodeHtml(String html) {
-  return ((document.createElement('textarea') as TextAreaElement)
-        ..innerHtml = html)
-      .value!;
+  return ((document.createElement('textarea') as HTMLTextAreaElement)
+        ..innerHTML = html)
+      .value;
 }
 
 extension on int {
