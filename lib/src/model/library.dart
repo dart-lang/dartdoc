@@ -220,7 +220,10 @@ class Library extends ModelElement
       allClasses.where((c) => c.isErrorOrException).toList(growable: false);
 
   @override
-  String get filePath => '${library.dirName}/${fileStructure.fileName}';
+  String get filePath => '${library.dirName}/$fileName';
+
+  @override
+  String get fileName => '$dirName-library.html';
 
   String get sidebarPath => '${library.dirName}/$dirName-library-sidebar.html';
 

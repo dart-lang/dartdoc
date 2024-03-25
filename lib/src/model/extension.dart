@@ -65,7 +65,7 @@ class Extension extends Container implements EnclosedElement {
 
   @override
   late final List<Field> declaredFields = element.fields.map((field) {
-    Accessor? getter, setter;
+    ContainerAccessor? getter, setter;
     final fieldGetter = field.getter;
     if (fieldGetter != null) {
       getter = ContainerAccessor(fieldGetter, library, packageGraph);
@@ -93,7 +93,7 @@ class Extension extends Container implements EnclosedElement {
   ];
 
   @override
-  String get filePath => '${library.dirName}/${fileStructure.fileName}';
+  String get filePath => '${library.dirName}/$fileName';
 
   @override
   String get sidebarPath => '${library.dirName}/$name-extension-sidebar.html';

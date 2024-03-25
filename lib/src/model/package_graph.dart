@@ -459,7 +459,6 @@ class PackageGraph with CommentReferable, Nameable {
       PackageWarning.invalidParameter ||
       PackageWarning.toolError ||
       PackageWarning.deprecated ||
-      PackageWarning.missingExampleFile ||
       PackageWarning.missingCodeBlockLanguage =>
         kind.messageFor([message])
     };
@@ -896,6 +895,7 @@ class PackageGraph with CommentReferable, Nameable {
     return allElements;
   }
 
+  @visibleForTesting
   late final List<ModelElement> allLocalModelElements = [
     for (var library in _localLibraries) ...library.allModelElements
   ];

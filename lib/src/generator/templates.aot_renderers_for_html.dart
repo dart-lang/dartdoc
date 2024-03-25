@@ -3,8 +3,7 @@
 // To change the contents of this library, make changes to the builder source
 // files in the tool/mustachio/ directory.
 
-// There are a few deduplicated render functions which are generated but not
-// used.
+// Some deduplicated render functions are generated but not used.
 // TODO(srawlins): Detect these and do not write them.
 // ignore_for_file: unused_element
 // Sometimes we enter a new section which triggers creating a new variable, but
@@ -366,29 +365,9 @@ String renderClass(ClassTemplateData context0) {
   }
   buffer.write('\n\n    ');
   buffer.write(_renderClass_partial_constructors_9(context2));
-  buffer.writeln();
-  if (context2.hasPublicInstanceFields) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor''');
-    if (context2.publicInheritedInstanceFields) {
-      buffer.write(''' inherited''');
-    }
-    buffer.write('''" id="instance-properties">
-      <h2>Properties</h2>
-
-      <dl class="properties">''');
-    var context7 = context2.publicInstanceFieldsSorted;
-    for (var context8 in context7) {
-      buffer.write('\n        ');
-      buffer.write(_renderClass_partial_property_10(context8));
-    }
-    buffer.writeln();
-    buffer.write('''
-      </dl>
-    </section>''');
-  }
-  buffer.write('\n\n    ');
+  buffer.write('\n    ');
+  buffer.write(_renderClass_partial_instance_fields_10(context2));
+  buffer.write('\n    ');
   buffer.write(_renderClass_partial_instance_methods_11(context2));
   buffer.write('\n    ');
   buffer.write(_renderClass_partial_instance_operators_12(context2));
@@ -589,33 +568,9 @@ String renderEnum(EnumTemplateData context0) {
         </dl>
       </section>''');
   }
-  buffer.writeln();
-  if (context2.hasPublicInstanceFields) {
-    buffer.writeln();
-    buffer.write('''
-      <section
-          class="
-            summary
-            offset-anchor''');
-    if (context2.publicInheritedInstanceFields) {
-      buffer.write('''inherited''');
-    }
-    buffer.write('''"
-          id="instance-properties">
-        <h2>Properties</h2>
-
-        <dl class="properties">''');
-    var context5 = context2.publicInstanceFieldsSorted;
-    for (var context6 in context5) {
-      buffer.write('\n          ');
-      buffer.write(_renderEnum_partial_property_11(context6));
-    }
-    buffer.writeln();
-    buffer.write('''
-        </dl>
-      </section>''');
-  }
   buffer.write('\n\n    ');
+  buffer.write(_renderEnum_partial_instance_fields_11(context2));
+  buffer.write('\n    ');
   buffer.write(_renderEnum_partial_instance_methods_12(context2));
   buffer.write('\n    ');
   buffer.write(_renderEnum_partial_instance_operators_13(context2));
@@ -754,25 +709,10 @@ String renderExtension<T extends Extension>(ExtensionTemplateData<T> context0) {
   buffer.writeln();
   buffer.write('''
     </section>
-''');
-  if (context2.hasPublicInstanceFields) {
-    buffer.writeln();
-    buffer.write('''
-      <section class="summary offset-anchor" id="instance-properties">
-        <h2>Properties</h2>
 
-        <dl class="properties">''');
-    var context4 = context2.publicInstanceFieldsSorted;
-    for (var context5 in context4) {
-      buffer.write('\n            ');
-      buffer.write(_renderExtension_partial_property_6(context5));
-    }
-    buffer.writeln();
-    buffer.write('''
-        </dl>
-      </section>''');
-  }
-  buffer.write('\n\n    ');
+    ''');
+  buffer.write(_renderExtension_partial_instance_fields_6(context2));
+  buffer.write('\n    ');
   buffer.write(_renderExtension_partial_instance_methods_7(context2));
   buffer.write('\n    ');
   buffer.write(_renderExtension_partial_instance_operators_8(context2));
@@ -782,7 +722,7 @@ String renderExtension<T extends Extension>(ExtensionTemplateData<T> context0) {
   buffer.write(_renderExtension_partial_static_methods_10(context2));
   buffer.write('\n    ');
   buffer.write(_renderExtension_partial_static_constants_11(context2));
-  var context6 = context0.extension;
+  var context4 = context0.extension;
   buffer.writeln();
   buffer.write('''
 
@@ -895,25 +835,9 @@ String renderExtensionType<T extends ExtensionType>(
 
     ''');
   buffer.write(_renderExtensionType_partial_constructors_7(context2));
-  buffer.writeln();
-  if (context2.hasPublicInstanceFields) {
-    buffer.writeln();
-    buffer.write('''
-      <section class="summary offset-anchor" id="instance-properties">
-        <h2>Properties</h2>
-
-        <dl class="properties">''');
-    var context6 = context2.publicInstanceFieldsSorted;
-    for (var context7 in context6) {
-      buffer.write('\n            ');
-      buffer.write(_renderExtensionType_partial_property_8(context7));
-    }
-    buffer.writeln();
-    buffer.write('''
-        </dl>
-      </section>''');
-  }
-  buffer.write('\n\n    ');
+  buffer.write('\n    ');
+  buffer.write(_renderExtensionType_partial_instance_fields_8(context2));
+  buffer.write('\n    ');
   buffer.write(_renderExtensionType_partial_instance_methods_9(context2));
   buffer.write('\n    ');
   buffer.write(_renderExtensionType_partial_instance_operators_10(context2));
@@ -1533,85 +1457,65 @@ String renderMixin(MixinTemplateData context0) {
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.mixin;
-  buffer.write('\n  ');
+  buffer.write('\n    ');
   buffer.write(_renderMixin_partial_documentation_4(context2));
   buffer.writeln();
   if (context2.hasModifiers) {
     buffer.writeln();
     buffer.write('''
-    <section>
-      <dl class="dl-horizontal">''');
+      <section>
+        <dl class="dl-horizontal">''');
     if (context2.hasPublicSuperclassConstraints) {
       buffer.writeln();
       buffer.write('''
-          <dt>Superclass Constraints</dt>
-          <dd><ul class="comma-separated dark mixin-relationships">''');
+            <dt>Superclass Constraints</dt>
+            <dd><ul class="comma-separated dark mixin-relationships">''');
       var context3 = context2.publicSuperclassConstraints;
       for (var context4 in context3) {
         buffer.writeln();
         buffer.write('''
-              <li>''');
+                <li>''');
         buffer.write(context4.linkedName);
         buffer.write('''</li>''');
       }
       buffer.writeln();
       buffer.write('''
-          </ul></dd>''');
+            </ul></dd>''');
     }
-    buffer.write('\n\n        ');
+    buffer.write('\n\n          ');
     buffer.write(_renderMixin_partial_super_chain_5(context2));
-    buffer.write('\n        ');
+    buffer.write('\n          ');
     buffer.write(_renderMixin_partial_interfaces_6(context2));
     buffer.writeln();
     if (context2.hasPublicImplementers) {
       buffer.writeln();
       buffer.write('''
-          <dt>Mixin Applications</dt>
-          <dd>
-            <ul class="comma-separated mixin-relationships">''');
+            <dt>Mixin Applications</dt>
+            <dd>
+              <ul class="comma-separated mixin-relationships">''');
       var context5 = context2.publicImplementersSorted;
       for (var context6 in context5) {
         buffer.writeln();
         buffer.write('''
-              <li>''');
+                <li>''');
         buffer.write(context6.linkedName);
         buffer.write('''</li>''');
       }
       buffer.writeln();
       buffer.write('''
-            </ul>
-          </dd>''');
+              </ul>
+            </dd>''');
     }
-    buffer.write('\n\n        ');
+    buffer.write('\n\n          ');
     buffer.write(_renderMixin_partial_annotations_7(context2));
     buffer.writeln();
     buffer.write('''
-      </dl>
-    </section>''');
-  }
-  buffer.writeln();
-  if (context2.hasPublicInstanceFields) {
-    buffer.writeln();
-    buffer.write('''
-    <section class="summary offset-anchor''');
-    if (context2.publicInheritedInstanceFields) {
-      buffer.write(''' inherited''');
-    }
-    buffer.write('''" id="instance-properties">
-      <h2>Properties</h2>
-
-      <dl class="properties">''');
-    var context7 = context2.publicInstanceFieldsSorted;
-    for (var context8 in context7) {
-      buffer.write('\n          ');
-      buffer.write(_renderMixin_partial_property_8(context8));
-    }
-    buffer.writeln();
-    buffer.write('''
-      </dl>
-    </section>''');
+        </dl>
+      </section>''');
   }
   buffer.write('\n\n    ');
+  buffer.write(_renderMixin_partial_instance_fields_8(context2));
+  buffer.write('\n    ');
   buffer.write(_renderMixin_partial_instance_methods_9(context2));
   buffer.write('\n    ');
   buffer.write(_renderMixin_partial_instance_operators_10(context2));
@@ -2702,8 +2606,8 @@ String _renderClass_partial_container_annotations_8(Class context1) =>
 String _renderClass_partial_constructors_9(Class context1) =>
     _deduplicated_lib_templates__constructors_html(context1);
 
-String _renderClass_partial_property_10(Field context2) =>
-    _deduplicated_lib_templates__property_html(context2);
+String _renderClass_partial_instance_fields_10(Class context1) =>
+    _deduplicated_lib_templates__instance_fields_html(context1);
 
 String _renderClass_partial_instance_methods_11(Class context1) =>
     _deduplicated_lib_templates__instance_methods_html(context1);
@@ -2808,8 +2712,8 @@ String _renderEnum_partial_constructors_9(Enum context1) =>
 String _renderEnum_partial_constant_10(Field context2) =>
     _deduplicated_lib_templates__constant_html(context2);
 
-String _renderEnum_partial_property_11(Field context2) =>
-    _deduplicated_lib_templates__property_html(context2);
+String _renderEnum_partial_instance_fields_11(Enum context1) =>
+    _deduplicated_lib_templates__instance_fields_html(context1);
 
 String _renderEnum_partial_instance_methods_12(Enum context1) =>
     _deduplicated_lib_templates__instance_methods_html(context1);
@@ -2863,8 +2767,8 @@ String _renderExtension_partial_documentation_4(Extension context1) =>
 String _renderExtension_partial_container_annotations_5(Extension context1) =>
     _deduplicated_lib_templates__container_annotations_html(context1);
 
-String _renderExtension_partial_property_6(Field context2) =>
-    _deduplicated_lib_templates__property_html(context2);
+String _renderExtension_partial_instance_fields_6(Extension context1) =>
+    _deduplicated_lib_templates__instance_fields_html(context1);
 
 String _renderExtension_partial_instance_methods_7(Extension context1) =>
     _deduplicated_lib_templates__instance_methods_html(context1);
@@ -2915,8 +2819,8 @@ String _renderExtensionType_partial_container_annotations_6(
 String _renderExtensionType_partial_constructors_7(ExtensionType context1) =>
     _deduplicated_lib_templates__constructors_html(context1);
 
-String _renderExtensionType_partial_property_8(Field context2) =>
-    _deduplicated_lib_templates__property_html(context2);
+String _renderExtensionType_partial_instance_fields_8(ExtensionType context1) =>
+    _deduplicated_lib_templates__instance_fields_html(context1);
 
 String _renderExtensionType_partial_instance_methods_9(
         ExtensionType context1) =>
@@ -3236,8 +3140,8 @@ String _renderMixin_partial_interfaces_6(Mixin context1) =>
 String _renderMixin_partial_annotations_7(Mixin context1) =>
     _deduplicated_lib_templates__annotations_html(context1);
 
-String _renderMixin_partial_property_8(Field context2) =>
-    _deduplicated_lib_templates__property_html(context2);
+String _renderMixin_partial_instance_fields_8(Mixin context1) =>
+    _deduplicated_lib_templates__instance_fields_html(context1);
 
 String _renderMixin_partial_instance_methods_9(Mixin context1) =>
     _deduplicated_lib_templates__instance_methods_html(context1);
@@ -4559,6 +4463,110 @@ String _deduplicated_lib_templates__constructors_html(
     </dl>
   </section>''');
   }
+
+  return buffer.toString();
+}
+
+String _deduplicated_lib_templates__instance_fields_html(Container context0) {
+  final buffer = StringBuffer();
+  if (context0.hasPublicInstanceFields) {
+    buffer.writeln();
+    buffer.write('''
+  <section
+      class="summary offset-anchor''');
+    if (context0.publicInheritedInstanceFields) {
+      buffer.write(''' inherited''');
+    }
+    buffer.write('''"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">''');
+    var context1 = context0.publicInstanceFieldsSorted;
+    for (var context2 in context1) {
+      buffer.write('\n        ');
+      buffer.write(
+          __deduplicated_lib_templates__instance_fields_html_partial_property_0(
+              context2));
+    }
+    buffer.writeln();
+    buffer.write('''
+    </dl>
+  </section>''');
+  }
+
+  return buffer.toString();
+}
+
+String __deduplicated_lib_templates__instance_fields_html_partial_property_0(
+    Field context1) {
+  final buffer = StringBuffer();
+  buffer.write('''<dt id="''');
+  buffer.writeEscaped(context1.htmlId);
+  buffer.write('''" class="property''');
+  if (context1.isInherited) {
+    buffer.write(''' inherited''');
+  }
+  buffer.write('''">
+  <span class="name">''');
+  buffer.write(context1.linkedName);
+  buffer.write('''</span>
+  <span class="signature">''');
+  buffer.write(context1.arrow);
+  buffer.write(' ');
+  buffer.write(context1.modelType.linkedName);
+  buffer.write('''</span>
+  ''');
+  buffer.write(
+      ___deduplicated_lib_templates__instance_fields_html_partial_property_0_partial_categorization_0(
+          context1));
+  buffer.writeln();
+  buffer.write('''
+</dt>
+<dd''');
+  if (context1.isInherited) {
+    buffer.write(''' class="inherited"''');
+  }
+  buffer.write('''>
+  ''');
+  buffer.write(context1.oneLineDoc);
+  buffer.write('\n  ');
+  buffer.write(
+      ___deduplicated_lib_templates__instance_fields_html_partial_property_0_partial_attributes_1(
+          context1));
+  buffer.writeln();
+  buffer.write('''
+</dd>
+''');
+
+  return buffer.toString();
+}
+
+String
+    ___deduplicated_lib_templates__instance_fields_html_partial_property_0_partial_categorization_0(
+        Field context1) {
+  final buffer = StringBuffer();
+  if (context1.hasCategoryNames) {
+    var context2 = context1.displayedCategories;
+    for (var context3 in context2) {
+      buffer.write('\n    ');
+      buffer.write(context3!.categoryLabel);
+    }
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+String
+    ___deduplicated_lib_templates__instance_fields_html_partial_property_0_partial_attributes_1(
+        Field context1) {
+  final buffer = StringBuffer();
+  if (context1.hasAttributes) {
+    buffer.write('''<div class="features">''');
+    buffer.write(context1.attributesAsString);
+    buffer.write('''</div>''');
+  }
+  buffer.writeln();
 
   return buffer.toString();
 }

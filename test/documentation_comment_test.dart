@@ -111,16 +111,43 @@ More text.'''));
 ''');
 
     expectNoWarnings();
-    var rendered = libraryModel.modelElementRenderer.renderAnimation(
-        'barHerderAnimation',
-        100,
-        200,
-        Uri.parse('http://host/path/to/video.mp4'),
-        'barHerderAnimation_play_button_');
     expect(doc, equals('''
 Text.
 
-$rendered
+
+<div style="position: relative;">
+  <div id="barHerderAnimation_play_button_"
+       onclick="var barHerderAnimation = document.getElementById('barHerderAnimation');
+                if (barHerderAnimation.paused) {
+                  barHerderAnimation.play();
+                  this.style.display = 'none';
+                } else {
+                  barHerderAnimation.pause();
+                  this.style.display = 'block';
+                }"
+       style="position:absolute;
+              width:100px;
+              height:200px;
+              z-index:100000;
+              background-position: center;
+              background-repeat: no-repeat;
+              background-image: url(static-assets/play_button.svg);">
+  </div>
+  <video id="barHerderAnimation"
+         style="width:100px; height:200px;"
+         onclick="var barHerderAnimation_play_button_ = document.getElementById('barHerderAnimation_play_button_');
+                  if (this.paused) {
+                    this.play();
+                    barHerderAnimation_play_button_.style.display = 'none';
+                  } else {
+                    this.pause();
+                    barHerderAnimation_play_button_.style.display = 'block';
+                  }" loop>
+    <source src="http://host/path/to/video.mp4" type="video/mp4"/>
+  </video>
+</div>
+
+
 
 End text.'''));
   }
@@ -404,198 +431,6 @@ End text.'''));
     expect(doc, equals('{@macro abc}'));
   }
 
-  void test_processesExampleDirectiveWithFile() async {
-    projectRoot.getChildAssumingFile('abc.md').writeAsStringSync('''
-```plaintext
-Code snippet
-```
-''');
-    var doc = await libraryModel.processComment('''
-/// Text.
-///
-/// {@example abc}
-///
-/// End text.
-''');
-
-    expect(
-      libraryModel,
-      hasDeprecatedWarning(
-        "The '@example' directive is deprecated, and will soon no longer be "
-        'supported.',
-      ),
-    );
-    expect(doc, equals('''
-Text.
-
-```plaintext
-Code snippet
-```
-
-
-End text.'''));
-  }
-
-  void test_processesExampleDirectiveWithRegion() async {
-    projectRoot
-        .getChildAssumingFile('abc-r.md')
-        .writeAsStringSync('Markdown text.');
-    var doc = await libraryModel.processComment('''
-/// Text.
-///
-/// {@example region=r abc}
-''');
-
-    expect(
-      libraryModel,
-      hasDeprecatedWarning(
-        "The '@example' directive is deprecated, and will soon no longer be "
-        'supported.',
-      ),
-    );
-    expect(doc, equals('''
-Text.
-
-Markdown text.'''));
-  }
-
-  void test_addsLanguageToProcessedExampleWithExtensionAndNoLang() async {
-    projectRoot.getChildAssumingFile('abc.html.md').writeAsStringSync('''
-```
-Code snippet
-```
-''');
-    var doc = await libraryModel.processComment('''
-/// Text.
-///
-/// {@example abc.html}
-///
-/// End text.
-''');
-
-    expect(
-      libraryModel,
-      hasDeprecatedWarning(
-        "The '@example' directive is deprecated, and will soon no longer be "
-        'supported.',
-      ),
-    );
-    expect(doc, equals('''
-Text.
-
-```html
-Code snippet
-```
-
-
-End text.'''));
-  }
-
-  void test_addsLanguageToProcessedExampleWithLangAndAnExtension() async {
-    projectRoot.getChildAssumingFile('abc.html.md').writeAsStringSync('''
-```
-Code snippet
-```
-''');
-    var doc = await libraryModel.processComment('''
-/// Text.
-///
-/// {@example abc.html lang=html}
-''');
-
-    expect(
-      libraryModel,
-      hasDeprecatedWarning(
-        "The '@example' directive is deprecated, and will soon no longer be "
-        'supported.',
-      ),
-    );
-    expect(doc, equals('''
-Text.
-
-```html
-Code snippet
-```
-'''));
-  }
-
-  void
-      test_addsLanguageToProcessedExampleDirectiveWithLangAndNoExtension() async {
-    projectRoot.getChildAssumingFile('abc.md').writeAsStringSync('''
-```
-Code snippet
-```
-''');
-    var doc = await libraryModel.processComment('''
-/// Text.
-///
-/// {@example abc lang=html}
-''');
-
-    expect(
-      libraryModel,
-      hasDeprecatedWarning(
-        "The '@example' directive is deprecated, and will soon no longer be "
-        'supported.',
-      ),
-    );
-    expect(doc, equals('''
-Text.
-
-```html
-Code snippet
-```
-'''));
-  }
-
-  void test_processesExampleDirectiveWithFileNotFound() async {
-    var doc = await libraryModel.processComment('''
-/// {@example abc}
-''');
-
-    var abcPath = resourceProvider.pathContext.canonicalize(
-        resourceProvider.pathContext.join(projectRoot.path, 'abc.md'));
-    var libPathInWarning = resourceProvider.pathContext.join('lib', 'a.dart');
-    expect(
-      libraryModel,
-      hasDeprecatedWarning(
-        "The '@example' directive is deprecated, and will soon no longer be "
-        'supported.',
-      ),
-    );
-    expect(libraryModel,
-        hasMissingExampleWarning('$abcPath; path listed at $libPathInWarning'));
-    // When the example path is invalid, the directive should be left in-place.
-    expect(doc, equals('{@example abc}'));
-  }
-
-  void test_processesExampleDirectiveWithDirectoriesNotFound() async {
-    var doc = await libraryModel.processComment('''
-/// {@example abc/def/ghi}
-''');
-    var abcPath = resourceProvider.pathContext.canonicalize(resourceProvider
-        .pathContext
-        .join(projectRoot.path, 'abc', 'def', 'ghi.md'));
-    var libPathInWarning = resourceProvider.pathContext.join('lib', 'a.dart');
-    expect(libraryModel,
-        hasMissingExampleWarning('$abcPath; path listed at $libPathInWarning'));
-    // When the example path is invalid, the directive should be left in-place.
-    expect(doc, equals('{@example abc/def/ghi}'));
-  }
-
-  void test_processesExampleDirectiveWithRegionNotFound() async {
-    var doc = await libraryModel.processComment('''
-/// {@example region=r abc}
-''');
-    var abcPath = resourceProvider.pathContext.canonicalize(
-        resourceProvider.pathContext.join(projectRoot.path, 'abc-r.md'));
-    var libPathInWarning = resourceProvider.pathContext.join('lib', 'a.dart');
-    expect(libraryModel,
-        hasMissingExampleWarning('$abcPath; path listed at $libPathInWarning'));
-    // When the example path is invalid, the directive should be left in-place.
-    expect(doc, equals('{@example region=r abc}'));
-  }
-
   void test_leavesInjectHtmlDirectiveUnprocessedWhenDisabled() async {
     var doc = await libraryModel.processComment('''
 /// Text.
@@ -868,9 +703,6 @@ Text.
 
   Matcher hasInvalidParameterWarning(String message) =>
       _HasWarning(PackageWarning.invalidParameter, message);
-
-  Matcher hasMissingExampleWarning(String message) =>
-      _HasWarning(PackageWarning.missingExampleFile, message);
 
 // TODO(srawlins): More unit tests: @tool.
 }

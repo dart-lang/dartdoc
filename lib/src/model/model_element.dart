@@ -15,7 +15,6 @@ import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/generator/file_structure.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -23,7 +22,6 @@ import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/prefix.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
-import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/source_linker.dart';
@@ -160,9 +158,14 @@ abstract class ModelElement extends Canonicalization
         }
       } else {
         // EnumFields can't be inherited, so this case is simpler.
-        // TODO(srawlins): Correct this? Is this dead?
         newModelElement = Field.inherited(
-            e, enclosingContainer, library, packageGraph, getter, setter);
+          e,
+          enclosingContainer,
+          library,
+          packageGraph,
+          getter as ContainerAccessor?,
+          setter as ContainerAccessor?,
+        );
       }
     } else if (e is TopLevelVariableElement) {
       assert(getter != null || setter != null);
@@ -408,7 +411,14 @@ abstract class ModelElement extends Canonicalization
     };
   }
 
-  String get attributesAsString => modelElementRenderer.renderAttributes(this);
+  String get attributesAsString {
+    var allAttributes = attributes.toList(growable: false)
+      ..sort(byAttributeOrdering);
+    return allAttributes
+        .map((f) =>
+            '<span class="${f.cssClassName}">${f.linkedNameWithParameters}</span>')
+        .join();
+  }
 
   // True if this is a function, or if it is an type alias to a function.
   bool get isCallable =>
@@ -555,8 +565,7 @@ abstract class ModelElement extends Canonicalization
 
   /// The name of the output file in which this element will be primarily
   /// documented.
-  @Deprecated('replace with fileStructure.fileName')
-  String get fileName => fileStructure.fileName;
+  String get fileName => '$name.html';
 
   /// The full path of the output file in which this element will be primarily
   /// documented.
@@ -672,13 +681,9 @@ abstract class ModelElement extends Canonicalization
       return htmlEscape.convert(name);
     }
 
-    return modelElementRenderer.renderLinkedName(this);
+    var cssClass = isDeprecated ? ' class="deprecated"' : '';
+    return '<a$cssClass href="$href">$displayName</a>';
   }();
-
-  @visibleForTesting
-  @override
-  ModelElementRenderer get modelElementRenderer =>
-      const ModelElementRendererHtml();
 
   ParameterRenderer get _parameterRenderer => const ParameterRendererHtml();
 
@@ -784,9 +789,6 @@ abstract class ModelElement extends Canonicalization
   }
 
   String get linkedObjectType => _packageGraph.dartCoreObject;
-
-  @override
-  late final FileStructure fileStructure = FileStructure.fromDocumentable(this);
 }
 
 extension on MultiplyInheritedExecutableElement {

@@ -4,6 +4,7 @@
 
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/privacy.dart';
+import 'package:meta/meta.dart';
 
 int byAttributeOrdering(Attribute a, Attribute b) {
   if (a.sortGroup < b.sortGroup) return -1;
@@ -11,9 +12,13 @@ int byAttributeOrdering(Attribute a, Attribute b) {
   return compareAsciiLowerCaseNatural(a.name, b.name);
 }
 
-/// An attribute includes both explicit annotations in code (e.g. `deprecated`)
-/// as well as others added by the documentation system (`read-write`).
+/// An attribute on an element.
+///
+/// These include both explicit annotations in code (e.g. `deprecated`) as well
+/// as others added by the documentation system (e.g. 'no setter').
 abstract class Attribute implements Privacy {
+  // A name, only used for sorting.
+  @visibleForOverriding
   final String name;
 
   /// Numerical sort group for this attribute.
@@ -49,7 +54,7 @@ abstract class Attribute implements Privacy {
   static const overrideSetter = Attribute._builtIn('override-setter', 3);
 }
 
-class _BuiltInAttribute extends Attribute {
+final class _BuiltInAttribute extends Attribute {
   const _BuiltInAttribute(super.name, super.sortGroup);
 
   @override

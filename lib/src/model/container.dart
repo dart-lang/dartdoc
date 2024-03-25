@@ -171,13 +171,12 @@ abstract class Container extends ModelElement
     return membersByName;
   }();
 
-  /// Given a ModelElement that is a member of some other class, returns
+  /// Given a [ModelElement] that is a member of some other class, returns
   /// the member of this class that has the same name and runtime type.
   ///
   /// This enables object substitution for canonicalization, such as Interceptor
   /// for Object.
   T memberByExample<T extends ModelElement>(T example) {
-    ModelElement member;
     // [T] is insufficiently specific to disambiguate between different
     // subtypes of [Inheritable] or other mixins/implementations of
     // [ModelElement] via [Iterable.whereType].
@@ -187,9 +186,8 @@ abstract class Container extends ModelElement
       possibleMembers = possibleMembers
           .where((e) => example.isGetter == (e as Accessor).isGetter);
     }
-    member = possibleMembers.first;
     assert(possibleMembers.length == 1);
-    return member as T;
+    return possibleMembers.first as T;
   }
 
   bool get hasPublicStaticFields => staticFields.any((e) => e.isPublic);
@@ -252,7 +250,7 @@ abstract class Container extends ModelElement
   Iterable<CommentReferable> get referenceParents => [definingLibrary, library];
 
   @override
-  String get filePath => '${library.dirName}/${fileStructure.fileName}';
+  String get filePath => '${library.dirName}/$fileName';
 
   /// The full path of this element's sidebar file.
   String get sidebarPath;

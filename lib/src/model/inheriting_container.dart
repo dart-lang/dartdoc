@@ -19,9 +19,10 @@ import 'package:meta/meta.dart';
 /// Note that [Constructor]s are not considered to be modifiers so a
 /// [hasModifiers] override is not necessary for this mixin.
 mixin Constructable implements InheritingContainer {
-  late final List<Constructor> constructors = element.constructors
-      .map((e) => getModelFor(e, library) as Constructor)
-      .toList(growable: false);
+  late final List<Constructor> constructors =
+      (element.augmented?.constructors ?? element.constructors)
+          .map((e) => getModelFor(e, library) as Constructor)
+          .toList(growable: false);
 
   @override
   late final List<Constructor> publicConstructorsSorted =
@@ -153,12 +154,12 @@ abstract class InheritingContainer extends Container
 
     // The mapping of all of the inherited element names to their _concrete_
     // implementation element.
-    var concreteInheritanceMap =
-        packageGraph.inheritanceManager.getInheritedConcreteMap2(element);
+    var concreteInheritanceMap = packageGraph.inheritanceManager
+        .getInheritedConcreteMap2(element.augmentedDeclarationOrSelf);
     // The mapping of all inherited element names to the nearest inherited
     // element that they resolve to.
-    var inheritanceMap =
-        packageGraph.inheritanceManager.getInheritedMap2(element);
+    var inheritanceMap = packageGraph.inheritanceManager
+        .getInheritedMap2(element.augmentedDeclarationOrSelf);
 
     var inheritanceChainElements =
         inheritanceChain.map((c) => c.element).toList(growable: false);
@@ -256,9 +257,10 @@ abstract class InheritingContainer extends Container
   }();
 
   @override
-  late final List<Method> declaredMethods = element.methods
-      .map((e) => getModelFor(e, library) as Method)
-      .toList(growable: false);
+  late final List<Method> declaredMethods =
+      (element.augmented?.methods ?? element.methods)
+          .map((e) => getModelFor(e, library) as Method)
+          .toList(growable: false);
 
   @override
   late final List<TypeParameter> typeParameters = element.typeParameters
@@ -592,6 +594,13 @@ mixin MixedInTypes on InheritingContainer {
 
   Iterable<DefinedElementType> get publicMixedInTypes =>
       mixedInTypes.wherePublic;
+}
+
+extension on InterfaceElement {
+  /// This element's augmented declaration, or, if there is none, then just this
+  /// element itself.
+  InterfaceElement get augmentedDeclarationOrSelf =>
+      augmented?.declaration ?? this;
 }
 
 extension on InterfaceElement {

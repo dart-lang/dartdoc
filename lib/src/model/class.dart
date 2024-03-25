@@ -5,7 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-/// A [Container] defined with a `class` or `enum` declaration.
+/// A [Container] defined with a `class` declaration.
 ///
 /// Members follow similar naming rules to [Container], with the following
 /// additions:
@@ -14,7 +14,7 @@ import 'package:dartdoc/src/model/model.dart';
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends InheritingContainer with Constructable, MixedInTypes {
   @override
-  final InterfaceElement element;
+  final ClassElement element;
 
   @override
   late final List<ModelElement> allModelElements = [
@@ -47,16 +47,13 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   }
 
   @override
-  bool get isAbstract => switch (element) {
-        ClassElement class_ when class_.isAbstract => true,
-        _ => false,
-      };
+  String get fileName => '$name-class.html';
 
   @override
-  bool get isBase => switch (element) {
-        ClassElement class_ when class_.isBase && !class_.isSealed => true,
-        _ => false,
-      };
+  bool get isAbstract => element.isAbstract;
+
+  @override
+  bool get isBase => element.isBase && !element.isSealed;
 
   bool get isErrorOrException {
     bool isError(InterfaceElement element) =>
@@ -69,28 +66,16 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   }
 
   @override
-  bool get isFinal => switch (element) {
-        ClassElement class_ when class_.isFinal && !class_.isSealed => true,
-        _ => false,
-      };
+  bool get isFinal => element.isFinal && !element.isSealed;
 
   @override
-  bool get isInterface => switch (element) {
-        ClassElement class_ when class_.isInterface && !class_.isSealed => true,
-        _ => false,
-      };
+  bool get isInterface => element.isInterface && !element.isSealed;
 
   @override
-  bool get isMixinClass => switch (element) {
-        ClassElement class_ when class_.isMixinClass => true,
-        _ => false,
-      };
+  bool get isMixinClass => element.isMixinClass;
 
   @override
-  bool get isSealed => switch (element) {
-        ClassElement class_ when class_.isSealed => true,
-        _ => false,
-      };
+  bool get isSealed => element.isSealed;
 
   @override
   Kind get kind => Kind.class_;

@@ -1,7 +1,12 @@
-## 8.0.7-wip
+## 8.0.7
 
+* Generate documentation for static members of enums. (#3697)
+* Display an extension's extended type in a few places. (#3708)
+* Minimal support for documenting a package with macro applications. (#3687)
 * Deprecate the `--nodoc` option. (#3690)
 * Deprecate the `--resources-dir` option. (#3696)
+* Deprecate the `--include-externals` option. (#3694)
+* Remove the warning regarding unresolved exports; these are handled by the analyzer. (#3711)
 
 ## 8.0.6
 

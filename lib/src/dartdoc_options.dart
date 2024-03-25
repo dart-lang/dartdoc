@@ -1293,10 +1293,6 @@ class DartdocOptionContext extends DartdocOptionContextBase
   CategoryConfiguration get categories =>
       optionSet['categories'].valueAt(context);
 
-  // TODO(srawlins): Remove when we remove support for `{@example}`.
-  String? get examplePathPrefix =>
-      optionSet['examplePathPrefix'].valueAt(context);
-
   // TODO(srawlins): This memoization saved a lot of time in unit testing, but
   // is the first value in this class to be memoized. Memoize others?
   late final Set<String> exclude =
@@ -1554,12 +1550,6 @@ List<DartdocOption> createDartdocOptions(
         convertYamlToType: CategoryConfiguration.fromYamlMap,
         help: 'A list of all categories, their display names, and markdown '
             'documentation in the order they are to be displayed.'),
-    // TODO(srawlins): Remove when we remove support for `{@example}`.
-    DartdocOptionArgFile<String?>('examplePathPrefix', null, resourceProvider,
-        optionIs: OptionKind.dir,
-        help: '(deprecated) Prefix for @example paths; defaults to the project '
-            'root.',
-        mustExist: true),
     DartdocOptionArgFile<List<String>>('exclude', [], resourceProvider,
         help: 'Names of libraries to exclude from documentation.',
         splitCommas: true),

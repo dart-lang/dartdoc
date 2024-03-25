@@ -40,7 +40,7 @@ class ExtensionType extends InheritingContainer with Constructable {
 
   @override
   late final List<Field> declaredFields = element.fields.map((field) {
-    Accessor? getter, setter;
+    ContainerAccessor? getter, setter;
     final fieldGetter = field.getter;
     if (fieldGetter != null) {
       getter = ContainerAccessor(fieldGetter, library, packageGraph);
@@ -66,7 +66,10 @@ class ExtensionType extends InheritingContainer with Constructable {
   ];
 
   @override
-  String get filePath => '${library.dirName}/${fileStructure.fileName}';
+  String get filePath => '${library.dirName}/$fileName';
+
+  @override
+  String get fileName => '$name-extension-type.html';
 
   @override
   String get sidebarPath =>

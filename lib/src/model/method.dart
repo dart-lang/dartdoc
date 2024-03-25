@@ -62,7 +62,7 @@ class Method extends ModelElement
 
   @override
   String get filePath =>
-      '${enclosingElement.library.dirName}/${enclosingElement.name}/${fileStructure.fileName}';
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;

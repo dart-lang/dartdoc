@@ -4,7 +4,6 @@
 
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
-import 'package:dartdoc/src/render/enum_field_renderer.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -603,8 +602,7 @@ enum E {
     var oneValue =
         library.enums.named('E').publicEnumValues.named('one') as EnumField;
     expect(oneValue.linkedName, '<a href="$linkPrefix/E.html#one">one</a>');
-    expect(oneValue.constantValue,
-        equals(EnumFieldRendererHtml().renderValue(oneValue)));
+    expect(oneValue.constantValue, equals(oneValue.renderedName));
   }
 
   void test_values_haveIndices() async {
