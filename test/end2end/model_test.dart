@@ -345,14 +345,14 @@ void main() async {
       expect(
           m1.linkedParamsLines,
           equals(
-              '<ol class="parameter-list"><li><span class="parameter" id="m1-param-some"><span class="type-annotation">int</span> <span class="parameter-name">some</span>, </span></li>\n'
+              '<ol class="parameter-list"> <li><span class="parameter" id="m1-param-some"><span class="type-annotation">int</span> <span class="parameter-name">some</span>, </span></li>\n'
               '<li><span class="parameter" id="m1-param-regular"><span class="type-annotation">dynamic</span> <span class="parameter-name">regular</span>, </span></li>\n'
-              '<li><span class="parameter" id="m1-param-parameters"><span>covariant</span> <span class="type-annotation">dynamic</span> <span class="parameter-name">parameters</span>, </span></li>\n'
-              '<li><span class="parameter" id="m1-param-p1">{<span>required</span> <span class="type-annotation">dynamic</span> <span class="parameter-name">p1</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-parameters"><span>covariant</span> <span class="type-annotation">dynamic</span> <span class="parameter-name">parameters</span>, {</span></li>\n'
+              '<li><span class="parameter" id="m1-param-p1"><span>required</span> <span class="type-annotation">dynamic</span> <span class="parameter-name">p1</span>, </span></li>\n'
               '<li><span class="parameter" id="m1-param-p2"><span class="type-annotation">int</span> <span class="parameter-name">p2</span> = <span class="default-value">3</span>, </span></li>\n'
               '<li><span class="parameter" id="m1-param-p3"><span>required</span> <span>covariant</span> <span class="type-annotation">dynamic</span> <span class="parameter-name">p3</span>, </span></li>\n'
-              '<li><span class="parameter" id="m1-param-p4"><span>required</span> <span>covariant</span> <span class="type-annotation">int</span> <span class="parameter-name">p4</span>}</span></li>\n'
-              '</ol>'));
+              '<li><span class="parameter" id="m1-param-p4"><span>required</span> <span>covariant</span> <span class="type-annotation">int</span> <span class="parameter-name">p4</span>, </span></li>\n'
+              '</ol>}'));
     });
 
     test('verify no regression on ordinary optionals', () {
@@ -369,11 +369,11 @@ void main() async {
       expect(
           m2.linkedParamsLines,
           equals(
-              '<ol class="parameter-list"><li><span class="parameter" id="m2-param-sometimes"><span class="type-annotation">int</span> <span class="parameter-name">sometimes</span>, </span></li>\n'
-              '<li><span class="parameter" id="m2-param-we"><span class="type-annotation">dynamic</span> <span class="parameter-name">we</span>, </span></li>\n'
-              '<li><span class="parameter" id="m2-param-have">[<span class="type-annotation">String</span> <span class="parameter-name">have</span>, </span></li>\n'
-              '<li><span class="parameter" id="m2-param-optionals"><span class="type-annotation">double</span> <span class="parameter-name">optionals</span>]</span></li>\n'
-              '</ol>'));
+              '<ol class="parameter-list"> <li><span class="parameter" id="m2-param-sometimes"><span class="type-annotation">int</span> <span class="parameter-name">sometimes</span>, </span></li>\n'
+              '<li><span class="parameter" id="m2-param-we"><span class="type-annotation">dynamic</span> <span class="parameter-name">we</span>, [</span></li>\n'
+              '<li><span class="parameter" id="m2-param-have"><span class="type-annotation">String</span> <span class="parameter-name">have</span>, </span></li>\n'
+              '<li><span class="parameter" id="m2-param-optionals"><span class="type-annotation">double</span> <span class="parameter-name">optionals</span>, </span></li>\n'
+              '</ol>]'));
     });
 
     test('anonymous callback parameters are correctly marked as nullable', () {
@@ -383,8 +383,8 @@ void main() async {
       expect(listen.isRequiredPositional, isTrue);
       expect(onDone.isNamed, isTrue);
 
-      expect(m3.linkedParamsLines, contains('</ol>\n)?, '));
-      expect(m3.linkedParamsLines, contains('</ol>\n)?}</span>'));
+      expect(m3.linkedParamsLines, contains('</ol>)?, '));
+      expect(m3.linkedParamsLines, contains('</ol>}'));
     });
 
     test('Late final class member test', () {
@@ -3245,7 +3245,7 @@ void main() async {
           topLevelFunction2.linkedParamsLines,
           contains('<span class="parameter-name">p3</span> = '
               '<span class="default-value">const &lt;String, int&gt;{}</span>'
-              ']</span>'));
+              '</span>'));
     });
 
     test('has source code', () {
@@ -3288,11 +3288,11 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           .renderLinkedParams(doAComplicatedThing.parameters);
       expect(
           params,
-          '<span class="parameter" id="doAComplicatedThing-param-x"><span class="type-annotation">int</span> <span class="parameter-name">x</span>, </span>'
-          '<span class="parameter" id="doAComplicatedThing-param-doSomething">{<span class="type-annotation">void</span> <span class="parameter-name">doSomething</span>(<span class="parameter" id="doSomething-param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span>'
+          '<span class="parameter" id="doAComplicatedThing-param-x"><span class="type-annotation">int</span> <span class="parameter-name">x</span>, {</span>'
+          '<span class="parameter" id="doAComplicatedThing-param-doSomething"><span class="type-annotation">void</span> <span class="parameter-name">doSomething</span>(<span class="parameter" id="doSomething-param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span>'
           '<span class="parameter" id="doSomething-param-anotherThing"><span class="type-annotation">String</span> <span class="parameter-name">anotherThing</span></span>)?, </span>'
           '<span class="parameter" id="doAComplicatedThing-param-doSomethingElse"><span class="type-annotation">void</span> <span class="parameter-name">doSomethingElse</span>(<span class="parameter" id="doSomethingElse-param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span>'
-          '<span class="parameter" id="doSomethingElse-param-somethingElse"><span class="type-annotation">double</span> <span class="parameter-name">somethingElse</span></span>)?}</span>');
+          '<span class="parameter" id="doSomethingElse-param-somethingElse"><span class="type-annotation">double</span> <span class="parameter-name">somethingElse</span></span>)?</span>}');
     });
   });
 
@@ -4532,7 +4532,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       );
       expect(
         aComplexTypedef.linkedParamsLines,
-        '<ol class="parameter-list">'
+        '<ol class="parameter-list single-line"> '
         '<li><span class="parameter" id="param-"><span class="type-annotation">A3</span>, </span></li>\n'
         '<li><span class="parameter" id="param-"><span class="type-annotation">String</span></span></li>\n'
         '</ol>',

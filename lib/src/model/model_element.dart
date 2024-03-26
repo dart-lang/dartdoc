@@ -690,11 +690,20 @@ abstract class ModelElement extends Canonicalization
   ParameterRenderer get _parameterRendererDetailed =>
       const ParameterRendererHtmlList();
 
+  /// The list of linked parameters, as inline HTML, including metadata.
+  ///
+  /// The text does not contain the leading or trailing parentheses.
   String get linkedParams => _parameterRenderer.renderLinkedParams(parameters);
 
+  /// The list of linked parameters, as block HTML, including metadata.
+  ///
+  /// The text does not contain the leading or trailing parentheses.
   String get linkedParamsLines =>
       _parameterRendererDetailed.renderLinkedParams(parameters).trim();
 
+  /// The list of linked parameters, as inline HTML, without metadata.
+  ///
+  /// The text does not contain the leading or trailing parentheses.
   String? get linkedParamsNoMetadata =>
       _parameterRenderer.renderLinkedParams(parameters, showMetadata: false);
 
