@@ -150,32 +150,29 @@ abstract class ParameterRenderer {
       }
 
       for (var p in positionalParams) {
-        var renderedParameter = _renderParameter(p, showMetadata: showMetadata);
         var suffix = identical(p, positionalParams.last) ? trailingText : ', ';
-        var wrappedParameter = parameter('$renderedParameter$suffix', p.htmlId);
-        buffer.write(listItem(wrappedParameter));
+        buffer.write(
+            _renderParameter(p, showMetadata: showMetadata, suffix: suffix));
       }
     }
     if (optionalPositionalParams.isNotEmpty) {
       closingBracket = ']';
 
       for (var p in optionalPositionalParams) {
-        var renderedParameter = _renderParameter(p, showMetadata: showMetadata);
         var suffix = isMultiline || !identical(p, optionalPositionalParams.last)
             ? ', '
             : '';
-        var wrappedParameter = parameter('$renderedParameter$suffix', p.htmlId);
-        buffer.write(listItem(wrappedParameter));
+        buffer.write(
+            _renderParameter(p, showMetadata: showMetadata, suffix: suffix));
       }
     }
     if (namedParams.isNotEmpty) {
       closingBracket = '}';
 
       for (var p in namedParams) {
-        var renderedParameter = _renderParameter(p, showMetadata: showMetadata);
         var suffix = isMultiline || !identical(p, namedParams.last) ? ', ' : '';
-        var wrappedParameter = parameter('$renderedParameter$suffix', p.htmlId);
-        buffer.write(listItem(wrappedParameter));
+        buffer.write(
+            _renderParameter(p, showMetadata: showMetadata, suffix: suffix));
       }
     }
 
@@ -189,7 +186,8 @@ abstract class ParameterRenderer {
 
   String _renderParameter(
     Parameter param, {
-    bool showMetadata = true,
+    required bool showMetadata,
+    required String suffix,
   }) {
     final buffer = StringBuffer();
     final modelType = param.modelType;
@@ -263,6 +261,8 @@ abstract class ParameterRenderer {
       buffer.write(defaultValue(param.defaultValue!));
     }
 
-    return buffer.toString();
+    buffer.write(suffix);
+    var wrappedParameter = parameter(buffer.toString(), param.htmlId);
+    return listItem(wrappedParameter);
   }
 }

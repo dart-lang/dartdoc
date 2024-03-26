@@ -84,6 +84,7 @@ class A {
     var named = library.constructor('A.named');
 
     expect(named.linkedParams, matchesCompressed(r'''
+        \{
         <span class="parameter" id="named-param-f">
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
@@ -104,6 +105,7 @@ class A {
     var namedWithDefault = library.constructor('A.namedWithDefault');
 
     expect(namedWithDefault.linkedParams, matchesCompressed(r'''
+        \{
         <span class="parameter" id="namedWithDefault-param-f">
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
@@ -126,6 +128,7 @@ class A {
     var requiredNamed = library.constructor('A.requiredNamed');
 
     expect(requiredNamed.linkedParams, matchesCompressed(r'''
+        \{
         <span class="parameter" id="requiredNamed-param-f">
           <span>required</span>
           <span class="type-annotation">
@@ -147,6 +150,7 @@ class A {
     var optionalPositional = library.constructor('A.optionalPositional');
 
     expect(optionalPositional.linkedParams, matchesCompressed(r'''
+        \[
         <span class="parameter" id="optionalPositional-param-f">
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
@@ -167,6 +171,7 @@ class A {
     var defaultValue = library.constructor('A.defaultValue');
 
     expect(defaultValue.linkedParams, matchesCompressed(r'''
+        \[
         <span class="parameter" id="defaultValue-param-f">
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>\?
