@@ -1,3 +1,11 @@
+## 8.0.8
+
+* More support for documenting a package with macro applications. (#3712)
+* Remove support for `@example`. (#3715)
+* Migrate client code from `dart:html` to `package:web`. (#3610)
+* Improve the formatting of parameter lists, to look more like `dart format`
+  output. (#3731)
+
 ## 8.0.7
 
 * Generate documentation for static members of enums. (#3697)
@@ -6,7 +14,8 @@
 * Deprecate the `--nodoc` option. (#3690)
 * Deprecate the `--resources-dir` option. (#3696)
 * Deprecate the `--include-externals` option. (#3694)
-* Remove the warning regarding unresolved exports; these are handled by the analyzer. (#3711)
+* Remove the warning regarding unresolved exports; these are handled by the
+  analyzer. (#3711)
 
 ## 8.0.6
 
@@ -61,24 +70,24 @@
 
 ## 8.0.0
 
-* Apply @hideConstantImplementations by default. (#3576)
-* Remove unused parameter in zone thing (#3581)
-* Add some progress bars for time-intensive tasks (#3579)
+* Apply `@hideConstantImplementations` by default. (#3576)
+* Remove unused parameter in zone thing. (#3581)
+* Add some progress bars for time-intensive tasks. (#3579)
 * Privatize almost all elements in package_builder. (#3580)
 * Privatize several members on PackageGraph (#3578)
 * Correct looping bug in library discovery (#3574)
 * Remove @image directive. (#3568)
-* Privatize `packageName`, `name`, `libraryName`, and
-  `specialFileUri` in `SpecialClass`. (#3569)
+* Privatize `packageName`, `name`, `libraryName`, and `specialFileUri` in
+  `SpecialClass`. (#3569)
 * Privatize `PackageMeta.pathContext`. (#3572)
-* Remove @samples directive. (#3567)
-* Remove @api directive. (#3566)
+* Remove `@samples` directive. (#3567)
+* Remove `@api` directive. (#3566)
 * Improve display text for libraries. (#3552)
 * Remove `ElementType.canHaveParameters`. (#3563)
-* Privatize `ElementType`` subclass constructors (#3560)
+* Privatize `ElementType` subclass constructors. (#3560)
 * InheritingContainer: `hasPublicInheritedMethods`, `inheritedFields`,
-  `publicInheritedFields`, `publicInheritedMethods` are only visible
-  for testing. (#3559)
+  `publicInheritedFields`, `publicInheritedMethods` are only visible for
+  testing. (#3559)
 * Display inherited elements for extension types. (#3556)
 * Remove `DefinedElementType.element` and
   `DefinedElementType.isParameterType`. (#3558)
@@ -90,22 +99,23 @@
 
 * Remove support for the deprecated `new ` prefix in comment references.
   (#3529)
-* Remove ModelComment.staticElement, ModelNode.commentRefs,
-  PackageWarningDefinition, packageWarningsByName, packageWarningDefinitions,
-  AliasedElementType.aliasedParameters, and GenericTypeAliasElementType.
-* Privatize ModelNode.element, ModelNode.resourceProvider,
-  `PackageWarning.template, PackageWarning.warnablePrefix, and
-  PackageWarning.referredFromPrefix.
-* The `missingExampleFile` and `unknownHtmlFragment` flags can now be
-  included or ignored with options.
+* Remove `ModelComment.staticElement`, `ModelNode.commentRefs`,
+  `PackageWarningDefinition`, `packageWarningsByName`,
+  `packageWarningDefinitions`, `AliasedElementType.aliasedParameters`, and
+  `GenericTypeAliasElementType`.
+* Privatize `ModelNode.element`, `ModelNode.resourceProvider`,
+  `PackageWarning.template`, `PackageWarning.warnablePrefix`, and
+  `PackageWarning.referredFromPrefix`.
+* The `missingExampleFile` and `unknownHtmlFragment` flags can now be included
+  or ignored with options.
 * Fix canonicalization scoring when library shares package name. (#3551)
 
 ## 7.0.1
 
 * Add back missing search bar to left sidenav on narrow screens.
-* Remove unused warning: noDefiningLibraryFound
-* Canonicalization.scoreCanonicalCandidates is now calculateCanonicalCandidate,
-  and returns one Library. (#3520)
+* Remove unused warning: `noDefiningLibraryFound`
+* `Canonicalization.scoreCanonicalCandidates` is now
+  `calculateCanonicalCandidate`, and returns one Library. (#3520)
 * Print errors without associated elements; in particular this is errors
   generated during the final validation stage. (#3532)
 * Reduce logging when documenting multiple packages. (#3522)
@@ -136,29 +146,31 @@
 * Make `Category.categoryDefinition` and `Library.exportedInLibraries` private.
 
 ## 6.3.0
+
 * Add a hideImplementations directive to disable showing constant
   implementations alongside one-line docs on class pages (#3398)
 * Update highlight.js to 11.8.0 for Dart 3 syntax highlight support. (#3416)
 * Split sidebars out into separate HTML files (#3384)
-* Update several required dependency versions, switch to Dart
-  language version 3.0, and several internal refactors. (various)
+* Update several required dependency versions, switch to Dart language version
+  3.0, and several internal refactors. (various)
 
 ## 6.2.2
+
 * Add chips to class pages for class modifiers (#3401)
-* Fix a case where dartdoc was not properly handling extension
-  method resolution. (#3393)
+* Fix a case where dartdoc was not properly handling extension method
+  resolution. (#3393)
 
 ## 6.2.1
-* Do not show induced modifiers from analyzer in class headers.
-  (#3371)
+
+* Do not show induced modifiers from analyzer in class headers. (#3371)
 * Drop support for final, interface, and sealed mixins. (#3369)
-* Display an error message instead of crashing on wrong data type
-  in dartdoc_options.yaml. (#3372)
+* Display an error message instead of crashing on wrong data type in
+  `dartdoc_options.yaml`. (#3372)
 
 ## 6.2.0
 
 * Add basic support for Dart 3.0 features, including records and class
-  modifiers.  (#3340, #3354)
+  modifiers. (#3340, #3354)
 * Stop generating a null-safety badge for elements in a null-safe library.
   (#3295)
 * Use a sun icon for switching to the light theme. (#3309)
@@ -271,11 +283,12 @@
 * Deprecate public access to `allBeforeFirstNewline`, `allAfterLastNewline`,
   `findFreeHangingGenericsPositions`, `ReferenceChildrenLookup`, and
   `childLookups`.
-* Make `Mixin.superclassConstraints`, `ModelElement.library` and `ModelElement. package` non-nullable late final.
+* Make `Mixin.superclassConstraints`, `ModelElement.library` and
+  `ModelElement.package` non-nullable late final.
 * Make `ModelElement.element` non-nullable.
 * Remove `ElementType.returnedFrom`, `MatchingLinkResult.warn`.
-* Rename `DartdocGeneratorBackend` to `GeneratorBackendBase`. Add a
-  typedef to preserve old behavior.
+* Rename `DartdocGeneratorBackend` to `GeneratorBackendBase`. Add a typedef to
+  preserve old behavior.
 * Make `ContainerMember.enclosingElement` a `Container`.
 * Deprecate MarkdownDocument's unnamed constructor.
 * Fix the search box's height constraint.
@@ -285,9 +298,9 @@
 
 * BREAKING CHANGE: Make `DartdocGeneratorBackend.sidebarForContainer`,
   `DartdocGeneratorBackend.sidebarForLibrary` private.
-* BREAKING CHANGE: Change several fields from being nullable to late, final, and
-  non-nullable in the `Extension`, `InheritingContainer`, and `TopLevelContainer`
-  classes.
+* BREAKING CHANGE: Change several fields from being nullable to late, final,
+  and non-nullable in the `Extension`, `InheritingContainer`, and
+  `TopLevelContainer` classes.
 * BREAKING CHANGE: Make `InheritingContiner.enclosingElement` non-nullable.
 * BREAKING CHANGE: Remove unused elements:
   `InheritingContainer.publicConstructors`,
@@ -298,14 +311,17 @@
 * Require Dart 2.17.0
 
 ## 5.1.2
+
 * Include `lib/resources/docs.dart.js.map`
 * Reintroduce query param search. (#3026)
 
 ## 5.1.1
+
 * Include `lib/resources/docs.dart.js`
 * Optimize compiled Dart web code with `-04`. (#3028)
 
 ## 5.1.0
+
 * Support new enhanced enums feature.
 * Removed superfluous `[...]` links. (#2928)
 * Fix `categoryOrder` option. (#2965)
@@ -316,17 +332,20 @@
 * Mustachio: Remove parameters which are unused in AOT renderers. (#2943)
 * Mustachio: Deduplicate AOT partial renderers. (#2978)
 * Mustachio: Allow whitespace after section and partial delimiters. (#2964)
-* Fixed the `{@youtube}` directive to respect the provided width and height. (#3030)
+* Fixed the `{@youtube}` directive to respect the provided width and height.
+  (#3030)
 
 ## 5.0.1
+
 * Add support for new VM service message. (#2931)
 
 ## 5.0.0
+
 * Migrate to null safety.
 * BREAKING CHANGE: Many breaking changes to dartdoc API, as part of the broad
   migration to null safety.
-* Add a `resources-dir` option to support documenting with `dart doc`
-  compiled AOT from within the Dart SDK directory. (#2857)
+* Add a `resources-dir` option to support documenting with `dart doc` compiled
+  AOT from within the Dart SDK directory. (#2857)
 * When rendering to templates, stop calling `toString` on String objects.
   (#2900)
 * Update README to discuss `dart doc`. (#2898)
@@ -336,6 +355,7 @@
 * Move to analyzer 3.1.0.
 
 ## 4.1.0
+
 * Move to analyzer 2.7.0. (#2845)
 * The library interface is now explicitly marked as experimental via meta.
 * Experimental feature: HTML output from markdown rendering, `{@tool}` and
@@ -343,19 +363,20 @@
 * Refactor of ModelElement and ElementType constructors.  Technically breaking
   but known users of the API do not attempt to construct these types by hand.
   (#2828, #2829)
-* Move to recommended set of hints in linter and correct some small errors
-  in regexps. (#2833)
+* Move to recommended set of hints in linter and correct some small errors in
+  regexps. (#2833)
 
 ## 4.0.0
-* BREAKING CHANGE: Refactors to support NNBD and adapt to new analyzer 
-  changes are technically semver breaking.   If you make extensive use of
-  the `documentationComment` getter on `ModelElement` or other deep
-  structural elements in dartdoc or custom templates, they could break
-  dependent code.  (#2819, #2818, #2817, #2806, #2798)
-* BREAKING CHANGE: Remove a large number of long-standing deprecated
-  symbols in dartdoc. (#2821)
-* Fix a problem where certain comment reference strings could
-  crash the parser. (#2813, #2808)
+
+* BREAKING CHANGE: Refactors to support NNBD and adapt to new analyzer changes
+  are technically semver breaking. If you make extensive use of the
+  `documentationComment` getter on `ModelElement` or other deep structural
+  elements in dartdoc or custom templates, they could break dependent code.
+  (#2819, #2818, #2817, #2806, #2798)
+* BREAKING CHANGE: Remove a large number of long-standing deprecated symbols in
+  dartdoc. (#2821)
+* Fix a problem where certain comment reference strings could crash the parser.
+  (#2813, #2808)
 * Fix an assert in canonicalization for enums. (#2812)
 
 ## 3.1.0
