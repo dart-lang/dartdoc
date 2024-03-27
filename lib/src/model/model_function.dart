@@ -32,9 +32,7 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
   String get name => element.enclosingElement!.name!;
 }
 
-class ModelFunctionTyped extends ModelElement
-    with TypeParameters
-    implements EnclosedElement {
+class ModelFunctionTyped extends ModelElement with TypeParameters {
   @override
   final FunctionTypedElement element;
 

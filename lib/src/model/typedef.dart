@@ -9,8 +9,7 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 abstract class Typedef extends ModelElement
-    with TypeParameters, Categorization
-    implements EnclosedElement {
+    with TypeParameters, Categorization {
   @override
   final TypeAliasElement element;
 

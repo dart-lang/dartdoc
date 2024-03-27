@@ -12,8 +12,7 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Method extends ModelElement
-    with ContainerMember, Inheritable, TypeParameters
-    implements EnclosedElement {
+    with ContainerMember, Inheritable, TypeParameters {
   @override
   final MethodElement element;
 

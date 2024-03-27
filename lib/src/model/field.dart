@@ -9,8 +9,7 @@ import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Field extends ModelElement
-    with GetterSetterCombo, ContainerMember, Inheritable
-    implements EnclosedElement {
+    with GetterSetterCombo, ContainerMember, Inheritable {
   @override
   final FieldElement element;
 
