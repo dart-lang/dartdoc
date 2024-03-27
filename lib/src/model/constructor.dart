@@ -8,9 +8,7 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-class Constructor extends ModelElement
-    with TypeParameters, ContainerMember
-    implements EnclosedElement {
+class Constructor extends ModelElement with ContainerMember, TypeParameters {
   @override
   final ConstructorElement element;
 

@@ -2084,8 +2084,8 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
           CT_,
           () => {
                 ..._Renderer_ModelElement.propertyMap<CT_>(),
-                ..._Renderer_TypeParameters.propertyMap<CT_>(),
                 ..._Renderer_ContainerMember.propertyMap<CT_>(),
+                ..._Renderer_TypeParameters.propertyMap<CT_>(),
                 'aboveSidebarPath': Property(
                   getValue: (CT_ c) => c.aboveSidebarPath,
                   renderVariable:
@@ -3453,29 +3453,6 @@ class _Renderer_ContainerMember extends RendererBase<ContainerMember> {
                       List<MustachioNode> ast, StringSink sink) {
                     _render_Container(
                         c.canonicalEnclosingContainer!, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
-                'definingEnclosingContainer': Property(
-                  getValue: (CT_ c) => c.definingEnclosingContainer,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_Container.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as Container,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_Container(
-                        c.definingEnclosingContainer, ast, r.template, sink,
                         parent: r);
                   },
                 ),

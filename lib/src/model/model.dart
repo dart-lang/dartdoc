@@ -15,7 +15,6 @@ export 'documentable.dart';
 export 'documentation.dart';
 export 'documentation_comment.dart';
 export 'dynamic.dart';
-export 'enclosed_element.dart';
 export 'enum.dart';
 export 'extension.dart';
 export 'extension_type.dart';

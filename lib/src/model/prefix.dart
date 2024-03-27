@@ -11,7 +11,7 @@ import 'package:dartdoc/src/model/model.dart';
 ///
 /// Like [Parameter], it doesn't have doc pages, but participates in lookups.
 /// Forwards to its referenced library if referred to directly.
-class Prefix extends ModelElement with HasNoPage implements EnclosedElement {
+class Prefix extends ModelElement with HasNoPage {
   @override
   final PrefixElement element;
 

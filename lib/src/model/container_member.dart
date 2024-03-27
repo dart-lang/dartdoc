@@ -4,9 +4,10 @@
 
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:meta/meta.dart';
 
 /// A [ModelElement] that is a [Container] member.
-mixin ContainerMember on ModelElement implements EnclosedElement {
+mixin ContainerMember on ModelElement {
   /// True if this [ContainerMember] is from an applicable [Extension].
   /// False otherwise, including if this [ContainerMember]'s [enclosingElement]
   /// is the extension it was declared in.
@@ -20,6 +21,9 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   @override
   Container get enclosingElement;
 
+  /// The container that contains this member.
+  @protected
+  @visibleForTesting
   late final Container definingEnclosingContainer =
       getModelForElement(element.enclosingElement!) as Container;
 

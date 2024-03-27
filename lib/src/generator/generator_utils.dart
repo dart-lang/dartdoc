@@ -6,7 +6,6 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/directives/categorization.dart';
-import 'package:dartdoc/src/model/enclosed_element.dart';
 import 'package:dartdoc/src/model/indexable.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 
@@ -34,30 +33,28 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
 }
 
 /// Generates the text of the search index file (`index.json`) containing
-/// [indexedItems] and [packageOrder].
+/// [indexedElements] and [packageOrder].
 ///
 /// Passing `pretty: true` will use a [JsonEncoder] with a single-space indent.
 String generateSearchIndexJson(Iterable<Indexable> indexedElements,
     {required List<String> packageOrder, required bool pretty}) {
   final indexItems = [
-    for (final indexable
-        in indexedElements.sorted(_compareElementRepresentations))
+    for (final item in indexedElements.sorted(_compareElementRepresentations))
       {
-        'name': indexable.name,
-        'qualifiedName': indexable.fullyQualifiedName,
-        'href': indexable.href,
-        'kind': indexable.kind.index,
+        'name': item.name,
+        'qualifiedName': item.fullyQualifiedName,
+        'href': item.href,
+        'kind': item.kind.index,
         // TODO(srawlins): Only include this for [Inheritable] items.
-        'overriddenDepth': indexable.overriddenDepth,
-        if (indexable is ModelElement)
-          'packageRank': _packageRank(packageOrder, indexable),
-        if (indexable is ModelElement)
-          'desc': _removeHtmlTags(indexable.oneLineDoc),
-        if (indexable is EnclosedElement)
+        'overriddenDepth': item.overriddenDepth,
+        if (item is ModelElement)
+          'packageRank': _packageRank(packageOrder, item),
+        if (item is ModelElement) 'desc': _removeHtmlTags(item.oneLineDoc),
+        if (item case ModelElement(:var enclosingElement?))
           'enclosedBy': {
-            'name': indexable.enclosingElement.name,
-            'kind': indexable.enclosingElement.kind.index,
-            'href': indexable.enclosingElement.href,
+            'name': enclosingElement.name,
+            'kind': enclosingElement.kind.index,
+            'href': enclosingElement.href,
           },
       }
   ];
@@ -114,7 +111,7 @@ final _htmlTagPattern =
     RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
 
 // Compares two elements, first by fully qualified name, then by kind.
-int _compareElementRepresentations<T extends Indexable>(T a, T b) {
+int _compareElementRepresentations(Indexable a, Indexable b) {
   final value = compareNatural(a.fullyQualifiedName, b.fullyQualifiedName);
   if (value == 0) {
     return compareNatural(a.kind.toString(), b.kind.toString());

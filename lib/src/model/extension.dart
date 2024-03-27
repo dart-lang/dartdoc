@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 
 /// Static extension on a given type, containing methods (including getters,
 /// setters, operators).
-class Extension extends Container implements EnclosedElement {
+class Extension extends Container {
   @override
   final ExtensionElement element;
 

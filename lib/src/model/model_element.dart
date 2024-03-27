@@ -338,6 +338,14 @@ abstract class ModelElement extends Canonicalization
     return Accessor(e, library, packageGraph);
   }
 
+  /// The model element enclosing this one.
+  ///
+  /// As some examples:
+  /// * Instances of some subclasses have no enclosing element, like [Library]
+  /// and [Dynamic].
+  /// * A [Container] is enclosed by a [Library].
+  /// * A [Method] is enclosed by a [Container].
+  /// * An [Accessor] is either enclosed by a [Container] or a [Library].
   ModelElement? get enclosingElement;
 
   // Stub for mustache, which would otherwise search enclosing elements to find

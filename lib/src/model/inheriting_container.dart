@@ -74,8 +74,7 @@ mixin Constructable implements InheritingContainer {
 ///
 /// * **instance**: As with [Container], but also includes inherited children.
 /// * **inherited**: Filtered getters giving only inherited children.
-abstract class InheritingContainer extends Container
-    implements EnclosedElement {
+abstract class InheritingContainer extends Container {
   InheritingContainer(super.library, super.packageGraph);
 
   DefinedElementType? get supertype {
