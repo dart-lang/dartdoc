@@ -38,13 +38,6 @@ mixin DocumentationComment
 
   List<DocumentationComment>? _documentationFrom;
 
-  /// The [ModelElement](s) from which we will get documentation.
-  ///
-  /// Can be more than one if this is a [Field] composing documentation from
-  /// multiple [Accessor]s.
-  ///
-  /// This will walk up the inheritance hierarchy to find docs, if the current
-  /// class doesn't have docs for this element.
   @override
   List<DocumentationComment> get documentationFrom =>
       _documentationFrom ??= () {
@@ -72,11 +65,11 @@ mixin DocumentationComment
   /// like `///`, `//`, `/*`, `*/`.
   String get documentationComment => element.documentationComment ?? '';
 
-  /// True if [this] has a synthetic/inherited or local documentation
-  /// comment.  False otherwise.
+  /// Whether `this` has a synthetic/inherited or local documentation comment,
+  /// and false otherwise.
   bool get hasDocumentationComment => element.documentationComment != null;
 
-  /// Returns true if the raw documentation comment has a 'nodoc' indication.
+  /// Whether the raw documentation comment has a 'nodoc' indication.
   late final bool hasNodoc = () {
     if (packageGraph.configSetsNodocFor(element.source!.fullName)) {
       return true;

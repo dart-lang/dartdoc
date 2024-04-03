@@ -125,7 +125,7 @@ mixin Inheritable on ContainerMember {
 
   Inheritable? get overriddenElement;
 
-  /// True if this [Inheritable] is overriding a superclass.
+  /// Whether this [Inheritable] is overriding a member from a superclass.
   late final bool isOverride = () {
     // The canonical version of the enclosing element -- not
     // [canonicalEnclosingElement], as that is the element enclosing the
