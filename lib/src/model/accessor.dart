@@ -32,14 +32,9 @@ class Accessor extends ModelElement {
       [ExecutableMember? super.originalMember]);
 
   @override
-  CharacterLocation? get characterLocation {
-    if (element.nameOffset < 0) {
-      assert(element.isSynthetic, 'Invalid offset for non-synthetic element');
-      // TODO(jcollins-g): switch to [element.nonSynthetic] after analyzer 1.8
-      return enclosingCombo.characterLocation;
-    }
-    return super.characterLocation;
-  }
+  CharacterLocation? get characterLocation => element.isSynthetic
+      ? enclosingCombo.characterLocation
+      : super.characterLocation;
 
   @override
   ExecutableMember? get originalMember =>
