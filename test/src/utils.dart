@@ -16,9 +16,7 @@ import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
-import 'package:dartdoc/src/model/model_element.dart';
-import 'package:dartdoc/src/model/package_builder.dart';
-import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -356,12 +354,11 @@ bool get classModifiersAllowed =>
     VersionRange(min: Version.parse('3.0.0-0.0-dev'), includeMin: true)
         .allows(platformVersion);
 
-extension ModelElementIterableExtensions<T extends ModelElement>
-    on Iterable<T> {
+extension ModelElementIterableExtension<T extends ModelElement> on Iterable<T> {
   T named(String name) => firstWhere((e) => e.name == name);
 }
 
-extension IterableStringExtensions on Iterable<String> {
+extension IterableStringExtension on Iterable<String> {
   /// The main content line of `this`.
   Iterable<String> get mainContent =>
       skipWhile((line) => !line.contains('"dartdoc-main-content"'))
@@ -375,6 +372,16 @@ extension IterableStringExtensions on Iterable<String> {
       reason: 'main content:\n\n${mainContent.join('\n')}',
     );
   }
+}
+
+extension PackageExtension on Package {
+  /// Gathers all extensions found across a package.
+  Iterable<Extension> get extensions =>
+      libraries.expand((library) => library.extensions);
+
+  /// Gathers all functions found across a package.
+  Iterable<ModelFunction> get functions =>
+      libraries.expand((library) => library.functions);
 }
 
 /// Extension methods just for tests.

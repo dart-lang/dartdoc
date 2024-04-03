@@ -79,7 +79,7 @@ analyzer:
         packagePath, libraryName, Uri.file('$packagePath/'));
   }
 
-  Future<PackageGraph> _bootPackageFromFiles(Iterable<d.Descriptor> files,
+  Future<PackageGraph> bootPackageFromFiles(Iterable<d.Descriptor> files,
       {List<String> additionalArguments = const []}) async {
     var packagePathBasename =
         resourceProvider.pathContext.basename(packagePath);
@@ -103,7 +103,7 @@ analyzer:
       {String libraryPreamble = '',
       Iterable<d.Descriptor> extraFiles = const [],
       List<String> additionalArguments = const []}) async {
-    return (await _bootPackageFromFiles([
+    return (await bootPackageFromFiles([
       d.dir('lib', [
         d.file('lib.dart', '''
 $libraryPreamble
@@ -114,54 +114,6 @@ $libraryContent
       ]),
       ...extraFiles
     ], additionalArguments: additionalArguments))
-        .libraries
-        .named(libraryName);
-  }
-
-  /// Similar to [bootPackageWithLibrary], but allows for more complex
-  /// cases to test the edges of canonicalization.
-  ///
-  /// - Puts [reexportedContent] in a library named [libraryName]_src in
-  ///   `lib/src` (if [reexportPrivate] is true), or 'lib/subdir'.
-  /// - Creates a reexporting library named [libraryName]_lib in `lib` that
-  ///   reexports [libraryName]_src.
-  /// - Creates [libraryName] containing [libraryContent] that can optionally
-  ///   import 'lib.dart' to import the reexporting library.
-  ///
-  /// Optionally, specify [show] or [hide] to change whether the reexport
-  /// gives access to the full namespace.
-  Future<Library> bootPackageWithReexportedLibrary(
-      String reexportedContent, String libraryContent,
-      {bool reexportPrivate = false,
-      List<String> show = const [],
-      List<String> hide = const []}) async {
-    final subdir = reexportPrivate ? 'src' : 'subdir';
-    if (show.isNotEmpty && hide.isNotEmpty) {
-      throw DartdocTestBaseFailure('Can not specify show and hide');
-    }
-    final showHideString = '${show.isNotEmpty ? 'show ${show.join(', ')}' : ''}'
-        '${hide.isNotEmpty ? 'hide ${hide.join(', ')}' : ''}';
-
-    return (await _bootPackageFromFiles([
-      d.dir('lib', [
-        d.dir(subdir, [
-          d.file('lib.dart', '''
-library ${libraryName}_src;
-
-$reexportedContent
-'''),
-        ]),
-        d.file('lib.dart', '''
-library ${libraryName}_lib;
-
-export '$subdir/lib.dart' $showHideString;
-'''),
-        d.file('importing_lib.dart', '''
-library $libraryName;
-$libraryContent
-'''),
-      ])
-    ]))
         .libraries
         .named(libraryName);
   }
