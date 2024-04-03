@@ -35,12 +35,13 @@ class GeneratorFrontEnd implements Generator {
       );
     }
 
-    var indexElements = packageGraph == null
-        ? const <Indexable>[]
-        : _generateDocs(packageGraph);
-
     await _generatorBackend.generateAdditionalFiles();
 
+    if (packageGraph == null) {
+      return;
+    }
+
+    var indexElements = _generateDocs(packageGraph);
     var categories = indexElements
         .whereType<Categorization>()
         .where((e) => e.hasCategorization)
@@ -114,7 +115,7 @@ class GeneratorFrontEnd implements Generator {
       }
     }
 
-    void generateInstanceProperty(Container container) {
+    void generateInstanceProperties(Container container) {
       for (var property in container.instanceFields.whereDocumented) {
         if (!property.isCanonical) continue;
         indexAccumulator.add(property);
@@ -132,7 +133,7 @@ class GeneratorFrontEnd implements Generator {
       }
     }
 
-    void generateStaticProperty(Container container) {
+    void generateStaticProperties(Container container) {
       for (var property in container.variableStaticFields.whereDocumented) {
         if (!property.isCanonical) continue;
         indexAccumulator.add(property);
@@ -171,9 +172,9 @@ class GeneratorFrontEnd implements Generator {
           generateConstructors(class_);
           generateInstanceMethods(class_);
           generateInstanceOperators(class_);
-          generateInstanceProperty(class_);
+          generateInstanceProperties(class_);
           generateStaticMethods(class_);
-          generateStaticProperty(class_);
+          generateStaticProperties(class_);
         }
 
         for (var extension in lib.extensions.whereDocumented) {
@@ -183,9 +184,9 @@ class GeneratorFrontEnd implements Generator {
           generateConstants(extension);
           generateInstanceMethods(extension);
           generateInstanceOperators(extension);
-          generateInstanceProperty(extension);
+          generateInstanceProperties(extension);
           generateStaticMethods(extension);
-          generateStaticProperty(extension);
+          generateStaticProperties(extension);
         }
 
         for (var extensionType in lib.extensionTypes.whereDocumented) {
@@ -197,9 +198,9 @@ class GeneratorFrontEnd implements Generator {
           generateConstructors(extensionType);
           generateInstanceMethods(extensionType);
           generateInstanceOperators(extensionType);
-          generateInstanceProperty(extensionType);
+          generateInstanceProperties(extensionType);
           generateStaticMethods(extensionType);
-          generateStaticProperty(extensionType);
+          generateStaticProperties(extensionType);
         }
 
         for (var mixin in lib.mixins.whereDocumented) {
@@ -207,11 +208,11 @@ class GeneratorFrontEnd implements Generator {
           _generatorBackend.generateMixin(packageGraph, lib, mixin);
 
           generateConstants(mixin);
-          generateInstanceProperty(mixin);
           generateInstanceMethods(mixin);
           generateInstanceOperators(mixin);
+          generateInstanceProperties(mixin);
           generateStaticMethods(mixin);
-          generateStaticProperty(mixin);
+          generateStaticProperties(mixin);
         }
 
         for (var enum_ in lib.enums.whereDocumented) {
@@ -222,9 +223,9 @@ class GeneratorFrontEnd implements Generator {
           generateConstructors(enum_);
           generateInstanceMethods(enum_);
           generateInstanceOperators(enum_);
-          generateInstanceProperty(enum_);
+          generateInstanceProperties(enum_);
           generateStaticMethods(enum_);
-          generateStaticProperty(enum_);
+          generateStaticProperties(enum_);
         }
 
         for (var constant in lib.constants.whereDocumented) {
