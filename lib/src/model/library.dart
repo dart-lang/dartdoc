@@ -343,7 +343,6 @@ class Library extends ModelElement
 
   late final List<Class> allClasses = _exportedAndLocalElements
       .whereType<ClassElement>()
-      .where((e) => e is! EnumElement && e is! MixinElement)
       .map((e) => packageGraph.getModelFor(e, this) as Class)
       .toList(growable: false);
 
