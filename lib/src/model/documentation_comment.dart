@@ -69,7 +69,15 @@ mixin DocumentationComment
   /// and false otherwise.
   bool get hasDocumentationComment => element.documentationComment != null;
 
-  /// Whether the raw documentation comment has a 'nodoc' indication.
+  /// Whether the raw documentation comment is considered to be 'nodoc', an
+  /// attribute indicating that any documentation should not be included in
+  /// dartdoc's generated output.
+  ///
+  /// An element is considered to be 'nodoc' if any of the following are true:
+  /// * a global 'nodoc' configuration has been set for this element (this
+  ///   feature is deprecated),
+  /// * the element has no documentation comment,
+  /// * the documentation comment contains the `@nodoc` dartdoc directive.
   late final bool hasNodoc = () {
     if (packageGraph.configSetsNodocFor(element.source!.fullName)) {
       return true;

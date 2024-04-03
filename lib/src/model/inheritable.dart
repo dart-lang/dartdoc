@@ -126,6 +126,11 @@ mixin Inheritable on ContainerMember {
   Inheritable? get overriddenElement;
 
   /// Whether this [Inheritable] is overriding a member from a superclass.
+  ///
+  /// This is distinct from [isInherited]. An inheritable member which is an
+  /// override is explicitly written in its container. An inheritable member
+  /// which is implicitly included in a container is "inherited", and not an
+  /// override.
   late final bool isOverride = () {
     // The canonical version of the enclosing element -- not
     // [canonicalEnclosingElement], as that is the element enclosing the

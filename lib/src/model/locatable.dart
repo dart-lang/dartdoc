@@ -3,13 +3,14 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart' show Element;
+import 'package:dartdoc/src/model/model.dart';
 
 /// Something that can be located for warning purposes.
 mixin Locatable {
-  /// The model element(s) from which we will get documentation.
+  /// The [Locatable](s) from which we will get documentation.
   ///
-  /// Can be more than one if this is a `Field` composing documentation from
-  /// multiple `Accessor`s.
+  /// Can be more than one if this is a [Field] composing documentation from
+  /// multiple [Accessor]s.
   ///
   /// This will walk up the inheritance hierarchy to find docs, if the current
   /// class doesn't have docs for this element.

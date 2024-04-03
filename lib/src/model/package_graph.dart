@@ -903,8 +903,12 @@ class PackageGraph with CommentReferable, Nameable {
   /// Glob lookups can be expensive.  Cache per filename.
   final _configSetsNodocFor = HashMap<String, bool>();
 
-  /// Given an element's location, look up the nodoc configuration data and
-  /// determine whether to unconditionally treat the element as "nodoc".
+  /// Given an element's [fullName], look up the nodoc configuration data and
+  /// determine whether to unconditionally treat the element as "nodoc", an
+  /// attribute indicating that documentation should not be included in
+  /// dartdoc's generated output.
+  ///
+  /// This configuration setting is deprecated.
   bool configSetsNodocFor(String fullName) {
     return _configSetsNodocFor.putIfAbsent(fullName, () {
       var file = resourceProvider.getFile(fullName);
