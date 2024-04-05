@@ -279,15 +279,17 @@ enum PackageWarning implements Comparable<PackageWarning> {
     'deprecated dartdoc usage: {0}',
     shortHelp: 'A dartdoc directive has a deprecated format.',
   ),
+  // TODO(kallentu): Remove this warning.
   missingCodeBlockLanguage(
     'missing-code-block-language',
     'missing code block language: {0}',
-    shortHelp: 'A fenced code block is missing a specified language.',
-    longHelp:
-        'To enable proper syntax highlighting of Markdown code blocks, Dartdoc '
-        'requires code blocks to specify the language used after the initial '
-        'declaration. As an example, to specify Dart you would open the '
-        'Markdown code block with ```dart or ~~~dart.',
+    shortHelp: '(Deprecated: Use `missing_code_block_language_in_doc_comment` '
+        'lint) A fenced code block is missing a specified language.',
+    longHelp: '(Deprecated: Use `missing_code_block_language_in_doc_comment` '
+        'lint) To enable proper syntax highlighting of Markdown code blocks, '
+        'Dartdoc requires code blocks to specify the language used after the '
+        'initial declaration. As an example, to specify Dart you would open '
+        'the Markdown code block with ```dart or ~~~dart.',
     defaultWarningMode: PackageWarningMode.ignore,
   );
 
