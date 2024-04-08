@@ -291,6 +291,7 @@ enum PackageWarning implements Comparable<PackageWarning> {
         'initial declaration. As an example, to specify Dart you would open '
         'the Markdown code block with ```dart or ~~~dart.',
     defaultWarningMode: PackageWarningMode.ignore,
+    isDeprecated: true,
   );
 
   /// The name which can be used at the command line to enable this warning.
@@ -307,6 +308,8 @@ enum PackageWarning implements Comparable<PackageWarning> {
 
   final String _longHelp;
 
+  final bool _isDeprecated;
+
   final PackageWarningMode _defaultWarningMode;
 
   const PackageWarning(
@@ -316,11 +319,13 @@ enum PackageWarning implements Comparable<PackageWarning> {
     String longHelp = '',
     String warnablePrefix = 'from',
     String referredFromPrefix = 'referred to by',
+    bool isDeprecated = false,
     PackageWarningMode defaultWarningMode = PackageWarningMode.warn,
   })  : _shortHelp = shortHelp,
         _longHelp = longHelp,
         _warnablePrefix = warnablePrefix,
         _referredFromPrefix = referredFromPrefix,
+        _isDeprecated = isDeprecated,
         _defaultWarningMode = defaultWarningMode;
 
   static PackageWarning? _byName(String name) =>
@@ -404,6 +409,7 @@ class PackageWarningOptions {
     for (var warningName in errorsForDir) {
       var packageWarning = PackageWarning._byName(warningName);
       if (packageWarning != null) {
+        newOptions.writeErrorOnDeprecation(packageWarning);
         newOptions.error(packageWarning);
       }
     }
@@ -412,6 +418,7 @@ class PackageWarningOptions {
     for (var warningName in warningsForDir) {
       var packageWarning = PackageWarning._byName(warningName);
       if (packageWarning != null) {
+        newOptions.writeErrorOnDeprecation(packageWarning);
         newOptions.warn(packageWarning);
       }
     }
@@ -457,14 +464,21 @@ class PackageWarningOptions {
     return newOptions;
   }
 
+  void error(PackageWarning kind) =>
+      warningModes[kind] = PackageWarningMode.error;
+
   void ignore(PackageWarning kind) =>
       warningModes[kind] = PackageWarningMode.ignore;
 
   void warn(PackageWarning kind) =>
       warningModes[kind] = PackageWarningMode.warn;
 
-  void error(PackageWarning kind) =>
-      warningModes[kind] = PackageWarningMode.error;
+  void writeErrorOnDeprecation(PackageWarning warning) {
+    if (warning._isDeprecated) {
+      stderr.writeln("The warning 'missingCodeBlockLanguage' is deprecated. "
+          'Use the `missing_code_block_language_in_doc_comment` lint instead.');
+    }
+  }
 
   PackageWarningMode getMode(PackageWarning kind) => warningModes[kind]!;
 }
