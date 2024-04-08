@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -676,6 +678,8 @@ mixin DocumentationComment
     for (var element in firstOfPair) {
       final result = element.group(2)!.trim();
       if (result.isEmpty) {
+        stderr.writeln("The warning 'missingCodeBlockLanguage' is deprecated. "
+            'Use the `missing_code_block_language_in_doc_comment` lint instead.');
         warn(PackageWarning.missingCodeBlockLanguage,
             message:
                 'A fenced code block in Markdown should have a language specified');
