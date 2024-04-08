@@ -475,8 +475,7 @@ class PackageWarningOptions {
 
   void writeErrorOnDeprecation(PackageWarning warning) {
     if (warning._isDeprecated) {
-      stderr.writeln("The warning 'missingCodeBlockLanguage' is deprecated. "
-          'Use the `missing_code_block_language_in_doc_comment` lint instead.');
+      stderr.writeln("The warning '${warning._flagName}' is deprecated.");
     }
   }
 
