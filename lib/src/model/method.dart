@@ -112,6 +112,9 @@ class Method extends ModelElement
       return null;
     }
     var parent = element.enclosingElement as InterfaceElement;
+    // TODO(srawlins): Remove this and deal with the follow-on effects, when
+    // `.augmented` becomes non-nullable.
+    // ignore: invalid_null_aware_operator
     var parentDeclaration = parent.augmented?.declaration ?? parent;
     for (var t in parentDeclaration.allSupertypes) {
       Element? e = t.getMethod(element.name);
