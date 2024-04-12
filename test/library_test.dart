@@ -94,6 +94,57 @@ A doc comment.
     expect(library.oneLineDoc, 'A doc comment.');
   });
 
+  test('Libraries are sorted properly', () async {
+    var packageMetaProvider = testPackageMetaProvider;
+    var resourceProvider =
+        packageMetaProvider.resourceProvider as MemoryResourceProvider;
+
+    var packagePath = await d.createPackage(
+      'test_package',
+      libFiles: [
+        d.dir('d', [d.file('a.dart', '')]),
+        d.dir('e', [d.file('a.dart', '')]),
+        // Unnamed library with library directive.
+        d.file('b.dart', 'library;'),
+        // Unnamed library without library directives.
+        d.file('c.dart', ''),
+        d.file('d.dart', 'library;'),
+        d.file('e.dart', ''),
+      ],
+      resourceProvider: resourceProvider,
+    );
+    final packageConfigProvider =
+        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
+    packageConfigProvider.addPackageToConfigFor(
+        packagePath, 'library_test', Uri.file('$packagePath/'));
+
+    final packageGraph = await bootBasicPackage(
+      packagePath,
+      packageMetaProvider,
+      packageConfigProvider,
+    );
+    final daName = resourceProvider.convertPath('d/a');
+    final eaName = resourceProvider.convertPath('e/a');
+    final daLibrary = packageGraph.libraries.displayNamed(daName);
+    final eaLibrary = packageGraph.libraries.displayNamed(eaName);
+    final bLibrary = packageGraph.libraries.displayNamed('b');
+    final cLibrary = packageGraph.libraries.displayNamed('c');
+    final dLibrary = packageGraph.libraries.displayNamed('d');
+    final eLibrary = packageGraph.libraries.displayNamed('e');
+    var libraries = [
+      daLibrary,
+      eaLibrary,
+      bLibrary,
+      cLibrary,
+      dLibrary,
+      eLibrary,
+    ]..sort(byName);
+    expect(
+      libraries.map((l) => l.displayName),
+      containsAllInOrder(['b', 'c', 'd', daName, 'e', eaName]),
+    );
+  });
+
   test('libraries in SDK package have appropriate data', () async {
     var packageMetaProvider = testPackageMetaProvider;
     var sdkFolder = packageMetaProvider.defaultSdkDir;

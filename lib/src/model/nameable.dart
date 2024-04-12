@@ -96,9 +96,14 @@ mixin Nameable implements Privacy {
 
 /// Compares [a] with [b] by name.
 int byName(Nameable a, Nameable b) {
-  var stringCompare = compareAsciiLowerCaseNatural(a.name, b.name);
-  if (stringCompare == 0) {
-    return a.hashCode.compareTo(b.hashCode);
+  if (a is Library && b is Library) {
+    return compareAsciiLowerCaseNatural(a.displayName, b.displayName);
   }
-  return stringCompare;
+
+  var stringCompare = compareAsciiLowerCaseNatural(a.name, b.name);
+  if (stringCompare != 0) {
+    return stringCompare;
+  }
+
+  return a.hashCode.compareTo(b.hashCode);
 }
