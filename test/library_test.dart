@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:test/test.dart';
 
