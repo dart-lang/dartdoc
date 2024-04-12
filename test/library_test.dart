@@ -96,6 +96,8 @@ A doc comment.
 
   test('Libraries are sorted properly', () async {
     var packageMetaProvider = testPackageMetaProvider;
+    var resourceProvider =
+        packageMetaProvider.resourceProvider as MemoryResourceProvider;
 
     var packagePath = await d.createPackage(
       'test_package',
@@ -109,8 +111,7 @@ A doc comment.
         d.file('d.dart', 'library;'),
         d.file('e.dart', ''),
       ],
-      resourceProvider:
-          packageMetaProvider.resourceProvider as MemoryResourceProvider,
+      resourceProvider: resourceProvider,
     );
     final packageConfigProvider =
         getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
@@ -138,7 +139,14 @@ A doc comment.
     ]..sort(byName);
     expect(
       libraries.map((l) => l.displayName),
-      containsAllInOrder(['b', 'c', 'd', 'd/a', 'e', 'e/a']),
+      containsAllInOrder([
+        'b',
+        'c',
+        'd',
+        resourceProvider.convertPath('d/a'),
+        'e',
+        resourceProvider.convertPath('e/a'),
+      ]),
     );
   });
 
