@@ -20,6 +20,9 @@ import 'package:meta/meta.dart';
 /// [hasModifiers] override is not necessary for this mixin.
 mixin Constructable implements InheritingContainer {
   late final List<Constructor> constructors =
+      // TODO(srawlins): Remove this and deal with the follow-on effects, when
+      // `.augmented` becomes non-nullable.
+      // ignore: invalid_null_aware_operator
       (element.augmented?.constructors ?? element.constructors)
           .map((e) => getModelFor(e, library) as Constructor)
           .toList(growable: false);
@@ -257,6 +260,9 @@ abstract class InheritingContainer extends Container {
 
   @override
   late final List<Method> declaredMethods =
+      // TODO(srawlins): Remove this and deal with the follow-on effects, when
+      // `.augmented` becomes non-nullable.
+      // ignore: invalid_null_aware_operator
       (element.augmented?.methods ?? element.methods)
           .map((e) => getModelFor(e, library) as Method)
           .toList(growable: false);
@@ -599,6 +605,9 @@ extension on InterfaceElement {
   /// This element's augmented declaration, or, if there is none, then just this
   /// element itself.
   InterfaceElement get augmentedDeclarationOrSelf =>
+      // TODO(srawlins): Remove this and deal with the follow-on effects, when
+      // `.augmented` becomes non-nullable.
+      // ignore: invalid_null_aware_operator
       augmented?.declaration ?? this;
 }
 
