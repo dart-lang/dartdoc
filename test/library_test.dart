@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:test/test.dart';
 
@@ -92,6 +93,54 @@ A doc comment.
 
 **Details**.''');
     expect(library.oneLineDoc, 'A doc comment.');
+  });
+
+  test('Libraries are sorted properly', () async {
+    var packageMetaProvider = testPackageMetaProvider;
+
+    var packagePath = await d.createPackage(
+      'test_package',
+      libFiles: [
+        d.dir('d', [d.file('a.dart', '')]),
+        d.dir('e', [d.file('a.dart', '')]),
+        // Unnamed library with library directive.
+        d.file('b.dart', 'library;'),
+        // Unnamed library without library directives.
+        d.file('c.dart', ''),
+        d.file('d.dart', 'library;'),
+        d.file('e.dart', ''),
+      ],
+      resourceProvider:
+          packageMetaProvider.resourceProvider as MemoryResourceProvider,
+    );
+    final packageConfigProvider =
+        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
+    packageConfigProvider.addPackageToConfigFor(
+        packagePath, 'library_test', Uri.file('$packagePath/'));
+
+    final packageGraph = await bootBasicPackage(
+      packagePath,
+      packageMetaProvider,
+      packageConfigProvider,
+    );
+    final daLibrary = packageGraph.libraries.displayNamed('d/a');
+    final eaLibrary = packageGraph.libraries.displayNamed('e/a');
+    final bLibrary = packageGraph.libraries.displayNamed('b');
+    final cLibrary = packageGraph.libraries.displayNamed('c');
+    final dLibrary = packageGraph.libraries.displayNamed('d');
+    final eLibrary = packageGraph.libraries.displayNamed('e');
+    var libraries = [
+      daLibrary,
+      eaLibrary,
+      bLibrary,
+      cLibrary,
+      dLibrary,
+      eLibrary,
+    ]..sort(byName);
+    expect(
+      libraries.map((l) => l.displayName),
+      containsAllInOrder(['b', 'c', 'd', 'd/a', 'e', 'e/a']),
+    );
   });
 
   test('libraries in SDK package have appropriate data', () async {

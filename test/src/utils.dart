@@ -17,6 +17,7 @@ import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -355,7 +356,10 @@ bool get classModifiersAllowed =>
         .allows(platformVersion);
 
 extension ModelElementIterableExtension<T extends ModelElement> on Iterable<T> {
-  T named(String name) => firstWhere((e) => e.name == name);
+  T named(String name) => singleWhere((e) => e.name == name);
+
+  T displayNamed(String displayName) =>
+      singleWhere((e) => e.displayName == displayName);
 }
 
 extension IterableStringExtension on Iterable<String> {
@@ -377,11 +381,11 @@ extension IterableStringExtension on Iterable<String> {
 extension PackageExtension on Package {
   /// Gathers all extensions found across a package.
   Iterable<Extension> get extensions =>
-      libraries.expand((library) => library.extensions);
+      libraries.expand((library) => library.extensions.whereDocumented);
 
   /// Gathers all functions found across a package.
   Iterable<ModelFunction> get functions =>
-      libraries.expand((library) => library.functions);
+      libraries.expand((library) => library.functions.whereDocumented);
 }
 
 /// Extension methods just for tests.
