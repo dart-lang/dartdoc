@@ -123,8 +123,10 @@ A doc comment.
       packageMetaProvider,
       packageConfigProvider,
     );
-    final daLibrary = packageGraph.libraries.displayNamed('d/a');
-    final eaLibrary = packageGraph.libraries.displayNamed('e/a');
+    final daName = resourceProvider.convertPath('d/a');
+    final eaName = resourceProvider.convertPath('e/a');
+    final daLibrary = packageGraph.libraries.displayNamed(daName);
+    final eaLibrary = packageGraph.libraries.displayNamed(eaName);
     final bLibrary = packageGraph.libraries.displayNamed('b');
     final cLibrary = packageGraph.libraries.displayNamed('c');
     final dLibrary = packageGraph.libraries.displayNamed('d');
@@ -139,14 +141,7 @@ A doc comment.
     ]..sort(byName);
     expect(
       libraries.map((l) => l.displayName),
-      containsAllInOrder([
-        'b',
-        'c',
-        'd',
-        resourceProvider.convertPath('d/a'),
-        'e',
-        resourceProvider.convertPath('e/a'),
-      ]),
+      containsAllInOrder(['b', 'c', 'd', daName, 'e', eaName]),
     );
   });
 
