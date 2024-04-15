@@ -6,7 +6,6 @@ import 'dart:collection';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
-import 'package:analyzer/dart/element/type_system.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show SdkLibrary;
@@ -58,7 +57,7 @@ class Library extends ModelElement
       // Initialize the list of elements defined in this library and
       // exported via its export directives.
       ...element.exportNamespace.definedNames.values,
-      // TODO(jcollins-g): Consider switch to [_libraryElement.topLevelElements].
+      // TODO(jcollins-g): Consider switch to `element.topLevelElements`.
       ..._getDefinedElements(element.definingCompilationUnit),
       ...element.parts
           .map((e) => e.uri)
@@ -110,21 +109,6 @@ class Library extends ModelElement
   CompilationUnitElement get compilationUnitElement =>
       element.definingCompilationUnit;
 
-  @override
-  Iterable<Class> get classes => allClasses.where((c) => !c.isErrorOrException);
-
-  @override
-  late final List<Extension> extensions = _exportedAndLocalElements
-      .whereType<ExtensionElement>()
-      .map((e) => getModelFor(e, this) as Extension)
-      .toList(growable: false);
-
-  @override
-  late final List<ExtensionType> extensionTypes = _exportedAndLocalElements
-      .whereType<ExtensionTypeElement>()
-      .map((e) => getModelFor(e, this) as ExtensionType)
-      .toList(growable: false);
-
   SdkLibrary? get _sdkLib =>
       packageGraph.sdkLibrarySources[element.librarySource];
 
@@ -143,10 +127,6 @@ class Library extends ModelElement
     }
     return true;
   }
-
-  @override
-  Iterable<TopLevelVariable> get constants =>
-      _variables.where((v) => v.isConst);
 
   /// Map of each import prefix ('import "foo" as prefix;') to the set of
   /// libraries which are imported via that prefix.
@@ -204,22 +184,6 @@ class Library extends ModelElement
   ModelElement? get enclosingElement => null;
 
   @override
-  late final List<Enum> enums = _exportedAndLocalElements
-      .whereType<EnumElement>()
-      .map((e) => getModelFor(e, this) as Enum)
-      .toList(growable: false);
-
-  @override
-  late final List<Mixin> mixins = _exportedAndLocalElements
-      .whereType<MixinElement>()
-      .map((e) => getModelFor(e, this) as Mixin)
-      .toList(growable: false);
-
-  @override
-  late final List<Class> exceptions =
-      allClasses.where((c) => c.isErrorOrException).toList(growable: false);
-
-  @override
   String get filePath => '${library.dirName}/$fileName';
 
   @override
@@ -234,12 +198,6 @@ class Library extends ModelElement
 
   @override
   String get belowSidebarPath => sidebarPath;
-
-  @override
-  late final List<ModelFunction> functions = _exportedAndLocalElements
-      .whereType<FunctionElement>()
-      .map((e) => getModelFor(e, this) as ModelFunction)
-      .toList(growable: false);
 
   @override
   String? get href {
@@ -328,30 +286,62 @@ class Library extends ModelElement
   late final PackageMeta? packageMeta =
       packageGraph.packageMetaProvider.fromElement(element, config.sdkDir);
 
-  /// All variables ("properties") except constants.
+  late final List<Class> classesAndExceptions =
+      _localElementsOfType<ClassElement, Class>();
+
+  @override
+  Iterable<Class> get classes =>
+      classesAndExceptions.where((c) => !c.isErrorOrException);
+
+  @override
+  Iterable<TopLevelVariable> get constants =>
+      _variables.where((v) => v.isConst);
+
+  @override
+  late final List<Enum> enums = _localElementsOfType<EnumElement, Enum>();
+
+  @override
+  late final List<Class> exceptions = classesAndExceptions
+      .where((c) => c.isErrorOrException)
+      .toList(growable: false);
+
+  @override
+  late final List<Extension> extensions =
+      _localElementsOfType<ExtensionElement, Extension>();
+
+  @override
+  late final List<ExtensionType> extensionTypes =
+      _localElementsOfType<ExtensionTypeElement, ExtensionType>();
+
+  @override
+  late final List<ModelFunction> functions =
+      _localElementsOfType<FunctionElement, ModelFunction>();
+
+  @override
+  late final List<Mixin> mixins = _localElementsOfType<MixinElement, Mixin>();
+
   @override
   late final List<TopLevelVariable> properties =
       _variables.where((v) => !v.isConst).toList(growable: false);
 
   @override
-  late final List<Typedef> typedefs = _exportedAndLocalElements
-      .whereType<TypeAliasElement>()
-      .map((e) => packageGraph.getModelFor(e, this) as Typedef)
-      .toList(growable: false);
+  late final List<Typedef> typedefs =
+      _localElementsOfType<TypeAliasElement, Typedef>();
 
-  TypeSystem get typeSystem => element.typeSystem;
+  List<U> _localElementsOfType<T extends Element, U extends ModelElement>() =>
+      _exportedAndLocalElements
+          .whereType<T>()
+          .map((e) => packageGraph.getModelFor(e, this) as U)
+          .toList(growable: false);
 
-  late final List<Class> allClasses = _exportedAndLocalElements
-      .whereType<ClassElement>()
-      .map((e) => packageGraph.getModelFor(e, this) as Class)
-      .toList(growable: false);
-
+  /// All top-level variables, including "properties" and constants.
   List<TopLevelVariable> get _variables {
-    var elements =
-        _exportedAndLocalElements.whereType<TopLevelVariableElement>().toSet();
-    elements.addAll(_exportedAndLocalElements
-        .whereType<PropertyAccessorElement>()
-        .map((a) => a.variable as TopLevelVariableElement));
+    var elements = {
+      ..._exportedAndLocalElements.whereType<TopLevelVariableElement>(),
+      ..._exportedAndLocalElements
+          .whereType<PropertyAccessorElement>()
+          .map((a) => a.variable as TopLevelVariableElement)
+    };
     var variables = <TopLevelVariable>[];
     for (var element in elements) {
       Accessor? getter;
@@ -378,15 +368,15 @@ class Library extends ModelElement
   late final HashMap<Element, Set<ModelElement>> modelElementsMap = () {
     var modelElements = HashMap<Element, Set<ModelElement>>();
     for (var modelElement in <ModelElement>[
-      ...library.constants,
-      ...library.functions,
-      ...library.properties,
-      ...library.typedefs,
-      ...library.extensions.expand((e) => [e, ...e.allModelElements]),
-      ...library.extensionTypes.expand((e) => [e, ...e.allModelElements]),
-      ...library.allClasses.expand((c) => [c, ...c.allModelElements]),
-      ...library.enums.expand((e) => [e, ...e.allModelElements]),
-      ...library.mixins.expand((m) => [m, ...m.allModelElements]),
+      ...constants,
+      ...functions,
+      ...properties,
+      ...typedefs,
+      ...extensions.expand((e) => [e, ...e.allModelElements]),
+      ...extensionTypes.expand((e) => [e, ...e.allModelElements]),
+      ...classesAndExceptions.expand((c) => [c, ...c.allModelElements]),
+      ...enums.expand((e) => [e, ...e.allModelElements]),
+      ...mixins.expand((m) => [m, ...m.allModelElements]),
     ]) {
       modelElements
           .putIfAbsent(modelElement.element, () => {})
@@ -454,7 +444,7 @@ class Library extends ModelElement
     var libraryMembers = [
       ...library.extensions,
       ...library.extensionTypes,
-      ...library.allClasses,
+      ...library.classesAndExceptions,
       ...library.enums,
       ...library.mixins,
       ...library.constants,

@@ -12,7 +12,11 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 /// Do not call any methods or members excepting [name] and the private Lists
 /// below before finishing initialization of a [TopLevelContainer].
 mixin TopLevelContainer implements Nameable {
+  /// All top-level classes except those that subtype [Error] or [Exception].
   Iterable<Class> get classes;
+
+  /// All classes that subtype [Error] or [Exception].
+  Iterable<Class> get exceptions;
 
   Iterable<Extension> get extensions;
 
@@ -22,10 +26,10 @@ mixin TopLevelContainer implements Nameable {
 
   Iterable<Mixin> get mixins;
 
-  Iterable<Class> get exceptions;
-
+  /// All top-level constants.
   Iterable<TopLevelVariable> get constants;
 
+  /// All top-level variables ("properties") except constants.
   Iterable<TopLevelVariable> get properties;
 
   Iterable<ModelFunction> get functions;

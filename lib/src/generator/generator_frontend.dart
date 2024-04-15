@@ -164,7 +164,7 @@ class GeneratorFrontEnd implements Generator {
         indexAccumulator.add(lib);
         _generatorBackend.generateLibrary(packageGraph, lib);
 
-        for (var class_ in lib.allClasses.whereDocumented) {
+        for (var class_ in lib.classesAndExceptions.whereDocumented) {
           indexAccumulator.add(class_);
           _generatorBackend.generateClass(packageGraph, lib, class_);
 
