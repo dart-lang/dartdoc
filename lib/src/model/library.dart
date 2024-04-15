@@ -287,7 +287,7 @@ class Library extends ModelElement
       packageGraph.packageMetaProvider.fromElement(element, config.sdkDir);
 
   late final List<Class> classesAndExceptions =
-      _localElementsOfType<ClassElement, Class>();
+      _elementsOfType<ClassElement, Class>();
 
   @override
   Iterable<Class> get classes =>
@@ -298,7 +298,7 @@ class Library extends ModelElement
       _variables.where((v) => v.isConst);
 
   @override
-  late final List<Enum> enums = _localElementsOfType<EnumElement, Enum>();
+  late final List<Enum> enums = _elementsOfType<EnumElement, Enum>();
 
   @override
   late final List<Class> exceptions = classesAndExceptions
@@ -307,18 +307,18 @@ class Library extends ModelElement
 
   @override
   late final List<Extension> extensions =
-      _localElementsOfType<ExtensionElement, Extension>();
+      _elementsOfType<ExtensionElement, Extension>();
 
   @override
   late final List<ExtensionType> extensionTypes =
-      _localElementsOfType<ExtensionTypeElement, ExtensionType>();
+      _elementsOfType<ExtensionTypeElement, ExtensionType>();
 
   @override
   late final List<ModelFunction> functions =
-      _localElementsOfType<FunctionElement, ModelFunction>();
+      _elementsOfType<FunctionElement, ModelFunction>();
 
   @override
-  late final List<Mixin> mixins = _localElementsOfType<MixinElement, Mixin>();
+  late final List<Mixin> mixins = _elementsOfType<MixinElement, Mixin>();
 
   @override
   late final List<TopLevelVariable> properties =
@@ -326,9 +326,9 @@ class Library extends ModelElement
 
   @override
   late final List<Typedef> typedefs =
-      _localElementsOfType<TypeAliasElement, Typedef>();
+      _elementsOfType<TypeAliasElement, Typedef>();
 
-  List<U> _localElementsOfType<T extends Element, U extends ModelElement>() =>
+  List<U> _elementsOfType<T extends Element, U extends ModelElement>() =>
       _exportedAndLocalElements
           .whereType<T>()
           .map((e) => packageGraph.getModelFor(e, this) as U)
