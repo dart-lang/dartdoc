@@ -303,9 +303,9 @@ void main() async {
           .firstWhere((lib) => lib.name == 'nnbd_class_member_declarations');
       nullableElements = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'nullable_elements');
-      b = nullSafetyClassMemberDeclarations.allClasses
+      b = nullSafetyClassMemberDeclarations.classes
           .firstWhere((c) => c.name == 'B');
-      c = nullSafetyClassMemberDeclarations.allClasses
+      c = nullSafetyClassMemberDeclarations.classes
           .firstWhere((c) => c.name == 'C');
       oddAsyncFunction = nullableElements.functions.wherePublic
           .firstWhere((f) => f.name == 'oddAsyncFunction');
@@ -388,8 +388,8 @@ void main() async {
     });
 
     test('Late final class member test', () {
-      var c = lateFinalWithoutInitializer.allClasses
-          .firstWhere((c) => c.name == 'C');
+      var c =
+          lateFinalWithoutInitializer.classes.firstWhere((c) => c.name == 'C');
       var a = c.instanceFields.firstWhere((f) => f.name == 'a');
       var b = c.instanceFields.firstWhere((f) => f.name == 'b');
       var cField = c.instanceFields.firstWhere((f) => f.name == 'cField');
@@ -431,7 +431,7 @@ void main() async {
     });
 
     test('complex nullable elements are detected and rendered correctly', () {
-      var complexNullableMembers = nullableElements.allClasses
+      var complexNullableMembers = nullableElements.classes
           .firstWhere((c) => c.name == 'ComplexNullableMembers');
       expect(
           complexNullableMembers.nameWithGenerics,
@@ -440,7 +440,7 @@ void main() async {
     });
 
     test('simple nullable elements are detected and rendered correctly', () {
-      var nullableMembers = nullableElements.allClasses
+      var nullableMembers = nullableElements.classes
           .firstWhere((c) => c.name == 'NullableMembers');
       var methodWithNullables = nullableMembers.instanceMethods.wherePublic
           .firstWhere((f) => f.name == 'methodWithNullables');
@@ -551,15 +551,15 @@ void main() async {
         RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
 
     setUpAll(() {
-      NonCanonicalToolUser = fakeLibrary.allClasses
+      NonCanonicalToolUser = fakeLibrary.classes
           .firstWhere((c) => c.name == '_NonCanonicalToolUser');
-      CanonicalToolUser = fakeLibrary.allClasses
-          .firstWhere((c) => c.name == 'CanonicalToolUser');
-      PrivateLibraryToolUser = fakeLibrary.allClasses
+      CanonicalToolUser =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'CanonicalToolUser');
+      PrivateLibraryToolUser = fakeLibrary.classes
           .firstWhere((c) => c.name == 'PrivateLibraryToolUser');
-      ImplementingClassForTool = fakeLibrary.allClasses
+      ImplementingClassForTool = fakeLibrary.classes
           .firstWhere((c) => c.name == 'ImplementingClassForTool');
-      CanonicalPrivateInheritedToolUser = fakeLibrary.allClasses
+      CanonicalPrivateInheritedToolUser = fakeLibrary.classes
           .firstWhere((c) => c.name == 'CanonicalPrivateInheritedToolUser');
       toolUser = exLibrary.classes.firstWhere((c) => c.name == 'ToolUser');
       invokeTool =
@@ -593,8 +593,9 @@ void main() async {
       // Verify setup of the test is correct.
       expect(invokeToolParentDoc.isCanonical, isTrue);
       expect(invokeToolParentDoc.hasDocumentationComment, isFalse);
-      // Error message here might look strange due to toString() on Methods, but if this
-      // fails that means we don't have the correct invokeToolParentDoc instance.
+      // Error message here might look strange due to `toString()` on Methods,
+      // but if this fails that means we don't have the correct
+      // invokeToolParentDoc instance.
       expect(invokeToolParentDoc.documentationFrom,
           contains(invokeToolParentDocOriginal));
       // Tool should be substituted out here.
@@ -888,7 +889,7 @@ void main() async {
     });
 
     test('can be reexported even if the file suffix is not .dart', () {
-      expect(fakeLibrary.allClasses.map((c) => c.name),
+      expect(fakeLibrary.classes.map((c) => c.name),
           contains('MyClassFromADartFile'));
     });
 
@@ -1007,7 +1008,7 @@ void main() async {
           fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
       macroReferencedHere = MacrosFromAccessors.publicEnumValues
           .firstWhere((e) => e.name == 'macroReferencedHere') as EnumField;
-      ClassTemplateOneLiner = exLibrary.allClasses
+      ClassTemplateOneLiner = exLibrary.classes
           .firstWhere((c) => c.name == 'ClassTemplateOneLiner');
     });
 
@@ -1196,7 +1197,7 @@ void main() async {
       superAwesomeClass = fakeLibrary.classes
           .firstWhere((cls) => cls.name == 'SuperAwesomeClass');
       foo2 = fakeLibrary.classes.firstWhere((cls) => cls.name == 'Foo2');
-      extendedClass = twoExportsLib.allClasses
+      extendedClass = twoExportsLib.classes
           .firstWhere((clazz) => clazz.name == 'ExtendingClass');
 
       subForDocComments =
@@ -1256,11 +1257,11 @@ void main() async {
         var NodocMeLibrary = packageGraph.defaultPackage.allLibraries
             .firstWhere((l) => l.name == 'nodocme');
         expect(NodocMeLibrary.hasNodoc, isTrue);
-        var NodocMeImplementation = fakeLibrary.allClasses
+        var NodocMeImplementation = fakeLibrary.classes
             .firstWhere((c) => c.name == 'NodocMeImplementation');
         expect(NodocMeImplementation.hasNodoc, isTrue);
         expect(NodocMeImplementation.isPublic, isFalse);
-        var MeNeitherEvenWithoutADocComment = fakeLibrary.allClasses
+        var MeNeitherEvenWithoutADocComment = fakeLibrary.classes
             .firstWhere((c) => c.name == 'MeNeitherEvenWithoutADocComment');
         expect(MeNeitherEvenWithoutADocComment.hasNodoc, isTrue);
         expect(MeNeitherEvenWithoutADocComment.isPublic, isFalse);
@@ -1628,7 +1629,7 @@ void main() async {
     test(
         'code references to privately defined elements in public classes work properly',
         () {
-      var notAMethodFromPrivateClass = fakeLibrary.allClasses
+      var notAMethodFromPrivateClass = fakeLibrary.classes
           .firstWhere((Class c) => c.name == 'ReferringClass')
           .instanceMethods
           .wherePublic
@@ -1711,7 +1712,7 @@ void main() async {
 
     test('Overrides from intermediate abstract classes are picked up correctly',
         () {
-      var IntermediateAbstractSubclass = fakeLibrary.allClasses
+      var IntermediateAbstractSubclass = fakeLibrary.classes
           .firstWhere((c) => c.name == 'IntermediateAbstractSubclass');
       var operatorEquals = IntermediateAbstractSubclass.inheritedOperators
           .firstWhere((o) => o.name == 'operator ==');
@@ -1724,7 +1725,7 @@ void main() async {
         () {
       var dartCore =
           packageGraph.libraries.firstWhere((l) => l.name == 'dart:core');
-      var intClass = dartCore.allClasses.firstWhere((c) => c.name == 'int');
+      var intClass = dartCore.classes.firstWhere((c) => c.name == 'int');
       var operatorEqualsInt = intClass.inheritedOperators
           .firstWhere((o) => o.name == 'operator ==');
       expect(operatorEqualsInt.definingEnclosingContainer.name, equals('num'));
@@ -1733,7 +1734,7 @@ void main() async {
     test('Factories from unrelated classes are linked correctly', () {
       var A = packageGraph.localPublicLibraries
           .firstWhere((l) => l.name == 'unrelated_factories')
-          .allClasses
+          .classes
           .firstWhere((c) => c.name == 'A');
       var fromMap = A.constructors.firstWhere((c) => c.name == 'A.fromMap');
       expect(fromMap.documentationAsHtml,
@@ -1750,7 +1751,7 @@ void main() async {
         () {
       var GadgetExtender = packageGraph.localPublicLibraries
           .firstWhere((l) => l.name == 'gadget_extender')
-          .allClasses
+          .classes
           .firstWhere((c) => c.name == 'GadgetExtender');
       var gadgetGetter = GadgetExtender.instanceFields
           .firstWhere((f) => f.name == 'gadgetGetter');
@@ -2380,7 +2381,7 @@ void main() async {
         typedParam = aTopLevelTypeParameterFunction.parameters
             .firstWhere((t) => t.name == 'typedParam');
 
-        TypeParameterThings = fakeLibrary.allClasses
+        TypeParameterThings = fakeLibrary.classes
             .firstWhere((c) => c.name == 'TypeParameterThings');
         aName = TypeParameterThings.instanceFields
             .firstWhere((f) => f.name == 'aName');
@@ -2400,12 +2401,12 @@ void main() async {
         BTypeParam = TypeParameterThings.typeParameters.firstWhere(
             (t) => t.name == 'BTypeParam extends FactoryConstructorThings');
 
-        TypeParameterThingsExtended = fakeLibrary.allClasses
+        TypeParameterThingsExtended = fakeLibrary.classes
             .firstWhere((c) => c.name == 'TypeParameterThingsExtended');
         aMethodExtended = TypeParameterThingsExtended.instanceMethods
             .firstWhere((m) => m.name == 'aMethod');
 
-        TypeParameterThingsExtendedQ = fakeLibrary.allClasses
+        TypeParameterThingsExtendedQ = fakeLibrary.classes
             .firstWhere((c) => c.name == 'TypeParameterThingsExtendedQ');
         aMethodExtendedQ = TypeParameterThingsExtendedQ.instanceMethods
             .firstWhere((m) => m.name == 'aMethod');
@@ -2525,11 +2526,11 @@ void main() async {
             .firstWhere((v) => v.name == 'NAME_SINGLEUNDERSCORE');
         string = packageGraph.allLibraries.values
             .firstWhere((e) => e.name == 'dart:core')
-            .allClasses
+            .classes
             .firstWhere((c) => c.name == 'String');
         metaUseResult = packageGraph.allLibraries.values
             .firstWhere((e) => e.name == 'meta')
-            .allClasses
+            .classes
             .firstWhere((c) => c.name == 'UseResult');
         baseForDocComments = fakeLibrary.classes
             .firstWhere((c) => c.name == 'BaseForDocComments');
@@ -2912,7 +2913,7 @@ void main() async {
           .firstWhere((e) => e.name == 'DocumentThisExtensionOnce');
       string = packageGraph.allLibraries.values
           .firstWhere((e) => e.name == 'dart:core')
-          .allClasses
+          .classes
           .firstWhere((c) => c.name == 'String');
       apple = exLibrary.classes.firstWhere((e) => e.name == 'Apple');
       ext = exLibrary.extensions.firstWhere((e) => e.name == 'AppleExtension');
@@ -3687,17 +3688,16 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           .instanceFields
           .firstWhere((c) => c.name == 'lengthX');
 
-      var appleClass =
-          exLibrary.allClasses.firstWhere((c) => c.name == 'Apple');
+      var appleClass = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
 
       sFromApple = appleClass.instanceFields.firstWhere((p) => p.name == 's');
       mFromApple = appleClass.instanceFields.singleWhere((p) => p.name == 'm');
 
-      mInB = exLibrary.allClasses
+      mInB = exLibrary.classes
           .firstWhere((c) => c.name == 'B')
           .instanceFields
           .firstWhere((p) => p.name == 'm');
-      autoCompress = exLibrary.allClasses
+      autoCompress = exLibrary.classes
           .firstWhere((c) => c.name == 'B')
           .instanceFields
           .firstWhere((p) => p.name == 'autoCompress');
@@ -4219,7 +4219,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       cat = exLibrary.constants.firstWhere((c) => c.name == 'MY_CAT');
       deprecated =
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
-      var Dog = exLibrary.allClasses.firstWhere((c) => c.name == 'Dog');
+      var Dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
       customClassPrivate = fakeLibrary.constants
           .firstWhere((c) => c.name == 'CUSTOM_CLASS_PRIVATE');
       aStaticConstField =
@@ -4980,7 +4980,6 @@ class StringNameHashCode with Nameable {
 }
 
 extension on Library {
-  Class getClassByName(String name) {
-    return allClasses.firstWhere((c) => c.name == name);
-  }
+  Class getClassByName(String name) =>
+      classes.firstWhere((c) => c.name == name);
 }

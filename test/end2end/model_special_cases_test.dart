@@ -306,7 +306,7 @@ void main() {
           isNot(contains('{@end-inject-html}')));
     });
     test('tool outputs a macro which outputs injected HTML', () {
-      var ToolPrintingMacroWhichInjectsHtml = injectionExLibrary.allClasses
+      var ToolPrintingMacroWhichInjectsHtml = injectionExLibrary.classes
           .firstWhere((c) => c.name == 'ToolPrintingMacroWhichInjectsHtml');
       var a = ToolPrintingMacroWhichInjectsHtml.instanceFields
           .firstWhere((m) => m.name == 'a');
@@ -433,7 +433,7 @@ void main() {
       var htmlLibrary =
           sdkAsPackageGraph.libraries.singleWhere((l) => l.name == 'dart:html');
       var eventTarget =
-          htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
+          htmlLibrary.classes.singleWhere((c) => c.name == 'EventTarget');
       var hashCode = eventTarget.instanceFields.wherePublic
           .singleWhere((f) => f.name == 'hashCode');
       var objectModelElement =

@@ -151,7 +151,7 @@ class PackageGraph with CommentReferable, Nameable {
     // all packages are picked up.
     for (var package in _documentedPackages) {
       for (var library in package.libraries) {
-        _addToImplementers(library.allClasses);
+        _addToImplementers(library.classesAndExceptions);
         _addToImplementers(library.mixins);
         _addToImplementers(library.extensionTypes);
         _extensions.addAll(library.extensions);
@@ -645,7 +645,7 @@ class PackageGraph with CommentReferable, Nameable {
   /// The String name representing the `Object` type.
   late final String dartCoreObject = libraries
           .firstWhereOrNull((library) => library.name == 'dart:core')
-          ?.allClasses
+          ?.classes
           .firstWhereOrNull((c) => c.name == 'Object')
           ?.linkedName ??
       'Object';

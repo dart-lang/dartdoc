@@ -182,8 +182,7 @@ void main() {
       // the 'Bear' class.
       var dartBear =
           dartPackage.libraries.firstWhere((lib) => lib.name == 'dart:bear');
-      expect(
-          dartBear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
+      expect(dartBear.classes.map((cls) => cls.name).contains('Bear'), isTrue);
       expect(dartPackage.libraries.wherePublic, hasLength(3));
     });
 

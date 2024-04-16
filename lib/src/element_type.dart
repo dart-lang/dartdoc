@@ -10,6 +10,7 @@ library;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:analyzer/dart/element/type_system.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
@@ -305,6 +306,8 @@ abstract class DefinedElementType extends ElementType {
     return canonicalClass.isPublic;
   }
 
+  TypeSystem get _typeSystem => library.element.typeSystem;
+
   DartType get _bound => type;
 
   /// This type, instantiated to bounds if it isn't already.
@@ -313,7 +316,7 @@ abstract class DefinedElementType extends ElementType {
     final bound = _bound;
     if (bound is InterfaceType &&
         !bound.typeArguments.every((t) => t is InterfaceType)) {
-      return library.typeSystem.instantiateInterfaceToBounds(
+      return _typeSystem.instantiateInterfaceToBounds(
           element: bound.element, nullabilitySuffix: _bound.nullabilitySuffix);
     } else {
       return _bound;
@@ -324,7 +327,7 @@ abstract class DefinedElementType extends ElementType {
   /// of [type].
   @override
   bool isSubtypeOf(ElementType type) =>
-      library.typeSystem.isSubtypeOf(instantiatedType, type.instantiatedType);
+      _typeSystem.isSubtypeOf(instantiatedType, type.instantiatedType);
 
   /// Whether at least one supertype (including via mixins and interfaces) is
   /// equivalent to or a subtype of `this` when instantiated to bounds.
@@ -334,7 +337,7 @@ abstract class DefinedElementType extends ElementType {
     if (type is InterfaceType) {
       var superTypes = type.allSupertypes;
       for (var superType in superTypes) {
-        if (library.typeSystem.isSubtypeOf(superType, instantiatedType)) {
+        if (_typeSystem.isSubtypeOf(superType, instantiatedType)) {
           return true;
         }
       }

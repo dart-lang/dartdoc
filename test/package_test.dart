@@ -306,7 +306,7 @@ dartdoc:
         // TODO(srawlins): Why is there more than one?
         var libraryOne =
             packageOne.allLibraries.lastWhere((l) => l.name == 'one');
-        var classOne = libraryOne.allClasses.named('One');
+        var classOne = libraryOne.classes.named('One');
         expect(packageOne.documentedWhere, equals(DocumentLocation.remote));
         expect(classOne.href,
             equals('https://mypub.topdomain/one/0.0.1/one/One-class.html'));
@@ -347,7 +347,7 @@ dartdoc:
         expect(packageOne.documentedWhere, equals(DocumentLocation.remote));
         // TODO(srawlins): Why is there more than one?
         var libraryScript = packageOne.allLibraries.named('script');
-        var classScript = libraryScript.allClasses.named('Script');
+        var classScript = libraryScript.classesAndExceptions.named('Script');
         expect(
             classScript.href,
             equals(

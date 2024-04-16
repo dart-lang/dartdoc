@@ -8093,18 +8093,6 @@ class _Renderer_Library extends RendererBase<Library> {
                         parent: r);
                   },
                 ),
-                'allClasses': Property(
-                  getValue: (CT_ c) => c.allClasses,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<Class>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.allClasses.map((e) =>
-                        _render_Class(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'allModelElements': Property(
                   getValue: (CT_ c) => c.allModelElements,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -8185,6 +8173,18 @@ class _Renderer_Library extends RendererBase<Library> {
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.classes.map((e) =>
+                        _render_Class(e, ast, r.template, sink, parent: r));
+                  },
+                ),
+                'classesAndExceptions': Property(
+                  getValue: (CT_ c) => c.classesAndExceptions,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(
+                          c, remainingNames, 'List<Class>'),
+                  renderIterable: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    return c.classesAndExceptions.map((e) =>
                         _render_Class(e, ast, r.template, sink, parent: r));
                   },
                 ),
@@ -8653,19 +8653,6 @@ class _Renderer_Library extends RendererBase<Library> {
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.sidebarPath, ast, r.template, sink,
                         parent: r);
-                  },
-                ),
-                'typeSystem': Property(
-                  getValue: (CT_ c) => c.typeSystem,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'TypeSystem'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.typeSystem, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['TypeSystem']!);
                   },
                 ),
                 'typedefs': Property(
@@ -12435,7 +12422,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12673,13 +12660,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -16690,7 +16677,6 @@ const _invisibleGetters = {
     'name',
     'runtimeType'
   },
-  'TypeSystem': {'hashCode', 'runtimeType'},
   'int': {
     'bitLength',
     'hashCode',

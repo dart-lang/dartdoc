@@ -294,7 +294,7 @@ class Package extends LibraryContainer
         addToCategories(
             extensionType, (c) => c.extensionTypes.add(extensionType));
       }
-      for (var class_ in library.allClasses) {
+      for (var class_ in library.classesAndExceptions) {
         addToCategories(class_, (c) => c.addClass(class_));
       }
       for (var enum_ in library.enums) {
