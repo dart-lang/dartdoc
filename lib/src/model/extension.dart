@@ -93,9 +93,6 @@ class Extension extends Container {
   ];
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
-
-  @override
   String get sidebarPath => '${library.dirName}/$name-extension-sidebar.html';
 
   Map<String, CommentReferable>? _referenceChildren;
