@@ -156,22 +156,15 @@ class Accessor extends ModelElement {
   @override
   Kind get kind => Kind.accessor;
 
-  String get _namePart => super.namePart.split('=').first;
-
-  @override
-  String get namePart => _namePart;
-
-  @override
-
   /// Accessors should never be participating directly in comment reference
   /// lookups.
+  @override
   Map<String, CommentReferable> get referenceChildren =>
       enclosingCombo.referenceChildren;
 
-  @override
-
   /// Accessors should never be participating directly in comment reference
   /// lookups.
+  @override
   Iterable<CommentReferable> get referenceParents =>
       enclosingCombo.referenceParents;
 }

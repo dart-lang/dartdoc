@@ -29,7 +29,7 @@ const String htmlBasePlaceholder = r'%%__HTMLBASE_dartdoc_internal__%%';
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
 class Package extends LibraryContainer
-    with Nameable, Locatable, Canonicalization, Warnable, CommentReferable
+    with Nameable, Locatable, Warnable, CommentReferable
     implements Privacy {
   @override
   final String name;
@@ -81,9 +81,6 @@ class Package extends LibraryContainer
   // The animation IDs that have already been used, indexed by the [href] of the
   // object that contains them.
   Map<String?, Set<String>> usedAnimationIdsByHref = {};
-
-  @override
-  Set<String> get locationPieces => const {};
 
   /// Holds all libraries added to this package.  May include non-documented
   /// libraries, but is not guaranteed to include a complete list of

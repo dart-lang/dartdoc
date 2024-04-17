@@ -13,28 +13,19 @@ import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/model/privacy.dart';
 
-import 'locatable.dart';
-
 /// Something that has a name.
 mixin Nameable implements Privacy {
   String get name;
 
+  /// A qualified name, mostly for use in the web search functionality, and for
+  /// warnings printed in the terminal; not for display use in rendered HTML.
   String get fullyQualifiedName => name;
-
-  late final Set<String> namePieces = {
-    ...name.split(locationSplitter).where((s) => s.isNotEmpty)
-  };
 
   /// The name to use as text in the rendered documentation.
   String get displayName => name;
 
   /// The name to use in breadcrumbs in the rendered documentation.
   String get breadcrumbName => name;
-
-  /// Utility getter/cache for `_MarkdownCommentReference._getResultsForClass`.
-  // TODO(jcollins-g): This should really be the same as 'name', but isn't
-  // because of accessors and operators.
-  late final String namePart = fullyQualifiedName.split('.').last;
 
   @override
   bool get isPublic => name.isNotEmpty && !name.startsWith('_');

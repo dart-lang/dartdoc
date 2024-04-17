@@ -59,7 +59,7 @@ import 'package:path/path.dart' as p show Context;
 /// helps prevent subtle bugs as generated output for a non-canonical
 /// ModelElement will reference itself as part of the "wrong" [Library] from the
 /// public interface perspective.
-abstract class ModelElement extends Canonicalization
+abstract class ModelElement
     with
         CommentReferable,
         Warnable,
@@ -397,13 +397,6 @@ abstract class ModelElement extends Canonicalization
       DartdocOptionContext.fromContextElement(
           packageGraph.config, library.element, packageGraph.resourceProvider);
 
-  @override
-  late final Set<String> locationPieces = element.location
-      .toString()
-      .split(locationSplitter)
-      .where((s) => s.isNotEmpty)
-      .toSet();
-
   bool get hasAttributes => attributes.isNotEmpty;
 
   /// This element's attributes.
@@ -536,7 +529,8 @@ abstract class ModelElement extends Canonicalization
 
     var topLevelModelElement =
         ModelElement.forElement(topLevelElement, packageGraph);
-    return topLevelModelElement.calculateCanonicalCandidate(candidateLibraries);
+    return Canonicalization(topLevelModelElement)
+        .calculateCanonicalCandidate(candidateLibraries);
   }
 
   @override

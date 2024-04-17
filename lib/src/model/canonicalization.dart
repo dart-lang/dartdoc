@@ -10,17 +10,20 @@ import 'package:dartdoc/src/warnings.dart';
 /// This provides heuristic scoring to determine which library a human likely
 /// considers this element to be primarily 'from', and therefore, canonical.
 /// Still warn if the heuristic isn't very confident.
-abstract mixin class Canonicalization
-    implements Locatable, Documentable, Warnable {
-  bool get isCanonical;
+final class Canonicalization {
+  final ModelElement _element;
 
-  /// Pieces of the location, split to remove 'package:' and slashes.
-  Set<String> get locationPieces;
+  Canonicalization(this._element);
 
   Library calculateCanonicalCandidate(Iterable<Library> libraries) {
+    var locationPieces = _element.element.location
+        .toString()
+        .split(_locationSplitter)
+        .where((s) => s.isNotEmpty)
+        .toSet();
     var scoredCandidates = libraries
         .map((library) => _scoreElementWithLibrary(
-            library, fullyQualifiedName, locationPieces))
+            library, _element.fullyQualifiedName, locationPieces))
         .toList(growable: false)
       ..sort();
 
@@ -31,11 +34,11 @@ abstract mixin class Canonicalization
     var confidence = highestScore - secondHighestScore;
     final canonicalLibrary = librariesByScore.last;
 
-    if (confidence < config.ambiguousReexportScorerMinConfidence) {
+    if (confidence < _element.config.ambiguousReexportScorerMinConfidence) {
       var libraryNames = librariesByScore.map((l) => l.name);
       var message = '$libraryNames -> ${canonicalLibrary.name} '
           '(confidence ${confidence.toStringAsPrecision(4)})';
-      warn(PackageWarning.ambiguousReexport,
+      _element.warn(PackageWarning.ambiguousReexport,
           message: message, extendedDebug: scoredCandidates.map((s) => '$s'));
     }
 
@@ -61,17 +64,19 @@ abstract mixin class Canonicalization
       scoredCandidate._alterScore(-1.0, _Reason.deprecated);
     }
 
+    var libraryNamePieces = {
+      ...library.name.split('.').where((s) => s.isNotEmpty)
+    };
+
     // Give a big boost if the library has the package name embedded in it.
-    if (library.package.namePieces
-        .intersection(library.namePieces)
-        .isNotEmpty) {
+    if (libraryNamePieces.contains(library.package.name)) {
       scoredCandidate._alterScore(1.0, _Reason.packageName);
     }
 
     // Give a tiny boost for libraries with long names, assuming they're
     // more specific (and therefore more likely to be the owner of this symbol).
     scoredCandidate._alterScore(
-        .01 * library.namePieces.length, _Reason.longName);
+        .01 * libraryNamePieces.length, _Reason.longName);
 
     // If we don't know the location of this element (which shouldn't be
     // possible), return our best guess.
@@ -81,7 +86,7 @@ abstract mixin class Canonicalization
     // The more pieces we have of the location in our library name, the more we
     // should boost our score.
     scoredCandidate._alterScore(
-      library.namePieces.intersection(elementLocationPieces).length.toDouble() /
+      libraryNamePieces.intersection(elementLocationPieces).length.toDouble() /
           elementLocationPieces.length.toDouble(),
       _Reason.sharedNamePart,
     );
@@ -90,7 +95,7 @@ abstract mixin class Canonicalization
     // boost the score a little bit.
     var scoreBoost = 0.0;
     for (var piece in elementLocationPieces.expand((item) => item.split('_'))) {
-      for (var namePiece in library.namePieces) {
+      for (var namePiece in libraryNamePieces) {
         if (piece.startsWith(namePiece)) {
           scoreBoost += 0.001;
         }
@@ -100,6 +105,9 @@ abstract mixin class Canonicalization
     return scoredCandidate;
   }
 }
+
+/// A pattern that can split [Locatable.location] strings.
+final _locationSplitter = RegExp(r'(package:|[\\/;.])');
 
 /// This class represents the score for a particular element; how likely
 /// it is that this is the canonical element.

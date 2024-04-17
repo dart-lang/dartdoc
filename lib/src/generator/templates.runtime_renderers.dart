@@ -310,28 +310,6 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                         parent: r);
                   },
                 ),
-                'namePart': Property(
-                  getValue: (CT_ c) => c.namePart,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.namePart, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'originalMember': Property(
                   getValue: (CT_ c) => c.originalMember,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -761,49 +739,6 @@ class _Renderer_CanonicalFor extends RendererBase<CanonicalFor> {
   }
 }
 
-class _Renderer_Canonicalization extends RendererBase<Canonicalization> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<
-          CT_ extends Canonicalization>() =>
-      _propertyMapCache.putIfAbsent(
-          CT_,
-          () => {
-                ..._Renderer_Object.propertyMap<CT_>(),
-                'isCanonical': Property(
-                  getValue: (CT_ c) => c.isCanonical,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isCanonical,
-                ),
-                'locationPieces': Property(
-                  getValue: (CT_ c) => c.locationPieces,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Set<String>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.locationPieces.map((e) =>
-                        _render_String(e, ast, r.template, sink, parent: r));
-                  },
-                ),
-              }) as Map<String, Property<CT_>>;
-
-  _Renderer_Canonicalization(Canonicalization context,
-      RendererBase<Object>? parent, Template template, StringSink sink)
-      : super(context, parent, template, sink);
-
-  @override
-  Property<Canonicalization>? getProperty(String key) {
-    if (propertyMap<Canonicalization>().containsKey(key)) {
-      return propertyMap<Canonicalization>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
 class _Renderer_Categorization extends RendererBase<Categorization> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Categorization>() =>
@@ -903,7 +838,6 @@ class _Renderer_Category extends RendererBase<Category> {
                 ..._Renderer_Warnable.propertyMap<CT_>(),
                 ..._Renderer_CommentReferable.propertyMap<CT_>(),
                 ..._Renderer_Locatable.propertyMap<CT_>(),
-                ..._Renderer_Canonicalization.propertyMap<CT_>(),
                 ..._Renderer_MarkdownFileDocumentation.propertyMap<CT_>(),
                 ..._Renderer_LibraryContainer.propertyMap<CT_>(),
                 ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
@@ -9028,6 +8962,13 @@ class _Renderer_Locatable extends RendererBase<Locatable> {
                     _render_String(c.href!, ast, r.template, sink, parent: r);
                   },
                 ),
+                'isCanonical': Property(
+                  getValue: (CT_ c) => c.isCanonical,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isCanonical,
+                ),
                 'location': Property(
                   getValue: (CT_ c) => c.location,
                   renderVariable:
@@ -9178,18 +9119,6 @@ class _Renderer_MarkdownFileDocumentation
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.location, ast, r.template, sink,
                         parent: r);
-                  },
-                ),
-                'locationPieces': Property(
-                  getValue: (CT_ c) => c.locationPieces,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Set<String>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.locationPieces.map((e) =>
-                        _render_String(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'oneLineDoc': Property(
@@ -10146,7 +10075,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
       _propertyMapCache.putIfAbsent(
           CT_,
           () => {
-                ..._Renderer_Canonicalization.propertyMap<CT_>(),
+                ..._Renderer_Object.propertyMap<CT_>(),
                 ..._Renderer_CommentReferable.propertyMap<CT_>(),
                 ..._Renderer_Warnable.propertyMap<CT_>(),
                 ..._Renderer_Locatable.propertyMap<CT_>(),
@@ -10792,18 +10721,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         parent: r);
                   },
                 ),
-                'locationPieces': Property(
-                  getValue: (CT_ c) => c.locationPieces,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Set<String>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.locationPieces.map((e) =>
-                        _render_String(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'modelNode': Property(
                   getValue: (CT_ c) => c.modelNode,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -11428,40 +11345,6 @@ class _Renderer_Nameable extends RendererBase<Nameable> {
                     _render_String(c.name, ast, r.template, sink, parent: r);
                   },
                 ),
-                'namePart': Property(
-                  getValue: (CT_ c) => c.namePart,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.namePart, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
-                'namePieces': Property(
-                  getValue: (CT_ c) => c.namePieces,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Set<String>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.namePieces.map((e) =>
-                        _render_String(e, ast, r.template, sink, parent: r));
-                  },
-                ),
                 'packageGraph': Property(
                   getValue: (CT_ c) => c.packageGraph,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -11711,7 +11594,6 @@ class _Renderer_Package extends RendererBase<Package> {
                 ..._Renderer_LibraryContainer.propertyMap<CT_>(),
                 ..._Renderer_Nameable.propertyMap<CT_>(),
                 ..._Renderer_Locatable.propertyMap<CT_>(),
-                ..._Renderer_Canonicalization.propertyMap<CT_>(),
                 ..._Renderer_Warnable.propertyMap<CT_>(),
                 ..._Renderer_CommentReferable.propertyMap<CT_>(),
                 'aboveSidebarPath': Property(
@@ -12170,18 +12052,6 @@ class _Renderer_Package extends RendererBase<Package> {
                       List<MustachioNode> ast, StringSink sink) {
                     _render_String(c.location, ast, r.template, sink,
                         parent: r);
-                  },
-                ),
-                'locationPieces': Property(
-                  getValue: (CT_ c) => c.locationPieces,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Set<String>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.locationPieces.map((e) =>
-                        _render_String(e, ast, r.template, sink, parent: r));
                   },
                 ),
                 'name': Property(
@@ -16397,6 +16267,7 @@ const _invisibleGetters = {
     'documentationIsLocal',
     'fullyQualifiedName',
     'href',
+    'isCanonical',
     'location'
   },
   'Map': {

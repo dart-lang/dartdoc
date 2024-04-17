@@ -27,9 +27,16 @@ mixin Locatable {
   /// A string indicating the URI of this Locatable, usually derived from
   /// [Element.location].
   String get location;
-}
 
-final RegExp locationSplitter = RegExp(r'(package:|[\\/;.])');
+  /// Whether this is the "canonical" copy of an element.
+  ///
+  /// Generally, a canonical element must be public, along with possible other
+  /// requirements.
+  ///
+  /// In order for an element to be documented, it must be canonical, and have
+  /// documentation.
+  bool get isCanonical;
+}
 
 extension NullableLocatable on Locatable? {
   String get safeWarnableName =>
