@@ -184,12 +184,12 @@ class Library extends ModelElement
   ModelElement? get enclosingElement => null;
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '$dirName/$fileName';
 
   @override
   String get fileName => '$dirName-library.html';
 
-  String get sidebarPath => '${library.dirName}/$dirName-library-sidebar.html';
+  String get sidebarPath => '$dirName/$dirName-library-sidebar.html';
 
   /// The library template manually includes 'packages' in the left/above
   /// sidebar.
