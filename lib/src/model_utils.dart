@@ -62,37 +62,42 @@ Iterable<InheritingContainer> findCanonicalFor(
       c);
 }
 
-bool hasPrivateName(Element e) {
-  var elementName = e.name;
-  if (elementName == null) return false;
+extension ElementExtension on Element {
+  bool get hasPrivateName {
+    final name = this.name;
+    if (name == null) return false;
 
-  if (elementName.startsWith('_')) {
-    return true;
-  }
-  // GenericFunctionTypeElements have the name we care about in the enclosing
-  // element.
-  if (e is GenericFunctionTypeElement) {
-    var enclosingElementName = e.enclosingElement?.name;
-    if (enclosingElementName != null && enclosingElementName.startsWith('_')) {
+    if (name.startsWith('_')) {
       return true;
     }
-  }
-  if (e is LibraryElement) {
-    if (e.identifier.startsWith('dart:_') ||
-        e.identifier.startsWith('dart:nativewrappers/') ||
-        'dart:nativewrappers' == e.identifier) {
-      return true;
+
+    var self = this;
+
+    // GenericFunctionTypeElements have the name we care about in the enclosing
+    // element.
+    if (self is GenericFunctionTypeElement) {
+      var enclosingElementName = self.enclosingElement?.name;
+      if (enclosingElementName != null &&
+          enclosingElementName.startsWith('_')) {
+        return true;
+      }
     }
-    var elementUri = e.source.uri;
-    // TODO(jcollins-g): Implement real cross package detection
-    if (elementUri.scheme == 'package' && elementUri.pathSegments[1] == 'src') {
-      return true;
+    if (self is LibraryElement) {
+      if (self.identifier.startsWith('dart:_') ||
+          self.identifier.startsWith('dart:nativewrappers/') ||
+          'dart:nativewrappers' == self.identifier) {
+        return true;
+      }
+      var elementUri = self.source.uri;
+      // TODO(jcollins-g): Implement real cross package detection.
+      if (elementUri.scheme == 'package' &&
+          elementUri.pathSegments[1] == 'src') {
+        return true;
+      }
     }
+    return false;
   }
-  return false;
 }
-
-bool hasPublicName(Element e) => !hasPrivateName(e);
 
 extension IterableOfDocumentableExtension<E extends Documentable>
     on Iterable<E> {

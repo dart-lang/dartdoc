@@ -21,7 +21,7 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/prefix.dart';
-import 'package:dartdoc/src/model_utils.dart' as utils;
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/source_linker.dart';
@@ -389,7 +389,7 @@ abstract class ModelElement extends Canonicalization
         !(enclosingElement as Extension).isPublic) {
       return false;
     }
-    return utils.hasPublicName(element) && !hasNodoc;
+    return !element.hasPrivateName && !hasNodoc;
   }();
 
   @override
@@ -458,7 +458,7 @@ abstract class ModelElement extends Canonicalization
       getModelForElement(element.library!) as Library;
 
   late final Library? canonicalLibrary = () {
-    if (!utils.hasPublicName(element)) {
+    if (element.hasPrivateName) {
       // Privately named elements can never have a canonical library.
       return null;
     }
