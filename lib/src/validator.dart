@@ -9,7 +9,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
-import 'package:dartdoc/src/model/canonicalization.dart';
+import 'package:dartdoc/src/model/locatable.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
@@ -214,7 +214,7 @@ class Validator {
     String origin, {
     String? referredFrom,
   }) {
-    final referredFromElements = <Canonicalization>{};
+    final referredFromElements = <Locatable>{};
 
     // Make all paths relative to origin.
     if (path.isWithin(origin, warnOn)) {

@@ -16,7 +16,6 @@ class Category
         Warnable,
         CommentReferable,
         Locatable,
-        Canonicalization,
         MarkdownFileDocumentation,
         LibraryContainer,
         TopLevelContainer,

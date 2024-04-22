@@ -5,7 +5,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
-import 'package:dartdoc/src/model/canonicalization.dart';
 import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/documentation.dart';
 import 'package:dartdoc/src/model/inheritable.dart';
@@ -36,7 +35,7 @@ final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 /// [_processCommentWithoutTools] and [processComment] are the primary
 /// entrypoints.
 mixin DocumentationComment
-    implements Canonicalization, Documentable, Warnable, Locatable, SourceCode {
+    implements Documentable, Warnable, Locatable, SourceCode {
   @override
   Element get element;
 

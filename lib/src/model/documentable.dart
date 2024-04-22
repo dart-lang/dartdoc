@@ -5,6 +5,7 @@
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/warnings.dart';
 
 import 'model.dart';
 
@@ -53,7 +54,7 @@ enum DocumentLocation {
   remote,
 }
 
-mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
+mixin MarkdownFileDocumentation implements Documentable, Warnable {
   DocumentLocation get documentedWhere;
 
   late final Documentation _documentation = Documentation.forElement(this);
@@ -83,7 +84,4 @@ mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
 
   @override
   String get location => '(${documentationFile?.path})';
-
-  @override
-  Set<String> get locationPieces => {location};
 }
