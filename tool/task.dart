@@ -347,6 +347,7 @@ Future<Iterable<Map<String, Object?>>> _docFlutter({
   String? label,
   bool withStats = false,
 }) async {
+  //   var flutterRepo = FlutterRepo.fromPath(flutterPath, env, label);
   var flutterRepo = await FlutterRepo.copyFromExistingFlutterRepo(
       await cleanFlutterRepo, flutterPath, env, label);
   var snippetsPath = path.join(flutterPath, 'dev', 'snippets');
@@ -393,8 +394,7 @@ Future<Iterable<Map<String, Object?>>> _docFlutter({
   );
 }
 
-final Directory flutterDir =
-    Directory.systemTemp.createTempSync('flutter').absolute;
+final Directory flutterDir = Directory('/tmp/flutterOOFHUB');
 
 Future<void> _docHelp() async {
   print('''

@@ -136,9 +136,11 @@ mixin CommentReferable implements Nameable {
         // Then, use the result for the PropertyAccessorElement.
         result = packageGraph.getModelForElement(resultElement);
       } else {
+        // print('propertyaccessor variable $variable');
         result = packageGraph.getModelForElement(variable);
       }
     } else {
+      // print('resultElement  $resultElement');
       result = packageGraph.getModelForElement(resultElement);
     }
     return _recurseChildrenAndFilter(referenceLookup, result, filter: filter);

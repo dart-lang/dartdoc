@@ -454,7 +454,7 @@ class PackageWarningOptions {
 
   void writeErrorOnDeprecation(PackageWarning warning) {
     if (warning._isDeprecated) {
-      stderr.writeln("The warning '${warning._flagName}' is deprecated.");
+      // stderr.writeln("The warning '${warning._flagName}' is deprecated.");
     }
   }
 

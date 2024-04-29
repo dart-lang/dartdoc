@@ -8,6 +8,7 @@ library;
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -172,11 +173,108 @@ MatchingLinkResult _getMatchingLinkElement(
       // force resolution to the class.
       : _rejectUnnamedAndShadowingConstructors;
 
+  if (commentReference.hasCallableHint) {
+    // Trailing parens indicate we are looking for a callable.
+    filter = _requireCallable;
+  } else {
+    // Neither reject, nor require, an unnamed constructor in the event the
+    // comment reference structure implies one. (We cannot require it in case a
+    // library name is the same as a member class name and the class is the
+    // intended lookup).
+    filter = commentReference.hasCallableHint
+        ? _requireCallable
+        // Without hints, reject unnamed constructors and their parameters to
+        // force resolution to the class.
+        : filter = _rejectUnnamedAndShadowingConstructors;
+  }
+
+  MatchingLinkResult? analyzerReference;
+  ModelElement? modelElement;
+  if (element is ModelElement) {
+    if (element.modelNode case var modelNode?) {
+      // var references = commentReference.referenceBy;
+      // for (var reference in references) {
+      var result = modelNode.commentData!.references[referenceText]?.element;
+      if (result != null) {
+        if (result is PropertyAccessorElement2) {
+          final variable = result.variable3;
+          // if (variable.isSynthetic) {
+          //   print(
+          //       'ANALYZER PropertyAccessorElement synthetic $result $variable');
+          //   modelElement = element.packageGraph.getModelForElement(result);
+          // } else {
+
+          // if (variable is FieldElement) {
+          //   print('ANALYZER PropertyAccessorElement FIELDD $result $variable');
+          //   modelElement = element.packageGraph.getModelForElement(variable);
+          // } else if (variable is TopLevelVariableElement) {
+          //   print('ANALYZER PropertyAccessorElement TOPP $result $variable');
+          //   modelElement = element.packageGraph.getModelForElement(variable);
+          // }
+          modelElement = element.packageGraph.getModelForElement(variable!);
+          // }
+        } else {
+          // print('ANALYZER regular getModelForElement $result');
+          modelElement = element.packageGraph.getModelForElement(result);
+        }
+
+        // if (modelElement is ContainerAccessor) {
+        //   modelElement =
+        //       element.packageGraph.getModelForElement(modelElement.element);
+        // }
+
+        analyzerReference = MatchingLinkResult(modelElement);
+        // return analyzerReference;
+        // }
+      }
+    }
+  }
+
   var lookupResult =
       element.referenceBy(commentReference.referenceBy, filter: filter);
+  var result = MatchingLinkResult(lookupResult);
+
+  if (analyzerReference == null) {
+    if (element is Inheritable && element.isOverride) {
+      element.warn(PackageWarning.unresolvedDocReference,
+          message:
+              'analyzerRef OVERRIDENULL other result is ${result.commentReferable} with href ${result.commentReferable?.href} ');
+      return result;
+    }
+    if (element is ModelElement) {
+      element.warn(PackageWarning.unresolvedDocReference,
+          message: 'MODELNODE ${element.modelNode?.commentData?.references} ');
+    } else {
+      element.warn(PackageWarning.unresolvedDocReference,
+          message: 'NOT MODELNODE $element ');
+    }
+    element.warn(PackageWarning.unresolvedDocReference,
+        message:
+            'analyzerRef NULL other result is ${result.commentReferable} with href ${result.commentReferable?.href} ');
+  } else if (analyzerReference.commentReferable is Accessor) {
+    element.warn(PackageWarning.unknownMacro,
+        message:
+            'analyzerRef ACCESSOR ${analyzerReference.commentReferable} other result is ${result.commentReferable} ${result.commentReferable?.href}');
+  } else if (analyzerReference.commentReferable?.href !=
+      result.commentReferable?.href) {
+    element.warn(PackageWarning.unknownMacro,
+        message:
+            'analyzerRef DIFFERENT ${analyzerReference.commentReferable} ${analyzerReference.commentReferable?.href} other result is ${result.commentReferable} ${result.commentReferable?.href}');
+  }
+  // if (referenceText == 'EdgeInsets') {
+  //   if (analyzerReference == null) {
+  //     element.warn(PackageWarning.unresolvedDocReference,
+  //         message:
+  //             'analyzerRef NULL other result is ${result.commentReferable} with href ${result.commentReferable?.href}');
+  //   } else {
+  //     element.warn(PackageWarning.unknownMacro,
+  //         message:
+  //             'analyzerRef with href ${analyzerReference.commentReferable?.href}');
+  //   }
+  // }
 
   // TODO(jcollins-g): Consider prioritizing analyzer resolution before custom.
-  return MatchingLinkResult(lookupResult);
+  return result;
 }
 
 /// Creates a [MatchingLinkResult] for [referenceText], the text of a doc

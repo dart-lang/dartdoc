@@ -9,6 +9,15 @@
 ///
 library constructor_tearoffs;
 
+import 'dart:ui';
+
+final class Ok<T> {
+  const Ok(this.textRange)
+
+  /// The [TextRange] of the substring within [renderObject]'s text.
+  final TextRange textRange;
+}
+
 abstract class A {
   final int number;
 
