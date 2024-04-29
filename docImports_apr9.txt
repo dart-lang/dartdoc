@@ -1,0 +1,3070 @@
+file no_override_with_href.txt
+there are 46774 lines
+
+For file lib/animation.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/painting.dart:
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/rendering.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/semantics.dart:
+/// @docImport 'package:flutter/semantics.dart';
+
+For file lib/flutter_test.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/driver_extension.dart:
+/// @docImport 'package:flutter/flutter_driver_extension.dart';
+
+For file lib/flutter_web_plugins.dart:
+/// @docImport 'package:flutter/flutter_web_plugins.dart';
+
+For file lib/src/scheduler/priority.dart:
+/// @docImport 'package:flutter/scheduler.dart';
+
+For file lib/src/scheduler/ticker.dart:
+/// @docImport 'dart:async';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/scheduler/binding.dart:
+/// @docImport 'dart:async';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/scheduler/debug.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/scheduler/service_extensions.dart:
+/// @docImport 'package:flutter/scheduler.dart';
+
+For file lib/src/animation/tween.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/animation/animation.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/animation/animation_controller.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/animation/animation_style.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/animation/animations.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/animation/curves.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/animation/tween_sequence.dart:
+/// @docImport 'package:flutter/animation.dart';
+
+For file lib/src/material/about.dart:
+/// @docImport 'dart:io';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/action_chip.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/theme_data.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:io';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/material/adaptive_text_selection_toolbar.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/dialog.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/animated_icons/animated_icons.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/animated_icons/animated_icons_data.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/app_bar.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/app_bar_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/autocomplete.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/action_buttons.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/badge.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/badge_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/bottom_app_bar.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/bottom_app_bar_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/bottom_navigation_bar.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/bottom_sheet_theme.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/button_bar.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/button_bar_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/button_style.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/button_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/calendar_date_picker.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/card.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/card_theme.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/material/checkbox.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/checkbox_list_tile.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/menu_anchor.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/characters.dart';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/checkbox_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/chip.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/chip_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/choice_chip.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/circle_avatar.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/progress_indicator.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/semantics.dart';
+
+For file lib/src/material/colors.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/color_scheme.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/page_transitions_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/data_table.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/data_table_source.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/data_table_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/date_picker_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/material/date.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/material_localizations.dart:
+/// @docImport 'package:flutter/flutter_localizations.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/tab_controller.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/desktop_text_selection_toolbar.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/dialog_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/divider.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/divider_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/drawer.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/drawer_header.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/drawer_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/dropdown.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/dropdown_menu_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/elevated_button.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/elevated_button_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/expand_icon.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/expansion_tile_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/filled_button.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/filled_button_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/filter_chip.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/flexible_space_bar.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/floating_action_button.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/floating_action_button_location.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/floating_action_button_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/grid_tile.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/grid_tile_bar.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/icon_button.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/icon_button_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/icons.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/ink_decoration.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/ink_highlight.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/ink_well.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/ink_ripple.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/ink_sparkle.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/ink_splash.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/input_border.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/input_chip.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/input_date_picker_form_field.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/input_decorator.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+/// @docImport 'package:matcher/matcher.dart';
+
+For file lib/src/material/list_tile.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/list_tile_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/material.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/app.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/flutter_localizations.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/banner_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/material_button.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/arc.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/material_state.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/menu_bar_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/menu_button_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/menu_style.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/menu_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/mergeable_material.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/bottom_sheet.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/navigation_bar.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/navigation_drawer.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/navigation_drawer_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/navigation_rail.dart:
+/// @docImport 'package:flutter/intl.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/no_splash.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/outlined_button.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/outlined_button_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/slider_theme.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/popup_menu.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/popup_menu_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/predictive_back_page_transitions_builder.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/progress_indicator_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/radio.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/radio_list_tile.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/radio_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/range_slider.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/button.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/refresh_indicator.dart:
+/// @docImport 'dart:async';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/reorderable_list.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/time.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/scaffold.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/scrollbar.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/scrollbar_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/search_bar_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/search_view_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/segmented_button.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/segmented_button_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/selectable_text.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/selection_area.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/slider.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/snack_bar_theme.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/spell_check_suggestions_toolbar_layout_delegate.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/switch.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/switch_list_tile.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/switch_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/text_button.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/text_button_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/text_field.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/text_form_field.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/text_selection_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/text_selection_toolbar.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/text_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/time_picker_theme.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/toggle_buttons.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/toggle_buttons_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/tooltip.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/tooltip_theme.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/tooltip_visibility.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/typography.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/tab_indicator.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/user_accounts_drawer_header.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/material/time_picker.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/material_state_mixin.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/toggleable.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/shadows.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/material/constants.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/date_picker.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/search.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/material/action_icons_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/banner.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/bottom_navigation_bar_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/button_style_button.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/desktop_text_selection_toolbar_button.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/dropdown_menu.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/elevation_overlay.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/expansion_panel.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/expansion_tile.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/flutter_logo.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/magnifier.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/navigation_bar_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/navigation_rail_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/page.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/paginated_data_table.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/physics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/search_anchor.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/snack_bar.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/spell_check_suggestions_toolbar.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/material/stepper.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/tab_bar_theme.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/tabs.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material/text_selection_toolbar_text_button.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/alignment.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/image_provider.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/image_resolution.dart:
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/notched_shapes.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/painting/box_border.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/painting/border_radius.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/borders.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/box_decoration.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/box_shadow.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/circle_border.dart:
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/painting/clip.dart:
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/painting/colors.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/painting/continuous_rectangle_border.dart:
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/painting/decoration.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/edge_insets.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/gradient.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/image_cache.dart:
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/image_stream.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/debug.dart:
+/// @docImport 'dart:developer';
+/// @docImport 'dart:io';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/painting/inline_span.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/linear_border.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/oval_border.dart:
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/painting/text_painter.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/placeholder_span.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/rounded_rectangle_border.dart:
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/painting/shader_warm_up.dart:
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/shape_decoration.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/stadium_border.dart:
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/painting/star_border.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/strut_style.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/painting/text_span.dart:
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/text_style.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/basic_types.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/binding.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_driver_extension.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/box_fit.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/image_decoder.dart:
+/// @docImport 'dart:ui';
+
+For file lib/src/painting/decoration_image.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/painting/geometry.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/painting/beveled_rectangle_border.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/painting/flutter_logo.dart:
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/painting/fractional_offset.dart:
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/painting/matrix_utils.dart:
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/painting/text_scaler.dart:
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/physics/gravity_simulation.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/physics/clamped_simulation.dart:
+/// @docImport 'package:flutter/physics.dart';
+
+For file lib/src/physics/simulation.dart:
+/// @docImport 'package:flutter/physics.dart';
+
+For file lib/src/physics/spring_simulation.dart:
+/// @docImport 'package:flutter/physics.dart';
+
+For file lib/src/widgets/actions.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/basic.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/transitions.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/vector_math_64.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/implicit_animations.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/animated_cross_fade.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/modal_barrier.dart:
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/animated_size.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/animated_switcher.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/app_lifecycle_listener.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/autofill.dart:
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/router.dart:
+/// @docImport 'dart:async';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/banner.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/bottom_navigation_bar_item.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_physics.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_view.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/framework.dart:
+/// @docImport 'dart:async';
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_simulation.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/color_filter.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/layout_builder.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/container.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/context_menu_button_item.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/context_menu_controller.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/widgets/decorated_sliver.dart:
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/default_selection_style.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/default_text_editing_shortcuts.dart:
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/text.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/localizations.dart:
+/// @docImport 'package:flutter/flutter_localizations.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/desktop_text_selection_toolbar_layout_delegate.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/focus_traversal.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/dismissible.dart:
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/display_feature_sub_screen.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/text_editing_intents.dart:
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/draggable_scrollable_sheet.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_activity.dart:
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/editable_text.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/text_selection.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/focus_scope.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_metrics.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/focus_manager.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/form.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/gesture_detector.dart:
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/overscroll_indicator.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/heroes.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/icon.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/icon_data.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/icon_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/icon_theme_data.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/image.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/image_filter.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/image_icon.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/inherited_model.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/inherited_notifier.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/sliver.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/automatic_keep_alive.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/keyboard_listener.dart:
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/notification_listener.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/list_wheel_scroll_view.dart:
+/// @docImport 'dart:math';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/lookup_boundary.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/media_query.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/navigator.dart:
+/// @docImport 'dart:async';
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/navigation_toolbar.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/nested_scroll_view.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/overflow_bar.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/overlay.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_notification.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/page_view.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/pages.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/page_storage.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/performance_overlay.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/platform_view.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/routes.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/pop_scope.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/preferred_size.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/primary_scroll_controller.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/autocomplete.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/raw_keyboard_listener.dart:
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scrollbar.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/adapter.dart:
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/tap_region.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/reorderable_list.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/restoration_properties.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/restoration.dart:
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/safe_area.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scrollable.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scrollable_helpers.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_aware_image_provider.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_configuration.dart:
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_context.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_controller.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_notification_observer.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_position.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_position_with_single_context.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/selectable_region.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/selection_container.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/shared_app_data.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/shortcuts.dart:
+/// @docImport 'dart:collection';
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/viewport.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/single_child_scroll_view.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/size_changed_layout_notifier.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/scroll_delegate.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/sliver_fill.dart:
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/sliver_persistent_header.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/sliver_prototype_extent_list.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/sliver_varied_extent_list.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/slotted_render_object_widget.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/widgets/snapshot_widget.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/spell_check.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/async.dart:
+/// @docImport 'dart:async';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/table.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/text_selection_toolbar_anchors.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/text_selection_toolbar_layout_delegate.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/ticker_provider.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/tween_animation_builder.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/two_dimensional_scroll_view.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/physics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/two_dimensional_viewport.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/undo_history.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/value_listenable_builder.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/view.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/visibility.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/app.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/binding.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/widget_span.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/widget_state.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/will_pop_scope.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/widget_inspector.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/debug.dart:
+/// @docImport 'dart:developer';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/animated_scroll_view.dart:
+/// @docImport 'dart:async';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/annotated_region.dart:
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/widgets/drag_target.dart:
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/dual_transition_builder.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/fade_in_image.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/grid_paper.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/inherited_theme.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/widgets/interactive_viewer.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/vector_math_64.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/magnifier.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/navigator_pop_handler.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/orientation_builder.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/placeholder.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/platform_menu_bar.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/semantics_debugger.dart:
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/spacer.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/texture.dart:
+/// @docImport 'dart:ui';
+
+For file lib/src/widgets/title.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets/service_extensions.dart:
+/// @docImport 'dart:developer';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/dialog.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/adaptive_text_selection_toolbar.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/app.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/button.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/checkbox.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/date_picker.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/cupertino/desktop_text_selection_toolbar.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/cupertino/route.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/colors.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/form_row.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/form_section.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+
+For file lib/src/cupertino/list_section.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/list_tile.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/page_scaffold.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/picker.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/radio.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/scrollbar.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/search_field.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/sliding_segmented_control.dart:
+/// @docImport 'dart:collection';
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/refresh.dart:
+/// @docImport 'dart:async';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/cupertino/spell_check_suggestions_toolbar.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/cupertino/switch.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/bottom_tab_bar.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/tab_scaffold.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/tab_view.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/text_field.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/text_selection_toolbar.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/cupertino/text_theme.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+
+For file lib/src/cupertino/theme.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/thumb_painter.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+
+For file lib/src/cupertino/localizations.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/constants.dart:
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/cupertino/context_menu.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/context_menu_action.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/painting.dart';
+
+For file lib/src/cupertino/desktop_text_selection_toolbar_button.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/icons.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+
+For file lib/src/cupertino/magnifier.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/nav_bar.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/segmented_control.dart:
+/// @docImport 'dart:collection';
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/cupertino.dart';
+
+For file lib/src/cupertino/slider.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/text_form_field_row.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/text_selection_toolbar_button.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/cupertino/interface_level.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+
+For file lib/src/semantics/semantics_event.dart:
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/semantics/semantics.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/semantics/semantics_service.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/semantics/debug.dart:
+/// @docImport 'package:flutter/semantics.dart';
+
+For file lib/src/semantics/binding.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/foundation/binding.dart:
+/// @docImport 'dart:convert';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/foundation/change_notifier.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/foundation/diagnostics.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:developer';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/vector_math_64.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/foundation/assertions.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/foundation/key.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/foundation/licenses.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+
+For file lib/src/foundation/constants.dart:
+/// @docImport 'dart:io';
+/// @docImport 'package:flutter/foundation.dart';
+
+For file lib/src/foundation/debug.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:developer';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/foundation/platform.dart:
+/// @docImport 'dart:io';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/foundation/print.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/foundation/isolates.dart:
+/// @docImport 'dart:developer';
+/// @docImport 'dart:isolate';
+/// @docImport 'package:flutter/scheduler.dart';
+
+For file lib/src/foundation/collections.dart:
+/// @docImport 'package:collection/collection.dart';
+
+For file lib/src/foundation/basic_types.dart:
+/// @docImport 'dart:ui';
+
+For file lib/src/foundation/memory_allocations.dart:
+/// @docImport 'package:flutter/foundation.dart';
+
+For file lib/src/foundation/timeline.dart:
+/// @docImport 'package:flutter/foundation.dart';
+
+For file lib/src/foundation/unicode.dart:
+/// @docImport 'package:flutter/foundation.dart';
+
+For file lib/src/foundation/service_extensions.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+
+For file lib/src/services/asset_bundle.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/spell_check.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/raw_keyboard_linux.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/hardware_keyboard.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/mouse_cursor.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/mouse_tracking.dart:
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/platform_views.dart:
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/raw_keyboard.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/raw_keyboard_android.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/raw_keyboard_fuchsia.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/raw_keyboard_ios.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/raw_keyboard_macos.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/raw_keyboard_web.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/raw_keyboard_windows.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/restoration.dart:
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/system_chrome.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/text_editing_delta.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/text_input.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/text_formatter.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/platform_channel.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/debug.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/binding.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/autofill.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/binary_messenger.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+
+For file lib/src/services/clipboard.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/font_loader.dart:
+/// @docImport 'dart:ui';
+
+For file lib/src/services/live_text.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/message_codec.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/system_channels.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:typed_data';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/services/system_navigator.dart:
+/// @docImport 'dart:io';
+
+For file lib/src/services/text_editing.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/services/service_extensions.dart:
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/rendering/tweens.dart:
+/// @docImport 'package:flutter/animation.dart';
+
+For file lib/src/rendering/box.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/object.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/proxy_box.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/vector_math_64.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/custom_paint.dart:
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/sliver_persistent_header.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/rendering/flow.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/layer.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/mouse_tracker.dart:
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/rendering/custom_layout.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/paragraph.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/stack.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/platform_view.dart:
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/shifted_box.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/flex.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/binding.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/list_wheel_viewport.dart:
+/// @docImport 'dart:math';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/performance_overlay.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/rotated_box.dart:
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/rendering/viewport.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/sliver.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/proxy_sliver.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/sliver_group.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/sliver_padding.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/sliver_fill.dart:
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/sliver_fixed_extent_list.dart:
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/sliver_grid.dart:
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/sliver_list.dart:
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/rendering/sliver_multi_box_adaptor.dart:
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/selection.dart:
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/table_border.dart:
+/// @docImport 'package:flutter/animation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/viewport_offset.dart:
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/wrap.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/debug_overflow_indicator.dart:
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/rendering/debug.dart:
+/// @docImport 'dart:developer';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/editable.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/error.dart:
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/rendering/table.dart:
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/rendering/texture.dart:
+/// @docImport 'dart:ui';
+
+For file lib/src/rendering/view.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/rendering/service_extensions.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:developer';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/rendering/animated_size.dart:
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/gestures/tap_and_drag.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/tap.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/multidrag.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/gesture_settings.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/drag.dart:
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/drag_details.dart:
+/// @docImport 'package:flutter/gestures.dart';
+
+For file lib/src/gestures/monodrag.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/eager.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/team.dart:
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/recognizer.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/events.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/painting.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/vector_math_64.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/converter.dart:
+/// @docImport 'dart:ui';
+
+For file lib/src/gestures/pointer_signal_resolver.dart:
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/binding.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:fake_async/fake_async.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/scale.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+
+For file lib/src/gestures/constants.dart:
+/// @docImport 'package:flutter/gestures.dart';
+
+For file lib/src/gestures/debug.dart:
+/// @docImport 'package:flutter/gestures.dart';
+
+For file lib/src/gestures/multitap.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/long_press.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/gestures/arena.dart:
+/// @docImport 'package:flutter/gestures.dart';
+
+For file lib/src/gestures/hit_test.dart:
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/rendering.dart';
+
+For file lib/src/gestures/force_press.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/gestures.dart';
+
+For file lib/src/gestures/velocity_tracker.dart:
+/// @docImport 'package:flutter/gestures.dart';
+
+For file lib/src/accessibility.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+
+For file lib/src/animation_sheet.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/binding.dart:
+/// @docImport 'dart:io';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_driver.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/test_api.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/goldens.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/test_api.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/controller.dart:
+/// @docImport 'dart:core';
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_driver.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/gestures.dart';
+/// @docImport 'package:flutter/scheduler.dart';
+/// @docImport 'package:matcher/matcher.dart';
+/// @docImport 'package:platform/platform.dart';
+
+For file lib/src/_goldens_io.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+
+For file lib/src/_matchers_io.dart:
+/// @docImport 'dart:async';
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/test_api.dart';
+/// @docImport 'package:matcher/expect.dart';
+
+For file lib/src/test_pointer.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/gestures.dart';
+
+For file lib/src/test_async_utils.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+
+For file lib/src/window.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/recording_canvas.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+
+For file lib/src/restoration.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+
+For file lib/src/test_text_input.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:integration_test/integration_test.dart';
+
+For file lib/src/test_vsync.dart:
+/// @docImport 'package:flutter/animation.dart';
+
+For file lib/src/widget_tester.dart:
+/// @docImport 'package:fake_async/fake_async.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/test_api.dart';
+/// @docImport 'package:matcher/matcher.dart';
+
+For file lib/src/matchers.dart:
+/// @docImport 'dart:async';
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+/// @docImport 'package:matcher/expect.dart';
+
+For file lib/src/finders.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/platform.dart:
+/// @docImport 'package:flutter/foundation.dart';
+
+For file lib/src/image.dart:
+/// @docImport 'package:fake_async/fake_async.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+
+For file lib/src/stack_manipulation.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+
+For file lib/src/test_compat.dart:
+/// @docImport 'package:flutter/test_api.scaffolding.dart';
+/// @docImport 'package:test_api/backend.dart';
+
+For file lib/src/expect/async_matcher.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:matcher/matcher.dart';
+
+For file lib/src/frame_timing_summarizer.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+
+For file lib/src/mock_canvas.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/material.dart';
+
+For file lib/src/test_default_binary_messenger.dart:
+/// @docImport 'dart:async';
+/// @docImport 'package:fake_async/fake_async.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/deprecated.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+
+For file lib/src/common/find.dart:
+/// @docImport 'dart:core';
+/// @docImport 'package:flutter/flutter_driver.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/semantics.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/common/diagnostics_tree.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/common/geometry.dart:
+/// @docImport 'dart:ui';
+
+For file lib/src/common/health.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+
+For file lib/src/common/render_tree.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+
+For file lib/src/common/deserialization_factory.dart:
+/// @docImport 'package:flutter/flutter_test.dart';
+
+For file lib/src/driver/common.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+
+For file lib/src/driver/vmservice_driver.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+
+For file lib/src/common/gesture.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/common/message.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/common/request_data.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+
+For file lib/src/common/semantics.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+
+For file lib/src/common/text.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+
+For file lib/src/common/text_input_action.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/common/wait.dart:
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/driver/timeline.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+
+For file lib/src/driver/driver.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_driver_extension.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:flutter/foundation.dart';
+/// @docImport 'package:flutter/rendering.dart';
+/// @docImport 'package:flutter/services.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/extension/extension.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+
+For file lib/src/cupertino_localizations.dart:
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/flutter_localizations.dart';
+/// @docImport 'package:flutter/intl.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/material_localizations.dart:
+/// @docImport 'package:flutter/flutter_localizations.dart';
+/// @docImport 'package:flutter/intl.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+
+For file lib/src/widgets_localizations.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_localizations.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/widgets.dart';
+/// @docImport 'package:intl/locale.dart';
+
+For file lib/src/l10n/generated_cupertino_localizations.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_localizations.dart';
+
+For file lib/src/l10n/generated_material_localizations.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_localizations.dart';
+
+For file lib/src/l10n/generated_widgets_localizations.dart:
+/// @docImport 'dart:ui';
+/// @docImport 'package:flutter/flutter_localizations.dart';
+
+For file lib/src/plugin_event_channel.dart:
+/// @docImport 'package:flutter/flutter_web_plugins.dart';
+/// @docImport 'package:flutter/services.dart';
+
+For file lib/src/plugin_registry.dart:
+/// @docImport 'dart:ui_web';
+
+For file lib/integration_test.dart:
+/// @docImport 'package:flutter/flutter_driver.dart';
+/// @docImport 'package:flutter/flutter_test.dart';
+/// @docImport 'package:integration_test/common.dart';
+/// @docImport 'package:integration_test/integration_test_driver.dart';
+
+For file lib/common.dart:
+/// @docImport 'package:integration_test/common.dart';
+/// @docImport 'package:integration_test/integration_test.dart';
+/// @docImport 'package:integration_test/integration_test_driver.dart';
+
+599 files to fix.
