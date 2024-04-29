@@ -1,0 +1,29 @@
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Class RenderObject with href rendering/RenderObject-class.html]
+flutter-docs:     from rendering: (file:///tmp/flutterOOFHUB/packages/flutter/lib/rendering.dart:22:9)
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Class RenderBox with href rendering/RenderBox-class.html]
+flutter-docs:     from rendering: (file:///tmp/flutterOOFHUB/packages/flutter/lib/rendering.dart:22:9)
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Class BindingBase with href foundation/BindingBase-class.html]
+flutter-docs:     from rendering: (file:///tmp/flutterOOFHUB/packages/flutter/lib/rendering.dart:22:9)
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Class RenderingFlutterBinding with href rendering/RenderingFlutterBinding-class.html]
+flutter-docs:     from rendering: (file:///tmp/flutterOOFHUB/packages/flutter/lib/rendering.dart:22:9)
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Mixin ServicesBinding with href services/ServicesBinding-mixin.html]
+flutter-docs:     from rendering: (file:///tmp/flutterOOFHUB/packages/flutter/lib/rendering.dart:22:9)
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Mixin GestureBinding with href gestures/GestureBinding-mixin.html]
+flutter-docs:     from rendering: (file:///tmp/flutterOOFHUB/packages/flutter/lib/rendering.dart:22:9)
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Mixin SchedulerBinding with href scheduler/SchedulerBinding-mixin.html]
+flutter-docs:     from rendering: (file:///tmp/flutterOOFHUB/packages/flutter/lib/rendering.dart:22:9)
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Mixin PaintingBinding with href painting/PaintingBinding-mixin.html]
+flutter-docs:     from rendering: (file:///tmp/flutterOOFHUB/packages/flutter/lib/rendering.dart:22:9)
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Mixin RendererBinding with href rendering/RendererBinding-mixin.html]
+flutter-docs:     from rendering: (file:///tmp/flutterOOFHUB/packages/flutter/lib/rendering.dart:22:9)
+
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Class List with href dart-core/List-class.html]
+flutter-docs:     from material.MenuBar.children: (file:///tmp/flutterOOFHUB/packages/flutter/lib/src/material/menu_anchor.dart:785:22)
+
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Class Failure with href package-integration_test_common/Failure-class.html]
+flutter-docs:     from integration_test.IntegrationTestWidgetsFlutterBinding.results: (file:///tmp/flutterOOFHUB/packages/integration_test/lib/integration_test.dart:164:23)
+
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Method getRenderTree with href flutter_driver/FlutterDriver/getRenderTree.html]
+flutter-docs:     from flutter_driver.RenderTree: (file:///tmp/flutterOOFHUB/packages/flutter_driver/lib/src/common/render_tree.dart:21:7)
+flutter-docs:   error: unresolved doc reference [analyzerRef NULL other result is Class DiagnosticsNode with href foundation/DiagnosticsNode-class.html]
+flutter-docs:     from flutter_driver.DiagnosticsType: (file:///tmp/flutterOOFHUB/packages/flutter_driver/lib/src/common/diagnostics_tree.dart:10:6)

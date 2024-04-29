@@ -234,9 +234,16 @@ class PackageGraph with CommentReferable, Nameable {
         _populateModelNodeFor(declaration);
         switch (declaration) {
           case ClassDeclaration():
-            for (var member in declaration.members) {
-              _populateModelNodeFor(member);
+            if (declaration.name.lexeme == 'Ok') {
+              for (var member in declaration.members) {
+                _populateModelNodeFor(member);
+              }
+            } else {
+              for (var member in declaration.members) {
+                _populateModelNodeFor(member);
+              }
             }
+
           case EnumDeclaration():
             if (declaration.declaredFragment?.element.isPublic ?? false) {
               for (var constant in declaration.constants) {
@@ -264,6 +271,168 @@ class PackageGraph with CommentReferable, Nameable {
             }
         }
       }
+    }
+  }
+
+  void addDocumentation(Comment? comment,
+      Map<String, CommentReferenceData> commentReferenceData) {
+    if (comment case var comment? when comment.references.isNotEmpty) {
+      // var commentReferences = <CommentReferenceData>[];
+      for (var reference in comment.references) {
+        var commentReferable = reference.expression;
+        switch (commentReferable) {
+          case ConstructorReferenceImpl(:var constructorName):
+            if (constructorName.staticElement case var element?) {
+              var name = constructorName.name;
+              if (name != null) {
+                commentReferenceData.putIfAbsent(
+                    name.name,
+                    () => CommentReferenceData(
+                          element,
+                          name.name,
+                          constructorName.offset,
+                          constructorName.length,
+                        ));
+              }
+              // commentReferences.add();
+            }
+          case FunctionReferenceImpl(:var function):
+            if (function is PrefixExpressionImpl) {
+              var element = function.staticElement;
+              if (element == null) continue;
+              // TODO: prefixexpression has more than 1 ref
+              // commentReferences.add(CommentReferenceData(
+              //   element,
+              //   function.operand.toString(),
+              //   function.operand.offset,
+              //   function.operand.length,
+              // ));
+              commentReferenceData.putIfAbsent(
+                  function.operand.toString(),
+                  () => CommentReferenceData(
+                        element,
+                        function.operand.toString(),
+                        function.operand.offset,
+                        function.operand.length,
+                      ));
+            } else if (function is SimpleIdentifierImpl) {
+              var element = function.staticElement;
+              if (element == null) continue;
+              // commentReferences.add(CommentReferenceData(
+              //   element,
+              //   function.name,
+              //   function.offset,
+              //   function.length,
+              // ));
+              commentReferenceData.putIfAbsent(
+                  function.name,
+                  () => CommentReferenceData(
+                        element,
+                        function.name,
+                        function.offset,
+                        function.length,
+                      ));
+            } else if (function is PropertyAccessImpl) {
+              var element = function.propertyName.staticElement;
+              if (element == null) continue;
+              // TODO add the other references
+              // commentReferences.add(CommentReferenceData(
+              //   element,
+              //   function.propertyName.name,
+              //   function.offset,
+              //   function.length,
+              // ));
+
+              commentReferenceData.putIfAbsent(
+                  function.propertyName.name,
+                  () => CommentReferenceData(
+                        element,
+                        function.propertyName.name,
+                        function.offset,
+                        function.length,
+                      ));
+            }
+          case PropertyAccessImpl(:var propertyName):
+            // TODO add the other references
+            if (propertyName.staticElement case var element?) {
+              // commentReferences.add(CommentReferenceData(
+              //   element,
+              //   propertyName.name,
+              //   propertyName.offset,
+              //   propertyName.length,
+              // ));
+              commentReferenceData.putIfAbsent(
+                  propertyName.name,
+                  () => CommentReferenceData(
+                        element,
+                        propertyName.name,
+                        propertyName.offset,
+                        propertyName.length,
+                      ));
+            }
+          case TypeLiteralImpl(:var type):
+            if (type.element case var element?) {
+              // commentReferences.add(CommentReferenceData(
+              //   element,
+              //   type.name2.lexeme,
+              //   type.offset,
+              //   type.length,
+              // ));
+              commentReferenceData.putIfAbsent(
+                  type.name2.lexeme,
+                  () => CommentReferenceData(
+                        element,
+                        type.name2.lexeme,
+                        type.offset,
+                        type.length,
+                      ));
+            }
+          case PrefixedIdentifier(
+              :var identifier,
+              :var prefix,
+            ):
+            if (identifier.staticElement case var staticElement?) {
+              commentReferenceData.putIfAbsent(
+                  commentReferable.name, // A.new
+                  () => CommentReferenceData(
+                        staticElement,
+                        commentReferable.name,
+                        commentReferable.offset,
+                        commentReferable.length,
+                      ));
+            }
+            if (prefix.staticElement case var staticElement?) {
+              commentReferenceData.putIfAbsent(
+                  prefix.name, // A
+                  () => CommentReferenceData(
+                        staticElement,
+                        prefix.name,
+                        commentReferable.offset,
+                        commentReferable.length,
+                      ));
+            }
+
+          case IdentifierImpl(:var staticElement?):
+            // commentReferences.add(CommentReferenceData(
+            //   staticElement,
+            //   commentReferable.name,
+            //   commentReferable.offset,
+            //   commentReferable.length,
+            // ));
+            commentReferenceData.putIfAbsent(
+                commentReferable.name,
+                () => CommentReferenceData(
+                      staticElement,
+                      commentReferable.name,
+                      commentReferable.offset,
+                      commentReferable.length,
+                    ));
+          default:
+            continue;
+        }
+      }
+      // TODO this is wrong
+      // commentReferenceData[comment.toString()] = commentReferences;
     }
   }
 
