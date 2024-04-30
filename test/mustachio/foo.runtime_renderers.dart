@@ -50,7 +50,7 @@ class Renderer_Bar extends RendererBase<Bar> {
                     var name = remainingNames.first;
                     var nextProperty =
                         Renderer_Baz.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c) as Baz?,
+                    return nextProperty.renderVariable(self.getValue(c) as Baz,
                         nextProperty, [...remainingNames.skip(1)]);
                   },
                   isNullValue: (CT_ c) => c.baz == null,
@@ -69,7 +69,7 @@ class Renderer_Bar extends RendererBase<Bar> {
                     var name = remainingNames.first;
                     var nextProperty =
                         Renderer_Foo.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c) as Foo?,
+                    return nextProperty.renderVariable(self.getValue(c) as Foo,
                         nextProperty, [...remainingNames.skip(1)]);
                   },
                   isNullValue: (CT_ c) => c.foo == null,
@@ -82,14 +82,14 @@ class Renderer_Bar extends RendererBase<Bar> {
                   getValue: (CT_ c) => c.l1,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool?'),
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.l1 == true,
                 ),
                 's2': Property(
                   getValue: (CT_ c) => c.s2,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'String?'),
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
                   isNullValue: (CT_ c) => c.s2 == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
@@ -143,7 +143,7 @@ class Renderer_Baz extends RendererBase<Baz> {
                     var name = remainingNames.first;
                     var nextProperty =
                         Renderer_Bar.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c) as Bar?,
+                    return nextProperty.renderVariable(self.getValue(c) as Bar,
                         nextProperty, [...remainingNames.skip(1)]);
                   },
                   isNullValue: (CT_ c) => c.bar == null,
@@ -205,7 +205,7 @@ class Renderer_Foo extends RendererBase<Foo> {
                     var name = remainingNames.first;
                     var nextProperty =
                         Renderer_Baz.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(self.getValue(c) as Baz?,
+                    return nextProperty.renderVariable(self.getValue(c) as Baz,
                         nextProperty, [...remainingNames.skip(1)]);
                   },
                   isNullValue: (CT_ c) => c.baz == null,
@@ -230,7 +230,7 @@ class Renderer_Foo extends RendererBase<Foo> {
                   getValue: (CT_ c) => c.length,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'int?'),
+                      self.renderSimpleVariable(c, remainingNames, 'int'),
                   isNullValue: (CT_ c) => c.length == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
@@ -249,7 +249,7 @@ class Renderer_Foo extends RendererBase<Foo> {
                     var nextProperty =
                         Renderer_Property1.propertyMap().getValue(name);
                     return nextProperty.renderVariable(
-                        self.getValue(c) as Property1?,
+                        self.getValue(c) as Property1,
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
@@ -263,7 +263,7 @@ class Renderer_Foo extends RendererBase<Foo> {
                   getValue: (CT_ c) => c.s1,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'String?'),
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
                   isNullValue: (CT_ c) => c.s1 == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
@@ -350,7 +350,7 @@ class Renderer_Mixin1 extends RendererBase<Mixin1> {
                     var nextProperty =
                         Renderer_Property3.propertyMap().getValue(name);
                     return nextProperty.renderVariable(
-                        self.getValue(c) as Property3?,
+                        self.getValue(c) as Property3,
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
@@ -435,7 +435,7 @@ class Renderer_Property1 extends RendererBase<Property1> {
                     var nextProperty =
                         Renderer_Property2.propertyMap().getValue(name);
                     return nextProperty.renderVariable(
-                        self.getValue(c) as Property2?,
+                        self.getValue(c) as Property2,
                         nextProperty,
                         [...remainingNames.skip(1)]);
                   },
@@ -480,7 +480,7 @@ class Renderer_Property2 extends RendererBase<Property2> {
                   getValue: (CT_ c) => c.s,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'String?'),
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
                   isNullValue: (CT_ c) => c.s == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
@@ -522,7 +522,7 @@ class Renderer_Property3 extends RendererBase<Property3> {
                   getValue: (CT_ c) => c.s,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'String?'),
+                      self.renderSimpleVariable(c, remainingNames, 'String'),
                   isNullValue: (CT_ c) => c.s == null,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {

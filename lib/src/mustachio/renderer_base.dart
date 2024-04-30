@@ -165,15 +165,15 @@ abstract class RendererBase<T extends Object?> {
   String get contextChainString =>
       parent == null ? '$T' : '${parent!.contextChainString} > $T';
 
-  /// Returns the [Property] on this renderer named [name].
+  /// Returns the [Property] on this renderer named [key].
   ///
-  /// If no property named [name] exists for this renderer, `null` is returned.
+  /// If no property named [key] exists for this renderer, `null` is returned.
   Property<T>? getProperty(String key);
 
-  /// Resolves [names] into one or more field accesses, returning the result as
+  /// Resolves [node] into one or more field accesses, returning the result as
   /// a String.
   ///
-  /// [names] may have multiple dot-separate names, and [names] may not be a
+  /// [node]'s `key` may have multiple dot-separate names, and it may not be a
   /// valid property of _this_ context type, in which the [parent] renderer is
   /// referenced.
   String getFields(Variable node) {
@@ -347,13 +347,13 @@ class SimpleRenderer extends RendererBase<Object?> {
 /// rendering various types of Mustache nodes.
 @immutable
 class Property<T extends Object?> {
-  /// Gets the value of this property on the object [context].
+  /// Gets the value of this property on the object `context`.
   final Object? Function(T context) getValue;
 
   final String Function(T, Property<T>, List<String>) renderVariable;
 
   /// Gets the bool value (true or false, never null) of this property on the
-  /// object [context].
+  /// object `context`.
   final bool Function(T context)? getBool;
 
   final Iterable<void> Function(
