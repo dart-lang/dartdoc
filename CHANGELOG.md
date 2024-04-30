@@ -1,6 +1,9 @@
 ## 8.0.10-dev
 
 * Un-deprecate the `--resources-dir` option.
+* Remove support for `[this]` as a comment reference. Referring to the
+  containing element can be written as `this [Foo]`, and referring to 'this'
+  can just be written as `` `this` ``.
 
 ## 8.0.9
 

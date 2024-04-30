@@ -2742,9 +2742,6 @@ void main() async {
                 doAwesomeStuff, 'BaseForDocComments.aNonDefaultConstructor'),
             equals(MatchingLinkResult(aNonDefaultConstructor)));
 
-        expect(referenceLookup(doAwesomeStuff, 'this'),
-            equals(MatchingLinkResult(baseForDocComments)));
-
         expect(referenceLookup(doAwesomeStuff, 'value'),
             equals(MatchingLinkResult(doAwesomeStuffParam)));
 
