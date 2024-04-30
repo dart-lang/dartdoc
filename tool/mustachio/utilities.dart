@@ -8,8 +8,7 @@ extension InterfaceElementExtension on InterfaceElement {
   /// The type parameters, if any, as a String, including bounds and the angled
   /// brackets, otherwise a blank String.
   String get typeParametersString {
-    return asGenerics(typeParameters
-        .map((tp) => tp.getDisplayString(withNullability: false)));
+    return asGenerics(typeParameters.map((tp) => tp.getDisplayString()));
   }
 
   /// The type variables, if any, as a String, including the angled brackets,
@@ -22,8 +21,7 @@ extension InterfaceElementExtension on InterfaceElement {
   /// generics.
   String typeParametersStringWith(String extra) {
     return asGenerics([
-      ...typeParameters
-          .map((tp) => tp.getDisplayString(withNullability: false)),
+      ...typeParameters.map((tp) => tp.getDisplayString()),
       extra,
     ]);
   }

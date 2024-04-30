@@ -340,7 +340,7 @@ class Library extends ModelElement
       ..._exportedAndLocalElements.whereType<TopLevelVariableElement>(),
       ..._exportedAndLocalElements
           .whereType<PropertyAccessorElement>()
-          .map((a) => a.variable as TopLevelVariableElement)
+          .map((a) => a.variable2! as TopLevelVariableElement)
     };
     var variables = <TopLevelVariable>[];
     for (var element in elements) {

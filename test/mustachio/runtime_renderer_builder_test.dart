@@ -234,12 +234,12 @@ class Baz {}
     var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo')!;
     expect(fooRenderFunction.typeParameters, hasLength(1));
     var fBound = fooRenderFunction.typeParameters.single.bound!;
-    expect(fBound.getDisplayString(withNullability: false), equals('num'));
+    expect(fBound.getDisplayString(), equals('num'));
 
     var fooRendererClass = renderersLibrary.getClass('_Renderer_Foo')!;
     expect(fooRendererClass.typeParameters, hasLength(1));
     var cBound = fooRenderFunction.typeParameters.single.bound!;
-    expect(cBound.getDisplayString(withNullability: false), equals('num'));
+    expect(cBound.getDisplayString(), equals('num'));
   });
 
   group('does not generate a renderer', () {

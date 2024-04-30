@@ -22,7 +22,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        sdk: [dev, stable]
+        # TODO(srawlins): Re-enable stable after 3.4.0 ships.
+        # sdk: [dev, stable]
+        sdk: [dev]
         job: [main, flutter, packages, sdk-docs]
         include:
           - os: macos-latest

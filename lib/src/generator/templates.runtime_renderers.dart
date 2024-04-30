@@ -2668,7 +2668,7 @@ class _Renderer_Container extends RendererBase<Container> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Set<Element>'),
+                          c, remainingNames, 'Set<Element?>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.allElements.map((e) => renderSimple(
@@ -10203,7 +10203,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Category>'),
+                          c, remainingNames, 'Iterable<Category?>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.displayedCategories.map((e) =>
@@ -12036,7 +12036,7 @@ class _Renderer_Package extends RendererBase<Package> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Map<String, Category>'),
+                          c, remainingNames, 'Map<String?, Category>'),
                   isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
@@ -12202,7 +12202,7 @@ class _Renderer_Package extends RendererBase<Package> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Map<String, Set<String>>'),
+                          c, remainingNames, 'Map<String?, Set<String>>'),
                   isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
@@ -15762,7 +15762,6 @@ const _invisibleGetters = {
     'isDartCoreObject',
     'isExhaustive',
     'isFinal',
-    'isInline',
     'isInterface',
     'isMixinApplication',
     'isMixinClass',
@@ -15926,6 +15925,7 @@ const _invisibleGetters = {
     'hasAlwaysThrows',
     'hasDeprecated',
     'hasDoNotStore',
+    'hasDoNotSubmit',
     'hasFactory',
     'hasImmutable',
     'hasInternal',
@@ -15933,6 +15933,7 @@ const _invisibleGetters = {
     'hasIsTestGroup',
     'hasJS',
     'hasLiteral',
+    'hasMustBeConst',
     'hasMustBeOverridden',
     'hasMustCallSuper',
     'hasNonVirtual',
@@ -15984,6 +15985,7 @@ const _invisibleGetters = {
     'hasAlwaysThrows',
     'hasDeprecated',
     'hasDoNotStore',
+    'hasDoNotSubmit',
     'hasFactory',
     'hasImmutable',
     'hasImplicitReturnType',
@@ -15992,6 +15994,7 @@ const _invisibleGetters = {
     'hasIsTestGroup',
     'hasJS',
     'hasLiteral',
+    'hasMustBeConst',
     'hasMustBeOverridden',
     'hasMustCallSuper',
     'hasNonVirtual',
@@ -16015,7 +16018,6 @@ const _invisibleGetters = {
     'isExtensionTypeMember',
     'isExternal',
     'isGenerator',
-    'isLegacy',
     'isOperator',
     'isPrivate',
     'isPublic',
@@ -16247,6 +16249,7 @@ const _invisibleGetters = {
     'hasAlwaysThrows',
     'hasDeprecated',
     'hasDoNotStore',
+    'hasDoNotSubmit',
     'hasFactory',
     'hasImmutable',
     'hasInternal',
@@ -16254,6 +16257,7 @@ const _invisibleGetters = {
     'hasIsTestGroup',
     'hasJS',
     'hasLiteral',
+    'hasMustBeConst',
     'hasMustBeOverridden',
     'hasMustCallSuper',
     'hasNonVirtual',
@@ -16271,7 +16275,6 @@ const _invisibleGetters = {
     'hasVisibleOutsideTemplate',
     'hashCode',
     'id',
-    'isLegacy',
     'isPrivate',
     'isPublic',
     'isSynthetic',
@@ -16399,6 +16402,7 @@ const _invisibleGetters = {
     'hasDefaultValue',
     'hasDeprecated',
     'hasDoNotStore',
+    'hasDoNotSubmit',
     'hasFactory',
     'hasImmutable',
     'hasImplicitType',
@@ -16407,6 +16411,7 @@ const _invisibleGetters = {
     'hasIsTestGroup',
     'hasJS',
     'hasLiteral',
+    'hasMustBeConst',
     'hasMustBeOverridden',
     'hasMustCallSuper',
     'hasNonVirtual',
@@ -16430,7 +16435,6 @@ const _invisibleGetters = {
     'isFinal',
     'isInitializingFormal',
     'isLate',
-    'isLegacy',
     'isPrivate',
     'isPublic',
     'isStatic',
@@ -16467,7 +16471,8 @@ const _invisibleGetters = {
     'isGetter',
     'isSetter',
     'runtimeType',
-    'variable'
+    'variable',
+    'variable2'
   },
   'Scope': {'hashCode', 'runtimeType'},
   'TemplateOptions': {

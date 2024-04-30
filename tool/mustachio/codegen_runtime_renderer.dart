@@ -423,8 +423,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
       if (superclassRendererName != null) {
         var superMapName = '$superclassRendererName.propertyMap';
         var generics = asGenerics([
-          ...supertype.typeArguments
-              .map((e) => e.getDisplayString(withNullability: false)),
+          ...supertype.typeArguments.map((e) => e.getDisplayString()),
           _contextTypeVariable
         ]);
         _buffer.writeln('    ...$superMapName$generics(),');
@@ -441,8 +440,7 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
       if (mixinRendererName != null) {
         var mixinMapName = '$mixinRendererName.propertyMap';
         var generics = asGenerics([
-          ...mixin.typeArguments
-              .map((e) => e.getDisplayString(withNullability: false)),
+          ...mixin.typeArguments.map((e) => e.getDisplayString()),
           _contextTypeVariable
         ]);
         _buffer.writeln('    ...$mixinMapName$generics(),');
@@ -476,21 +474,25 @@ class ${renderer._rendererClassName}${renderer._typeParametersString}
         .writeln('getValue: ($_contextTypeVariable c) => c.${property.name},');
 
     var getterName = property.name;
-    var getterTypeString = getterType.getDisplayString(withNullability: false);
+    var getterTypeString =
+        _typeSystem.promoteToNonNull(getterType).getDisplayString();
     // Only add a `getProperties` function, which returns the property map for
     // [getterType], if [getterType] is a renderable type.
     if (_typeToRendererClassName.containsKey(getterType.element)) {
       var rendererClassName = _typeToRendererClassName[getterType.element];
       _buffer.writeln('''
 renderVariable:
-    ($_contextTypeVariable c, Property<$_contextTypeVariable> self, List<String> remainingNames) {
+    ($_contextTypeVariable c,
+     Property<$_contextTypeVariable> self,
+     List<String> remainingNames) {
   if (remainingNames.isEmpty) {
     return self.getValue(c).toString();
   }
   var name = remainingNames.first;
   var nextProperty = $rendererClassName.propertyMap().getValue(name);
   return nextProperty.renderVariable(
-      self.getValue(c) as $getterTypeString, nextProperty, [...remainingNames.skip(1)]);
+      self.getValue(c) as $getterTypeString,
+      nextProperty, [...remainingNames.skip(1)]);
 },
 ''');
     } else {
@@ -676,7 +678,7 @@ class _RendererInfo {
       _contextClass.typeParametersStringWith(extra);
 
   String _renderSingleType(DartType tp) {
-    var displayString = tp.getDisplayString(withNullability: false);
+    var displayString = tp.getDisplayString();
     var nullabilitySuffix =
         tp.nullabilitySuffix == NullabilitySuffix.question ? '?' : '';
     return '$displayString$nullabilitySuffix';
@@ -710,6 +712,7 @@ extension on InterfaceElement {
 extension on PropertyAccessorElement {
   // Whether this property should be omitted from the runtime renderer code.
   bool get shouldBeOmitted {
+    var variable = variable2;
     return isPrivate ||
         isStatic ||
         isSetter ||
@@ -717,6 +720,7 @@ extension on PropertyAccessorElement {
         hasProtected ||
         hasVisibleForOverriding ||
         hasVisibleForTesting ||
+        variable == null ||
         variable.hasInternal ||
         variable.hasProtected ||
         variable.hasVisibleForOverriding ||

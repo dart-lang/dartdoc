@@ -109,7 +109,7 @@ class Baz {}
     var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo')!;
     expect(fooRenderFunction.typeParameters, hasLength(1));
     var fBound = fooRenderFunction.typeParameters.single.bound!;
-    expect(fBound.getDisplayString(withNullability: false), equals('num'));
+    expect(fBound.getDisplayString(), equals('num'));
   });
 
   test('deduplicates partials which share context type LUB', () async {
