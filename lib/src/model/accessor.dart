@@ -45,9 +45,9 @@ class Accessor extends ModelElement {
 
   bool get isSynthetic => element.isSynthetic;
 
-  // The [enclosingCombo] where this element was defined.
+  /// The [enclosingCombo] where this element was defined.
   late final GetterSetterCombo definingCombo =
-      getModelForElement(element.variable) as GetterSetterCombo;
+      getModelForElement(element.variable2!) as GetterSetterCombo;
 
   String get _sourceCode {
     if (!isSynthetic) {

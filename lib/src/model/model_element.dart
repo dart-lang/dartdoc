@@ -502,7 +502,7 @@ abstract class ModelElement
       var lookup =
           l.element.exportNamespace.definedNames[topLevelElement.name!];
       return switch (lookup) {
-        PropertyAccessorElement() => topLevelElement == lookup.variable,
+        PropertyAccessorElement() => topLevelElement == lookup.variable2,
         _ => topLevelElement == lookup,
       };
     }).toList(growable: true);

@@ -105,7 +105,7 @@ mixin CommentReferable implements Nameable {
     if (resultElement == null) return null;
     ModelElement result;
     if (resultElement is PropertyAccessorElement) {
-      final variable = resultElement.variable;
+      final variable = resultElement.variable2!;
       if (variable.isSynthetic) {
         result = packageGraph.getModelForElement(resultElement);
       } else {

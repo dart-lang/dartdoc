@@ -19,13 +19,9 @@ import 'package:meta/meta.dart';
 /// Note that [Constructor]s are not considered to be modifiers so a
 /// [hasModifiers] override is not necessary for this mixin.
 mixin Constructable implements InheritingContainer {
-  late final List<Constructor> constructors =
-      // TODO(srawlins): Remove this and deal with the follow-on effects, when
-      // `.augmented` becomes non-nullable.
-      // ignore: invalid_null_aware_operator
-      (element.augmented?.constructors ?? element.constructors)
-          .map((e) => getModelFor(e, library) as Constructor)
-          .toList(growable: false);
+  late final List<Constructor> constructors = element.augmented.constructors
+      .map((e) => getModelFor(e, library) as Constructor)
+      .toList(growable: false);
 
   @override
   late final List<Constructor> publicConstructorsSorted =
@@ -157,11 +153,11 @@ abstract class InheritingContainer extends Container {
     // The mapping of all of the inherited element names to their _concrete_
     // implementation element.
     var concreteInheritanceMap = packageGraph.inheritanceManager
-        .getInheritedConcreteMap2(element.augmentedDeclarationOrSelf);
+        .getInheritedConcreteMap2(element.augmented.declaration);
     // The mapping of all inherited element names to the nearest inherited
     // element that they resolve to.
     var inheritanceMap = packageGraph.inheritanceManager
-        .getInheritedMap2(element.augmentedDeclarationOrSelf);
+        .getInheritedMap2(element.augmented.declaration);
 
     var inheritanceChainElements =
         inheritanceChain.map((c) => c.element).toList(growable: false);
@@ -259,13 +255,9 @@ abstract class InheritingContainer extends Container {
   }();
 
   @override
-  late final List<Method> declaredMethods =
-      // TODO(srawlins): Remove this and deal with the follow-on effects, when
-      // `.augmented` becomes non-nullable.
-      // ignore: invalid_null_aware_operator
-      (element.augmented?.methods ?? element.methods)
-          .map((e) => getModelFor(e, library) as Method)
-          .toList(growable: false);
+  late final List<Method> declaredMethods = element.augmented.methods
+      .map((e) => getModelFor(e, library) as Method)
+      .toList(growable: false);
 
   @override
   late final List<TypeParameter> typeParameters = element.typeParameters
@@ -538,9 +530,9 @@ abstract class InheritingContainer extends Container {
       // Pick an appropriate [FieldElement] to represent this element.
       // Only hard when dealing with a synthetic [Field].
       if (getter != null && setter == null) {
-        field = getterElement!.variable as FieldElement;
+        field = getterElement!.variable2 as FieldElement;
       } else if (getter == null && setter != null) {
-        field = setterElement!.variable as FieldElement;
+        field = setterElement!.variable2 as FieldElement;
       } else {
         // In this case: `getter != null && setter != null`.
         getter!;
@@ -553,9 +545,9 @@ abstract class InheritingContainer extends Container {
         if (setterEnclosingElement is Class &&
             setterEnclosingElement._isInheritingFrom(
                 getter.enclosingElement as InheritingContainer)) {
-          field = setterElement!.variable as FieldElement;
+          field = setterElement!.variable2 as FieldElement;
         } else {
-          field = getterElement!.variable as FieldElement;
+          field = getterElement!.variable2 as FieldElement;
         }
       }
     }
@@ -599,16 +591,6 @@ mixin MixedInTypes on InheritingContainer {
 
   Iterable<DefinedElementType> get publicMixedInTypes =>
       mixedInTypes.wherePublic;
-}
-
-extension on InterfaceElement {
-  /// This element's augmented declaration, or, if there is none, then just this
-  /// element itself.
-  InterfaceElement get augmentedDeclarationOrSelf =>
-      // TODO(srawlins): Remove this and deal with the follow-on effects, when
-      // `.augmented` becomes non-nullable.
-      // ignore: invalid_null_aware_operator
-      augmented?.declaration ?? this;
 }
 
 extension on InterfaceElement {

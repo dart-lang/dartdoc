@@ -48,8 +48,8 @@ final class Annotation extends Attribute {
   late final ElementType _modelType = switch (_annotation.element) {
     ConstructorElement(:var returnType) =>
       _packageGraph.getTypeFor(returnType, _library),
-    PropertyAccessorElement(:var variable) =>
-      (_packageGraph.getModelForElement(variable) as GetterSetterCombo)
+    PropertyAccessorElement(:var variable2?) =>
+      (_packageGraph.getModelForElement(variable2) as GetterSetterCombo)
           .modelType,
     _ => throw StateError(
         'non-callable element used as annotation?: ${_annotation.element}')

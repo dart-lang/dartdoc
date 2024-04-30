@@ -706,7 +706,7 @@ class PackageGraph with CommentReferable, Nameable {
     _canonicalLibraryFor[e] = null;
 
     var searchElement = switch (e) {
-      PropertyAccessorElement() => e.variable,
+      PropertyAccessorElement() => e.variable2,
       GenericFunctionTypeElement() => e.enclosingElement,
       _ => e,
     };
