@@ -9,21 +9,21 @@ import 'package:dartdoc/src/comment_references/parser.dart';
 /// A stripped down analyzer AST [CommentReference] containing only that
 /// information needed for Dartdoc.
 class ModelCommentReference {
-  final String codeRef;
+  final String _codeRef;
 
   bool get hasCallableHint =>
-      parsed.isNotEmpty &&
-      ((parsed.length > 1 && parsed.last.text == 'new') ||
-          parsed.last is CallableHintEndNode);
+      _parsed.isNotEmpty &&
+      ((_parsed.length > 1 && _parsed.last.text == 'new') ||
+          _parsed.last is CallableHintEndNode);
 
-  List<String> get referenceBy => parsed
+  List<String> get referenceBy => _parsed
       .whereType<IdentifierNode>()
       .map<String>((i) => i.text)
       .toList(growable: false);
 
   /// Constructs a [ModelCommentReference] given a raw string.
-  ModelCommentReference(this.codeRef);
+  ModelCommentReference(this._codeRef);
 
-  late final List<CommentReferenceNode> parsed =
-      CommentReferenceParser(codeRef).parse();
+  late final List<CommentReferenceNode> _parsed =
+      CommentReferenceParser(_codeRef).parse();
 }
