@@ -12,10 +12,13 @@ updates:
       - "type-infra"
 
   # Maintain dependencies for GitHub Actions.
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: monthly
     labels:
-      - "autosubmit"
-      - "type-infra"
+      - autosubmit
+    groups:
+      github-actions:
+        patterns:
+          - "*"
