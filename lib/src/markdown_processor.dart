@@ -165,30 +165,15 @@ MatchingLinkResult _getMatchingLinkElement(
     String referenceText, Warnable element) {
   var commentReference = ModelCommentReference(referenceText);
 
-  // A filter to be used by [CommentReferable.referenceBy].
-  bool Function(CommentReferable?) filter;
+  var filter = commentReference.hasCallableHint
+      // Trailing parens indicate we are looking for a callable.
+      ? _requireCallable
+      // Without hints, reject unnamed constructors and their parameters to
+      // force resolution to the class.
+      : _rejectUnnamedAndShadowingConstructors;
 
-  // An "allow tree" filter to be used by [CommentReferable.referenceBy].
-  bool Function(CommentReferable?) allowTree;
-
-  if (commentReference.hasCallableHint) {
-    allowTree = (_) => true;
-    // Trailing parens indicate we are looking for a callable.
-    filter = _requireCallable;
-  } else {
-    allowTree = (_) => true;
-    // Neither reject, nor require, an unnamed constructor in the event the
-    // comment reference structure implies one. (We cannot require it in case a
-    // library name is the same as a member class name and the class is the
-    // intended lookup).
-    filter = commentReference.hasCallableHint
-        ? _requireCallable
-        // Without hints, reject unnamed constructors and their parameters to
-        // force resolution to the class.
-        : filter = _rejectUnnamedAndShadowingConstructors;
-  }
-  var lookupResult = element.referenceBy(commentReference.referenceBy,
-      allowTree: allowTree, filter: filter);
+  var lookupResult =
+      element.referenceBy(commentReference.referenceBy, filter: filter);
 
   // TODO(jcollins-g): Consider prioritizing analyzer resolution before custom.
   return MatchingLinkResult(lookupResult);

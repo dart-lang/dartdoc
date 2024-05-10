@@ -23,11 +23,11 @@ abstract class Base with Nameable, CommentReferable {
   /// Returns the added (or already existing) [Base].
   Base add(String newName);
 
-  CommentReferable? lookup<T extends CommentReferable?>(String value,
-      {bool Function(CommentReferable?)? allowTree,
-      bool Function(CommentReferable?)? filter}) {
-    return referenceBy(value.split(_separator),
-        allowTree: allowTree ?? (_) => true, filter: filter ?? (_) => true);
+  CommentReferable? lookup<T extends CommentReferable?>(
+    String value, {
+    bool Function(CommentReferable?)? filter,
+  }) {
+    return referenceBy(value.split(_separator), filter: filter ?? (_) => true);
   }
 
   @override
@@ -163,20 +163,6 @@ void main() {
       expect(referable.lookup('lib3'), isA<TopChild>());
       expect(referable.lookup('lib3', filter: (r) => r is GenericChild),
           isA<GenericChild>());
-    });
-
-    test('Check that allowTree works', () {
-      referable.add('lib4');
-      var lib4lib4 = referable.add('lib4.lib4');
-      var tooDeepSub1 = referable.add('lib4.lib4.sub1');
-      var sub1 = referable.add('lib4.sub1');
-      var sub2 = referable.add('lib4.sub2');
-      expect(sub2.lookup('lib4.lib4'), equals(lib4lib4));
-      expect(sub2.lookup('lib4.sub1'), equals(tooDeepSub1));
-      expect(
-          sub2.lookup('lib4.sub1',
-              allowTree: (r) => r is Base && (r.parent is Top)),
-          equals(sub1));
     });
 
     test('Check that grandparent overrides work', () {

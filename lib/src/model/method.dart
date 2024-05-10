@@ -138,10 +138,24 @@ class Method extends ModelElement
       return from.referenceChildren;
     }
     return _referenceChildren ??= <String, CommentReferable>{
-      ...modelType.returnType.typeArguments.explicitOnCollisionWith(this),
-      ...modelType.typeArguments.explicitOnCollisionWith(this),
+      // If we want to include all types referred to in the signature of this
+      // method, this is woefully incomplete. Notice we don't currently include
+      // the element of the returned type itself, nor nested type arguments,
+      // nor other nested types e.g. in the case of function types or record
+      // types. But this is all being replaced with analyzer's resolution soon.
+      ...modelType.returnType.typeArguments.modelElements
+          .explicitOnCollisionWith(this),
       ...parameters.explicitOnCollisionWith(this),
       ...typeParameters.explicitOnCollisionWith(this),
     };
   }
+}
+
+extension on Iterable<ElementType> {
+  /// The [ModelElement] associated with each type, for each type that is a
+  /// [DefinedElementType].
+  List<ModelElement> get modelElements => [
+        for (var type in this)
+          if (type is DefinedElementType) type.modelElement,
+      ];
 }

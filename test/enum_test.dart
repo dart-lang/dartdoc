@@ -641,4 +641,64 @@ class C {}
       '<a href="$linkPrefix/E/values-constant.html">E.values</a>.</p>',
     );
   }
+
+  void test_canBeReferenced_whenFoundAsReturnType() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  one, two
+}
+
+class C {
+  /// [E] can be referenced.
+  E m() => E.one;
+}
+''');
+    var m = library.classes.named('C').instanceMethods.named('m');
+
+    expect(m.hasDocumentationComment, true);
+    expect(
+      m.documentationAsHtml,
+      '<p><a href="$linkPrefix/E.html">E</a> can be referenced.</p>',
+    );
+  }
+
+  void test_canBeReferenced_whenFoundAsReturnType_typeArgument() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  one, two
+}
+
+class C {
+  /// [E] can be referenced.
+  Future<E> m() async => E.one;
+}
+''');
+    var m = library.classes.named('C').instanceMethods.named('m');
+
+    expect(m.hasDocumentationComment, true);
+    expect(
+      m.documentationAsHtml,
+      '<p><a href="$linkPrefix/E.html">E</a> can be referenced.</p>',
+    );
+  }
+
+  void test_canBeReferenced_whenFoundAsParameterType() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  one, two
+}
+
+class C {
+  /// [E] can be referenced.
+  void m(E p) {}
+}
+''');
+    var m = library.classes.named('C').instanceMethods.named('m');
+
+    expect(m.hasDocumentationComment, true);
+    expect(
+      m.documentationAsHtml,
+      '<p><a href="$linkPrefix/E.html">E</a> can be referenced.</p>',
+    );
+  }
 }

@@ -31,7 +31,6 @@ class _ReferenceChildrenLookup {
 
 /// Support comment reference lookups on a Nameable object.
 mixin CommentReferable implements Nameable {
-  //, ModelBuilderInterface {
   /// For any [CommentReferable] where an analyzer [Scope] exists (or can
   /// be constructed), implement this.  This will take priority over
   /// lookups via [referenceChildren].  Can be cached.
@@ -39,17 +38,15 @@ mixin CommentReferable implements Nameable {
 
   String? get href => null;
 
-  /// Look up a comment reference by its component parts.
+  /// Looks up a comment reference by its component parts.
   ///
   /// If [tryParents] is true, try looking up the same reference in any parents
   /// of `this`. Will skip over results that do not pass a given [filter] and
-  /// keep searching.  Will skip over entire subtrees whose parent node does not
-  /// pass [allowTree].
+  /// keep searching.
   @nonVirtual
   CommentReferable? referenceBy(
     List<String> reference, {
     required bool Function(CommentReferable?) filter,
-    required bool Function(CommentReferable?) allowTree,
     bool tryParents = true,
     Iterable<CommentReferable>? parentOverrides,
   }) {
@@ -57,11 +54,9 @@ mixin CommentReferable implements Nameable {
     if (reference.isEmpty) {
       return tryParents ? null : this;
     }
-
     for (var referenceLookup in _childLookups(reference)) {
       if (scope != null) {
-        var result = _lookupViaScope(referenceLookup,
-            filter: filter, allowTree: allowTree);
+        var result = _lookupViaScope(referenceLookup, filter: filter);
         if (result != null) {
           return result;
         }
@@ -69,8 +64,11 @@ mixin CommentReferable implements Nameable {
       final referenceChildren = this.referenceChildren;
       final childrenResult = referenceChildren[referenceLookup.lookup];
       if (childrenResult != null) {
-        var result = _recurseChildrenAndFilter(referenceLookup, childrenResult,
-            allowTree: allowTree, filter: filter);
+        var result = _recurseChildrenAndFilter(
+          referenceLookup,
+          childrenResult,
+          filter: filter,
+        );
         if (result != null) {
           return result;
         }
@@ -79,11 +77,12 @@ mixin CommentReferable implements Nameable {
     // If we can't find it in children, try searching parents if allowed.
     if (tryParents) {
       for (var parent in parentOverrides) {
-        var result = parent.referenceBy(reference,
-            tryParents: true,
-            parentOverrides: referenceGrandparentOverrides,
-            allowTree: allowTree,
-            filter: filter);
+        var result = parent.referenceBy(
+          reference,
+          tryParents: true,
+          parentOverrides: referenceGrandparentOverrides,
+          filter: filter,
+        );
         if (result != null) return result;
       }
     }
@@ -99,7 +98,6 @@ mixin CommentReferable implements Nameable {
   CommentReferable? _lookupViaScope(
     _ReferenceChildrenLookup referenceLookup, {
     required bool Function(CommentReferable?) filter,
-    required bool Function(CommentReferable?) allowTree,
   }) {
     final resultElement = scope!.lookupPreferGetter(referenceLookup.lookup);
     if (resultElement == null) return null;
@@ -122,9 +120,7 @@ mixin CommentReferable implements Nameable {
       );
       return null;
     }
-    if (!allowTree(result)) return null;
-    return _recurseChildrenAndFilter(referenceLookup, result,
-        allowTree: allowTree, filter: filter);
+    return _recurseChildrenAndFilter(referenceLookup, result, filter: filter);
   }
 
   /// Given a [result] found in an implementation of [_lookupViaScope] or
@@ -134,19 +130,14 @@ mixin CommentReferable implements Nameable {
     _ReferenceChildrenLookup referenceLookup,
     CommentReferable result, {
     required bool Function(CommentReferable?) filter,
-    required bool Function(CommentReferable?) allowTree,
   }) {
     CommentReferable? returnValue = result;
     if (referenceLookup.remaining.isNotEmpty) {
-      if (allowTree(result)) {
-        returnValue = result.referenceBy(referenceLookup.remaining,
-            tryParents: false, allowTree: allowTree, filter: filter);
-      } else {
-        returnValue = null;
-      }
+      returnValue = result.referenceBy(referenceLookup.remaining,
+          tryParents: false, filter: filter);
     } else if (!filter(result)) {
       returnValue = result.referenceBy([referenceLookup.lookup],
-          tryParents: false, allowTree: allowTree, filter: filter);
+          tryParents: false, filter: filter);
     }
     if (!filter(returnValue)) {
       returnValue = null;
