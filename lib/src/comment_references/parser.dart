@@ -32,11 +32,12 @@ const Map<String, String> operatorNames = {
 class StringTrie {
   final Map<int, StringTrie> children = {};
 
-  /// Does [this] node represent a valid entry in the trie?
+  /// Does `this` node represent a valid entry in the trie?
   bool valid = false;
 
-  /// Greedily match on the string trie starting at the given index.  Returns
-  /// the index of the first non-operator character if a match is valid,
+  /// Greedily matches on the string trie starting at the given index.
+  ///
+  /// Returns the index of the first non-operator character if a match is valid,
   /// otherwise -1.
   int match(String toMatch, [int index = 0, int lastValid = -1]) {
     if (index < 0 || index > toMatch.length) {
@@ -76,11 +77,11 @@ final StringTrie operatorParseTrie = () {
 // TODO(jcollins-g): align with [CommentReference] from analyzer AST.
 class CommentReferenceParser {
   /// Original, unparsed reference.
-  final String codeRef;
+  final String _codeRef;
 
   final int _referenceLength;
 
-  CommentReferenceParser(this.codeRef) : _referenceLength = codeRef.length;
+  CommentReferenceParser(this._codeRef) : _referenceLength = _codeRef.length;
 
   int _index = 0;
 
@@ -194,28 +195,29 @@ class CommentReferenceParser {
   };
 
   /// Advances the index forward to the end of the operator if one is
-  /// present and returns the operator's name.  Otherwise, leaves _index
-  /// unchanged and returns null.
+  /// present and returns the operator's name.
+  ///
+  /// Otherwise, leaves `_index` unchanged and returns `null`.
   String? _tryParseOperator() {
     var tryIndex = _index;
-    if (tryIndex + _operatorKeyword.length < codeRef.length &&
-        codeRef.substring(tryIndex, tryIndex + _operatorKeyword.length) ==
+    if (tryIndex + _operatorKeyword.length < _codeRef.length &&
+        _codeRef.substring(tryIndex, tryIndex + _operatorKeyword.length) ==
             _operatorKeyword) {
       tryIndex = tryIndex + _operatorKeyword.length;
-      while (_whitespace.contains(codeRef.codeUnitAt(tryIndex))) {
+      while (_whitespace.contains(_codeRef.codeUnitAt(tryIndex))) {
         tryIndex++;
       }
     }
 
-    var result = operatorParseTrie.match(codeRef, tryIndex);
+    var result = operatorParseTrie.match(_codeRef, tryIndex);
     if (result == -1) {
       return null;
     }
     _index = result;
-    return codeRef.substring(tryIndex, result);
+    return _codeRef.substring(tryIndex, result);
   }
 
-  /// Parse a dartdoc identifier.
+  /// Parses a dartdoc identifier.
   ///
   /// Dartdoc identifiers can include some operators.
   _IdentifierParseResult _parseIdentifier() {
@@ -240,10 +242,10 @@ class CommentReferenceParser {
       _index++;
     }
     return _IdentifierParseResult.ok(
-        IdentifierNode(codeRef.substring(startIndex, _index)));
+        IdentifierNode(_codeRef.substring(startIndex, _index)));
   }
 
-  /// Parse a list of type variables (arguments or parameters).
+  /// Parses a list of type variables (arguments or parameters).
   ///
   /// Dartdoc isolates these where present and potentially valid, but we don't
   /// break them down.
@@ -254,7 +256,7 @@ class CommentReferenceParser {
     var startIndex = _index;
     if (_matchBraces($lt, $gt)) {
       return _TypeVariablesParseResult.ok(
-          TypeVariablesNode(codeRef.substring(startIndex + 1, _index - 1)));
+          TypeVariablesNode(_codeRef.substring(startIndex + 1, _index - 1)));
     }
     return _TypeVariablesParseResult.notIdentifier;
   }
@@ -282,7 +284,7 @@ class CommentReferenceParser {
     if (_tryMatchLiteral(_callableHintSuffix)) {
       if (_atEnd) {
         return _SuffixParseResult.ok(
-            CallableHintEndNode(codeRef.substring(startIndex, _index)));
+            CallableHintEndNode(_codeRef.substring(startIndex, _index)));
       }
       return _SuffixParseResult.notSuffix;
     }
@@ -299,7 +301,7 @@ class CommentReferenceParser {
 
   bool get _atEnd => _index >= _referenceLength;
   bool get _nextAtEnd => _index + 1 >= _referenceLength;
-  int get _thisChar => codeRef.codeUnitAt(_index);
+  int get _thisChar => _codeRef.codeUnitAt(_index);
 
   /// Advances [_index] on match, preserves on non-match.
   bool _tryMatchLiteral(String characters,
@@ -310,7 +312,7 @@ class CommentReferenceParser {
     for (startIndex = _index;
         _index - startIndex < characters.length;
         _index++) {
-      if (codeRef.codeUnitAt(_index) !=
+      if (_codeRef.codeUnitAt(_index) !=
           characters.codeUnitAt(_index - startIndex)) {
         _index = startIndex;
         return false;
@@ -343,8 +345,9 @@ class CommentReferenceParser {
     return;
   }
 
-  /// Returns `true` if we started with [startChar] and ended with [endChar]
-  /// with a matching number of braces.
+  /// Returns whether we started with [startChar] and ended with [endChar] with
+  /// a matching number of braces.
+  ///
   /// Restores [_index] to state when called if returning `false`.
   bool _matchBraces(int startChar, int endChar) {
     var braceCount = 0;
@@ -414,10 +417,14 @@ class _IdentifierParseResult {
 }
 
 enum _TypeVariablesResultType {
-  endOfFile, // Found end of file instead of the beginning of a list of type
-  // variables.
-  notTypeVariables, // Found something, but it isn't type variables.
-  parsedTypeVariables, // Found type variables.
+  /// Found end of file instead of the beginning of a list of type variables.
+  endOfFile,
+
+  /// Found something, but it isn't type variables.
+  notTypeVariables,
+
+  /// Found type variables.
+  parsedTypeVariables,
 }
 
 class _TypeVariablesParseResult {
