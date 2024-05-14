@@ -1,3 +1,12 @@
+## 8.0.9
+
+* Deprecate the `missingCodeBlockLanguage` warning. This is replaced with the
+  `missing_code_block_language_in_doc_comment` lint rule. (#3743)
+* Properly sort unnamed libraries. (#3746)
+* Correctly link comment references for types specified in a function's return
+  type's type arguments. (#3768).
+* Require `analyzer: ^6.5.0`. (#3763)
+
 ## 8.0.8
 
 * More support for documenting a package with macro applications. (#3712)
