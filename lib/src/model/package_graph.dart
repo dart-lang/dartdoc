@@ -361,7 +361,7 @@ class PackageGraph with CommentReferable, Nameable {
   @override
   PackageGraph get packageGraph => this;
 
-  /// Map of package name to Package.
+  /// Map of package name to [Package].
   ///
   /// This mapping must be complete before [initializePackageGraph] is called.
   final Map<String, Package> packageMap = {};
@@ -497,38 +497,48 @@ class PackageGraph with CommentReferable, Nameable {
   Iterable<Package> get _documentedPackages =>
       packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
-  /// A mapping of all the [Library]s that export a given [LibraryElement].
+  /// A mapping from a [LibraryElement] to all of the [Library]s that export it.
   Map<LibraryElement, Set<Library>> _libraryExports = {};
 
-  /// Prevent cycles from breaking our stack.
-  Set<(Library, LibraryElement?)> _reexportsTagged = {};
-
-  void _tagReexportsFor(
-      final Library topLevelLibrary, final LibraryElement? libraryElement,
-      [LibraryExportElement? lastExportedElement]) {
-    var key = (topLevelLibrary, libraryElement);
-    if (_reexportsTagged.contains(key)) {
+  /// Marks [publicLibrary] as a library that exports [libraryElement] and all
+  /// libraries that [libraryElement] transitively exports.
+  ///
+  /// [alreadyTagged] is used internall to prevent visiting in cycles.
+  void _tagExportsFor(
+    final Library publicLibrary,
+    final LibraryElement libraryElement, {
+    Set<(Library, LibraryElement)>? alreadyTagged,
+  }) {
+    alreadyTagged ??= {};
+    var key = (publicLibrary, libraryElement);
+    if (alreadyTagged.contains(key)) {
       return;
     }
-    _reexportsTagged.add(key);
-    if (libraryElement == null) return;
-    _libraryExports.putIfAbsent(libraryElement, () => {}).add(topLevelLibrary);
+    alreadyTagged.add(key);
+    // Mark that `publicLibrary` exports `libraryElement`.
+    _libraryExports.putIfAbsent(libraryElement, () => {}).add(publicLibrary);
     for (var exportedElement in libraryElement.libraryExports) {
-      _tagReexportsFor(
-          topLevelLibrary, exportedElement.exportedLibrary, exportedElement);
+      var exportedLibrary = exportedElement.exportedLibrary;
+      if (exportedLibrary != null) {
+        // Follow the exports down; as `publicLibrary` exports `libraryElement`,
+        // it also exports each `exportedLibrary`.
+        _tagExportsFor(publicLibrary, exportedLibrary,
+            alreadyTagged: alreadyTagged);
+      }
     }
   }
 
   int _lastSizeOfAllLibraries = 0;
 
+  /// A mapping from a [LibraryElement] to all of the [Library]s that export it,
+  /// which is created if it is not yet populated.
   Map<LibraryElement, Set<Library>> get libraryExports {
     // Table must be reset if we're still in the middle of adding libraries.
     if (allLibraries.keys.length != _lastSizeOfAllLibraries) {
       _lastSizeOfAllLibraries = allLibraries.keys.length;
       _libraryExports = {};
-      _reexportsTagged = {};
       for (var library in publicLibraries) {
-        _tagReexportsFor(library, library.element);
+        _tagExportsFor(library, library.element);
       }
     }
     return _libraryExports;
@@ -621,11 +631,15 @@ class PackageGraph with CommentReferable, Nameable {
   }
 
   @visibleForTesting
+
+  /// The set of all libraries (public and implementation) found across all
+  /// [packages].
   late final List<Library> libraries =
       packages.expand((p) => p.libraries).toList(growable: false)..sort();
 
   int get libraryCount => libraries.length;
 
+  /// The set of public libraries found across all [packages].
   late final Set<Library> publicLibraries = () {
     assert(allLibrariesAdded);
     return libraries.wherePublic.toSet();
