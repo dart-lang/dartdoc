@@ -305,7 +305,7 @@ Future<void> runDoc(ArgResults commandResults) async {
 }
 
 Future<void> docFlutter({bool withStats = false}) async {
-  print('building flutter docs into: $flutterDir');
+  print('building flutter docs into: ${flutterDir.path}');
   var env = createThrowawayPubCache();
   await _docFlutter(
     flutterPath: flutterDir.path,
@@ -325,17 +325,20 @@ Future<Iterable<Map<String, Object?>>> _docFlutter({
 }) async {
   var flutterRepo = await FlutterRepo.copyFromExistingFlutterRepo(
       await cleanFlutterRepo, flutterPath, env, label);
-  try {
-    await flutterRepo.launcher.runStreamed(
-      flutterRepo.dartCmd,
-      ['pub', 'global', 'deactivate', 'snippets'],
-    );
-  } on SubprocessException {
-    // Ignore failure to deactivate so this works on completely clean bots.
-  }
+  var snippetsPath = path.join(flutterPath, 'dev', 'snippets');
+  var snippetsOutPath =
+      path.join(flutterPath, 'bin', 'cache', 'artifacts', 'snippets');
+  print('building snippets tool executable...');
+  Directory(snippetsOutPath).createSync(recursive: true);
+  await flutterRepo.launcher.runStreamed(
+    flutterRepo.flutterCmd,
+    ['pub', 'get'],
+    workingDirectory: path.join(snippetsPath),
+  );
   await flutterRepo.launcher.runStreamed(
     flutterRepo.dartCmd,
-    ['pub', 'global', 'activate', 'snippets', '0.4.3'],
+    ['compile', 'exe', '-o', '$snippetsOutPath/snippets', 'bin/snippets.dart'],
+    workingDirectory: path.join(snippetsPath),
   );
   // TODO(jcollins-g): flutter's dart SDK pub tries to precompile the universe
   // when using -spath.  Why?
