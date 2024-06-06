@@ -405,16 +405,26 @@ abstract class InheritingContainer extends Container {
       } else {
         var implementers = packageGraph.implementers[implementer];
         if (implementers != null) {
-          model_utils.findCanonicalFor(implementers).forEach(addToResult);
+          _findCanonicalFor(implementers).forEach(addToResult);
         }
       }
     }
 
     var immediateImplementers = packageGraph.implementers[this];
     if (immediateImplementers != null) {
-      model_utils.findCanonicalFor(immediateImplementers).forEach(addToResult);
+      _findCanonicalFor(immediateImplementers).forEach(addToResult);
     }
     return result.toList(growable: false)..sort(byName);
+  }
+
+  /// Finds canonical classes for all classes in the iterable, if possible.
+  /// If a canonical class can not be found, returns the original class.
+  Iterable<InheritingContainer> _findCanonicalFor(
+      Iterable<InheritingContainer> containers) {
+    return containers.map((container) {
+      var canonical = packageGraph.findCanonicalModelElementFor(container);
+      return canonical as InheritingContainer? ?? container;
+    });
   }
 
   bool get hasPublicInterfaces => publicInterfaces.isNotEmpty;

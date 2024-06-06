@@ -301,8 +301,7 @@ abstract class DefinedElementType extends ElementType {
   @override
   bool get isPublic {
     var canonicalClass =
-        packageGraph.findCanonicalModelElementFor(modelElement.element) ??
-            modelElement;
+        packageGraph.findCanonicalModelElementFor(modelElement) ?? modelElement;
     return canonicalClass.isPublic;
   }
 

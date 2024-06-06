@@ -52,16 +52,6 @@ Iterable<T> filterHasCanonical<T extends ModelElement>(
   return maybeHasCanonicalItems.where((me) => me.canonicalModelElement != null);
 }
 
-/// Finds canonical classes for all classes in the iterable, if possible.
-/// If a canonical class can not be found, returns the original class.
-Iterable<InheritingContainer> findCanonicalFor(
-    Iterable<InheritingContainer> containers) {
-  return containers.map((c) =>
-      c.packageGraph.findCanonicalModelElementFor(c.element)
-          as InheritingContainer? ??
-      c);
-}
-
 extension ElementExtension on Element {
   bool get hasPrivateName {
     final name = this.name;

@@ -3424,7 +3424,7 @@ class _Renderer_ContainerMember extends RendererBase<ContainerMember> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<Library>'),
+                          c, remainingNames, 'List<Library>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.referenceGrandparentOverrides.map((e) =>
