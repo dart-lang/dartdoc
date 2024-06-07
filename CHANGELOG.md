@@ -1,3 +1,7 @@
+## 8.0.10-dev
+
+* Un-deprecate the `--resources-dir` option.
+
 ## 8.0.9
 
 * Deprecate the `missingCodeBlockLanguage` warning. This is replaced with the

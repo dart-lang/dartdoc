@@ -27,13 +27,6 @@ class GeneratorFrontEnd implements Generator {
             'longer be supported.',
       );
     }
-    if (_generatorBackend.options.resourcesDir != null) {
-      packageGraph?.defaultPackage.warn(
-        PackageWarning.deprecated,
-        message: "The '--resources-dir' option is deprecated, and will soon be "
-            'removed.',
-      );
-    }
 
     await _generatorBackend.generateAdditionalFiles();
 
