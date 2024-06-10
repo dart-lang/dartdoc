@@ -708,121 +708,108 @@ class PackageGraph with CommentReferable, Nameable {
     return buffer.toString();
   }
 
-  final Map<Element, Library?> _canonicalLibraryFor = {};
-
-  /// Tries to find a top level library that references this element.
-  Library? _findCanonicalLibraryFor(Element e) {
-    assert(allLibrariesAdded);
-    if (_canonicalLibraryFor.containsKey(e)) {
-      return _canonicalLibraryFor[e];
-    }
-    _canonicalLibraryFor[e] = null;
-
-    var searchElement = switch (e) {
-      PropertyAccessorElement() => e.variable2,
-      GenericFunctionTypeElement() => e.enclosingElement,
-      _ => e,
-    };
-    if (searchElement == null) return null;
-    for (var library in publicLibraries) {
-      var modelElements = library.modelElementsMap[searchElement];
-      if (modelElements != null) {
-        if (modelElements.any((element) => element.isCanonical)) {
-          return _canonicalLibraryFor[e] = library;
-        }
-      }
-    }
-    return _canonicalLibraryFor[e];
-  }
-
-  /// Tries to find a canonical [ModelElement] for this [e].  If we know this
-  /// element is related to a particular class, pass a [preferredClass] to
-  /// disambiguate.
+  /// Tries to find a canonical [ModelElement] for this [modelElement].  If we
+  /// know this element is related to a particular class, pass a
+  /// [preferredClass] to disambiguate.
   ///
   /// This doesn't know anything about [PackageGraph.inheritThrough] and
   /// probably shouldn't, so using it with [Inheritable]s without special casing
   /// is not advised.
-  ModelElement? findCanonicalModelElementFor(Element? e,
+  ///
+  /// This can return `null` in a few ways: if [modelElement] is `null`, or if
+  /// it has no canonical library, or if a possible canonical model element has
+  /// a `false` value for `isCanonical`.
+  ModelElement? findCanonicalModelElementFor(ModelElement? modelElement,
       {Container? preferredClass}) {
     assert(allLibrariesAdded);
-    if (e == null) return null;
+    if (modelElement == null) return null;
+    var element = modelElement.element;
     if (preferredClass != null) {
       var canonicalClass =
-          findCanonicalModelElementFor(preferredClass.element) as Container?;
+          findCanonicalModelElementFor(preferredClass) as Container?;
       if (canonicalClass != null) preferredClass = canonicalClass;
     }
-    var lib = _findCanonicalLibraryFor(e);
+    var lib = modelElement.canonicalLibrary;
     if (lib == null && preferredClass != null) {
-      lib = _findCanonicalLibraryFor(preferredClass.element);
+      lib = preferredClass.canonicalLibrary;
     }
     // For elements defined in extensions, they are canonical.
-    var enclosingElement = e.enclosingElement;
+    var enclosingElement = element.enclosingElement;
     if (enclosingElement is ExtensionElement) {
       lib ??= getModelForElement(enclosingElement.library) as Library?;
       // TODO(keertip): Find a better way to exclude members of extensions
       // when libraries are specified using the "--include" flag.
       if (lib != null && lib.isDocumented) {
-        return getModelFor(e, lib);
+        return getModelFor(element, lib);
       }
     }
     // TODO(jcollins-g): The data structures should be changed to eliminate
     // guesswork with member elements.
-    var declaration = e.declaration;
-    ModelElement? modelElement;
+    var declaration = element.declaration;
+    ModelElement? canonicalModelElement;
     if (declaration != null &&
-        (e is ClassMemberElement || e is PropertyAccessorElement)) {
-      e = declaration;
-      modelElement = _findCanonicalModelElementForAmbiguous(e, lib,
+        (element is ClassMemberElement || element is PropertyAccessorElement)) {
+      modelElement = getModelForElement(declaration);
+      element = modelElement.element;
+      canonicalModelElement = _findCanonicalModelElementForAmbiguous(
+          modelElement, lib,
           preferredClass: preferredClass as InheritingContainer?);
     } else {
       if (lib != null) {
-        if (e is PropertyInducingElement) {
-          var getter = e.getter != null ? getModelFor(e.getter!, lib) : null;
-          var setter = e.setter != null ? getModelFor(e.setter!, lib) : null;
-          modelElement = getModelForPropertyInducingElement(e, lib,
+        if (element is PropertyInducingElement) {
+          var getter =
+              element.getter != null ? getModelFor(element.getter!, lib) : null;
+          var setter =
+              element.setter != null ? getModelFor(element.setter!, lib) : null;
+          canonicalModelElement = getModelForPropertyInducingElement(
+              element, lib,
               getter: getter as Accessor?, setter: setter as Accessor?);
         } else {
-          modelElement = getModelFor(e, lib);
+          canonicalModelElement = getModelFor(element, lib);
         }
       }
-      assert(modelElement is! Inheritable);
-      if (modelElement != null && !modelElement.isCanonical) {
-        modelElement = null;
+      assert(canonicalModelElement is! Inheritable);
+      if (canonicalModelElement != null && !canonicalModelElement.isCanonical) {
+        canonicalModelElement = null;
       }
     }
     // Prefer fields and top-level variables.
-    if (e is PropertyAccessorElement && modelElement is Accessor) {
-      modelElement = modelElement.enclosingCombo;
+    if (element is PropertyAccessorElement &&
+        canonicalModelElement is Accessor) {
+      canonicalModelElement = canonicalModelElement.enclosingCombo;
     }
-    return modelElement;
+    return canonicalModelElement;
   }
 
-  ModelElement? _findCanonicalModelElementForAmbiguous(Element e, Library? lib,
+  ModelElement? _findCanonicalModelElementForAmbiguous(
+      ModelElement modelElement, Library? lib,
       {InheritingContainer? preferredClass}) {
+    var element = modelElement.element;
     var candidates = <ModelElement>{};
     if (lib != null) {
       var constructedWithKey = allConstructedModelElements[
-          ConstructedModelElementsKey(e, lib, null)];
+          ConstructedModelElementsKey(element, lib, null)];
       if (constructedWithKey != null) {
         candidates.add(constructedWithKey);
       }
       var constructedWithKeyWithClass = allConstructedModelElements[
-          ConstructedModelElementsKey(e, lib, preferredClass)];
+          ConstructedModelElementsKey(element, lib, preferredClass)];
       if (constructedWithKeyWithClass != null) {
         candidates.add(constructedWithKeyWithClass);
       }
       if (candidates.isEmpty) {
         candidates = {
-          ...?allInheritableElements[InheritableElementsKey(e, lib)]
+          ...?allInheritableElements[InheritableElementsKey(element, lib)]
               ?.where((me) => me.isCanonical),
         };
       }
     }
 
-    var canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
+    var canonicalClass =
+        findCanonicalModelElementFor(modelElement.enclosingElement);
     if (canonicalClass is InheritingContainer) {
       candidates.addAll(canonicalClass.allCanonicalModelElements
-          .where((m) => m.element == e));
+          .where((m) => m.element == element));
     }
 
     var matches = {...candidates.where((me) => me.isCanonical)};

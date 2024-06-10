@@ -439,7 +439,7 @@ abstract class ModelElement
       ExtensionType() => enclosingElement,
       _ => null,
     };
-    return packageGraph.findCanonicalModelElementFor(element,
+    return packageGraph.findCanonicalModelElementFor(this,
         preferredClass: preferredClass);
   }();
 
@@ -447,9 +447,15 @@ abstract class ModelElement
 
   late final String sourceHref = SourceLinker.fromElement(this).href();
 
+  /// The library in which [element] is declared.
+  ///
+  /// This is different from [library] if this [ModelElement] is derived from
+  /// a library that exports [element] from another library.
   Library get definingLibrary =>
       getModelForElement(element.library!) as Library;
 
+  /// A public, documented library which exports this [ModelElement], ideally in
+  /// [definingLibrary]'s package.
   late final Library? canonicalLibrary = () {
     if (element.hasPrivateName) {
       // Privately named elements can never have a canonical library.
@@ -480,6 +486,8 @@ abstract class ModelElement
     return null;
   }();
 
+  /// Searches [PackageGraph.libraryExports] for a public, documented library
+  /// which exports this [ModelElement], ideally in [definingLibrary]'s package.
   Library? _searchForCanonicalLibrary() {
     var thisAndExported = packageGraph.libraryExports[definingLibrary.element];
     if (thisAndExported == null) {
@@ -494,17 +502,20 @@ abstract class ModelElement
         topLevelElement.enclosingElement != null) {
       topLevelElement = topLevelElement.enclosingElement!;
     }
+    var topLevelElementName = topLevelElement.name;
+    if (topLevelElementName == null) {
+      // Any member of an unnamed extension is not public, and has no
+      // canonical library.
+      return null;
+    }
 
     final candidateLibraries = thisAndExported
         .where((l) =>
             l.isPublic && l.package.documentedWhere != DocumentLocation.missing)
         .where((l) {
-      var lookup =
-          l.element.exportNamespace.definedNames[topLevelElement.name!];
-      return switch (lookup) {
-        PropertyAccessorElement() => topLevelElement == lookup.variable2,
-        _ => topLevelElement == lookup,
-      };
+      var lookup = l.element.exportNamespace.definedNames[topLevelElementName];
+      return topLevelElement ==
+          (lookup is PropertyAccessorElement ? lookup.variable2 : lookup);
     }).toList(growable: true);
 
     // Avoid claiming canonicalization for elements outside of this element's
@@ -612,8 +623,8 @@ abstract class ModelElement
 
   bool get hasParameters => parameters.isNotEmpty;
 
-  /// If [canonicalLibrary] (or [canonicalEnclosingElement], for [Inheritable]
-  /// subclasses) is null, this is null.
+  /// If [canonicalLibrary] (or [Inheritable.canonicalEnclosingContainer], for
+  /// [Inheritable] subclasses) is `null`, this is `null`.
   @override
   String? get href {
     if (!identical(canonicalModelElement, this)) {

@@ -70,8 +70,8 @@ mixin Inheritable on ContainerMember {
                 .memberByExample(this)
                 .canonicalEnclosingContainer;
           }
-          var canonicalContainer = packageGraph
-              .findCanonicalModelElementFor(c.element) as Container?;
+          var canonicalContainer =
+              packageGraph.findCanonicalModelElementFor(c) as Container?;
           // TODO(jcollins-g): invert this lookup so traversal is recursive
           // starting from the ModelElement.
           if (canonicalContainer != null) {
@@ -100,7 +100,7 @@ mixin Inheritable on ContainerMember {
       }
     } else if (definingEnclosingContainer is! Extension) {
       // TODO(jcollins-g): factor out extension logic into [Extendable].
-      return packageGraph.findCanonicalModelElementFor(element.enclosingElement)
+      return packageGraph.findCanonicalModelElementFor(enclosingElement)
           as Container?;
     }
     return super.computeCanonicalEnclosingContainer();

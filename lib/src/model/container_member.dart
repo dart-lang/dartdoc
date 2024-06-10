@@ -40,16 +40,8 @@ mixin ContainerMember on ModelElement {
     return canonicalEnclosingContainer;
   }();
 
-  Container? computeCanonicalEnclosingContainer() {
-    final enclosingElement = this.enclosingElement;
-    return switch (enclosingElement) {
-      Extension() =>
-        packageGraph.findCanonicalModelElementFor(enclosingElement.element),
-      ExtensionType() =>
-        packageGraph.findCanonicalModelElementFor(enclosingElement.element),
-      _ => packageGraph.findCanonicalModelElementFor(element.enclosingElement),
-    } as Container?;
-  }
+  Container? computeCanonicalEnclosingContainer() =>
+      packageGraph.findCanonicalModelElementFor(enclosingElement) as Container?;
 
   @override
   // TODO(jcollins-g): dart-lang/dartdoc#2693.
@@ -63,13 +55,12 @@ mixin ContainerMember on ModelElement {
       ];
 
   @override
-  Iterable<Library> get referenceGrandparentOverrides sync* {
-    // TODO(jcollins-g): split Field documentation up between accessors
-    // and resolve the pieces with different scopes.  dart-lang/dartdoc#2693.
-    // Until then, just pretend we're handling this correctly.
-    yield (documentationFrom.first as ModelElement).definingLibrary;
-    // TODO(jcollins-g): Wean users off of depending on canonical library
-    // resolution. dart-lang/dartdoc#2696
-    if (canonicalLibrary != null) yield canonicalLibrary!;
-  }
+  List<Library> get referenceGrandparentOverrides =>
+      // TODO(jcollins-g): split Field documentation up between accessors
+      // and resolve the pieces with different scopes.  dart-lang/dartdoc#2693.
+      // Until then, just pretend we're handling this correctly.
+      [
+        (documentationFrom.first as ModelElement).definingLibrary,
+        (packageGraph.findCanonicalModelElementFor(this) ?? this).library,
+      ];
 }
