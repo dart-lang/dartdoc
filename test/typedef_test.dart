@@ -40,6 +40,21 @@ typedef T = C;
     expect(tTypedef.aliasedType, isA<InterfaceType>());
   }
 
+  void test_extensionType_generic_referenceToTypeParameter() async {
+    var library = await bootPackageWithLibrary('''
+typedef TD<T> = T;
+
+/// Text [T].
+extension type ET<T>(TD<T> _) {}
+''');
+
+    expect(
+      library.extensionTypes.named('ET').documentationAsHtml,
+      // There is no way to link to a type parameter.
+      contains('<p>Text <code>T</code>.</p>'),
+    );
+  }
+
   void test_extensionType_basic() async {
     var library = await bootPackageWithLibrary('''
 extension type E(int i) {}

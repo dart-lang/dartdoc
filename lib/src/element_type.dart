@@ -272,20 +272,28 @@ abstract class DefinedElementType extends ElementType {
 
   factory DefinedElementType._from(DartType type, ModelElement modelElement,
       Library library, PackageGraph packageGraph) {
-    // `TypeAliasElement.alias.element` has different implications.
-    // In that case it is an actual type alias of some kind (generic or
-    // otherwise). Here however `alias.element` signals that this is a type
-    // referring to an alias.
     if (type is! TypeAliasElement && type.alias != null) {
-      return AliasedElementType._(
-          type as ParameterizedType, library, packageGraph, modelElement);
+      // Here, `alias.element` signals that this is a type referring to an
+      // alias. (`TypeAliasElement.alias.element` has different implications.
+      // In that case it is an actual type alias of some kind (generic or
+      // otherwise).)
+      return switch (type) {
+        TypeParameterType() =>
+          TypeParameterElementType._(type, library, packageGraph, modelElement),
+        ParameterizedType() =>
+          AliasedElementType._(type, library, packageGraph, modelElement),
+        _ => throw UnimplementedError(
+            'No ElementType implemented for aliased ${type.runtimeType}'),
+      };
     }
-    if (type is TypeParameterType) {
-      return TypeParameterElementType._(
-          type, library, packageGraph, modelElement);
-    }
-    return ParameterizedElementType._(
-        type as ParameterizedType, library, packageGraph, modelElement);
+    return switch (type) {
+      TypeParameterType() =>
+        TypeParameterElementType._(type, library, packageGraph, modelElement),
+      ParameterizedType() =>
+        ParameterizedElementType._(type, library, packageGraph, modelElement),
+      _ => throw UnimplementedError(
+          'No ElementType implemented for ${type.runtimeType}'),
+    };
   }
 
   @override
