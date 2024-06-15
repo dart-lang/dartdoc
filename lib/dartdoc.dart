@@ -4,7 +4,7 @@
 
 /// A documentation generator for Dart.
 @Deprecated('Will be removed in a later version of DartDoc.')
-library dartdoc;
+library;
 
 export 'package:dartdoc/src/dartdoc.dart';
 export 'package:dartdoc/src/dartdoc_options.dart';

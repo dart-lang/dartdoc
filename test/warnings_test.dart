@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// Unit tests for lib/src/warnings.dart.
-library dartdoc.warnings_test;
+library;
 
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';

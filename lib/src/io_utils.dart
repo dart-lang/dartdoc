@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// This is a helper library to make working with io easier.
-library dartdoc.io_utils;
+library;
 
 import 'dart:async';
 import 'dart:collection';
