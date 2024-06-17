@@ -67,21 +67,20 @@ void main() {
     setUpAll(() async {
       constructorTearoffs = (await _testPackageGraphGinormous)
           .libraries
-          .firstWhere((l) => l.name == 'constructor_tearoffs');
-      A = constructorTearoffs.classes.firstWhere((c) => c.name == 'A');
-      B = constructorTearoffs.classes.firstWhere((c) => c.name == 'B');
-      C = constructorTearoffs.classes.firstWhere((c) => c.name == 'C');
-      D = constructorTearoffs.classes.firstWhere((c) => c.name == 'D');
-      E = constructorTearoffs.classes.firstWhere((c) => c.name == 'E');
-      F = constructorTearoffs.classes.firstWhere((c) => c.name == 'F');
-      M = constructorTearoffs.mixins.firstWhere((m) => m.name == 'M');
-      At = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'At');
-      Bt = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Bt');
-      Ct = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Ct');
-      Et = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Et');
-      Ft = constructorTearoffs.typedefs.firstWhere((t) => t.name == 'Ft');
-      NotAClass =
-          constructorTearoffs.typedefs.firstWhere((t) => t.name == 'NotAClass');
+          .named('constructor_tearoffs');
+      A = constructorTearoffs.classes.named('A');
+      B = constructorTearoffs.classes.named('B');
+      C = constructorTearoffs.classes.named('C');
+      D = constructorTearoffs.classes.named('D');
+      E = constructorTearoffs.classes.named('E');
+      F = constructorTearoffs.classes.named('F');
+      M = constructorTearoffs.mixins.named('M');
+      At = constructorTearoffs.typedefs.named('At');
+      Bt = constructorTearoffs.typedefs.named('Bt');
+      Ct = constructorTearoffs.typedefs.named('Ct');
+      Et = constructorTearoffs.typedefs.named('Et');
+      Ft = constructorTearoffs.typedefs.named('Ft');
+      NotAClass = constructorTearoffs.typedefs.named('NotAClass');
       Anew = A.constructors.firstWhere((c) => c.isUnnamedConstructor);
       Bnew = B.constructors.firstWhere((c) => c.isUnnamedConstructor);
       Cnew = C.constructors.firstWhere((c) => c.isUnnamedConstructor);
@@ -201,14 +200,11 @@ void main() {
         additionalArguments: ['--sanitize-html'],
       );
 
-      exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
+      exLibrary = packageGraph.libraries.named('ex');
 
-      classWithHtml =
-          exLibrary.classes.firstWhere((c) => c.name == 'SanitizableHtml');
-      blockHtml = classWithHtml.instanceMethods
-          .firstWhere((m) => m.name == 'blockHtml');
-      inlineHtml = classWithHtml.instanceMethods
-          .firstWhere((m) => m.name == 'inlineHtml');
+      classWithHtml = exLibrary.classes.named('SanitizableHtml');
+      blockHtml = classWithHtml.instanceMethods.named('blockHtml');
+      inlineHtml = classWithHtml.instanceMethods.named('inlineHtml');
       for (var modelElement in packageGraph.allLocalModelElements) {
         modelElement.documentation;
       }
@@ -267,15 +263,13 @@ void main() {
           excludeLibraries: ['css', 'code_in_comments', 'excluded'],
           additionalArguments: ['--inject-html']);
 
-      injectionExLibrary =
-          injectionPackageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
+      injectionExLibrary = injectionPackageGraph.libraries.named('ex');
 
-      htmlInjection = injectionExLibrary.classes
-          .firstWhere((c) => c.name == 'HtmlInjection');
-      injectSimpleHtml = htmlInjection.instanceMethods
-          .firstWhere((m) => m.name == 'injectSimpleHtml');
-      injectHtmlFromTool = htmlInjection.instanceMethods
-          .firstWhere((m) => m.name == 'injectHtmlFromTool');
+      htmlInjection = injectionExLibrary.classes.named('HtmlInjection');
+      injectSimpleHtml =
+          htmlInjection.instanceMethods.named('injectSimpleHtml');
+      injectHtmlFromTool =
+          htmlInjection.instanceMethods.named('injectHtmlFromTool');
       for (var modelElement in injectionPackageGraph.allLocalModelElements) {
         modelElement.documentation;
       }
@@ -306,14 +300,12 @@ void main() {
           isNot(contains('{@end-inject-html}')));
     });
     test('tool outputs a macro which outputs injected HTML', () {
-      var ToolPrintingMacroWhichInjectsHtml = injectionExLibrary.classes
-          .firstWhere((c) => c.name == 'ToolPrintingMacroWhichInjectsHtml');
-      var a = ToolPrintingMacroWhichInjectsHtml.instanceFields
-          .firstWhere((m) => m.name == 'a');
+      var ToolPrintingMacroWhichInjectsHtml =
+          injectionExLibrary.classes.named('ToolPrintingMacroWhichInjectsHtml');
+      var a = ToolPrintingMacroWhichInjectsHtml.instanceFields.named('a');
       expect(a.documentationAsHtml,
           contains('<p>Text.</p>\n<p><div class="title">Title</div></p>'));
-      var b = ToolPrintingMacroWhichInjectsHtml.instanceFields
-          .firstWhere((m) => m.name == 'b');
+      var b = ToolPrintingMacroWhichInjectsHtml.instanceFields.named('b');
       expect(b.documentationAsHtml,
           contains('<p>Text.</p>\n<p><div class="title">Title</div></p>'));
     });
@@ -360,13 +352,13 @@ void main() {
         'Verify auto-included dependencies do not use default package category definitions',
         () {
       var IAmAClassWithCategories = ginormousPackageGraph.localPackages
-          .firstWhere((Package p) => p.name == 'test_package_imported')
+          .firstWhere((p) => p.name == 'test_package_imported')
           .libraries
           .wherePublic
-          .firstWhere((Library l) => l.name == 'categoriesExported')
+          .named('categoriesExported')
           .classes
           .wherePublic
-          .firstWhere((Class c) => c.name == 'IAmAClassWithCategories');
+          .named('IAmAClassWithCategories');
       expect(IAmAClassWithCategories.hasCategoryNames, isTrue);
       expect(IAmAClassWithCategories.categories, hasLength(1));
       expect(
@@ -378,13 +370,13 @@ void main() {
     // they are exposed in.
     test('Verify that reexported classes pick up categories', () {
       var IAmAClassWithCategoriesReexport = ginormousPackageGraph.localPackages
-          .firstWhere((Package p) => p.name == 'test_package')
+          .firstWhere((p) => p.name == 'test_package')
           .libraries
           .wherePublic
-          .firstWhere((Library l) => l.name == 'fake')
+          .named('fake')
           .classes
           .wherePublic
-          .firstWhere((Class c) => c.name == 'IAmAClassWithCategories');
+          .named('IAmAClassWithCategories');
       expect(IAmAClassWithCategoriesReexport.hasCategoryNames, isTrue);
       expect(IAmAClassWithCategoriesReexport.categories, hasLength(1));
       expect(IAmAClassWithCategoriesReexport.categories.first.name,
@@ -397,14 +389,14 @@ void main() {
 
     test('Verify that multiple categories work correctly', () {
       var fakeLibrary = ginormousPackageGraph.localPackages
-          .firstWhere((Package p) => p.name == 'test_package')
+          .firstWhere((p) => p.name == 'test_package')
           .libraries
           .wherePublic
-          .firstWhere((Library l) => l.name == 'fake');
-      var BaseForDocComments = fakeLibrary.classes.wherePublic
-          .firstWhere((Class c) => c.name == 'BaseForDocComments');
-      var SubForDocComments = fakeLibrary.classes.wherePublic
-          .firstWhere((Class c) => c.name == 'SubForDocComments');
+          .named('fake');
+      var BaseForDocComments =
+          fakeLibrary.classes.wherePublic.named('BaseForDocComments');
+      var SubForDocComments =
+          fakeLibrary.classes.wherePublic.named('SubForDocComments');
       expect(BaseForDocComments.hasCategoryNames, isTrue);
       // Display both, with the correct order and display name.
       expect(BaseForDocComments.displayedCategories, hasLength(2));
