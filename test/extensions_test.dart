@@ -70,7 +70,10 @@ class ExtensionMethodsExportTest extends DartdocTestBase {
     var fFunction = package.functions.named('f');
     var reference = getMatchingLinkElement(referenceText, fFunction)
         .commentReferable as ModelElement;
-    expect(identical(reference.canonicalModelElement, expected), isTrue);
+    expect(identical(reference.canonicalModelElement, expected), isTrue,
+        reason: '$expected (${expected.hashCode}) is not '
+            '${reference.canonicalModelElement} '
+            '(${reference.canonicalModelElement.hashCode})');
     expect(expected.isCanonical, isTrue);
     expect(expected.href, endsWith(href));
   }
