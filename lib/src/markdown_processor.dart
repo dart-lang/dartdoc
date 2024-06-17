@@ -314,15 +314,13 @@ class MarkdownDocument extends md.Document {
     var textContent = _htmlEscape.convert(referenceText);
     var linkedElement = result.commentReferable;
     if (linkedElement != null) {
-      if (linkedElement.href != null) {
+      var href = linkedElement.href;
+      if (href != null) {
         var anchor = md.Element.text('a', textContent);
         if (linkedElement is ModelElement && linkedElement.isDeprecated) {
           anchor.attributes['class'] = 'deprecated';
         }
-        var href = linkedElement.href;
-        if (href != null) {
-          anchor.attributes['href'] = href;
-        }
+        anchor.attributes['href'] = href;
         return anchor;
       } else {
         // Otherwise this would be `linkedElement.linkedName`, but link bodies

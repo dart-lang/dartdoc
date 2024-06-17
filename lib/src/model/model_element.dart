@@ -687,6 +687,7 @@ abstract class ModelElement
         element.kind == ElementKind.NEVER ||
         this is ModelFunction);
 
+    final href = this.href;
     if (href == null) {
       if (isPublicAndPackageDocumented) {
         warn(PackageWarning.noCanonicalFound);
