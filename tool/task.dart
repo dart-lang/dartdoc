@@ -299,7 +299,7 @@ Future<void> runDoc(ArgResults commandResults) async {
     'flutter' => docFlutter(withStats: stats),
     'help' => _docHelp(),
     'package' => _docPackage(commandResults, withStats: stats),
-    'sdk' => docSdk(),
+    'sdk' => docSdk(withStats: stats),
     'testing-package' => docTestingPackage(),
     _ => throw UnimplementedError('Unknown doc target: "$target"'),
   };
@@ -462,9 +462,10 @@ Future<String> docPackage({
   return path.join(pubPackageDir.absolute.path, 'doc', 'api');
 }
 
-Future<void> docSdk() async => _docSdk(
+Future<void> docSdk({bool withStats = false}) async => _docSdk(
       sdkDocsPath: _sdkDocsDir.path,
       dartdocPath: Directory.current.path,
+      withStats: withStats,
     );
 
 /// Creates a throwaway pub cache and returns the environment variables
@@ -547,6 +548,7 @@ Future<void> compareSdkWarnings() async {
 Future<Iterable<Map<String, Object?>>> _docSdk({
   required String sdkDocsPath,
   required String dartdocPath,
+  bool withStats = false,
 }) async {
   var launcher = SubprocessLauncher('build-sdk-docs');
   await launcher
@@ -570,6 +572,7 @@ Future<Iterable<Map<String, Object?>>> _docSdk({
       'lib/resources/blank.txt',
     ],
     workingDirectory: dartdocPath,
+    withStats: withStats,
   );
 }
 
