@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-///
 /// dartdoc's dartdoc_options.yaml configuration file follows similar loading
 /// semantics to that of analysis_options.yaml,
 /// [documented here](https://dart.dev/guides/language/analysis-options).
@@ -11,8 +10,7 @@
 ///
 /// The classes here manage both the dartdoc_options.yaml loading and command
 /// line arguments.
-///
-library dartdoc.dartdoc_options;
+library;
 
 import 'dart:io' show Platform, exitCode, stderr, stdout;
 

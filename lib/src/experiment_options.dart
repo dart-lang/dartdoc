@@ -2,11 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-///
 /// Implementation of Dart language experiment option handling for dartdoc.
 /// See https://github.com/dart-lang/sdk/blob/main/docs/process/experimental-flags.md.
-///
-library dartdoc.experiment_options;
+library;
 
 import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
