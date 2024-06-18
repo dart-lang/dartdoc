@@ -314,8 +314,7 @@ class MarkdownDocument extends md.Document {
     var textContent = _htmlEscape.convert(referenceText);
     var linkedElement = result.commentReferable;
     if (linkedElement != null) {
-      var href = linkedElement.href;
-      if (href != null) {
+      if (linkedElement.href case var href?) {
         var anchor = md.Element.text('a', textContent);
         if (linkedElement is ModelElement && linkedElement.isDeprecated) {
           anchor.attributes['class'] = 'deprecated';
