@@ -143,6 +143,11 @@ class Category
   String get linkedName {
     final unbrokenName = name.replaceAll(' ', '&nbsp;');
     if (isDocumented) {
+      final href = this.href;
+      if (href == null) {
+        throw StateError("Requesting the 'linkedName' of a non-canonical "
+            "category: '$name'");
+      }
       return '<a href="$href">$unbrokenName</a>';
     } else {
       return unbrokenName;
