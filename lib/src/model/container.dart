@@ -242,7 +242,6 @@ abstract class Container extends ModelElement
             .addEntriesIfAbsent(modelElement.parameters.generateEntries());
       }
     }
-    referenceChildren['this'] = this;
     return referenceChildren;
   }();
 

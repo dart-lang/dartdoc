@@ -572,7 +572,7 @@ abstract class DartdocOption<T extends Object?> {
   U getValueAs<U>(String name, Folder dir) =>
       _children[name]?.valueAt(dir) as U;
 
-  /// Apply the function [visit] to [this] and all children.
+  /// Apply the function [visit] to this [DartdocOption] and all children.
   void traverse(void Function(DartdocOption option) visit) {
     visit(this);
     for (var value in _children.values) {
