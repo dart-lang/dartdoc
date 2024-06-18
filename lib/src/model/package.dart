@@ -164,8 +164,8 @@ class Package extends LibraryContainer
       packageMeta == packageGraph.packageMeta ||
       packageGraph.config.autoIncludeDependencies;
 
-  /// Returns the location of documentation for this package, for linkToRemote
-  /// and canonicalization decision making.
+  /// Returns the location of documentation for this package, for making
+  /// decisions regarding the 'linkToRemote' option and canonicalization.
   late DocumentLocation documentedWhere = () {
     if (isLocal && isPublic) {
       return DocumentLocation.local;
