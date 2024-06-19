@@ -205,7 +205,9 @@ void main() {
       classWithHtml = exLibrary.classes.named('SanitizableHtml');
       blockHtml = classWithHtml.instanceMethods.named('blockHtml');
       inlineHtml = classWithHtml.instanceMethods.named('inlineHtml');
-      for (var modelElement in packageGraph.allLocalModelElements) {
+      for (var modelElement in packageGraph.localPublicLibraries
+          .expand((l) => l.allModelElements)) {
+        // Accessing this getter triggers documentation-processing.
         modelElement.documentation;
       }
     });
@@ -270,7 +272,9 @@ void main() {
           htmlInjection.instanceMethods.named('injectSimpleHtml');
       injectHtmlFromTool =
           htmlInjection.instanceMethods.named('injectHtmlFromTool');
-      for (var modelElement in injectionPackageGraph.allLocalModelElements) {
+      for (var modelElement in injectionPackageGraph.localPublicLibraries
+          .expand((l) => l.allModelElements)) {
+        // Accessing this getter triggers documentation-processing.
         modelElement.documentation;
       }
     });

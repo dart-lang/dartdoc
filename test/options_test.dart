@@ -5,7 +5,6 @@
 import 'package:args/args.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
-import 'package:dartdoc/src/model/model.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
@@ -258,10 +257,8 @@ class Foo {}
       packageMetaProvider,
       packageConfigProvider,
     );
-    final classFoo = packageGraph.allLocalModelElements
-        .where((e) => e.isCanonical)
-        .whereType<Class>()
-        .firstWhere((c) => c.name == 'Foo');
+    final classFoo =
+        packageGraph.localPackages.first.libraries.first.classes.named('Foo');
     expect(classFoo.displayedCategories, isNotEmpty);
   }
 

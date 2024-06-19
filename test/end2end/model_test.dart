@@ -564,7 +564,9 @@ void main() async {
           .named('invokeToolParentDoc');
       invokeToolParentDocOriginal =
           ImplementingClassForTool.instanceMethods.named('invokeToolParentDoc');
-      for (var modelElement in packageGraph.allLocalModelElements) {
+      for (var modelElement in packageGraph.localPublicLibraries
+          .expand((l) => l.allModelElements)) {
+        // Accessing this getter triggers documentation-processing.
         modelElement.documentation;
       }
     });
