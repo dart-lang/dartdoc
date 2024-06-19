@@ -839,8 +839,7 @@ void main() async {
 
     setUpAll(() {
       anonLib = packageGraph.libraries.named('anonymous_library');
-
-      someLib = packageGraph.allLibraries.values.named('reexport.somelib');
+      someLib = packageGraph.libraries.named('reexport.somelib');
       reexportOneLib = packageGraph.libraries.named('reexport_one');
       reexportTwoLib = packageGraph.libraries.named('reexport_two');
       reexportThreeLib = packageGraph.libraries.named('reexport_three');
@@ -2240,12 +2239,11 @@ void main() async {
       late Constructor aConstructor;
 
       setUp(() {
-        base = packageGraph.allLibraries.values.named('two_exports.src.base');
-        extending =
-            packageGraph.allLibraries.values.named('two_exports.src.extending');
-        local_scope = packageGraph.allLibraries.values
-            .named('two_exports.src.local_scope');
-        two_exports = packageGraph.allLibraries.values.named('two_exports');
+        base = packageGraph.libraries.named('two_exports.src.base');
+        extending = packageGraph.libraries.named('two_exports.src.extending');
+        local_scope =
+            packageGraph.libraries.named('two_exports.src.local_scope');
+        two_exports = packageGraph.libraries.named('two_exports');
 
         BaseWithMembers = base.classes.named('BaseWithMembers');
         aStaticField = BaseWithMembers.staticFields.named('aStaticField');
@@ -2469,23 +2467,19 @@ void main() async {
           initViaFieldFormal;
 
       setUpAll(() async {
-        mylibpub = packageGraph.allLibraries.values.named('mylibpub');
+        mylibpub = packageGraph.libraries.named('mylibpub');
         aFunctionUsingRenamedLib =
             fakeLibrary.functions.named('aFunctionUsingRenamedLib');
-        Dart = packageGraph.allLibraries.values.named('Dart');
+        Dart = packageGraph.libraries.named('Dart');
         DartPackage = packageGraph.packages.firstWhere((p) => p.name == 'Dart');
         nameWithTwoUnderscores =
             fakeLibrary.constants.named('NAME_WITH_TWO_UNDERSCORES');
         nameWithSingleUnderscore =
             fakeLibrary.constants.named('NAME_SINGLEUNDERSCORE');
-        string = packageGraph.allLibraries.values
-            .named('dart:core')
-            .classes
-            .named('String');
-        metaUseResult = packageGraph.allLibraries.values
-            .named('meta')
-            .classes
-            .named('UseResult');
+        string =
+            packageGraph.libraries.named('dart:core').classes.named('String');
+        metaUseResult =
+            packageGraph.libraries.named('meta').classes.named('UseResult');
         baseForDocComments = fakeLibrary.classes.named('BaseForDocComments');
         aNonDefaultConstructor = baseForDocComments.constructors
             .named('BaseForDocComments.aNonDefaultConstructor');
@@ -2512,11 +2506,11 @@ void main() async {
             .named('csspub')
             .properties
             .named('theOnlyThingInTheLibrary');
-        doesStuff = packageGraph.allLibraries.values
+        doesStuff = packageGraph.libraries
             .named('anonymous_library')
             .functions
             .named('doesStuff');
-        BaseClass = packageGraph.allLibraries.values
+        BaseClass = packageGraph.libraries
             .named('two_exports.src.base')
             .classes
             .named('BaseClass');
@@ -2531,7 +2525,7 @@ void main() async {
             .named('ImplicitProperties')
             .allFields
             .named('forInheriting');
-        action = packageGraph.allLibraries.values
+        action = packageGraph.libraries
             .named('reexport.somelib')
             .classes
             .named('BaseReexported')
@@ -2845,10 +2839,8 @@ void main() async {
           reexportOneLib.extensions.named('DocumentThisExtensionOnce');
       documentOnceReexportTwo =
           reexportTwoLib.extensions.named('DocumentThisExtensionOnce');
-      string = packageGraph.allLibraries.values
-          .named('dart:core')
-          .classes
-          .named('String');
+      string =
+          packageGraph.libraries.named('dart:core').classes.named('String');
       apple = exLibrary.classes.named('Apple');
       ext = exLibrary.extensions.named('AppleExtension');
       extensionReferencer = exLibrary.classes.named('ExtensionReferencer');
