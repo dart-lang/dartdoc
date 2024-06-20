@@ -16301,7 +16301,6 @@ const _invisibleGetters = {
     'allHrefs',
     'allImplementersAdded',
     'allInheritableElements',
-    'allLibraries',
     'allLibrariesAdded',
     'analysisContext',
     'breadcrumbName',
