@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:collection/collection.dart';
-import 'package:dartdoc/src/model/privacy.dart';
 import 'package:meta/meta.dart';
 
 int byAttributeOrdering(Attribute a, Attribute b) {
@@ -16,7 +15,7 @@ int byAttributeOrdering(Attribute a, Attribute b) {
 ///
 /// These include both explicit annotations in code (e.g. `deprecated`) as well
 /// as others added by the documentation system (e.g. 'no setter').
-abstract class Attribute implements Privacy {
+abstract class Attribute {
   // A name, only used for sorting.
   @visibleForOverriding
   final String name;
@@ -56,9 +55,6 @@ abstract class Attribute implements Privacy {
 
 final class _BuiltInAttribute extends Attribute {
   const _BuiltInAttribute(super.name, super.sortGroup);
-
-  @override
-  bool get isPublic => false;
 
   @override
   String get linkedName => name;

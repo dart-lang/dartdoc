@@ -29,8 +29,7 @@ const String htmlBasePlaceholder = r'%%__HTMLBASE_dartdoc_internal__%%';
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
 class Package extends LibraryContainer
-    with Nameable, Locatable, Warnable, CommentReferable
-    implements Privacy {
+    with Nameable, Locatable, Warnable, CommentReferable {
   @override
   final String name;
 

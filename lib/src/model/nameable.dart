@@ -11,10 +11,9 @@ import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
-import 'package:dartdoc/src/model/privacy.dart';
 
 /// Something that has a name.
-mixin Nameable implements Privacy {
+mixin Nameable {
   String get name;
 
   /// A qualified name, mostly for use in the web search functionality, and for
@@ -27,7 +26,16 @@ mixin Nameable implements Privacy {
   /// The name to use in breadcrumbs in the rendered documentation.
   String get breadcrumbName => name;
 
-  @override
+  /// Whether this is "package-public."
+  ///
+  /// A "package-public" element satisfies the following requirements:
+  /// * is not documented with the `@nodoc` directive,
+  /// * for a library, is found in a package's top-level 'lib' directory, and
+  ///   not found in it's 'lib/src' directory,
+  /// * for a library member, is in a _public_ library's exported namespace, and
+  ///   is not privately named, nor an unnamed extension,
+  /// * for a container (class, enum, extension, extension type, mixin) member,
+  ///   is in a _public_ container, and is not privately named.
   bool get isPublic => name.isNotEmpty && !name.startsWith('_');
 
   @override

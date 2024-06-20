@@ -20,7 +20,7 @@ import 'package:meta/meta.dart';
 
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
-abstract class ElementType with CommentReferable, Nameable implements Privacy {
+abstract class ElementType with CommentReferable, Nameable {
   final DartType type;
   @override
   final PackageGraph packageGraph;
