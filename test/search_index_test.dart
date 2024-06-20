@@ -51,16 +51,7 @@ class SearchIndexTest extends DartdocTestBase {
             .where((l) => l.name.startsWith('dart:')),
     ];
     var text = generateSearchIndexJson(
-      [
-        // For each library, gather the elements for the library, it's members,
-        // and the members of its container members.
-        for (var library in libraries) ...[
-          library,
-          ...library.allModelElements,
-          for (var element in library.allModelElements.whereType<Container>())
-            ...element.allModelElements,
-        ],
-      ],
+      libraries.expand((library) => library.allModelElements),
       packageOrder: actAsFlutter ? const ['flutter', 'Dart'] : const [],
       pretty: false,
     );

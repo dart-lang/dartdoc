@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:collection';
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/source/line_info.dart';
@@ -361,34 +359,27 @@ class Library extends ModelElement
     return variables;
   }
 
-  /// A mapping of all [Element]s in this library to the [ModelElement]s which
-  /// represent them in dartdoc.
+  /// All [ModelElement]s, direct and indirect, which are part of this library's
+  /// export namespace.
   // Note: Keep this a late final field; converting to a getter (without further
   // investigation) causes dartdoc to hang.
-  late final HashMap<Element, Set<ModelElement>> modelElementsMap = () {
-    var modelElements = HashMap<Element, Set<ModelElement>>();
-    for (var modelElement in <ModelElement>[
-      ...constants,
-      ...functions,
-      ...properties,
-      ...typedefs,
-      ...extensions.expand((e) => [e, ...e.allModelElements]),
-      ...extensionTypes.expand((e) => [e, ...e.allModelElements]),
-      ...classesAndExceptions.expand((c) => [c, ...c.allModelElements]),
-      ...enums.expand((e) => [e, ...e.allModelElements]),
-      ...mixins.expand((m) => [m, ...m.allModelElements]),
-    ]) {
-      modelElements
-          .putIfAbsent(modelElement.element, () => {})
-          .add(modelElement);
-    }
-    modelElements.putIfAbsent(element, () => {}).add(this);
-    return modelElements;
-  }();
-
-  Iterable<ModelElement> get allModelElements => [
-        for (var modelElements in modelElementsMap.values) ...modelElements,
-      ];
+  late final List<ModelElement> allModelElements = [
+    ...constants,
+    ...functions,
+    ...properties,
+    ...typedefs,
+    ...extensions,
+    for (var e in extensions) ...e.allModelElements,
+    ...extensionTypes,
+    for (var e in extensionTypes) ...e.allModelElements,
+    ...classesAndExceptions,
+    for (var c in classesAndExceptions) ...c.allModelElements,
+    ...enums,
+    for (var e in enums) ...e.allModelElements,
+    ...mixins,
+    for (var m in mixins) ...m.allModelElements,
+    this,
+  ];
 
   @override
   Map<String, CommentReferable> get referenceChildren {
@@ -417,13 +408,11 @@ class Library extends ModelElement
   @override
   String buildDocumentationAddition(String rawDocs) {
     rawDocs = super.buildDocumentationAddition(rawDocs);
-    var notFoundInAllModelElements = <String>{};
     var elementNames = _allOriginalModelElementNames;
-    for (var elementName in canonicalFor) {
-      if (!elementNames.contains(elementName)) {
-        notFoundInAllModelElements.add(elementName);
-      }
-    }
+    var notFoundInAllModelElements = {
+      for (var elementName in canonicalFor)
+        if (!elementNames.contains(elementName)) elementName,
+    };
     for (var notFound in notFoundInAllModelElements) {
       warn(PackageWarning.ignoredCanonicalFor, message: notFound);
     }
@@ -432,12 +421,13 @@ class Library extends ModelElement
     return rawDocs;
   }
 
-  /// [allModelElements] resolved to their original names.
+  /// The immediate elements of this library, resolved to their original names.
   ///
   /// A collection of [ModelElement.fullyQualifiedName]s for [ModelElement]s
   /// documented with this library, but these ModelElements and names correspond
   /// to the defining library where each originally came from with respect
-  /// to inheritance and re-exporting. Used for error reporting.
+  /// to inheritance and re-exporting. Only used for reporting
+  /// [PackageWarning.ignoredCanonicalFor].
   late final Set<String> _allOriginalModelElementNames = () {
     // Instead of using `allModelElements`, which includes deeper elements like
     // methods on classes, gather up only the library's immediate members.

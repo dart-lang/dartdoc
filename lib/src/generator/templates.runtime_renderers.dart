@@ -7988,7 +7988,7 @@ class _Renderer_Library extends RendererBase<Library> {
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'Iterable<ModelElement>'),
+                          c, remainingNames, 'List<ModelElement>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
                     return c.allModelElements.map((e) => _render_ModelElement(
@@ -8378,19 +8378,6 @@ class _Renderer_Library extends RendererBase<Library> {
                       List<MustachioNode> ast, StringSink sink) {
                     return c.mixins.map((e) =>
                         _render_Mixin(e, ast, r.template, sink, parent: r));
-                  },
-                ),
-                'modelElementsMap': Property(
-                  getValue: (CT_ c) => c.modelElementsMap,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames,
-                          'HashMap<Element, Set<ModelElement>>'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.modelElementsMap, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['HashMap']!);
                   },
                 ),
                 'name': Property(
@@ -12486,13 +12473,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -16162,7 +16149,6 @@ const _invisibleGetters = {
     'setter',
     'writeOnly'
   },
-  'HashMap': {'hashCode', 'runtimeType'},
   'Inheritable': {
     'attributes',
     'canonicalLibrary',
@@ -16317,7 +16303,6 @@ const _invisibleGetters = {
     'allInheritableElements',
     'allLibraries',
     'allLibrariesAdded',
-    'allLocalModelElements',
     'analysisContext',
     'breadcrumbName',
     'config',
@@ -16498,7 +16483,6 @@ const _invisibleGetters = {
     'aliasedType',
     'enclosingElement',
     'hashCode',
-    'isAugmentation',
     'name',
     'runtimeType'
   },

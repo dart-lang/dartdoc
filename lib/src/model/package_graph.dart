@@ -544,10 +544,9 @@ class PackageGraph with CommentReferable, Nameable {
   }
 
   /// A lookup index for hrefs to allow warnings to indicate where a broken
-  /// link or orphaned file may have come from.  Not cached because
-  /// [ModelElement]s can be created at any time and we're basing this
-  /// on more than just [allLocalModelElements] to make the error messages
-  /// comprehensive.
+  /// link or orphaned file may have come from.
+  ///
+  /// This is not cached because [ModelElement]s can be created at any time.
   Map<String, Set<ModelElement>> get allHrefs {
     final hrefMap = <String, Set<ModelElement>>{};
     // TODO(jcollins-g ): handle calculating hrefs causing new elements better
@@ -894,11 +893,6 @@ class PackageGraph with CommentReferable, Nameable {
 
     return allElements;
   }
-
-  @visibleForTesting
-  late final List<ModelElement> allLocalModelElements = [
-    for (var library in _localLibraries) ...library.allModelElements
-  ];
 
   /// Glob lookups can be expensive.  Cache per filename.
   final _configSetsNodocFor = HashMap<String, bool>();
