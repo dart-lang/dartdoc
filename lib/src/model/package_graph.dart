@@ -81,7 +81,7 @@ class PackageGraph with CommentReferable, Nameable {
   @override
   String get breadcrumbName => throw UnimplementedError();
 
-  /// Adds [resolvedLibrary] to the package graph, adding it to [allLibraries],
+  /// Adds [resolvedLibrary] to the package graph, adding it to [_allLibraries],
   /// and to the [Package] which is created from the [PackageMeta] for the
   /// library.
   ///
@@ -108,11 +108,11 @@ class PackageGraph with CommentReferable, Nameable {
     var package = Package.fromPackageMeta(packageMeta, this);
     var lib = Library.fromLibraryResult(resolvedLibrary, this, package);
     package.libraries.add(lib);
-    allLibraries[libraryElement.source.fullName] = lib;
+    _allLibraries[libraryElement.source.fullName] = lib;
   }
 
   /// Adds [resolvedLibrary] as a special library to the package graph, which
-  /// adds the library to [allLibraries], but does not add it to any [Package]'s
+  /// adds the library to [_allLibraries], but does not add it to any [Package]'s
   /// list of libraries.
   ///
   /// Call during initialization to add a library possibly containing
@@ -122,7 +122,7 @@ class PackageGraph with CommentReferable, Nameable {
     allLibrariesAdded = true;
     assert(!_localDocumentationBuilt);
     final libraryElement = resolvedLibrary.element.library;
-    allLibraries.putIfAbsent(
+    _allLibraries.putIfAbsent(
       libraryElement.source.fullName,
       () => Library.fromLibraryResult(
         resolvedLibrary,
@@ -312,18 +312,18 @@ class PackageGraph with CommentReferable, Nameable {
     return _extensions;
   }
 
-  /// All library objects related to this package; a superset of [libraries].
+  /// All library objects related to this package graph; a superset of
+  /// [libraries].
   ///
-  /// Keyed by `LibraryElement.Source.fullName` to resolve different URIs, which
-  /// refer to the same location, to the same [Library].  This isn't how Dart
+  /// Keyed by `LibraryElement.source.fullName` to resolve different URIs
+  /// referring to the same location, to the same [Library].  This isn't how Dart
   /// works internally, but Dartdoc pretends to avoid documenting or duplicating
   /// data structures for the same "library" on disk based on how it is
   /// referenced.  We can't use [Source] as a key due to differences in the
   /// [TimestampedData] timestamps.
   ///
   /// This mapping must be complete before [initializePackageGraph] is called.
-  @visibleForTesting
-  final Map<String, Library> allLibraries = {};
+  final Map<String, Library> _allLibraries = {};
 
   /// All [ModelElement]s constructed for this package; a superset of
   /// the elements gathered in [_gatherModelElements].
@@ -533,8 +533,8 @@ class PackageGraph with CommentReferable, Nameable {
   /// which is created if it is not yet populated.
   Map<LibraryElement, Set<Library>> get libraryExports {
     // Table must be reset if we're still in the middle of adding libraries.
-    if (allLibraries.keys.length != _lastSizeOfAllLibraries) {
-      _lastSizeOfAllLibraries = allLibraries.keys.length;
+    if (_allLibraries.keys.length != _lastSizeOfAllLibraries) {
+      _lastSizeOfAllLibraries = _allLibraries.keys.length;
       _libraryExports = {};
       for (var library in publicLibraries) {
         _tagExportsFor(library, library.element);
@@ -565,7 +565,7 @@ class PackageGraph with CommentReferable, Nameable {
       hrefMap.putIfAbsent(href, () => {}).add(modelElement);
     }
 
-    for (final library in allLibraries.values) {
+    for (final library in _allLibraries.values) {
       final href = library.href;
       if (href == null) continue;
       hrefMap.putIfAbsent(href, () => {}).add(library);
@@ -862,7 +862,7 @@ class PackageGraph with CommentReferable, Nameable {
   /// set of canonical Libraries).
   Library? findButDoNotCreateLibraryFor(Element e) {
     // This is just a cache to avoid creating lots of libraries over and over.
-    return allLibraries[e.library?.source.fullName];
+    return _allLibraries[e.library?.source.fullName];
   }
 
   /// Gathers all of the model elements found in all of the libraries of all
@@ -894,7 +894,9 @@ class PackageGraph with CommentReferable, Nameable {
     return allElements;
   }
 
-  /// Glob lookups can be expensive.  Cache per filename.
+  /// Cache of 'nodoc' configurations.
+  ///
+  /// Glob lookups can be expensive, so cache per filename.
   final _configSetsNodocFor = HashMap<String, bool>();
 
   /// Given an element's [fullName], look up the nodoc configuration data and
