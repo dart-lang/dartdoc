@@ -518,19 +518,6 @@ abstract class ModelElement
           (lookup is PropertyAccessorElement ? lookup.variable2 : lookup);
     }).toList(growable: true);
 
-    // Avoid claiming canonicalization for elements outside of this element's
-    // defining package.
-    // TODO(jcollins-g): Make the else block unconditional.
-    if (candidateLibraries.isNotEmpty &&
-        !candidateLibraries.any((l) => l.package == definingLibrary.package)) {
-      warn(PackageWarning.reexportedPrivateApiAcrossPackages,
-          message: definingLibrary.package.fullyQualifiedName,
-          referredFrom: candidateLibraries);
-    } else {
-      candidateLibraries
-          .removeWhere((l) => l.package != definingLibrary.package);
-    }
-
     if (candidateLibraries.isEmpty) {
       return null;
     }
