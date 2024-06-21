@@ -69,7 +69,7 @@ abstract class ModelElement
         Indexable,
         FeatureSet,
         DocumentationComment
-    implements Comparable<ModelElement>, Documentable, Privacy {
+    implements Comparable<ModelElement>, Documentable {
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Member? _originalMember;
   final Library _library;

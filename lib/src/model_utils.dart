@@ -95,6 +95,6 @@ extension IterableOfDocumentableExtension<E extends Documentable>
   Iterable<E> get whereDocumented => where((e) => e.isDocumented).wherePublic;
 }
 
-extension IterableOfNameableExtension<E extends Privacy> on Iterable<E> {
+extension IterableOfNameableExtension<E extends Nameable> on Iterable<E> {
   Iterable<E> get wherePublic => where((e) => e.isPublic);
 }

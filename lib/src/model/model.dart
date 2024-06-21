@@ -39,7 +39,6 @@ export 'package.dart';
 export 'package_builder.dart';
 export 'package_graph.dart';
 export 'parameter.dart';
-export 'privacy.dart';
 export 'source_code_mixin.dart';
 export 'top_level_container.dart';
 export 'top_level_variable.dart';

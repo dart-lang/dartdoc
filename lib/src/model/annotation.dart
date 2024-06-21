@@ -55,7 +55,6 @@ final class Annotation extends Attribute {
         'non-callable element used as annotation?: ${_annotation.element}')
   };
 
-  @override
   bool get isPublic {
     final modelType = _modelType;
     if (!modelType.isPublic) {

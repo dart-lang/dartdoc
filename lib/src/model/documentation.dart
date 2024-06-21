@@ -37,7 +37,12 @@ class Documentation {
       // situation where one public getter might set both fields, but might only
       // set one. We have this awkward check to make sure we set both fields if
       // we'll need both fields.
-      assert(_element.isCanonical);
+      assert(
+        _element.isCanonical,
+        "generating docs for non-canonical element: '$_element' "
+        "('${_element.runtimeType}', ${_element.hashCode}), representing "
+        "'${_element.element}'",
+      );
       return _asHtml;
     }
 
