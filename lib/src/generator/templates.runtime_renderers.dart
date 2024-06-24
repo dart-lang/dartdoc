@@ -2187,19 +2187,19 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isConst,
                 ),
-                'isDefaultConstructor': Property(
-                  getValue: (CT_ c) => c.isDefaultConstructor,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isDefaultConstructor,
-                ),
                 'isFactory': Property(
                   getValue: (CT_ c) => c.isFactory,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isFactory,
+                ),
+                'isPublic': Property(
+                  getValue: (CT_ c) => c.isPublic,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isPublic,
                 ),
                 'isUnnamedConstructor': Property(
                   getValue: (CT_ c) => c.isUnnamedConstructor,

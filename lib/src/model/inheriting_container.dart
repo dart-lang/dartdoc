@@ -59,7 +59,7 @@ mixin Constructable implements InheritingContainer {
       yield MapEntry(
           '${constructor.enclosingElement.referenceName}.${constructor.referenceName}',
           constructor);
-      if (constructor.isDefaultConstructor) {
+      if (constructor.isUnnamedConstructor) {
         yield MapEntry('new', constructor);
       }
     }

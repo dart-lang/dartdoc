@@ -7,6 +7,7 @@ import 'package:analyzer/source/line_info.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 
 class Constructor extends ModelElement with ContainerMember, TypeParameters {
   @override
@@ -23,6 +24,24 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
       return enclosingElement.characterLocation;
     }
     return super.characterLocation;
+  }
+
+  @override
+  bool get isPublic {
+    if (!super.isPublic) return false;
+    if (element.hasPrivateName) return false;
+    var class_ = element.enclosingElement;
+    if (class_ is! ClassElement) return true;
+    if (element.isFactory) return true;
+    if (class_.isSealed ||
+        (class_.isAbstract && class_.isFinal) ||
+        (class_.isAbstract && class_.isInterface)) {
+      /// Sealed classes, abstract final classes, and abstract interface
+      /// classes, cannot be instantiated nor extended, from outside the
+      /// declaring library. Avoid documenting them.
+      return false;
+    }
+    return true;
   }
 
   @override
@@ -59,9 +78,6 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
   bool get isConst => element.isConst;
 
   bool get isUnnamedConstructor => name == enclosingElement.name;
-
-  bool get isDefaultConstructor =>
-      isUnnamedConstructor || name == '${enclosingElement.name}.new';
 
   bool get isFactory => element.isFactory;
 
