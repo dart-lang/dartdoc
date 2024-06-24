@@ -5,6 +5,7 @@
 import 'package:args/args.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
@@ -472,6 +473,37 @@ class Foo {}
             'message', startsWith('Missing required template file'))));
   }
 
+  void test_emptyPackage() async {
+    await createPackage();
+    await (await buildDartdoc()).generateDocs();
+
+    expect(outBuffer, isEmpty);
+    expect(
+      errBuffer.toString(),
+      matches('warning: package:test_package has no documentable libraries'),
+    );
+  }
+
+  void test_helpOption_resultsInPrintedHelp() async {
+    startLogging(
+      isJson: false,
+      isQuiet: false,
+      showProgress: false,
+      outSink: outBuffer,
+      errSink: errBuffer,
+    );
+    parseOptions(packageMetaProvider, ['--help']);
+
+    expect(
+      outBuffer.toString().split('\n'),
+      containsAll([
+        'Generate HTML documentation for Dart libraries.',
+        matches('^-h, --help[ ]+Show command help.')
+      ]),
+    );
+    expect(errBuffer.toString(), isEmpty);
+  }
+
   void test_quietOption_resultsInNoProgressOrOtherLogging() async {
     await createPackage(
       libFiles: [
@@ -646,5 +678,18 @@ class Foo {
     final dartdoc = await buildDartdoc(
         additionalArguments: ['--max-total-size', '15000000']);
     await dartdoc.generateDocs();
+  }
+
+  void test_versionOption_resultsInPrintedVersion() async {
+    startLogging(
+      isJson: false,
+      isQuiet: false,
+      showProgress: false,
+      outSink: outBuffer,
+      errSink: errBuffer,
+    );
+    parseOptions(packageMetaProvider, ['--version']);
+
+    expect(outBuffer.toString(), matches(r'dartdoc version: \d+.\d+.\d+'));
   }
 }
