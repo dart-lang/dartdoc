@@ -154,4 +154,11 @@ $libraryContent
     );
     return await Dartdoc.fromContext(context, packageBuilder);
   }
+
+  /// The real offset in a library generated with [bootPackageWithLibrary].
+  ///
+  /// When a library is written via [bootPackageWithLibrary], the test author
+  /// provides `libraryContent`, which is a snippet of Dart library text.
+  int realOffsetFor(int offsetInContent) =>
+      '\n\nlibrary $libraryName\n\n'.length + offsetInContent;
 }

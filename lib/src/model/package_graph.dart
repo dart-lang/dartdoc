@@ -5,10 +5,11 @@
 import 'dart:collection';
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
-import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/source/source.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/ast/ast.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart'
     show InheritanceManager3;
@@ -234,6 +235,20 @@ class PackageGraph with CommentReferable, Nameable {
   // me how, because the data is on AST nodes, not the element model.
   void gatherModelNodes(DartDocResolvedLibrary resolvedLibrary) {
     for (var unit in resolvedLibrary.units) {
+      for (var directive in unit.directives.whereType<LibraryDirective>()) {
+        // There should be only one library directive. If there are more, there
+        // is no harm in grabbing ModelNode for each.
+        var commentReferenceData = directive.documentationComment?.data;
+        _modelNodes.putIfAbsent(
+            resolvedLibrary.element,
+            () => ModelNode(
+                  directive,
+                  resolvedLibrary.element,
+                  analysisContext,
+                  commentReferenceData: commentReferenceData,
+                ));
+      }
+
       for (var declaration in unit.declarations) {
         _populateModelNodeFor(declaration);
         switch (declaration) {
@@ -243,6 +258,9 @@ class PackageGraph with CommentReferable, Nameable {
             }
           case EnumDeclaration():
             if (declaration.declaredElement?.isPublic ?? false) {
+              for (var constant in declaration.constants) {
+                _populateModelNodeFor(constant);
+              }
               for (var member in declaration.members) {
                 _populateModelNodeFor(member);
               }
@@ -269,12 +287,21 @@ class PackageGraph with CommentReferable, Nameable {
   }
 
   void _populateModelNodeFor(Declaration declaration) {
+    var commentReferenceData = declaration.documentationComment?.data;
+
     if (declaration is FieldDeclaration) {
       var fields = declaration.fields.variables;
       for (var field in fields) {
         var element = field.declaredElement!;
         _modelNodes.putIfAbsent(
-            element, () => ModelNode(field, element, analysisContext));
+          element,
+          () => ModelNode(
+            field,
+            element,
+            analysisContext,
+            commentReferenceData: commentReferenceData,
+          ),
+        );
       }
       return;
     }
@@ -283,13 +310,27 @@ class PackageGraph with CommentReferable, Nameable {
       for (var field in fields) {
         var element = field.declaredElement!;
         _modelNodes.putIfAbsent(
-            element, () => ModelNode(field, element, analysisContext));
+          element,
+          () => ModelNode(
+            field,
+            element,
+            analysisContext,
+            commentReferenceData: commentReferenceData,
+          ),
+        );
       }
       return;
     }
     var element = declaration.declaredElement!;
     _modelNodes.putIfAbsent(
-        element, () => ModelNode(declaration, element, analysisContext));
+      element,
+      () => ModelNode(
+        declaration,
+        element,
+        analysisContext,
+        commentReferenceData: commentReferenceData,
+      ),
+    );
   }
 
   ModelNode? getModelNodeFor(Element element) => _modelNodes[element];
@@ -1028,4 +1069,42 @@ class InheritableElementsKey {
   final Library library;
 
   InheritableElementsKey(this.element, this.library);
+}
+
+extension on Comment {
+  /// A mapping of all comment references to their various data.
+  Map<String, CommentReferenceData> get data {
+    if (references.isEmpty) return const {};
+
+    var data = <String, CommentReferenceData>{};
+    for (var reference in references) {
+      var commentReferable = reference.expression;
+      String name;
+      Element? staticElement;
+      if (commentReferable case PropertyAccessImpl(:var propertyName)) {
+        var target = commentReferable.target;
+        if (target is! PrefixedIdentifierImpl) continue;
+        name = '${target.name}.${propertyName.name}';
+        staticElement = propertyName.staticElement;
+      } else if (commentReferable case PrefixedIdentifier(:var identifier)) {
+        name = commentReferable.name;
+        staticElement = identifier.staticElement;
+      } else if (commentReferable case SimpleIdentifier()) {
+        name = commentReferable.name;
+        staticElement = commentReferable.staticElement;
+      } else {
+        continue;
+      }
+
+      if (staticElement != null && !data.containsKey(name)) {
+        data[name] = CommentReferenceData(
+          staticElement,
+          name,
+          commentReferable.offset,
+          commentReferable.length,
+        );
+      }
+    }
+    return data;
+  }
 }

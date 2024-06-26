@@ -11,15 +11,22 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:meta/meta.dart';
 
 /// Stripped down information derived from [AstNode] containing only information
-/// needed to resurrect the source code of [element].
+/// needed to resurrect the source code of [_element].
 class ModelNode {
   final Element _element;
   final AnalysisContext _analysisContext;
   final int _sourceEnd;
   final int _sourceOffset;
 
+  /// Data about each comment reference found in the doc comment of this node.
+  final Map<String, CommentReferenceData>? commentReferenceData;
+
   factory ModelNode(
-      AstNode? sourceNode, Element element, AnalysisContext analysisContext) {
+    AstNode? sourceNode,
+    Element element,
+    AnalysisContext analysisContext, {
+    required Map<String, CommentReferenceData>? commentReferenceData,
+  }) {
     if (sourceNode == null) {
       return ModelNode._(element, analysisContext,
           sourceEnd: -1, sourceOffset: -1);
@@ -32,14 +39,23 @@ class ModelNode {
         assert(sourceNode is FieldDeclaration ||
             sourceNode is TopLevelVariableDeclaration);
       }
-      return ModelNode._(element, analysisContext,
-          sourceEnd: sourceNode.end, sourceOffset: sourceNode.offset);
+      return ModelNode._(
+        element,
+        analysisContext,
+        sourceEnd: sourceNode.end,
+        sourceOffset: sourceNode.offset,
+        commentReferenceData: commentReferenceData,
+      );
     }
   }
 
-  ModelNode._(this._element, this._analysisContext,
-      {required int sourceEnd, required int sourceOffset})
-      : _sourceEnd = sourceEnd,
+  ModelNode._(
+    this._element,
+    this._analysisContext, {
+    required int sourceEnd,
+    required int sourceOffset,
+    this.commentReferenceData = const {},
+  })  : _sourceEnd = sourceEnd,
         _sourceOffset = sourceOffset;
 
   bool get _isSynthetic => _sourceEnd < 0 || _sourceOffset < 0;
@@ -61,6 +77,20 @@ class ModelNode {
         .stripDocComments
         .trim();
   }();
+}
+
+/// Comment reference data from the syntax tree.
+///
+/// Comment reference data is not available on the analyzer's Element model, so
+/// we store it after resolving libraries in instances of this class.
+class CommentReferenceData {
+  final Element element;
+  final String name;
+  final int offset;
+  final int length;
+
+  CommentReferenceData(this.element, String? name, this.offset, this.length)
+      : name = name ?? '';
 }
 
 @visibleForTesting
