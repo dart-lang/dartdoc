@@ -1424,8 +1424,6 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
 
   /// Whether to generate docs or perform a dry run.
   bool get generateDocs => optionSet['generateDocs'].valueAt(context);
-  bool get help => optionSet['help'].valueAt(context);
-  bool get version => optionSet['version'].valueAt(context);
 }
 
 List<DartdocOption<bool>> createDartdocProgramOptions(
@@ -1472,12 +1470,14 @@ DartdocProgramOptionContext? parseOptions(
     return null;
   }
   if (optionRoot['help'].valueAtCurrent() as bool) {
-    _printHelp(optionRoot.argParser);
+    logInfo('dartdoc version: $dartdocVersion');
+    logInfo('Generate HTML documentation for Dart libraries.\n');
+    logInfo(optionRoot.argParser.usage);
     exitCode = 0;
     return null;
   }
   if (optionRoot['version'].valueAtCurrent() as bool) {
-    _printVersion(optionRoot.argParser);
+    logInfo('dartdoc version: $dartdocVersion');
     exitCode = 0;
     return null;
   }
@@ -1501,21 +1501,10 @@ DartdocProgramOptionContext? parseOptions(
   return config;
 }
 
-/// Print help if we are passed the help option.
-void _printHelp(ArgParser parser) {
-  print('Generate HTML documentation for Dart libraries.\n');
-  print(parser.usage);
-}
-
 /// Print usage information on invalid command lines.
 void _printUsage(ArgParser parser) {
   print('Usage: dartdoc [OPTIONS]\n');
   print(parser.usage);
-}
-
-/// Print version information.
-void _printVersion(ArgParser parser) {
-  print('dartdoc version: $dartdocVersion');
 }
 
 /// Instantiate dartdoc's configuration file and options parser with the

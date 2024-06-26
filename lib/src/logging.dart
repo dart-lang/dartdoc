@@ -39,10 +39,6 @@ void logProgress(String message) {
   _logger.log(_progressLevel, message);
 }
 
-void logPrint(String message) {
-  _logger.log(printLevel, message);
-}
-
 /// Creates a new deterministic progress bar, and displays it (with zero
 /// progress).
 void progressBarStart(int totalTickCount) {
