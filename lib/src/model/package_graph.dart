@@ -238,14 +238,17 @@ class PackageGraph with CommentReferable, Nameable {
       for (var directive in unit.directives.whereType<LibraryDirective>()) {
         // There should be only one library directive. If there are more, there
         // is no harm in grabbing ModelNode for each.
-        var commentReferenceData = directive.documentationComment?.data;
+        var commentData = directive.documentationComment?.data;
+        directive.documentationComment?.docDirectives;
+        directive.documentationComment?.docImports;
+        directive.documentationComment?.hasNodoc;
         _modelNodes.putIfAbsent(
             resolvedLibrary.element,
             () => ModelNode(
                   directive,
                   resolvedLibrary.element,
                   analysisContext,
-                  commentReferenceData: commentReferenceData,
+                  commentData: commentData,
                 ));
       }
 
@@ -287,50 +290,39 @@ class PackageGraph with CommentReferable, Nameable {
   }
 
   void _populateModelNodeFor(Declaration declaration) {
-    var commentReferenceData = declaration.documentationComment?.data;
+    var commentData = declaration.documentationComment?.data;
+
+    void addModelNode(Declaration declaration) {
+      var element = declaration.declaredElement;
+      if (element == null) {
+        throw StateError("Expected '$declaration' to declare an element");
+      }
+      _modelNodes.putIfAbsent(
+        element,
+        () => ModelNode(
+          declaration,
+          element,
+          analysisContext,
+          commentData: commentData,
+        ),
+      );
+    }
 
     if (declaration is FieldDeclaration) {
       var fields = declaration.fields.variables;
       for (var field in fields) {
-        var element = field.declaredElement!;
-        _modelNodes.putIfAbsent(
-          element,
-          () => ModelNode(
-            field,
-            element,
-            analysisContext,
-            commentReferenceData: commentReferenceData,
-          ),
-        );
+        addModelNode(field);
       }
       return;
     }
     if (declaration is TopLevelVariableDeclaration) {
       var fields = declaration.variables.variables;
       for (var field in fields) {
-        var element = field.declaredElement!;
-        _modelNodes.putIfAbsent(
-          element,
-          () => ModelNode(
-            field,
-            element,
-            analysisContext,
-            commentReferenceData: commentReferenceData,
-          ),
-        );
+        addModelNode(field);
       }
       return;
     }
-    var element = declaration.declaredElement!;
-    _modelNodes.putIfAbsent(
-      element,
-      () => ModelNode(
-        declaration,
-        element,
-        analysisContext,
-        commentReferenceData: commentReferenceData,
-      ),
-    );
+    addModelNode(declaration);
   }
 
   ModelNode? getModelNodeFor(Element element) => _modelNodes[element];
@@ -1073,10 +1065,16 @@ class InheritableElementsKey {
 
 extension on Comment {
   /// A mapping of all comment references to their various data.
-  Map<String, CommentReferenceData> get data {
-    if (references.isEmpty) return const {};
+  CommentData get data {
+    var docImportsData = <CommentDocImportData>[];
+    for (var docImport in docImports) {
+      docImportsData.add(
+        CommentDocImportData(
+            offset: docImport.offset, length: docImport.import.length),
+      );
+    }
 
-    var data = <String, CommentReferenceData>{};
+    var referencesData = <String, CommentReferenceData>{};
     for (var reference in references) {
       var commentReferable = reference.expression;
       String name;
@@ -1096,8 +1094,8 @@ extension on Comment {
         continue;
       }
 
-      if (staticElement != null && !data.containsKey(name)) {
-        data[name] = CommentReferenceData(
+      if (staticElement != null && !referencesData.containsKey(name)) {
+        referencesData[name] = CommentReferenceData(
           staticElement,
           name,
           commentReferable.offset,
@@ -1105,6 +1103,6 @@ extension on Comment {
         );
       }
     }
-    return data;
+    return CommentData(docImports: docImportsData, references: referencesData);
   }
 }

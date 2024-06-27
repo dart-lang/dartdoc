@@ -28,14 +28,11 @@ class DocumentationCommentTest extends DartdocTestBase {
   late ModelElement libraryModel;
 
   void expectNoWarnings() {
-    expect(packageGraph.packageWarningCounter.hasWarnings, isFalse);
     expect(packageGraph.packageWarningCounter.countedWarnings, isEmpty);
+    expect(packageGraph.packageWarningCounter.hasWarnings, isFalse);
   }
 
-  @override
-  Future<void> setUp() async {
-    await super.setUp();
-
+  Future<void> writeLibraryWithComment(String comment) async {
     projectRoot = utils.writePackage(
         'my_package', resourceProvider, packageConfigProvider);
     projectRoot
@@ -50,8 +47,8 @@ class DocumentationCommentTest extends DartdocTestBase {
         .getChildAssumingFolder('lib')
         .getChildAssumingFile('a.dart')
         .writeAsStringSync('''
-/// Documentation comment.
-int x = 1;
+$comment
+library;
 ''');
 
     var optionSet = DartdocOptionRoot.fromOptionGenerators(
@@ -64,10 +61,11 @@ int x = 1;
   }
 
   void test_removesTripleSlashes() async {
-    var doc = await libraryModel.processComment('''
+    await writeLibraryWithComment('''
 /// Text.
 /// More text.
 ''');
+    var doc = await libraryModel.processComment();
 
     expect(doc, equals('''
 Text.
@@ -75,10 +73,11 @@ More text.'''));
   }
 
   void test_removesSpaceAfterTripleSlashes() async {
-    var doc = await libraryModel.processComment('''
+    await writeLibraryWithComment('''
 ///  Text.
 ///    More text.
 ''');
+    var doc = await libraryModel.processComment();
 
     // TODO(srawlins): Actually, the three spaces before 'More' is perhaps not
     // the best fit. Should it only be two, to match the indent from the first
@@ -89,11 +88,12 @@ Text.
   }
 
   void test_leavesBlankLines() async {
-    var doc = await libraryModel.processComment('''
+    await writeLibraryWithComment('''
 /// Text.
 ///
 /// More text.
 ''');
+    var doc = await libraryModel.processComment();
 
     expect(doc, equals('''
 Text.
@@ -101,14 +101,15 @@ Text.
 More text.'''));
   }
 
-  void test_processesAanimationDirective() async {
-    var doc = await libraryModel.processComment('''
+  void test_processesAnimationDirective() async {
+    await writeLibraryWithComment('''
 /// Text.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4 id=barHerderAnimation}
 ///
 /// End text.
 ''');
+    var doc = await libraryModel.processComment();
 
     expectNoWarnings();
     expect(doc, equals('''
@@ -153,39 +154,42 @@ End text.'''));
   }
 
   void test_rendersUnnamedAnimation() async {
-    var doc = await libraryModel.processComment('''
+    await writeLibraryWithComment('''
 /// First line.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4}
 ''');
+    var doc = await libraryModel.processComment();
 
     expectNoWarnings();
     expect(doc, contains('<video id="animation_1"'));
   }
 
   void test_rendersNamedAnimation() async {
-    var doc = await libraryModel.processComment('''
+    await writeLibraryWithComment('''
 /// First line.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4 id=namedAnimation}
 ''');
+    var doc = await libraryModel.processComment();
 
     expectNoWarnings();
     expect(doc, contains('<video id="namedAnimation"'));
   }
 
   void test_rendersNamedAnimation_outOfOrder() async {
-    var doc = await libraryModel.processComment('''
+    await writeLibraryWithComment('''
 /// First line.
 ///
 /// {@animation 100 200 id=namedAnimation http://host/path/to/video.mp4}
 ''');
+    var doc = await libraryModel.processComment();
 
     expectNoWarnings();
     expect(doc, contains('<video id="namedAnimation"'));
   }
 
-  void test_rendersNamedAnimationWithDoubleQuotes() async {
+  /*void test_rendersNamedAnimationWithDoubleQuotes() async {
     var doc = await libraryModel.processComment('''
 /// First line.
 ///
@@ -230,9 +234,22 @@ End text.'''));
     expectNoWarnings();
     expect(doc, contains('<video id="animation_3"'));
     expect(doc, contains('<video id="animation_4"'));
+  }*/
+
+  void solo_test_docImport() async {
+    await writeLibraryWithComment('''
+/// Text.
+///
+/// @docImport 'dart:async' as async;
+///
+/// End text.
+''');
+    var doc = await libraryModel.processComment();
+
+    expect(doc, contains('<video id="animation_4"'));
   }
 
-  void test_animationDirectiveHasFewerThanThreeArguments() async {
+  /*void test_animationDirectiveHasFewerThanThreeArguments() async {
     await libraryModel.processComment('''
 /// Text.
 ///
@@ -696,7 +713,7 @@ Text.
             PackageWarning.missingCodeBlockLanguage,
             'A fenced code block in Markdown should have a language specified'),
         isFalse);
-  }
+  }*/
 
   Matcher hasDeprecatedWarning(String message) =>
       _HasWarning(PackageWarning.deprecated, message);

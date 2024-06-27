@@ -27,7 +27,7 @@ class C {}
 ''');
     var c = library.classes.named('C');
     expect(c.name, equals('C'));
-    var commentReferenceData = c.modelNode!.commentReferenceData!;
+    var commentReferenceData = c.modelNode!.commentData!.references;
     expect(
       commentReferenceData['int'],
       isA<CommentReferenceData>()
@@ -47,7 +47,7 @@ class C {}
 ''');
     var c = library.classes.named('C');
     expect(c.name, equals('C'));
-    var commentReferenceData = c.modelNode!.commentReferenceData!;
+    var commentReferenceData = c.modelNode!.commentData!.references;
     expect(
       commentReferenceData['FutureOr'],
       isA<CommentReferenceData>()
@@ -65,7 +65,7 @@ class C {}
 ''');
     var c = library.classes.named('C');
     expect(c.name, equals('C'));
-    var commentReferenceData = c.modelNode!.commentReferenceData!;
+    var commentReferenceData = c.modelNode!.commentData!.references;
     expect(
       commentReferenceData['async.Future.value'],
       isA<CommentReferenceData>()
@@ -82,7 +82,7 @@ class C {}
 ''');
     var c = library.classes.named('C');
     expect(c.name, equals('C'));
-    var commentReferenceData = c.modelNode!.commentReferenceData!;
+    var commentReferenceData = c.modelNode!.commentData!.references;
     expect(
       commentReferenceData['Future.value'],
       isA<CommentReferenceData>()
@@ -101,7 +101,7 @@ class C {
 ''');
     var g = library.classes.named('C').instanceAccessors.named('g');
     expect(g.name, equals('g'));
-    var commentReferenceData = g.modelNode!.commentReferenceData!;
+    var commentReferenceData = g.modelNode!.commentData!.references;
     expect(
       commentReferenceData['int'],
       isA<CommentReferenceData>()
@@ -118,7 +118,7 @@ int a = 1, b = 2;
 ''');
     var a = library.properties.named('a');
     expect(a.name, equals('a'));
-    var aData = a.modelNode!.commentReferenceData!;
+    var aData = a.modelNode!.commentData!.references;
     expect(
       aData['int'],
       isA<CommentReferenceData>()
@@ -129,7 +129,7 @@ int a = 1, b = 2;
 
     var b = library.properties.named('b');
     expect(b.name, equals('b'));
-    var bData = b.modelNode!.commentReferenceData!;
+    var bData = b.modelNode!.commentData!.references;
     expect(
       bData['int'],
       isA<CommentReferenceData>()

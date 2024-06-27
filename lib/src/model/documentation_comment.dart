@@ -111,7 +111,7 @@ mixin DocumentationComment
   /// Process [documentationComment], performing various actions based on
   /// `{@}`-style directives, returning the processed result.
   @visibleForTesting
-  Future<String> processComment(String documentationComment) async {
+  Future<String> processComment(/*String documentationComment*/) async {
     var docs = stripComments(documentationComment);
     // Must evaluate tools first, in case they insert any other directives.
     docs = await _evaluateTools(docs);
@@ -121,6 +121,7 @@ mixin DocumentationComment
   }
 
   String processCommentDirectives(String docs) {
+    docs = _stripDocImports(docs);
     // The vast, vast majority of doc comments have no directives.
     if (!docs.contains('{@')) {
       return docs;
@@ -557,6 +558,30 @@ mixin DocumentationComment
     });
   }
 
+  String _stripDocImports(String content) {
+    if (modelNode?.commentData case var commentData?) {
+      var buffer = StringBuffer();
+      if (commentData.docImports.isEmpty) return content;
+      var firstDocImport = commentData.docImports.first;
+      print(
+          'FIRST DOC COMMENT: ${firstDocImport.offset} for ${firstDocImport.length}: '
+          '"${content.substring(0, firstDocImport.offset)}"');
+      buffer.write(content.substring(0, firstDocImport.offset));
+      var offset = firstDocImport.offset + firstDocImport.length;
+      for (var docImport in commentData.docImports.skip(1)) {
+        print('NEXT DOC COMMENT: ${docImport.offset} for ${docImport.length}: '
+            '"${content.substring(0, docImport.offset)}"');
+        buffer.write(content.substring(offset, docImport.offset));
+        offset = docImport.offset + docImport.length;
+      }
+      // Write from the end of the last doc-import to the end of the comment.
+      buffer.write(content.substring(offset));
+      return buffer.toString();
+    } else {
+      return content;
+    }
+  }
+
   /// Parse and remove &#123;@inject-html ...&#125; in API comments and store
   /// them in the index on the package, replacing them with a SHA1 hash of the
   /// contents, where the HTML will be re-injected after Markdown processing of
@@ -793,7 +818,7 @@ mixin DocumentationComment
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
-    var rawDocs = await processComment(documentationComment);
+    var rawDocs = await processComment();
     return _rawDocs = buildDocumentationAddition(rawDocs);
   }
 
