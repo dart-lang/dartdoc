@@ -5,6 +5,10 @@
   containing element can be written as `this [Foo]`, and referring to 'this'
   can just be written as `` `this` ``.
 
+## 8.0.9+1
+
+* Fix referencing an aliased type parameter. (#3784)
+
 ## 8.0.9
 
 * Deprecate the `missingCodeBlockLanguage` warning. This is replaced with the
