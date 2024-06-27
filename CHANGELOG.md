@@ -1,3 +1,7 @@
+## 8.0.9+1
+
+* Fix referencing an aliased type parameter. (#3784)
+
 ## 8.0.9
 
 * Deprecate the `missingCodeBlockLanguage` warning. This is replaced with the
