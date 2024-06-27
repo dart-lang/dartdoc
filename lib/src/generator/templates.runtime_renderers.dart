@@ -16498,6 +16498,7 @@ const _invisibleGetters = {
     'aliasedType',
     'enclosingElement',
     'hashCode',
+    'isAugmentation',
     'name',
     'runtimeType'
   },

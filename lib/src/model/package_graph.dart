@@ -8,13 +8,12 @@ import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/source/source.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart'
     show InheritanceManager3;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk, SdkLibrary;
-// ignore: implementation_imports
-import 'package:analyzer/src/generated/source.dart' show Source;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/timestamped_data.dart';
 import 'package:collection/collection.dart';
