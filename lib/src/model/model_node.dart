@@ -84,10 +84,16 @@ class ModelNode {
 /// Various comment data is not available on the analyzer's Element model, so we
 /// store it in instances of this class after resolving libraries.
 class CommentData {
+  /// The offset of this comment in the source text.
+  final int offset;
   final List<CommentDocImportData> docImports;
   final Map<String, CommentReferenceData> references;
 
-  CommentData({required this.docImports, required this.references});
+  CommentData({
+    required this.offset,
+    required this.docImports,
+    required this.references,
+  });
 }
 
 /// doc-import data from the syntax tree.
@@ -95,11 +101,13 @@ class CommentData {
 /// Comment doc-import data is not available on the analyzer's Element model, so
 /// we store it in instances of this class after resolving libraries.
 class CommentDocImportData {
+  /// The offset of the doc import in the source text.
   final int offset;
 
-  final int length;
+  /// The offset of the end of the doc import in the source text.
+  final int end;
 
-  CommentDocImportData({required this.offset, required this.length});
+  CommentDocImportData({required this.offset, required this.end});
 }
 
 /// Comment reference data from the syntax tree.

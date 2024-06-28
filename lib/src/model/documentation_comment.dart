@@ -96,7 +96,10 @@ mixin DocumentationComment
   /// `{@}`-style directives (except tool directives), returning the processed
   /// result.
   String _processCommentWithoutTools(String documentationComment) {
-    var docs = stripComments(documentationComment);
+    // We must first strip the comment of directives like `@docImport`, since
+    // the offsets are for the source text.
+    var docs = _stripDocImports(documentationComment);
+    docs = stripCommentDelimiters(docs);
     if (docs.contains('{@')) {
       docs = _injectYouTube(docs);
       docs = _injectAnimations(docs);
@@ -111,9 +114,13 @@ mixin DocumentationComment
   /// Process [documentationComment], performing various actions based on
   /// `{@}`-style directives, returning the processed result.
   @visibleForTesting
-  Future<String> processComment(/*String documentationComment*/) async {
-    var docs = stripComments(documentationComment);
-    // Must evaluate tools first, in case they insert any other directives.
+  Future<String> processComment() async {
+    // We must first strip the comment of directives like `@docImport`, since
+    // the offsets are for the source text.
+    var docs = _stripDocImports(documentationComment);
+    docs = stripCommentDelimiters(docs);
+    // Then we evaluate tools, in case they insert any other directives that
+    // would need to be processed by `processCommentDirectives`.
     docs = await _evaluateTools(docs);
     docs = processCommentDirectives(docs);
     _analyzeCodeBlocks(docs);
@@ -121,7 +128,6 @@ mixin DocumentationComment
   }
 
   String processCommentDirectives(String docs) {
-    docs = _stripDocImports(docs);
     // The vast, vast majority of doc comments have no directives.
     if (!docs.contains('{@')) {
       return docs;
@@ -560,19 +566,16 @@ mixin DocumentationComment
 
   String _stripDocImports(String content) {
     if (modelNode?.commentData case var commentData?) {
+      var commentOffset = commentData.offset;
       var buffer = StringBuffer();
       if (commentData.docImports.isEmpty) return content;
       var firstDocImport = commentData.docImports.first;
-      print(
-          'FIRST DOC COMMENT: ${firstDocImport.offset} for ${firstDocImport.length}: '
-          '"${content.substring(0, firstDocImport.offset)}"');
-      buffer.write(content.substring(0, firstDocImport.offset));
-      var offset = firstDocImport.offset + firstDocImport.length;
+      buffer.write(content.substring(0, firstDocImport.offset - commentOffset));
+      var offset = firstDocImport.end - commentOffset;
       for (var docImport in commentData.docImports.skip(1)) {
-        print('NEXT DOC COMMENT: ${docImport.offset} for ${docImport.length}: '
-            '"${content.substring(0, docImport.offset)}"');
-        buffer.write(content.substring(offset, docImport.offset));
-        offset = docImport.offset + docImport.length;
+        buffer
+            .write(content.substring(offset, docImport.offset - commentOffset));
+        offset = docImport.end - commentOffset;
       }
       // Write from the end of the last doc-import to the end of the comment.
       buffer.write(content.substring(offset));

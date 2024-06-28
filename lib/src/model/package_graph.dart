@@ -1070,7 +1070,7 @@ extension on Comment {
     for (var docImport in docImports) {
       docImportsData.add(
         CommentDocImportData(
-            offset: docImport.offset, length: docImport.import.length),
+            offset: docImport.offset, end: docImport.import.end),
       );
     }
 
@@ -1103,6 +1103,7 @@ extension on Comment {
         );
       }
     }
-    return CommentData(docImports: docImportsData, references: referencesData);
+    return CommentData(
+        offset: offset, docImports: docImportsData, references: referencesData);
   }
 }
