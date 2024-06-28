@@ -21,20 +21,20 @@ void main() {
       // Trim the last line.
       .replaceFirst(RegExp('\n$multilineStringMargin\$'), '');
 
-  void expectCorrectDocumentation() =>
-      expect(stripComments(trimMargin(comment)), trimMargin(documentation));
+  void expectCorrectDocumentation() => expect(
+      stripCommentDelimiters(trimMargin(comment)), trimMargin(documentation));
 
   group('///-style', () {
     test('one-line comment', () {
-      expect(stripComments('/// One line.'), equals('One line.'));
+      expect(stripCommentDelimiters('/// One line.'), equals('One line.'));
     });
 
     test('unbuffered one-line comment', () {
-      expect(stripComments('///One line.'), equals('One line.'));
+      expect(stripCommentDelimiters('///One line.'), equals('One line.'));
     });
 
     test('multiple runs with multiline comments', () {
-      expect(stripComments(stripComments('''
+      expect(stripCommentDelimiters(stripCommentDelimiters('''
           /// A line.
           /// * An asterisk
       ''')), equals('A line.\n* An asterisk'));
@@ -99,7 +99,7 @@ void main() {
 
   group('/**-style', () {
     test('multiple runs with cstyle comments', () {
-      expect(stripComments(stripComments('''
+      expect(stripCommentDelimiters(stripCommentDelimiters('''
           /**
            * A line.
            * * An asterisk
@@ -108,11 +108,11 @@ void main() {
     });
 
     test('one-line comment', () {
-      expect(stripComments('/** One line. */'), equals('One line.'));
+      expect(stripCommentDelimiters('/** One line. */'), equals('One line.'));
     });
 
     test('unbuffered one-line comment', () {
-      expect(stripComments('/**One line.*/'), equals('One line.'));
+      expect(stripCommentDelimiters('/**One line.*/'), equals('One line.'));
     });
 
     test('multi-line comment', () {

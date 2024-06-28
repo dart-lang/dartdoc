@@ -28,14 +28,14 @@ class DocumentationCommentTest extends DartdocTestBase {
   late ModelElement libraryModel;
 
   void expectNoWarnings() {
-    expect(packageGraph.packageWarningCounter.hasWarnings, isFalse);
     expect(packageGraph.packageWarningCounter.countedWarnings, isEmpty);
+    expect(packageGraph.packageWarningCounter.hasWarnings, isFalse);
   }
 
-  @override
-  Future<void> setUp() async {
-    await super.setUp();
-
+  Future<void> writePackageWithCommentedLibraries(
+    List<(String, String)> filesAndComments, {
+    List<String> additionalArguments = const [],
+  }) async {
     projectRoot = utils.writePackage(
         'my_package', resourceProvider, packageConfigProvider);
     projectRoot
@@ -46,28 +46,36 @@ class DocumentationCommentTest extends DartdocTestBase {
           - missing-code-block-language
       ''');
 
-    projectRoot
-        .getChildAssumingFolder('lib')
-        .getChildAssumingFile('a.dart')
-        .writeAsStringSync('''
-/// Documentation comment.
-int x = 1;
-''');
+    for (var (fileName, comment) in filesAndComments) {
+      projectRoot
+          .getChildAssumingFolder('lib')
+          .getChildAssumingFile(fileName)
+          .writeAsStringSync('$comment\n'
+              'library;');
+    }
 
     var optionSet = DartdocOptionRoot.fromOptionGenerators(
         'dartdoc', [createDartdocOptions], packageMetaProvider);
     optionSet.parseArguments([]);
     packageGraph = await utils.bootBasicPackage(
         projectRoot.path, packageMetaProvider, packageConfigProvider,
-        additionalArguments: []);
+        additionalArguments: additionalArguments);
     libraryModel = packageGraph.defaultPackage.libraries.first;
   }
 
+  Future<void> writePackageWithCommentedLibrary(
+    String comment, {
+    List<String> additionalArguments = const [],
+  }) =>
+      writePackageWithCommentedLibraries([('a.dart', comment)],
+          additionalArguments: additionalArguments);
+
   void test_removesTripleSlashes() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 /// More text.
 ''');
+    var doc = libraryModel.documentation;
 
     expect(doc, equals('''
 Text.
@@ -75,10 +83,11 @@ More text.'''));
   }
 
   void test_removesSpaceAfterTripleSlashes() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 ///  Text.
 ///    More text.
 ''');
+    var doc = libraryModel.documentation;
 
     // TODO(srawlins): Actually, the three spaces before 'More' is perhaps not
     // the best fit. Should it only be two, to match the indent from the first
@@ -89,11 +98,12 @@ Text.
   }
 
   void test_leavesBlankLines() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// More text.
 ''');
+    var doc = libraryModel.documentation;
 
     expect(doc, equals('''
 Text.
@@ -101,14 +111,15 @@ Text.
 More text.'''));
   }
 
-  void test_processesAanimationDirective() async {
-    var doc = await libraryModel.processComment('''
+  void test_processesAnimationDirective() async {
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4 id=barHerderAnimation}
 ///
 /// End text.
 ''');
+    var doc = libraryModel.documentation;
 
     expectNoWarnings();
     expect(doc, equals('''
@@ -153,87 +164,175 @@ End text.'''));
   }
 
   void test_rendersUnnamedAnimation() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// First line.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4}
 ''');
+    var doc = libraryModel.documentation;
 
     expectNoWarnings();
     expect(doc, contains('<video id="animation_1"'));
   }
 
   void test_rendersNamedAnimation() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// First line.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4 id=namedAnimation}
 ''');
+    var doc = libraryModel.documentation;
 
     expectNoWarnings();
     expect(doc, contains('<video id="namedAnimation"'));
   }
 
   void test_rendersNamedAnimation_outOfOrder() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// First line.
 ///
 /// {@animation 100 200 id=namedAnimation http://host/path/to/video.mp4}
 ''');
+    var doc = libraryModel.documentation;
 
     expectNoWarnings();
     expect(doc, contains('<video id="namedAnimation"'));
   }
 
   void test_rendersNamedAnimationWithDoubleQuotes() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// First line.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4 id="namedAnimation"}
 ''');
+    var doc = libraryModel.documentation;
 
     expectNoWarnings();
     expect(doc, contains('<video id="namedAnimation"'));
   }
 
   void test_rendersNamedAnimationWithSingleQuotes() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// First line.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4 id='namedAnimation'}
 ''');
+    var doc = libraryModel.documentation;
 
     expectNoWarnings();
     expect(doc, contains('<video id="namedAnimation"'));
   }
 
   void test_rendersMultipleAnimationsUsingUniqueIds() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibraries([
+      (
+        'a.dart',
+        '''
 /// First line.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4}
 /// {@animation 100 200 http://host/path/to/video2.mp4}
-''');
-
-    expectNoWarnings();
-    expect(doc, contains('<video id="animation_1"'));
-    expect(doc, contains('<video id="animation_2"'));
-
-    // A second element with unnamed animations requires unique IDs as well.
-    doc = await libraryModel.processComment('''
+''',
+      ),
+      // A second element with unnamed animations requires unique IDs as well.
+      (
+        'b.dart',
+        '''
 /// First line.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4}
 /// {@animation 100 200 http://host/path/to/video2.mp4}
-''');
+''',
+      ),
+    ]);
+    var docA = await libraryModel.processComment();
+    var docB = packageGraph.defaultPackage.libraries[1].documentation;
 
     expectNoWarnings();
-    expect(doc, contains('<video id="animation_3"'));
-    expect(doc, contains('<video id="animation_4"'));
+    expect(docA, contains('<video id="animation_3"'));
+    expect(docA, contains('<video id="animation_4"'));
+    expect(docB, contains('<video id="animation_1"'));
+    expect(docB, contains('<video id="animation_2"'));
+  }
+
+  void test_docImport() async {
+    await writePackageWithCommentedLibrary('''
+/// Text.
+///
+/// @docImport 'dart:async' as async;
+///
+/// End text.
+''');
+    var doc = libraryModel.documentation;
+
+    expect(doc, equals('''
+Text.
+
+
+
+End text.'''));
+  }
+
+  void test_docImport_onlyLine() async {
+    await writePackageWithCommentedLibrary('''
+/// @docImport 'dart:async' as async;
+''');
+    var doc = libraryModel.documentation;
+
+    expect(doc, equals(''));
+  }
+
+  void test_docImport_onlyLine_moreWhitespace() async {
+    await writePackageWithCommentedLibrary('''
+///   @docImport   'dart:async'   as   async;
+''');
+    var doc = libraryModel.documentation;
+
+    expect(doc, equals(''));
+  }
+
+  void test_docImport_consecutiveLines() async {
+    await writePackageWithCommentedLibrary('''
+/// @docImport 'dart:async' as async;
+/// @docImport 'dart:isolate' as isolate;
+/// @docImport 'dart:math' as math;
+''');
+    var doc = libraryModel.documentation;
+
+    expect(doc, equals(''));
+  }
+
+  void test_docImport_multipleLines() async {
+    await writePackageWithCommentedLibrary('''
+/// One.
+/// @docImport 'dart:async' as async;
+/// Two.
+/// @docImport 'dart:isolate' as isolate;
+/// Three.
+''');
+    var doc = libraryModel.documentation;
+
+    expect(doc, equals('''
+One.
+
+Two.
+
+Three.'''));
+  }
+
+  void test_docImport_precedingText() async {
+    await writePackageWithCommentedLibrary('''
+// Copyright such-and-such.
+
+/// @docImport 'dart:async' as async;
+''');
+    var doc = libraryModel.documentation;
+
+    expect(doc, equals(''));
   }
 
   void test_animationDirectiveHasFewerThanThreeArguments() async {
-    await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@animation 100 http://host/path/to/video.mp4 id=barHerderAnimation}
@@ -242,16 +341,17 @@ End text.'''));
 ''');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning(
-            'Invalid @animation directive, "{@animation 100 '
-            'http://host/path/to/video.mp4 id=barHerderAnimation}"\n'
-            'Animation directives must be of the form "{@animation WIDTH '
-            'HEIGHT URL [id=ID]}"'));
+      libraryModel,
+      hasInvalidParameterWarning(
+          'Invalid @animation directive, "{@animation 100 '
+          'http://host/path/to/video.mp4 id=barHerderAnimation}"\n'
+          'Animation directives must be of the form "{@animation WIDTH '
+          'HEIGHT URL [id=ID]}"'),
+    );
   }
 
   void test_animationDirectiveHasMoreThanFourArguments() async {
-    await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@animation 100 200 300 400 http://host/path/to/video.mp4 id=barHerderAnimation}
@@ -260,16 +360,17 @@ End text.'''));
 ''');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning(
-            'Invalid @animation directive, "{@animation 100 200 300 400 '
-            'http://host/path/to/video.mp4 id=barHerderAnimation}"\n'
-            'Animation directives must be of the form "{@animation WIDTH '
-            'HEIGHT URL [id=ID]}"'));
+      libraryModel,
+      hasInvalidParameterWarning(
+          'Invalid @animation directive, "{@animation 100 200 300 400 '
+          'http://host/path/to/video.mp4 id=barHerderAnimation}"\n'
+          'Animation directives must be of the form "{@animation WIDTH '
+          'HEIGHT URL [id=ID]}"'),
+    );
   }
 
   void test_animationDirectiveHasNonUniqueIdentifier() async {
-    await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4 id=barHerderAnimation}
@@ -279,13 +380,14 @@ End text.'''));
 ''');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning('An animation has a non-unique identifier, '
-            '"barHerderAnimation". Animation identifiers must be unique.'));
+      libraryModel,
+      hasInvalidParameterWarning('An animation has a non-unique identifier, '
+          '"barHerderAnimation". Animation identifiers must be unique.'),
+    );
   }
 
   void test_animationDirectiveHasAnInvalidIdentifier() async {
-    await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4 id=not-valid}
@@ -294,15 +396,16 @@ End text.'''));
 ''');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning(
-            'An animation has an invalid identifier, "not-valid". The '
-            'identifier can only contain letters, numbers and underscores, and '
-            'must not begin with a number.'));
+      libraryModel,
+      hasInvalidParameterWarning(
+          'An animation has an invalid identifier, "not-valid". The '
+          'identifier can only contain letters, numbers and underscores, and '
+          'must not begin with a number.'),
+    );
   }
 
   void test_animationDirectiveHasMalformedWidth() async {
-    await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@animation 100px 200 http://host/path/to/video.mp4 id=barHerderAnimation}
@@ -311,14 +414,15 @@ End text.'''));
 ''');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning(
-            'An animation has an invalid width (barHerderAnimation), '
-            '"100px". The width must be an integer.'));
+      libraryModel,
+      hasInvalidParameterWarning(
+          'An animation has an invalid width (barHerderAnimation), '
+          '"100px". The width must be an integer.'),
+    );
   }
 
   void test_animationDirectiveHasMalformedHeight() async {
-    await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@animation 100 200px http://host/path/to/video.mp4 id=barHerderAnimation}
@@ -327,14 +431,15 @@ End text.'''));
 ''');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning(
-            'An animation has an invalid height (barHerderAnimation), '
-            '"200px". The height must be an integer.'));
+      libraryModel,
+      hasInvalidParameterWarning(
+          'An animation has an invalid height (barHerderAnimation), '
+          '"200px". The height must be an integer.'),
+    );
   }
 
   void test_animationDirectiveHasUnknownParameter() async {
-    await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@animation 100 200 http://host/path/to/video.mp4 name=barHerderAnimation}
@@ -343,15 +448,16 @@ End text.'''));
 ''');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning(
-            'The {@animation ...} directive was called with invalid '
-            'parameters. FormatException: Could not find an option named '
-            '"name".'));
+      libraryModel,
+      hasInvalidParameterWarning(
+          'The {@animation ...} directive was called with invalid '
+          'parameters. FormatException: Could not find an option named '
+          '"name".'),
+    );
   }
 
   void test_processesTemplateDirective() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@template abc}
@@ -360,6 +466,7 @@ End text.'''));
 ///
 /// End text.
 ''');
+    var doc = await libraryModel.processComment();
 
     expectNoWarnings();
     expect(doc, equals('''
@@ -371,13 +478,14 @@ End text.'''));
   }
 
   void test_processesLeadingTemplateDirective() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// {@template abc}
 /// Template text.
 /// {@endtemplate}
 ///
 /// End text.
 ''');
+    var doc = await libraryModel.processComment();
 
     expectNoWarnings();
     expect(doc, equals('''
@@ -387,13 +495,14 @@ End text.'''));
   }
 
   void test_processesTrailingTemplateDirective() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@template abc}
 /// Template text.
 /// {@endtemplate}
 ''');
+    var doc = await libraryModel.processComment();
 
     expectNoWarnings();
     expect(doc, equals('''
@@ -403,7 +512,7 @@ Text.
   }
 
   void test_processesTemplateDirectiveWithoutBlankLineFollowing() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@template abc}
@@ -411,6 +520,7 @@ Text.
 /// {@endtemplate}
 /// End text.
 ''');
+    var doc = await libraryModel.processComment();
 
     expectNoWarnings();
     expect(doc, equals('''
@@ -421,22 +531,24 @@ End text.'''));
   }
 
   void test_allowsWhitespaceAroundTemplateDirectiveName() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// {@template    abc    }
 /// Template text.
 /// {@endtemplate}
 ''');
+    var doc = await libraryModel.processComment();
 
     expectNoWarnings();
     expect(doc, equals('{@macro abc}'));
   }
 
   void test_leavesInjectHtmlDirectiveUnprocessedWhenDisabled() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@inject-html}<script></script>{@end-inject-html}
 ''');
+    var doc = libraryModel.documentation;
 
     expectNoWarnings();
     expect(doc, equals('''
@@ -446,11 +558,12 @@ Text.
   }
 
   void test_leavesToolUnprocessedWhenDisabled() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@tool date}{@end-tool}
 ''');
+    var doc = libraryModel.documentation;
 
     expectNoWarnings();
     expect(doc, equals('''
@@ -460,15 +573,16 @@ Text.
   }
 
   void test_processesInjectHtmlDirectiveWhenEnabled() async {
-    packageGraph = await utils.bootBasicPackage(
-        projectRoot.path, packageMetaProvider, packageConfigProvider,
-        additionalArguments: ['--inject-html']);
-    libraryModel = packageGraph.defaultPackage.libraries.first;
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary(
+      additionalArguments: ['--inject-html'],
+      '''
 /// Text.
 ///
 /// {@inject-html}<script></script>{@end-inject-html}
-''');
+''',
+    );
+    libraryModel = packageGraph.defaultPackage.libraries.first;
+    var doc = libraryModel.documentation;
 
     expectNoWarnings();
     expect(doc, equals('''
@@ -480,13 +594,14 @@ Text.
   }
 
   void test_processesYoutubeDirective() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@youtube 100 200 https://www.youtube.com/watch?v=oHg5SJYRHA0}
 ///
 /// End text.
 ''');
+    var doc = libraryModel.documentation;
 
     expectNoWarnings();
     expect(
@@ -504,11 +619,12 @@ Text.
   }
 
   void test_processesLeadingYoutubeDirective() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// {@youtube 100 200 https://www.youtube.com/watch?v=oHg5SJYRHA0}
 ///
 /// End text.
 ''');
+    var doc = libraryModel.documentation;
 
     expectNoWarnings();
     expect(
@@ -525,11 +641,12 @@ Text.
   }
 
   void test_processesTrailingYoutubeDirective() async {
-    var doc = await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// Text.
 ///
 /// {@youtube 100 200 https://www.youtube.com/watch?v=oHg5SJYRHA0}
 ''');
+    var doc = libraryModel.documentation;
 
     expectNoWarnings();
     expect(
@@ -546,156 +663,168 @@ Text.
   }
 
   void test_youtubeDirectiveHasLessThanThreeArguments() async {
-    await libraryModel.processComment(
+    await writePackageWithCommentedLibrary(
         '/// {@youtube 100 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning('Invalid @youtube directive, '
-            '"{@youtube 100 https://www.youtube.com/watch?v=oHg5SJYRHA0}"\n'
-            'YouTube directives must be of the form '
-            '"{@youtube WIDTH HEIGHT URL}"'));
+      libraryModel,
+      hasInvalidParameterWarning('Invalid @youtube directive, '
+          '"{@youtube 100 https://www.youtube.com/watch?v=oHg5SJYRHA0}"\n'
+          'YouTube directives must be of the form '
+          '"{@youtube WIDTH HEIGHT URL}"'),
+    );
   }
 
   void test_youtubeDirectiveHasMoreThanThreeArguments() async {
-    await libraryModel.processComment(
+    await writePackageWithCommentedLibrary(
         '/// {@youtube 100 200 300 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning('Invalid @youtube directive, '
-            '"{@youtube 100 200 300 https://www.youtube.com/watch?v=oHg5SJYRHA0}"\n'
-            'YouTube directives must be of the form '
-            '"{@youtube WIDTH HEIGHT URL}"'));
+      libraryModel,
+      hasInvalidParameterWarning('Invalid @youtube directive, '
+          '"{@youtube 100 200 300 https://www.youtube.com/watch?v=oHg5SJYRHA0}"\n'
+          'YouTube directives must be of the form '
+          '"{@youtube WIDTH HEIGHT URL}"'),
+    );
   }
 
   void test_youtubeDirectiveHasMalformedWidth() async {
-    await libraryModel.processComment(
+    await writePackageWithCommentedLibrary(
         '/// {@youtube 100px 200 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning(
-            'A @youtube directive has an invalid width, "100px". '
-            'The width must be a positive integer.'));
+      libraryModel,
+      hasInvalidParameterWarning(
+          'A @youtube directive has an invalid width, "100px". '
+          'The width must be a positive integer.'),
+    );
   }
 
   void test_youtubeDirectiveHasNegativeWidth() async {
-    await libraryModel.processComment(
+    await writePackageWithCommentedLibrary(
         '/// {@youtube -100 200 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning(
-            'The {@youtube ...} directive was called with invalid '
-            'parameters. FormatException: Could not find an option with '
-            'short name "-1".'));
+      libraryModel,
+      hasInvalidParameterWarning(
+          'The {@youtube ...} directive was called with invalid '
+          'parameters. FormatException: Could not find an option with '
+          'short name "-1".'),
+    );
   }
 
   void test_youtubeDirectiveHasMalformedHeight() async {
-    await libraryModel.processComment(
+    await writePackageWithCommentedLibrary(
         '/// {@youtube 100 200px https://www.youtube.com/watch?v=oHg5SJYRHA0}');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning(
-            'A @youtube directive has an invalid height, "200px". The height '
-            'must be a positive integer.'));
+      libraryModel,
+      hasInvalidParameterWarning(
+          'A @youtube directive has an invalid height, "200px". The height '
+          'must be a positive integer.'),
+    );
   }
 
   void test_youtubeDirectiveHasNegativeHeight() async {
-    await libraryModel.processComment(
+    await writePackageWithCommentedLibrary(
         '/// {@youtube 100 -200 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning(
-            'The {@youtube ...} directive was called with invalid '
-            'parameters. FormatException: Could not find an option with '
-            'short name "-2".'));
+      libraryModel,
+      hasInvalidParameterWarning(
+          'The {@youtube ...} directive was called with invalid '
+          'parameters. FormatException: Could not find an option with '
+          'short name "-2".'),
+    );
   }
 
   void test_youtubeDirectiveHasInvalidUrl() async {
-    await libraryModel.processComment(
+    await writePackageWithCommentedLibrary(
         '/// {@youtube 100 200 https://www.not-youtube.com/watch?v=oHg5SJYRHA0}');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning('A @youtube directive has an invalid URL: '
-            '"https://www.not-youtube.com/watch?v=oHg5SJYRHA0". Supported '
-            'YouTube URLs have the following format: '
-            'https://www.youtube.com/watch?v=oHg5SJYRHA0.'));
+      libraryModel,
+      hasInvalidParameterWarning('A @youtube directive has an invalid URL: '
+          '"https://www.not-youtube.com/watch?v=oHg5SJYRHA0". Supported '
+          'YouTube URLs have the following format: '
+          'https://www.youtube.com/watch?v=oHg5SJYRHA0.'),
+    );
   }
 
   void test_youtubeDirectiveHasUrlWithExtraQueryParameters() async {
-    await libraryModel.processComment(
+    await writePackageWithCommentedLibrary(
         '/// {@youtube 100 200 https://www.not-youtube.com/watch?v=oHg5SJYRHA0&a=1}');
 
     expect(
-        libraryModel,
-        hasInvalidParameterWarning('A @youtube directive has an invalid URL: '
-            '"https://www.not-youtube.com/watch?v=oHg5SJYRHA0&a=1". '
-            'Supported YouTube URLs have the following format: '
-            'https://www.youtube.com/watch?v=oHg5SJYRHA0.'));
+      libraryModel,
+      hasInvalidParameterWarning('A @youtube directive has an invalid URL: '
+          '"https://www.not-youtube.com/watch?v=oHg5SJYRHA0&a=1". '
+          'Supported YouTube URLs have the following format: '
+          'https://www.youtube.com/watch?v=oHg5SJYRHA0.'),
+    );
   }
 
   void test_fencedCodeBlockDoesNotSpecifyLanguage() async {
-    await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// ```
 /// void main() {}
 /// ```
 ''');
 
     expect(
-        packageGraph.packageWarningCounter.hasWarning(
-            libraryModel,
-            PackageWarning.missingCodeBlockLanguage,
-            'A fenced code block in Markdown should have a language specified'),
-        isTrue);
+      packageGraph.packageWarningCounter.hasWarning(
+          libraryModel,
+          PackageWarning.missingCodeBlockLanguage,
+          'A fenced code block in Markdown should have a language specified'),
+      isTrue,
+    );
   }
 
   void test_squigglyFencedCodeBlockDoesNotSpecifyLanguage() async {
-    await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// ~~~
 /// void main() {}
 /// ~~~
 ''');
 
     expect(
-        packageGraph.packageWarningCounter.hasWarning(
-            libraryModel,
-            PackageWarning.missingCodeBlockLanguage,
-            'A fenced code block in Markdown should have a language specified'),
-        isTrue);
+      packageGraph.packageWarningCounter.hasWarning(
+          libraryModel,
+          PackageWarning.missingCodeBlockLanguage,
+          'A fenced code block in Markdown should have a language specified'),
+      isTrue,
+    );
   }
 
   void test_fencedCodeBlockDoesSpecifyLanguage() async {
-    await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// ```dart
 /// void main() {}
 /// ```
 ''');
 
     expect(
-        packageGraph.packageWarningCounter.hasWarning(
-            libraryModel,
-            PackageWarning.missingCodeBlockLanguage,
-            'A fenced code block in Markdown should have a language specified'),
-        isFalse);
+      packageGraph.packageWarningCounter.hasWarning(
+          libraryModel,
+          PackageWarning.missingCodeBlockLanguage,
+          'A fenced code block in Markdown should have a language specified'),
+      isFalse,
+    );
   }
 
   void test_fencedBlockIsNotClosed() async {
-    await libraryModel.processComment('''
+    await writePackageWithCommentedLibrary('''
 /// ```
 /// A not closed fenced code block
 ''');
 
     expect(
-        packageGraph.packageWarningCounter.hasWarning(
-            libraryModel,
-            PackageWarning.missingCodeBlockLanguage,
-            'A fenced code block in Markdown should have a language specified'),
-        isFalse);
+      packageGraph.packageWarningCounter.hasWarning(
+          libraryModel,
+          PackageWarning.missingCodeBlockLanguage,
+          'A fenced code block in Markdown should have a language specified'),
+      isFalse,
+    );
   }
 
   Matcher hasDeprecatedWarning(String message) =>

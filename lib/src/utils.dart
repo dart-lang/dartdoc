@@ -30,7 +30,8 @@ Iterable<String> stripCommonWhitespace(String str) sync* {
   }
 }
 
-String stripComments(String str) {
+/// Strips [str] of all comment delimiters.
+String stripCommentDelimiters(String str) {
   if (str.isEmpty) return '';
   final buf = StringBuffer();
 

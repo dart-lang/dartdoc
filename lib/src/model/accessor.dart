@@ -72,7 +72,7 @@ class Accessor extends ModelElement {
     }
     // TODO(srawlins): This doesn't seem right... the super value has delimiters
     // (like `///`), but this one doesn't?
-    return stripComments(super.documentationComment);
+    return stripCommentDelimiters(super.documentationComment);
   }();
 
   /// If this is a getter, assume we want synthetic documentation.

@@ -96,7 +96,10 @@ mixin DocumentationComment
   /// `{@}`-style directives (except tool directives), returning the processed
   /// result.
   String _processCommentWithoutTools(String documentationComment) {
-    var docs = stripComments(documentationComment);
+    // We must first strip the comment of directives like `@docImport`, since
+    // the offsets are for the source text.
+    var docs = _stripDocImports(documentationComment);
+    docs = stripCommentDelimiters(docs);
     if (docs.contains('{@')) {
       docs = _injectYouTube(docs);
       docs = _injectAnimations(docs);
@@ -111,9 +114,13 @@ mixin DocumentationComment
   /// Process [documentationComment], performing various actions based on
   /// `{@}`-style directives, returning the processed result.
   @visibleForTesting
-  Future<String> processComment(String documentationComment) async {
-    var docs = stripComments(documentationComment);
-    // Must evaluate tools first, in case they insert any other directives.
+  Future<String> processComment() async {
+    // We must first strip the comment of directives like `@docImport`, since
+    // the offsets are for the source text.
+    var docs = _stripDocImports(documentationComment);
+    docs = stripCommentDelimiters(docs);
+    // Then we evaluate tools, in case they insert any other directives that
+    // would need to be processed by `processCommentDirectives`.
     docs = await _evaluateTools(docs);
     docs = processCommentDirectives(docs);
     _analyzeCodeBlocks(docs);
@@ -557,6 +564,27 @@ mixin DocumentationComment
     });
   }
 
+  String _stripDocImports(String content) {
+    if (modelNode?.commentData case var commentData?) {
+      var commentOffset = commentData.offset;
+      var buffer = StringBuffer();
+      if (commentData.docImports.isEmpty) return content;
+      var firstDocImport = commentData.docImports.first;
+      buffer.write(content.substring(0, firstDocImport.offset - commentOffset));
+      var offset = firstDocImport.end - commentOffset;
+      for (var docImport in commentData.docImports.skip(1)) {
+        buffer
+            .write(content.substring(offset, docImport.offset - commentOffset));
+        offset = docImport.end - commentOffset;
+      }
+      // Write from the end of the last doc-import to the end of the comment.
+      buffer.write(content.substring(offset));
+      return buffer.toString();
+    } else {
+      return content;
+    }
+  }
+
   /// Parse and remove &#123;@inject-html ...&#125; in API comments and store
   /// them in the index on the package, replacing them with a SHA1 hash of the
   /// contents, where the HTML will be re-injected after Markdown processing of
@@ -793,7 +821,7 @@ mixin DocumentationComment
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
-    var rawDocs = await processComment(documentationComment);
+    var rawDocs = await processComment();
     return _rawDocs = buildDocumentationAddition(rawDocs);
   }
 

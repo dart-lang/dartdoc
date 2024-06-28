@@ -18,14 +18,14 @@ class ModelNode {
   final int _sourceEnd;
   final int _sourceOffset;
 
-  /// Data about each comment reference found in the doc comment of this node.
-  final Map<String, CommentReferenceData>? commentReferenceData;
+  /// Data about the doc comment of this node.
+  final CommentData? commentData;
 
   factory ModelNode(
     AstNode? sourceNode,
     Element element,
     AnalysisContext analysisContext, {
-    required Map<String, CommentReferenceData>? commentReferenceData,
+    CommentData? commentData,
   }) {
     if (sourceNode == null) {
       return ModelNode._(element, analysisContext,
@@ -44,7 +44,7 @@ class ModelNode {
         analysisContext,
         sourceEnd: sourceNode.end,
         sourceOffset: sourceNode.offset,
-        commentReferenceData: commentReferenceData,
+        commentData: commentData,
       );
     }
   }
@@ -54,7 +54,7 @@ class ModelNode {
     this._analysisContext, {
     required int sourceEnd,
     required int sourceOffset,
-    this.commentReferenceData = const {},
+    this.commentData,
   })  : _sourceEnd = sourceEnd,
         _sourceOffset = sourceOffset;
 
@@ -79,10 +79,41 @@ class ModelNode {
   }();
 }
 
+/// Comment data from the syntax tree.
+///
+/// Various comment data is not available on the analyzer's Element model, so we
+/// store it in instances of this class after resolving libraries.
+class CommentData {
+  /// The offset of this comment in the source text.
+  final int offset;
+  final List<CommentDocImportData> docImports;
+  final Map<String, CommentReferenceData> references;
+
+  CommentData({
+    required this.offset,
+    required this.docImports,
+    required this.references,
+  });
+}
+
+/// doc-import data from the syntax tree.
+///
+/// Comment doc-import data is not available on the analyzer's Element model, so
+/// we store it in instances of this class after resolving libraries.
+class CommentDocImportData {
+  /// The offset of the doc import in the source text.
+  final int offset;
+
+  /// The offset of the end of the doc import in the source text.
+  final int end;
+
+  CommentDocImportData({required this.offset, required this.end});
+}
+
 /// Comment reference data from the syntax tree.
 ///
 /// Comment reference data is not available on the analyzer's Element model, so
-/// we store it after resolving libraries in instances of this class.
+/// we store it in instances of this class after resolving libraries.
 class CommentReferenceData {
   final Element element;
   final String name;
