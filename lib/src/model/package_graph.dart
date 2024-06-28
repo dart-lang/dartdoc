@@ -239,9 +239,6 @@ class PackageGraph with CommentReferable, Nameable {
         // There should be only one library directive. If there are more, there
         // is no harm in grabbing ModelNode for each.
         var commentData = directive.documentationComment?.data;
-        directive.documentationComment?.docDirectives;
-        directive.documentationComment?.docImports;
-        directive.documentationComment?.hasNodoc;
         _modelNodes.putIfAbsent(
             resolvedLibrary.element,
             () => ModelNode(
