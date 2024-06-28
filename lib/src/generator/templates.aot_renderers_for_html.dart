@@ -548,8 +548,6 @@ String renderEnum(EnumTemplateData context0) {
         </dl>
       </section>''');
   }
-  buffer.write('\n\n    ');
-  buffer.write(_renderEnum_partial_constructors_9(context2));
   buffer.writeln();
   if (context2.hasPublicEnumValues) {
     buffer.writeln();
@@ -561,7 +559,7 @@ String renderEnum(EnumTemplateData context0) {
     var context3 = context2.publicEnumValues;
     for (var context4 in context3) {
       buffer.write('\n            ');
-      buffer.write(_renderEnum_partial_constant_10(context4));
+      buffer.write(_renderEnum_partial_constant_9(context4));
     }
     buffer.writeln();
     buffer.write('''
@@ -569,24 +567,24 @@ String renderEnum(EnumTemplateData context0) {
       </section>''');
   }
   buffer.write('\n\n    ');
-  buffer.write(_renderEnum_partial_instance_fields_11(context2));
+  buffer.write(_renderEnum_partial_instance_fields_10(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_instance_methods_12(context2));
+  buffer.write(_renderEnum_partial_instance_methods_11(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_instance_operators_13(context2));
+  buffer.write(_renderEnum_partial_instance_operators_12(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_static_properties_14(context2));
+  buffer.write(_renderEnum_partial_static_properties_13(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_static_methods_15(context2));
+  buffer.write(_renderEnum_partial_static_methods_14(context2));
   buffer.write('\n    ');
-  buffer.write(_renderEnum_partial_static_constants_16(context2));
+  buffer.write(_renderEnum_partial_static_constants_15(context2));
   buffer.writeln();
   buffer.write('''
 </div><!-- /.main-content -->
 
 <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
   ''');
-  buffer.write(_renderEnum_partial_search_sidebar_17(context0));
+  buffer.write(_renderEnum_partial_search_sidebar_16(context0));
   buffer.writeln();
   buffer.write('''
   <h5>''');
@@ -601,7 +599,7 @@ String renderEnum(EnumTemplateData context0) {
 </div><!-- /.sidebar-offcanvas -->
 
 ''');
-  buffer.write(_renderEnum_partial_footer_18(context0));
+  buffer.write(_renderEnum_partial_footer_17(context0));
   buffer.writeln();
 
   return buffer.toString();
@@ -1696,7 +1694,7 @@ String renderSidebarForContainer<T extends Documentable>(
   buffer.write('''<ol>''');
   var context1 = context0.container;
   buffer.writeln();
-  if (context1.isClassOrEnum) {
+  if (context1.isClassOrExtensionType) {
     if (context1.hasPublicConstructors) {
       buffer.writeln();
       buffer.write('''
@@ -2706,34 +2704,31 @@ String _renderEnum_partial_mixed_in_types_7(Enum context1) {
 String _renderEnum_partial_container_annotations_8(Enum context1) =>
     _deduplicated_lib_templates__container_annotations_html(context1);
 
-String _renderEnum_partial_constructors_9(Enum context1) =>
-    _deduplicated_lib_templates__constructors_html(context1);
-
-String _renderEnum_partial_constant_10(Field context2) =>
+String _renderEnum_partial_constant_9(Field context2) =>
     _deduplicated_lib_templates__constant_html(context2);
 
-String _renderEnum_partial_instance_fields_11(Enum context1) =>
+String _renderEnum_partial_instance_fields_10(Enum context1) =>
     _deduplicated_lib_templates__instance_fields_html(context1);
 
-String _renderEnum_partial_instance_methods_12(Enum context1) =>
+String _renderEnum_partial_instance_methods_11(Enum context1) =>
     _deduplicated_lib_templates__instance_methods_html(context1);
 
-String _renderEnum_partial_instance_operators_13(Enum context1) =>
+String _renderEnum_partial_instance_operators_12(Enum context1) =>
     _deduplicated_lib_templates__instance_operators_html(context1);
 
-String _renderEnum_partial_static_properties_14(Enum context1) =>
+String _renderEnum_partial_static_properties_13(Enum context1) =>
     _deduplicated_lib_templates__static_properties_html(context1);
 
-String _renderEnum_partial_static_methods_15(Enum context1) =>
+String _renderEnum_partial_static_methods_14(Enum context1) =>
     _deduplicated_lib_templates__static_methods_html(context1);
 
-String _renderEnum_partial_static_constants_16(Enum context1) =>
+String _renderEnum_partial_static_constants_15(Enum context1) =>
     _deduplicated_lib_templates__static_constants_html(context1);
 
-String _renderEnum_partial_search_sidebar_17(EnumTemplateData context0) =>
+String _renderEnum_partial_search_sidebar_16(EnumTemplateData context0) =>
     _deduplicated_lib_templates__search_sidebar_html(context0);
 
-String _renderEnum_partial_footer_18(EnumTemplateData context0) =>
+String _renderEnum_partial_footer_17(EnumTemplateData context0) =>
     _deduplicated_lib_templates__footer_html(context0);
 
 String _renderError_partial_head_0(PackageTemplateData context0) =>
@@ -4417,8 +4412,7 @@ String _deduplicated_lib_templates__container_annotations_html(
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates__constructors_html(
-    InheritingContainer context0) {
+String _deduplicated_lib_templates__constructors_html(Constructable context0) {
   final buffer = StringBuffer();
   if (context0.hasPublicConstructors) {
     buffer.writeln();

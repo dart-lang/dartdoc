@@ -31,15 +31,18 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
     if (!super.isPublic) return false;
     if (element.hasPrivateName) return false;
     var class_ = element.enclosingElement;
-    if (class_ is! ClassElement) return true;
-    if (element.isFactory) return true;
-    if (class_.isSealed ||
-        (class_.isAbstract && class_.isFinal) ||
-        (class_.isAbstract && class_.isInterface)) {
-      /// Sealed classes, abstract final classes, and abstract interface
-      /// classes, cannot be instantiated nor extended, from outside the
-      /// declaring library. Avoid documenting them.
-      return false;
+    // Enums cannot be explicitly constructed or extended.
+    if (class_ is EnumElement) return false;
+    if (class_ is ClassElement) {
+      if (element.isFactory) return true;
+      if (class_.isSealed ||
+          (class_.isAbstract && class_.isFinal) ||
+          (class_.isAbstract && class_.isInterface)) {
+        /// Sealed classes, abstract final classes, and abstract interface
+        /// classes, cannot be instantiated nor extended, from outside the
+        /// declaring library. Avoid documenting them.
+        return false;
+      }
     }
     return true;
   }

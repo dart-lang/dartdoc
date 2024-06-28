@@ -1,14 +1,14 @@
 <ol>
   {{ #container }}
 
-    {{ #isClassOrEnum }}
+    {{ #isClassOrExtensionType }}
       {{ #hasPublicConstructors }}
         <li class="section-title"><a href="{{{ href }}}#constructors">Constructors</a></li>
         {{ #publicConstructorsSorted }}
           <li><a{{ #isDeprecated }} class="deprecated"{{ /isDeprecated }} href="{{{ href }}}">{{ shortName }}</a></li>
         {{ /publicConstructorsSorted }}
       {{ /hasPublicConstructors }}
-    {{ /isClassOrEnum }}
+    {{ /isClassOrExtensionType }}
 
     {{ #isEnum }}
       {{ #hasPublicEnumValues }}

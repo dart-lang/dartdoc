@@ -218,27 +218,6 @@ enum E<T> with M<T>, N { one, two, three; }
     expect(eEnum.mixedInElements.map((e) => e.name), equals(['M', 'N']));
   }
 
-  void test_namedConstructorCanBeReferenced() async {
-    // TODO(srawlins): As all supported Dart is >=2.15.0, this test can just
-    // be a "constructors" test rather than an "enum" test.
-    var library = await bootPackageWithLibrary('''
-enum E {
-  one.named(1),
-  two.named(2);
-
-  const E.named(int x);
-}
-
-/// Reference to [E.named].
-class C {}
-''');
-    var cClass = library.classes.named('C');
-    expect(
-      cClass.documentationAsHtml,
-      '<p>Reference to <a href="$linkPrefix/E/E.named.html">E.named</a>.</p>',
-    );
-  }
-
   void test_operatorsAreDocumented() async {
     // TODO(srawlins): As all supported Dart is >=2.15.0, this test can just
     // be an "operator" test rather than an "enum" test.

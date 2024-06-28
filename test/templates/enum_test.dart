@@ -17,7 +17,6 @@ void main() async {
   late List<String> eLines;
   late List<String> eRightSidebarLines;
   late List<String> enumWithDefaultConstructorLines;
-  late List<String> enumWithDefaultConstructorRightSidebarLines;
 
   group('enums', () {
     setUpAll(() async {
@@ -129,11 +128,6 @@ enum EnumWithDefaultConstructor {
       enumWithDefaultConstructorLines = resourceProvider
           .getFile(path.join(
               packagePath, 'doc', 'lib', 'EnumWithDefaultConstructor.html'))
-          .readAsStringSync()
-          .split('\n');
-      enumWithDefaultConstructorRightSidebarLines = resourceProvider
-          .getFile(path.join(packagePath, 'doc', 'lib',
-              'EnumWithDefaultConstructor-enum-sidebar.html'))
           .readAsStringSync()
           .split('\n');
     });
@@ -340,29 +334,6 @@ enum EnumWithDefaultConstructor {
             matches('<a href="../lib/E/operator_greater.html">operator ></a>'),
             matches('An operator.'),
           ]));
-    });
-
-    test('enum sidebar contains default constructors', () async {
-      expect(
-        enumWithDefaultConstructorRightSidebarLines,
-        containsAllInOrder([
-          matches('<a href="lib/EnumWithDefaultConstructor.html#constructors">'
-              'Constructors</a>'),
-          matches(
-              '<a href="lib/EnumWithDefaultConstructor/EnumWithDefaultConstructor.html">'
-              'EnumWithDefaultConstructor</a>'),
-        ]),
-      );
-    });
-
-    test('enum sidebar contains explicit constructors', () async {
-      expect(
-        eRightSidebarLines,
-        containsAllInOrder([
-          matches('<a href="lib/E.html#constructors">Constructors</a>'),
-          matches('<a href="lib/E/E.named.html">named</a>'),
-        ]),
-      );
     });
 
     test('enum sidebar contains values', () async {
