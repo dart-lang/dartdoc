@@ -2936,6 +2936,13 @@ class _Renderer_Container extends RendererBase<Container> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isClassOrEnum,
                 ),
+                'isClassOrExtensionType': Property(
+                  getValue: (CT_ c) => c.isClassOrExtensionType,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isClassOrExtensionType,
+                ),
                 'isEnum': Property(
                   getValue: (CT_ c) => c.isEnum,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -16294,7 +16301,12 @@ const _invisibleGetters = {
     'runtimeType',
     'superclassConstraints'
   },
-  'ModelNode': {'hashCode', 'runtimeType', 'sourceCode'},
+  'ModelNode': {
+    'commentReferenceData',
+    'hashCode',
+    'runtimeType',
+    'sourceCode'
+  },
   'PackageGraph': {
     'allConstructedModelElements',
     'allExtensionsAdded',
@@ -16482,6 +16494,7 @@ const _invisibleGetters = {
     'aliasedType',
     'enclosingElement',
     'hashCode',
+    'isAugmentation',
     'name',
     'runtimeType'
   },

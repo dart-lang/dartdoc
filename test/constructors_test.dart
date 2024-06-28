@@ -145,4 +145,78 @@ sealed class C {
     expect(c.isPublic, isFalse);
     expect(c.documentationAsHtml, '<p>Constructor.</p>');
   }
+
+  void test_enum_named() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  one.named(), two.named();
+  /// Constructor.
+  const E.named();
+}
+''');
+    var e = library.enums.named('E').constructors.first;
+    expect(e.name, equals('E.named'));
+    expect(e.isPublic, isFalse);
+    expect(e.documentationAsHtml, '<p>Constructor.</p>');
+  }
+
+  void test_enum_unnamed() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  one(), two();
+  /// Constructor.
+  const E();
+}
+''');
+    var e = library.enums.named('E').constructors.first;
+    expect(e.name, equals('E'));
+    expect(e.isPublic, isFalse);
+    expect(e.documentationAsHtml, '<p>Constructor.</p>');
+  }
+
+  void test_extensionType_named() async {
+    var library = await bootPackageWithLibrary('''
+extension type ET(int it) {
+  /// Constructor.
+  ET.named(this.it);
+}
+''');
+    var etNamed =
+        library.extensionTypes.named('ET').constructors.named('ET.named');
+    expect(etNamed.name, equals('ET.named'));
+    expect(etNamed.isPublic, isTrue);
+    expect(etNamed.documentationAsHtml, '<p>Constructor.</p>');
+  }
+
+  void test_extensionType_primaryNamed() async {
+    var library = await bootPackageWithLibrary('''
+extension type ET.named(int it) {}
+''');
+    var etNamed =
+        library.extensionTypes.named('ET').constructors.named('ET.named');
+    expect(etNamed.name, equals('ET.named'));
+    expect(etNamed.isPublic, isTrue);
+  }
+
+  void test_extensionType_primaryUnnamed() async {
+    var library = await bootPackageWithLibrary('''
+extension type ET(int it) {}
+''');
+    var et = library.extensionTypes.named('ET').constructors.named('ET');
+    expect(et.name, equals('ET'));
+    expect(et.isPublic, isTrue);
+  }
+
+  void test_extensionType_unnamed() async {
+    var library = await bootPackageWithLibrary('''
+extension type ET.named(int it) {
+  /// Constructor.
+  ET(this.it);
+}
+''');
+    var etNamed = library.extensionTypes.named('ET').constructors.named('ET');
+    expect(etNamed.name, equals('ET'));
+    expect(etNamed.isPublic, isTrue);
+    expect(etNamed.documentationAsHtml, '<p>Constructor.</p>');
+  }
 }

@@ -53,6 +53,10 @@ abstract class Container extends ModelElement
   /// Whether this is a class or an enum.
   bool get isClassOrEnum => element is InterfaceElement;
 
+  /// Whether this is a class or an extension type.
+  bool get isClassOrExtensionType =>
+      element is ClassElement || element is ExtensionTypeElement;
+
   /// Whether this is a mixin.
   bool get isMixin => element is MixinElement;
 
