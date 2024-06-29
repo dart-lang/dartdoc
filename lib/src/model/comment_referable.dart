@@ -10,7 +10,6 @@ import 'dart:core';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:collection/collection.dart';
-import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/nameable.dart';
@@ -53,12 +52,13 @@ mixin CommentReferable implements Nameable {
       return tryParents ? null : this;
     }
     for (var referenceLookup in _childLookups(reference)) {
-      if (scope != null) {
-        var result = _lookupViaScope(referenceLookup, filter: filter);
-        if (result != null) {
-          return result;
-        }
+      // First attempt: Ask analyzer's `Scope.lookup` API.
+      var result = _lookupViaScope(referenceLookup, filter: filter);
+      if (result != null) {
+        return result;
       }
+
+      // Second attempt: Look through `referenceChildren`.
       final referenceChildren = this.referenceChildren;
       final childrenResult = referenceChildren[referenceLookup.lookup];
       if (childrenResult != null) {
@@ -97,26 +97,39 @@ mixin CommentReferable implements Nameable {
     _ReferenceChildrenLookup referenceLookup, {
     required bool Function(CommentReferable?) filter,
   }) {
-    final resultElement = scope!.lookupPreferGetter(referenceLookup.lookup);
-    if (resultElement == null) return null;
+    Element? resultElement;
+    final scope = this.scope;
+    if (scope != null) {
+      resultElement = scope.lookupPreferGetter(referenceLookup.lookup);
+      if (resultElement == null) return null;
+    }
+
+    if (this case ModelElement(:var modelNode?) when resultElement == null) {
+      var references = modelNode.commentData?.references;
+      if (references != null) {
+        resultElement = references[referenceLookup.lookup]?.element;
+      }
+    }
+
+    if (resultElement == null) {
+      return null;
+    }
+
     ModelElement result;
     if (resultElement is PropertyAccessorElement) {
       final variable = resultElement.variable2!;
       if (variable.isSynthetic) {
+        // First, cache the synthetic variable, so that the
+        // PropertyAccessorElement getter and/or setter are set (see
+        // `Field.new` regarding `enclosingCombo`).
+        packageGraph.getModelForElement(variable);
+        // Then, use the result for the PropertyAccessorElement.
         result = packageGraph.getModelForElement(resultElement);
       } else {
         result = packageGraph.getModelForElement(variable);
       }
     } else {
       result = packageGraph.getModelForElement(resultElement);
-    }
-    if (result.enclosingElement is Container) {
-      assert(
-        false,
-        '[Container] member detected, support not implemented for analyzer '
-        'scope inside containers',
-      );
-      return null;
     }
     return _recurseChildrenAndFilter(referenceLookup, result, filter: filter);
   }

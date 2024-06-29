@@ -566,7 +566,7 @@ abstract class InheritingContainer extends Container {
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
       return getModelForPropertyInducingElement(field, library,
-          enclosingContainer: this, getter: getter, setter: setter) as Field;
+          getter: getter, setter: setter, enclosingContainer: this) as Field;
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
