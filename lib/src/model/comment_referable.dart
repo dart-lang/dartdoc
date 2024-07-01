@@ -228,25 +228,14 @@ extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
             r.referenceName: r,
       };
 
-  /// Generates entries from this Iterable.
-  Iterable<MapEntry<String, CommentReferable>> generateEntries() =>
-      map((r) => MapEntry(r.referenceName, r));
+  /// A mapping from each [CommentReferable]'s name to itself.
+  Map<String, CommentReferable> get asMapByName => {
+        for (var r in this) r.referenceName: r,
+      };
 
   /// Returns all values not of this type.
   List<CommentReferable> whereNotType<T>() => [
         for (var referable in this)
           if (referable is! T) referable,
       ];
-}
-
-/// A set of utility methods to add entries to
-/// [CommentReferable.referenceChildren].
-extension CommentReferableEntryBuilder on Map<String, CommentReferable> {
-  /// Like [Map.putIfAbsent] except works on an iterable of entries.
-  void addEntriesIfAbsent(
-      Iterable<MapEntry<String, CommentReferable>> entries) {
-    for (var entry in entries) {
-      if (!containsKey(entry.key)) this[entry.key] = entry.value;
-    }
-  }
 }

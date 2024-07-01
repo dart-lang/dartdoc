@@ -29,41 +29,35 @@ mixin Constructable implements InheritingContainer {
 
   @override
   @visibleForOverriding
-  Iterable<MapEntry<String, CommentReferable>>
-      get extraReferenceChildren sync* {
-    yield* _constructorGenerator(constructors);
-    // TODO(jcollins-g): wean important users off of relying on static method
-    // inheritance (dart-lang/dartdoc#2698)
-    for (var container in superChain.wherePublic
-        .map((t) => t.modelElement)
-        .whereType<Container>()) {
-      for (var modelElement in [
-        ...container.staticFields,
-        ...container.staticMethods,
-      ]) {
-        yield MapEntry(modelElement.referenceName, modelElement);
-      }
-      if (container is Constructable) {
-        yield* _constructorGenerator(container.constructors);
-      }
-    }
-  }
+  Map<String, CommentReferable> get extraReferenceChildren => {
+        for (var container in superChain.wherePublic
+            .map((t) => t.modelElement)
+            .whereType<Container>()) ...{
+          if (container is Constructable)
+            ..._mapConstructorsByName(container.constructors),
+          for (var modelElement in [
+            // TODO(jcollins-g): wean important users off of relying on static
+            // method inheritance (dart-lang/dartdoc#2698).
+            ...container.staticFields, ...container.staticMethods
+          ])
+            modelElement.referenceName: modelElement,
+        },
+        ..._mapConstructorsByName(constructors),
+      };
 
   @override
   bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
 
-  static Iterable<MapEntry<String, CommentReferable>> _constructorGenerator(
-      Iterable<Constructor> source) sync* {
-    for (var constructor in source) {
-      yield MapEntry(constructor.referenceName, constructor);
-      yield MapEntry(
-          '${constructor.enclosingElement.referenceName}.${constructor.referenceName}',
-          constructor);
-      if (constructor.isUnnamedConstructor) {
-        yield MapEntry('new', constructor);
-      }
-    }
-  }
+  static Map<String, CommentReferable> _mapConstructorsByName(
+          Iterable<Constructor> constructors) =>
+      {
+        for (var constructor in constructors) ...{
+          constructor.referenceName: constructor,
+          '${constructor.enclosingElement.referenceName}.${constructor.referenceName}':
+              constructor,
+          if (constructor.isUnnamedConstructor) 'new': constructor,
+        },
+      };
 }
 
 /// A [Container] that participates in inheritance in Dart.
