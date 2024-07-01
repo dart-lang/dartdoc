@@ -133,8 +133,15 @@ abstract class ModelElement
     }
 
     ModelElement newModelElement;
-    if (e is FieldElement) {
-      if (enclosingContainer == null) {
+    if (e is TopLevelVariableElement) {
+      assert(getter != null || setter != null);
+      newModelElement =
+          TopLevelVariable(e, library, packageGraph, getter, setter);
+    } else if (e is FieldElement) {
+      if (enclosingContainer is Extension) {
+        newModelElement = Field(e, library, packageGraph,
+            getter as ContainerAccessor?, setter as ContainerAccessor?);
+      } else if (enclosingContainer == null) {
         if (e.isEnumConstant) {
           var constantValue = e.computeConstantValue();
           if (constantValue == null) {
@@ -157,7 +164,6 @@ abstract class ModelElement
               getter as ContainerAccessor?, setter as ContainerAccessor?);
         }
       } else {
-        // EnumFields can't be inherited, so this case is simpler.
         newModelElement = Field.inherited(
           e,
           enclosingContainer,
@@ -167,16 +173,11 @@ abstract class ModelElement
           setter as ContainerAccessor?,
         );
       }
-    } else if (e is TopLevelVariableElement) {
-      assert(getter != null || setter != null);
-      newModelElement =
-          TopLevelVariable(e, library, packageGraph, getter, setter);
     } else {
       throw UnimplementedError(
           'Unrecognized property inducing element: $e (${e.runtimeType})');
     }
 
-    if (enclosingContainer != null) assert(newModelElement is Inheritable);
     _cacheNewModelElement(e, newModelElement, library,
         enclosingContainer: enclosingContainer);
 
@@ -193,8 +194,6 @@ abstract class ModelElement
   // clean that up.
   // TODO(jcollins-g): Enforce construction restraint.
   // TODO(jcollins-g): Allow e to be null and drop extraneous null checks.
-  // TODO(jcollins-g): Auto-vivify element's defining library for library
-  // parameter when given a null.
   factory ModelElement.for_(
       Element e, Library library, PackageGraph packageGraph,
       {Container? enclosingContainer}) {

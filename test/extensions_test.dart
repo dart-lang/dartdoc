@@ -53,6 +53,38 @@ var f() {}
     );
   }
 
+  void test_referenceToExtensionGetter() async {
+    var library = await bootPackageWithLibrary('''
+extension Ex on int {
+  bool get b => true;
+}
+
+/// Text [Ex.b].
+var f() {}
+''');
+
+    expect(
+      library.functions.named('f').documentationAsHtml,
+      contains('<a href="$linkPrefix/Ex/b.html">Ex.b</a>'),
+    );
+  }
+
+  void test_referenceToExtensionSetter() async {
+    var library = await bootPackageWithLibrary('''
+extension Ex on int {
+  set b(int value) {}
+}
+
+/// Text [Ex.b].
+var f() {}
+''');
+
+    expect(
+      library.functions.named('f').documentationAsHtml,
+      contains('<a href="$linkPrefix/Ex/b.html">Ex.b</a>'),
+    );
+  }
+
   // TODO(srawlins): Test everything else about extensions.
 }
 

@@ -75,7 +75,7 @@ class Extension extends Container {
       setter = ContainerAccessor(fieldSetter, library, packageGraph);
     }
     return getModelForPropertyInducingElement(field, library,
-        getter: getter, setter: setter) as Field;
+        getter: getter, setter: setter, enclosingContainer: this) as Field;
   }).toList(growable: false);
 
   @override
