@@ -1,9 +1,21 @@
-## 8.0.10-dev
+## 8.0.10
 
-* Un-deprecate the `--resources-dir` option.
+* Un-deprecate the `--resources-dir` option. (#3782)
 * Remove support for `[this]` as a comment reference. Referring to the
   containing element can be written as `this [Foo]`, and referring to 'this'
-  can just be written as `` `this` ``.
+  can just be written as `` `this` ``. (#3765)
+* Stop displaying constructors meeting a few attributes: generative
+  constructors of `abstract final`, `abstract interface`, and `sealed` classes.
+  (#3796 and #3804)
+* Strip `@docImport` directives from library documentation. (#3803)
+* Combine the two implementations of "library canonicalization." This should be
+  a no-op. (#3781)
+* Simplify `Library.allModelElements`, but should be a no-op. (#3793)
+* Support the `--stats` flag for the 'doc sdk' task
+  (`dart tools/task.dart doc sdk --stats`). (#3791)
+* Make `CommentReferenceParser.codeRef` private. (#3771)
+* Make `PackageGraph.allLibraries` private. (#3792)
+* Remove the unnecessary Privacy mixin. (#3794)
 
 ## 8.0.9+1
 
