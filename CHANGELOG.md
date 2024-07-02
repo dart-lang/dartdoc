@@ -1,3 +1,7 @@
+## 8.0.11-wip
+
+* Fix the slash key (`/`) not focusing the search box.
+
 ## 8.0.10
 
 * Un-deprecate the `--resources-dir` option. (#3782)
