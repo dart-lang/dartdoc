@@ -123,11 +123,13 @@ class _Search {
     // Handle grabbing focus when the user types '/' outside of the input.
     document.addEventListener(
       'keydown',
-      (Event event) {
-        if (event is! KeyboardEvent) {
+      (KeyboardEvent event) {
+        if (event.key != '/') {
           return;
         }
-        if (event.key == '/' && document.activeElement is! HTMLInputElement) {
+
+        var activeElement = document.activeElement;
+        if (activeElement == null || !activeElement.acceptsInput) {
           event.preventDefault();
           inputElement.focus();
         }
@@ -515,4 +517,9 @@ String _decodeHtml(String html) {
 extension on int {
   // TODO(srawlins): Re-implement in inline class someday.
   bool get isBlurred => this == -1;
+}
+
+extension on Element {
+  bool get acceptsInput =>
+      const {'input', 'textarea'}.contains(nodeName.toLowerCase());
 }
