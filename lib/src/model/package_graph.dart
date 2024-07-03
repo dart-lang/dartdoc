@@ -769,7 +769,7 @@ class PackageGraph with CommentReferable, Nameable {
       // TODO(keertip): Find a better way to exclude members of extensions
       // when libraries are specified using the "--include" flag.
       if (lib != null && lib.isDocumented) {
-        return getModelFor(element, lib);
+        return getModelFor(element, lib, enclosingContainer: preferredClass);
       }
     }
     // TODO(jcollins-g): The data structures should be changed to eliminate

@@ -234,7 +234,6 @@ abstract class ModelElement
       originalMember: originalMember,
     );
 
-    if (enclosingContainer != null) assert(newModelElement is Inheritable);
     _cacheNewModelElement(e, newModelElement, library,
         enclosingContainer: enclosingContainer);
 
@@ -324,11 +323,10 @@ abstract class ModelElement
     if (e.enclosingElement is ExtensionElement ||
         e.enclosingElement is InterfaceElement ||
         e is MultiplyInheritedExecutableElement) {
-      if (enclosingContainer == null) {
+      if (enclosingContainer == null || enclosingContainer is Extension) {
         return ContainerAccessor(e, library, packageGraph);
       }
 
-      assert(e.enclosingElement is! ExtensionElement);
       return ContainerAccessor.inherited(
           e, library, packageGraph, enclosingContainer,
           originalMember: originalMember as ExecutableMember?);
