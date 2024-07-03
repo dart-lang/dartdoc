@@ -29,7 +29,7 @@ class Accessor extends ModelElement {
   late GetterSetterCombo enclosingCombo;
 
   Accessor(this.element, super.library, super.packageGraph,
-      [ExecutableMember? super.originalMember]);
+      {ExecutableMember? super.originalMember});
 
   @override
   CharacterLocation? get characterLocation => element.isSynthetic
@@ -185,24 +185,22 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   }
 
   late final Container _enclosingElement;
-  bool _isInherited = false;
+
+  @override
+  final bool isInherited;
 
   @override
   bool get isCovariant => isSetter && parameters.first.isCovariant;
 
-  ContainerAccessor(super.element, super.library, super.packageGraph) {
+  ContainerAccessor(super.element, super.library, super.packageGraph)
+      : isInherited = false {
     _enclosingElement = super.enclosingElement as Container;
   }
 
-  ContainerAccessor.inherited(PropertyAccessorElement element, Library library,
-      PackageGraph packageGraph, this._enclosingElement,
-      {ExecutableMember? originalMember})
-      : super(element, library, packageGraph, originalMember) {
-    _isInherited = true;
-  }
-
-  @override
-  bool get isInherited => _isInherited;
+  ContainerAccessor.inherited(
+      super.element, super.library, super.packageGraph, this._enclosingElement,
+      {super.originalMember})
+      : isInherited = true;
 
   @override
   Container get enclosingElement => _enclosingElement;

@@ -785,14 +785,14 @@ class PackageGraph with CommentReferable, Nameable {
           preferredClass: preferredClass as InheritingContainer?);
     } else {
       if (lib != null) {
-        if (element is PropertyInducingElement) {
-          var getter =
-              element.getter != null ? getModelFor(element.getter!, lib) : null;
-          var setter =
-              element.setter != null ? getModelFor(element.setter!, lib) : null;
+        if (element case PropertyInducingElement(:var getter, :var setter)) {
+          var getterElement =
+              getter == null ? null : getModelFor(getter, lib) as Accessor;
+          var setterElement =
+              setter == null ? null : getModelFor(setter, lib) as Accessor;
           canonicalModelElement = getModelForPropertyInducingElement(
               element, lib,
-              getter: getter as Accessor?, setter: setter as Accessor?);
+              getter: getterElement, setter: setterElement);
         } else {
           canonicalModelElement = getModelFor(element, lib);
         }

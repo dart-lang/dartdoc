@@ -13,9 +13,8 @@ class Parameter extends ModelElement with HasNoPage {
   @override
   final ParameterElement element;
 
-  Parameter(this.element, Library library, PackageGraph packageGraph,
-      {ParameterMember? originalMember})
-      : super(library, packageGraph, originalMember);
+  Parameter(this.element, super.library, super.packageGraph,
+      {ParameterMember? super.originalMember});
 
   String? get defaultValue => hasDefaultValue ? element.defaultValueCode : null;
 

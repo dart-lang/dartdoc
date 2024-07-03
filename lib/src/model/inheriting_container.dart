@@ -503,11 +503,11 @@ abstract class InheritingContainer extends Container {
     return typeChain;
   }();
 
-  /// Add a single Field to _fields.
+  /// Creates a single Field.
   ///
-  /// If [field] is not specified, pick the FieldElement from the PropertyAccessorElement
-  /// whose enclosing class inherits from the other (defaulting to the getter)
-  /// and construct a Field using that.
+  /// If [field] is not specified, picks the [FieldElement] from the
+  /// [PropertyAccessorElement] whose enclosing class inherits from the other
+  /// (defaulting to the getter) and constructs a [Field] using that.
   Field _createSingleField(
       PropertyAccessorElement? getterElement,
       PropertyAccessorElement? setterElement,

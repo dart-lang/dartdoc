@@ -28,11 +28,10 @@ class Method extends ModelElement
     _calcTypeParameters();
   }
 
-  Method.inherited(this.element, this._enclosingContainer, Library library,
-      PackageGraph packageGraph,
-      {ExecutableMember? originalMember})
-      : _isInherited = true,
-        super(library, packageGraph, originalMember) {
+  Method.inherited(
+      this.element, this._enclosingContainer, super.library, super.packageGraph,
+      {ExecutableMember? super.originalMember})
+      : _isInherited = true {
     _calcTypeParameters();
   }
 
