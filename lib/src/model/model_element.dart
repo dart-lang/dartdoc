@@ -205,13 +205,6 @@ abstract class ModelElement
         e.kind == ElementKind.DYNAMIC ||
         e.kind == ElementKind.NEVER);
 
-    if (e.kind == ElementKind.DYNAMIC) {
-      return Dynamic(e, packageGraph);
-    }
-    if (e.kind == ElementKind.NEVER) {
-      return NeverType(e, packageGraph);
-    }
-
     Member? originalMember;
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
     //                   for members?
@@ -221,10 +214,19 @@ abstract class ModelElement
     }
 
     // Return the cached ModelElement if it exists.
-    var cachedModelElement = packageGraph.allConstructedModelElements[
-        ConstructedModelElementsKey(e, library, enclosingContainer)];
+    var key = ConstructedModelElementsKey(e, library, enclosingContainer);
+    var cachedModelElement = packageGraph.allConstructedModelElements[key];
     if (cachedModelElement != null) {
       return cachedModelElement;
+    }
+
+    if (e.kind == ElementKind.DYNAMIC) {
+      return packageGraph.allConstructedModelElements[key] =
+          Dynamic(e, packageGraph);
+    }
+    if (e.kind == ElementKind.NEVER) {
+      return packageGraph.allConstructedModelElements[key] =
+          NeverType(e, packageGraph);
     }
 
     var newModelElement = ModelElement._constructFromElementDeclaration(
