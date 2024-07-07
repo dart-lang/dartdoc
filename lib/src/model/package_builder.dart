@@ -190,10 +190,9 @@ class PubPackageBuilder implements PackageBuilder {
   Future<DartDocResolvedLibrary?> _resolveLibrary(String filePath) async {
     logDebug('Resolving $filePath...');
 
-    var analysisContext = _contextCollection.contextFor(_config.inputDir);
     // Allow dart source files with inappropriate suffixes (#1897).
     final library =
-        await analysisContext.currentSession.getResolvedLibrary(filePath);
+        await _analysisContext.currentSession.getResolvedLibrary(filePath);
     if (library is ResolvedLibraryResult) {
       return DartDocResolvedLibrary(library);
     }
