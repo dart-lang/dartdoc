@@ -76,7 +76,8 @@ abstract class ModelElement
 
   final PackageGraph _packageGraph;
 
-  ModelElement(this._library, this._packageGraph, [this._originalMember]);
+  ModelElement(this._library, this._packageGraph, {Member? originalMember})
+      : _originalMember = originalMember;
 
   /// Returns a [ModelElement] for an [Element], which can be a
   /// property-inducing element or not.
