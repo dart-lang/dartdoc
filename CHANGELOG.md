@@ -1,6 +1,9 @@
-## 8.0.11-wip
+## 8.0.11
 
-* Fix the slash key (`/`) not focusing the search box.
+* Fix the slash key (`/`) not focusing the search box. (#3810)
+* Start using resolution of doc-imports (via `/// @docImport`). (#3805)
+* Make `ContainerAccessor.isInherited` a final field.
+* Make `PackageGraph.analysisContext` a private field.
 
 ## 8.0.10
 
