@@ -43,7 +43,7 @@ class PackageGraph with CommentReferable, Nameable {
 
   final InheritanceManager3 inheritanceManager = InheritanceManager3();
 
-  final AnalysisContext analysisContext;
+  final AnalysisContext _analysisContext;
 
   /// PackageMeta for the default package.
   final PackageMeta packageMeta;
@@ -55,7 +55,7 @@ class PackageGraph with CommentReferable, Nameable {
     DartSdk sdk,
     this.hasEmbedderSdk,
     this.packageMetaProvider,
-    this.analysisContext,
+    this._analysisContext,
   )   : packageMeta = config.topLevelPackageMeta,
         sdkLibrarySources = {
           for (var lib in sdk.sdkLibraries) sdk.mapDartUri(lib.shortName): lib
@@ -244,7 +244,7 @@ class PackageGraph with CommentReferable, Nameable {
             () => ModelNode(
                   directive,
                   resolvedLibrary.element,
-                  analysisContext,
+                  _analysisContext,
                   commentData: commentData,
                 ));
       }
@@ -299,7 +299,7 @@ class PackageGraph with CommentReferable, Nameable {
         () => ModelNode(
           declaration,
           element,
-          analysisContext,
+          _analysisContext,
           commentData: commentData,
         ),
       );
