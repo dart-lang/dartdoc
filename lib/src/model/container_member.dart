@@ -61,6 +61,9 @@ mixin ContainerMember on ModelElement {
       // Until then, just pretend we're handling this correctly.
       [
         (documentationFrom.first as ModelElement).definingLibrary,
-        (packageGraph.findCanonicalModelElementFor(this) ?? this).library,
-      ];
+        if (this case Field(:var getter, :var setter))
+          packageGraph.findCanonicalModelElementFor(getter ?? setter)?.library
+        else
+          (packageGraph.findCanonicalModelElementFor(this) ?? this).library,
+      ].nonNulls.toList();
 }

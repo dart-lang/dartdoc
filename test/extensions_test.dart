@@ -37,6 +37,22 @@ var f() {}
     );
   }
 
+  void test_referenceToMissingElement_onExtensionMember() async {
+    var library = await bootPackageWithLibrary('''
+extension E on int {
+  /// Text [NotFound] text.
+  int get f => 7;
+}
+''');
+
+    // We are primarily testing that dartdoc does not crash when trying to
+    // resolve an unknown reference, from the position of an extension member.
+    expect(
+      library.extensions.first.instanceFields.first.documentationAsHtml,
+      contains('<p>Text <code>NotFound</code> text.</p>'),
+    );
+  }
+
   void test_referenceToExtensionMethod() async {
     var library = await bootPackageWithLibrary('''
 extension Ex on int {

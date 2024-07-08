@@ -104,10 +104,12 @@ mixin CommentReferable implements Nameable {
       if (resultElement == null) return null;
     }
 
-    if (this case ModelElement(:var modelNode?) when resultElement == null) {
-      var references = modelNode.commentData?.references;
-      if (references != null) {
-        resultElement = references[referenceLookup.lookup]?.element;
+    if (resultElement == null) {
+      if (this case ModelElement(:var modelNode?)) {
+        var references = modelNode.commentData?.references;
+        if (references != null) {
+          resultElement = references[referenceLookup.lookup]?.element;
+        }
       }
     }
 
