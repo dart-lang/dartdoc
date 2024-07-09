@@ -475,7 +475,6 @@ class PackageGraph with CommentReferable, Nameable {
       PackageWarning.ambiguousDocReference ||
       PackageWarning.ignoredCanonicalFor ||
       PackageWarning.packageOrderGivesMissingPackageName ||
-      PackageWarning.reexportedPrivateApiAcrossPackages ||
       PackageWarning.unresolvedDocReference ||
       PackageWarning.unknownMacro ||
       PackageWarning.unknownHtmlFragment ||
