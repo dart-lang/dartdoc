@@ -1,6 +1,6 @@
 ## 8.0.12
 
- * Allow `markdown-alert` class names in HTML sanitization.
+ * Allow `markdown-alert` class names in HTML sanitization. (#3820)
 
 ## 8.0.11
 
