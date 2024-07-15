@@ -1,5 +1,5 @@
 name: dartdoc
-version: 8.0.12-dev
+version: 8.0.12
 description: A non-interactive HTML documentation generator for Dart source code.
 repository: https://github.com/dart-lang/dartdoc
 
