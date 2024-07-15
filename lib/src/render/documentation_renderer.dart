@@ -77,7 +77,10 @@ class DocumentationRenderResult {
 }
 
 bool _allowClassName(String className) =>
-    className == 'deprecated' || className.startsWith('language-');
+    className == 'deprecated' ||
+    className.startsWith('language-') ||
+    className == 'markdown-alert' ||
+    className.startsWith('markdown-alert-');
 
 Iterable<String> _addLinkRel(String uriString) {
   final uri = Uri.tryParse(uriString);
