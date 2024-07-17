@@ -1,10 +1,7 @@
-## 8.0.13
-
-* Require package `web: '>=0.5.1 <2.0.0'`.
-
 ## 8.0.12
 
- * Allow `markdown-alert` class names in HTML sanitization. (#3820)
+* Allow `markdown-alert` class names in HTML sanitization. (#3820)
+* Require package `web: '>=0.5.1 <2.0.0'`.
 
 ## 8.0.11
 
