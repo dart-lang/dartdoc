@@ -6,6 +6,8 @@ import 'dart:js_interop';
 
 import 'package:web/web.dart';
 
+import 'search.dart' show ElementExtension;
+
 /// Initialize the sidebar contents and sidenav toggle handlers.
 void init() {
   _initializeContents();
@@ -74,7 +76,7 @@ void _loadSidebar(
 
   window.fetch('$baseHref$sidebarPath'.toJS).toDart.then((fetchResponse) async {
     if (fetchResponse.status != 200) {
-      final errorAnchor = (document.createElement('a') as HTMLAnchorElement)
+      final errorAnchor = HTMLAnchorElement()
         ..href = 'https://dart.dev/tools/dart-doc#troubleshoot'
         ..text = 'Failed to load sidebar. '
             'Visit dart.dev for help troubleshooting.';
@@ -83,8 +85,7 @@ void _loadSidebar(
     }
 
     final responseText = (await fetchResponse.text().toDart).toDart;
-    final sidebarContent = (document.createElement('div') as HTMLElement)
-      ..innerHTML = responseText;
+    final sidebarContent = HTMLDivElement()..innerHtml = responseText;
 
     _updateLinks(baseHref, sidebarContent);
     sidebarElement.appendChild(sidebarContent);

@@ -16301,12 +16301,7 @@ const _invisibleGetters = {
     'runtimeType',
     'superclassConstraints'
   },
-  'ModelNode': {
-    'commentReferenceData',
-    'hashCode',
-    'runtimeType',
-    'sourceCode'
-  },
+  'ModelNode': {'commentData', 'hashCode', 'runtimeType', 'sourceCode'},
   'PackageGraph': {
     'allConstructedModelElements',
     'allExtensionsAdded',
@@ -16314,7 +16309,6 @@ const _invisibleGetters = {
     'allImplementersAdded',
     'allInheritableElements',
     'allLibrariesAdded',
-    'analysisContext',
     'breadcrumbName',
     'config',
     'dartCoreObject',

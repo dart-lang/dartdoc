@@ -92,7 +92,7 @@ class _Search {
   final Index index;
   final Uri uri;
 
-  late final listBox = document.createElement('div') as HTMLElement
+  late final listBox = HTMLDivElement()
     ..setAttribute('role', 'listbox')
     ..setAttribute('aria-expanded', 'false')
     ..style.display = 'none'
@@ -102,11 +102,11 @@ class _Search {
 
   /// Element used in [listBox] to inform the functionality of hitting enter in
   /// search box.
-  late final moreResults = document.createElement('div')
+  late final moreResults = HTMLDivElement()
     ..classList.add('enter-search-message');
 
   /// Element that contains the search suggestions in a new format.
-  late final searchResults = document.createElement('div')
+  late final searchResults = HTMLDivElement()
     ..classList.add('tt-search-results');
 
   String? storedValue;
@@ -137,7 +137,7 @@ class _Search {
     );
 
     // Prepare elements.
-    var wrapper = document.createElement('div')..classList.add('tt-wrapper');
+    var wrapper = HTMLDivElement()..classList.add('tt-wrapper');
     inputElement
       ..replaceWith(wrapper)
       ..setAttribute('autocomplete', 'off')
@@ -187,15 +187,15 @@ class _Search {
     mainContent
       ..textContent = ''
       ..appendChild(
-        document.createElement('section')..classList.add('search-summary'),
+        HTMLElement.section()..classList.add('search-summary'),
       )
       ..appendChild(
-        document.createElement('h2')..innerHTML = 'Search Results',
+        HTMLHeadingElement.h2()..innerHtml = 'Search Results',
       )
       ..appendChild(
-        document.createElement('div')
+        HTMLDivElement()
           ..classList.add('search-summary')
-          ..innerHTML = '$_suggestionLength results for "$searchText"',
+          ..innerHtml = '$_suggestionLength results for "$searchText"',
       );
 
     if (_containerMap.isNotEmpty) {
@@ -203,16 +203,16 @@ class _Search {
         mainContent.appendChild(element);
       }
     } else {
-      var noResults = document.createElement('div')
+      var noResults = HTMLDivElement()
         ..classList.add('search-summary')
-        ..innerHTML =
+        ..innerHtml =
             'There was not a match for "$searchText". Want to try searching '
                 'from additional Dart-related sites? ';
 
       var buildLink = Uri.parse(
               'https://dart.dev/search?cx=011220921317074318178%3A_yy-tmb5t_i&ie=UTF-8&hl=en&q=')
           .replace(queryParameters: {'q': searchText});
-      var link = document.createElement('a')
+      var link = HTMLAnchorElement()
         ..setAttribute('href', buildLink.toString())
         ..textContent = 'Search on dart.dev.';
       noResults.appendChild(link);
@@ -414,30 +414,30 @@ class _Search {
 }
 
 HTMLElement _createSuggestion(String query, IndexItem match) {
-  final suggestion = document.createElement('div') as HTMLElement
+  final suggestion = HTMLDivElement()
     ..setAttribute('data-href', match.href ?? '')
     ..classList.add('tt-suggestion');
 
-  final suggestionTitle = document.createElement('span')
+  final suggestionTitle = HTMLSpanElement()
     ..classList.add('tt-suggestion-title')
-    ..innerHTML = _highlight(
+    ..innerHtml = _highlight(
         '${match.name} ${match.kind.toString().toLowerCase()}', query);
   suggestion.appendChild(suggestionTitle);
 
   final enclosingElement = match.enclosedBy;
   if (enclosingElement != null) {
-    suggestion.appendChild(document.createElement('span') as HTMLElement
+    suggestion.appendChild(HTMLSpanElement()
       ..classList.add('tt-suggestion-container')
-      ..innerHTML = '(in ${_highlight(enclosingElement.name, query)})');
+      ..innerHtml = '(in ${_highlight(enclosingElement.name, query)})');
   }
 
   // The one line description to use in the search suggestions.
   final matchDescription = match.desc;
   if (matchDescription != null && matchDescription.isNotEmpty) {
-    final inputDescription = document.createElement('blockquote') as HTMLElement
+    final inputDescription = HTMLQuoteElement.blockquote()
       ..classList.add('one-line-description')
       ..setAttribute('title', _decodeHtml(matchDescription))
-      ..innerHTML = _highlight(matchDescription, query);
+      ..innerHtml = _highlight(matchDescription, query);
     suggestion.appendChild(inputDescription);
   }
 
@@ -472,7 +472,7 @@ HTMLElement _createSuggestion(String query, IndexItem match) {
 
 /// Maps a suggestion library/class [Element] to the other suggestions, if any.
 void _mapToContainer(HTMLElement containerElement, HTMLElement suggestion) {
-  final containerInnerHtml = containerElement.innerHTML;
+  final containerInnerHtml = containerElement.innerHtml;
 
   if (containerInnerHtml.isEmpty) {
     return;
@@ -488,15 +488,14 @@ void _mapToContainer(HTMLElement containerElement, HTMLElement suggestion) {
 }
 
 /// Creates an `<a>` [Element] for the enclosing library/class.
-HTMLElement _createContainer(String encloser, String href) =>
-    document.createElement('div') as HTMLElement
-      ..classList.add('tt-container')
-      ..appendChild(document.createElement('p')
-        ..textContent = 'Results from '
-        ..classList.add('tt-container-text')
-        ..appendChild(document.createElement('a')
-          ..setAttribute('href', href)
-          ..innerHTML = encloser));
+HTMLElement _createContainer(String encloser, String href) => HTMLDivElement()
+  ..classList.add('tt-container')
+  ..appendChild(HTMLParagraphElement()
+    ..textContent = 'Results from '
+    ..classList.add('tt-container-text')
+    ..appendChild(HTMLAnchorElement()
+      ..setAttribute('href', href)
+      ..innerHtml = encloser));
 
 /// Wraps each instance of [query] in [text] with a `<strong>` tag, as HTML
 /// text.
@@ -509,9 +508,7 @@ String _highlight(String text, String query) => text.replaceAllMapped(
 ///
 /// This is safe for use in an HTML attribute like `title`.
 String _decodeHtml(String html) {
-  return ((document.createElement('textarea') as HTMLTextAreaElement)
-        ..innerHTML = html)
-      .value;
+  return (HTMLTextAreaElement()..innerHtml = html).value;
 }
 
 extension on int {
@@ -519,7 +516,12 @@ extension on int {
   bool get isBlurred => this == -1;
 }
 
-extension on Element {
+extension ElementExtension on Element {
   bool get acceptsInput =>
       const {'input', 'textarea'}.contains(nodeName.toLowerCase());
+
+  // The default implementation allows `JSAny` to support trusted types. We only
+  // use `String`s, so prefer this to avoid manual conversions.
+  @JS('innerHTML')
+  external String innerHtml;
 }
