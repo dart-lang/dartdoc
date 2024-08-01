@@ -286,10 +286,8 @@ class PubPackageBuilder implements PackageBuilder {
         if (processedLibraries.contains(resolvedLibrary.element)) {
           continue;
         }
-        if (addingSpecials || _shouldIncludeLibrary(resolvedLibrary.element)) {
-          addLibrary(resolvedLibrary);
-          processedLibraries.add(resolvedLibrary.element);
-        }
+        addLibrary(resolvedLibrary);
+        processedLibraries.add(resolvedLibrary.element);
       }
       files.addAll(newFiles);
       if (!addingSpecials) {
@@ -328,10 +326,6 @@ class PubPackageBuilder implements PackageBuilder {
       progressBarComplete();
     }
   }
-
-  /// Whether [libraryElement] should be included in the libraries-to-document.
-  bool _shouldIncludeLibrary(LibraryElement libraryElement) =>
-      _config.include.isEmpty || _config.include.contains(libraryElement.name);
 
   /// Returns all top level library files in the 'lib/' directory of the given
   /// package root directory.

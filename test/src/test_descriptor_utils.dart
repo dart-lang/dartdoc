@@ -48,7 +48,10 @@ Future<String> createPackage(
     final dependencies = parsedYaml['dependencies'] as Map;
     for (var dep in dependencies.keys) {
       // This only accepts 'path' deps.
-      final depConfig = dependencies[dep] as Map;
+      final depConfig = dependencies[dep];
+      if (depConfig is! Map) {
+        throw StateError('dep in pubspec must be a Map, but is: "$depConfig"');
+      }
       final pathDep = depConfig['path'];
 
       packagesInfo.writeln(''',{

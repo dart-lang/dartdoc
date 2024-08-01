@@ -28,12 +28,14 @@ class OptionsTest extends DartdocTestBase {
   static const packageName = 'test_package';
 
   Future<void> createPackage({
+    String? pubspec,
     String? dartdocOptions,
     List<d.Descriptor> libFiles = const [],
     List<d.Descriptor> files = const [],
   }) async {
     packagePath = await d.createPackage(
       packageName,
+      pubspec: pubspec,
       dartdocOptions: dartdocOptions,
       libFiles: libFiles,
       files: files,
@@ -179,6 +181,49 @@ class Baz {}
     );
     expect(packageGraph.localPublicLibraries.map((l) => l.name),
         orderedEquals(['library_1', 'library_2']));
+  }
+
+  void test_includeOption_referringToNotIncluded() async {
+    await createPackage(
+      pubspec: '''
+name: options
+version: 0.0.1
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+dependencies:
+  http:
+    path: vendor/http
+''',
+      dartdocOptions: '''
+dartdoc:
+  include: ["library_1"]
+''',
+      libFiles: [
+        d.file('library_1.dart', '''
+library library_1;
+import 'package:http/http.dart' as http;
+class Foo {
+  http.Client? client;
+}
+'''),
+      ],
+      files: [
+        d.dir('vendor/http', [
+          d.dir('lib', [d.file('http.dart', 'class Client {}')])
+        ])
+      ],
+    );
+    final packageGraph = await bootBasicPackage(
+      packagePath,
+      packageMetaProvider,
+      packageConfigProvider,
+    );
+    expect(packageGraph.localPublicLibraries.map((l) => l.name),
+        orderedEquals(['library_1']));
+    final foo =
+        packageGraph.localPackages.first.libraries.first.classes.named('Foo');
+    // The name is not linked, but also does not error.
+    expect(foo.allFields.first.modelType.linkedName, 'Client?');
   }
 
   void test_includeCommandLineOption_overridesOptionsFileOption() async {

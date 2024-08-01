@@ -30,8 +30,7 @@ mixin Nameable {
   ///
   /// A "package-public" element satisfies the following requirements:
   /// * is not documented with the `@nodoc` directive,
-  /// * for a library, is found in a package's top-level 'lib' directory, and
-  ///   not found in it's 'lib/src' directory,
+  /// * for a library, adheres to the documentation for [Library.isPublic],
   /// * for a library member, is in a _public_ library's exported namespace, and
   ///   is not privately named, nor an unnamed extension,
   /// * for a container (class, enum, extension, extension type, mixin) member,

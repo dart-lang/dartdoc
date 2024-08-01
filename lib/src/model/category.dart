@@ -21,7 +21,7 @@ class Category
         TopLevelContainer,
         Indexable
     implements Documentable {
-  /// All libraries in [libraries] must come from [_package].
+  /// All libraries in [libraries] must come from [package].
   @override
   final Package package;
 

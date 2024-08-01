@@ -28,15 +28,9 @@ void main() async {
   late FakePackageConfigProvider packageConfigProvider;
   late String packagePath;
 
-  Future<void> setUpPackage(
-    String name, {
-    String? pubspec,
-    String? analysisOptions,
-  }) async {
+  Future<void> setUpPackage(String name) async {
     packagePath = await d.createPackage(
       name,
-      pubspec: pubspec,
-      analysisOptions: analysisOptions,
       resourceProvider: resourceProvider,
     );
 

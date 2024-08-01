@@ -107,10 +107,16 @@ class PackageGraph with CommentReferable, Nameable {
           'that `$dartOrFlutter analyze` completes without errors.');
     }
     var package = Package.fromPackageMeta(packageMeta, this);
-    var lib = Library.fromLibraryResult(resolvedLibrary, this, package);
-    package.libraries.add(lib);
-    _allLibraries[libraryElement.source.fullName] = lib;
+    var library = Library.fromLibraryResult(resolvedLibrary, this, package);
+    if (_shouldIncludeLibrary(libraryElement)) {
+      package.libraries.add(library);
+    }
+    _allLibraries[libraryElement.source.fullName] = library;
   }
+
+  /// Whether [libraryElement] should be included in the libraries-to-document.
+  bool _shouldIncludeLibrary(LibraryElement libraryElement) =>
+      config.include.isEmpty || config.include.contains(libraryElement.name);
 
   /// Adds [resolvedLibrary] as a special library to the package graph, which
   /// adds the library to [_allLibraries], but does not add it to any [Package]'s
@@ -346,10 +352,10 @@ class PackageGraph with CommentReferable, Nameable {
   /// [libraries].
   ///
   /// Keyed by `LibraryElement.source.fullName` to resolve different URIs
-  /// referring to the same location, to the same [Library].  This isn't how Dart
-  /// works internally, but Dartdoc pretends to avoid documenting or duplicating
-  /// data structures for the same "library" on disk based on how it is
-  /// referenced.  We can't use [Source] as a key due to differences in the
+  /// referring to the same location, and hence to the same [Library]. This
+  /// isn't how Dart works internally, but Dartdoc pretends to avoid documenting
+  /// or duplicating data structures for the same library on disk based on how
+  /// it is referenced. We can't use [Source] as a key due to differences in the
   /// [TimestampedData] timestamps.
   ///
   /// This mapping must be complete before [initializePackageGraph] is called.
@@ -556,14 +562,19 @@ class PackageGraph with CommentReferable, Nameable {
     }
   }
 
-  int _lastSizeOfAllLibraries = 0;
+  int _previousSizeOfAllLibraries = 0;
 
   /// A mapping from a [LibraryElement] to all of the [Library]s that export it,
   /// which is created if it is not yet populated.
   Map<LibraryElement, Set<Library>> get libraryExports {
-    // Table must be reset if we're still in the middle of adding libraries.
-    if (_allLibraries.keys.length != _lastSizeOfAllLibraries) {
-      _lastSizeOfAllLibraries = _allLibraries.keys.length;
+    // The map must be reset if we're still in the middle of adding libraries
+    // (though this shouldn't happen).
+    if (_allLibraries.keys.length != _previousSizeOfAllLibraries) {
+      assert(
+        _previousSizeOfAllLibraries == 0,
+        'Re-entered `libraryExports` while building all libraries',
+      );
+      _previousSizeOfAllLibraries = _allLibraries.keys.length;
       _libraryExports = {};
       for (var library in publicLibraries) {
         _tagExportsFor(library, library.element);
