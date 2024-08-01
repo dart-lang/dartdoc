@@ -208,8 +208,10 @@ class Foo {
 '''),
       ],
       files: [
-        d.dir('vendor/http', [
-          d.dir('lib', [d.file('http.dart', 'class Client {}')])
+        d.dir('vendor', [
+          d.dir('http', [
+            d.dir('lib', [d.file('http.dart', 'class Client {}')])
+          ])
         ])
       ],
     );
