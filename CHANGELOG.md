@@ -1,3 +1,8 @@
+## 8.0.13
+
+* Fix an issue around referencing elements not explicitly included in a
+  package's documentation. (#3825)
+
 ## 8.0.12
 
 * Allow `markdown-alert` class names in HTML sanitization. (#3820)
