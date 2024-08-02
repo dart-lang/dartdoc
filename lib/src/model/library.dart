@@ -5,8 +5,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/source/line_info.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/generated/sdk.dart' show SdkLibrary;
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
@@ -107,13 +105,17 @@ class Library extends ModelElement
   CompilationUnitElement get compilationUnitElement =>
       element.definingCompilationUnit;
 
-  SdkLibrary? get _sdkLib =>
-      packageGraph.sdkLibrarySources[element.librarySource];
-
   @override
+
+  /// Whether this library is considered "public."
+  ///
+  /// A library is considered public if it:
+  /// * is an SDK library and it is documented and it is not internal, or
+  /// * is found in a package's top-level 'lib' directory, and
+  ///   not found in it's 'lib/src' directory, and it is not excluded.
   bool get isPublic {
     if (!super.isPublic) return false;
-    final sdkLib = _sdkLib;
+    final sdkLib = packageGraph.sdkLibrarySources[element.librarySource];
     if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
       return false;
     }
