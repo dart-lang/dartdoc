@@ -20,8 +20,48 @@ void main() {
 class ParameterTest extends DartdocTestBase {
   @override
   String get libraryName => 'parameters';
-  @override
-  String get sdkConstraint => '>=2.17.0 <3.0.0';
+
+  void test_formalParameter_referenced() async {
+    var library = await bootPackageWithLibrary('''
+/// Text [p].
+void f(int p) {}
+''');
+    var f = library.functions.named('f');
+    // There is no link, but also no wrong link or crash.
+    expect(f.documentationAsHtml, '<p>Text <code>p</code>.</p>');
+  }
+
+  void test_formalParameter_referenced_notShadowedElement() async {
+    var library = await bootPackageWithLibrary('''
+/// Text [p].
+void f(int p) {}
+var p = 0;
+''');
+    var f = library.functions.named('f');
+    // There is no link, but also no wrong link or crash.
+    expect(f.documentationAsHtml, '<p>Text <code>p</code>.</p>');
+  }
+
+  void test_formalParameter_referenced_notShadowedPrefix() async {
+    var library = await bootPackageWithLibrary('''
+import 'dart:async' as p;
+/// Text [p].
+void f(int p) {}
+''');
+    var f = library.functions.named('f');
+    // There is no link, but also no wrong link or crash.
+    expect(f.documentationAsHtml, '<p>Text <code>p</code>.</p>');
+  }
+
+  void test_formalParameter_referenced_wildcard() async {
+    var library = await bootPackageWithLibrary('''
+/// Text [_].
+void f(int _) {}
+''');
+    var f = library.functions.named('f');
+    // There is no link, but also no wrong link or crash.
+    expect(f.documentationAsHtml, '<p>Text <code>_</code>.</p>');
+  }
 
   void test_formalParameter_generic_method() async {
     var library = await bootPackageWithLibrary('''
@@ -203,7 +243,48 @@ class A {
       '''));
   }
 
-  void test_superConstructorParameter_fieldFormal() async {
+  void test_fieldFormalParameter_referenced() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  int p;
+  /// Text [p].
+  C(this.p);
+}
+''');
+    var cConstructor = library.classes.named('C').constructors.named('C');
+    // There is no link, but also no wrong link or crash.
+    expect(cConstructor.documentationAsHtml, '<p>Text <code>p</code>.</p>');
+  }
+
+  void test_fieldFormalParameter_referenced_wildcard() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  int _;
+  /// Text [_].
+  C(this._);
+}
+''');
+    var cConstructor = library.classes.named('C').constructors.named('C');
+    // There is no link, but also no wrong link or crash.
+    expect(cConstructor.documentationAsHtml, '<p>Text <code>_</code>.</p>');
+  }
+
+  void test_superParameter_referenced_wildcard() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  C(int _);
+}
+class D extends C {
+  /// Text [_].
+  D(super._) {}
+}
+''');
+    var dConstructor = library.classes.named('D').constructors.named('D');
+    // There is no link, but also no wrong link or crash.
+    expect(dConstructor.documentationAsHtml, '<p>Text <code>_</code>.</p>');
+  }
+
+  void test_superParameter_fieldFormal() async {
     var library = await bootPackageWithLibrary('''
 class C {
   int f;
@@ -225,7 +306,7 @@ class D extends C {
       '''));
   }
 
-  void test_superConstructorParameter_isSubtype() async {
+  void test_superParameter_isSubtype() async {
     var library = await bootPackageWithLibrary('''
 class C {
   C.positionalNum(num g);
@@ -246,7 +327,7 @@ class D extends C {
       '''));
   }
 
-  void test_superConstructorParameter_superParameter() async {
+  void test_superParameter_superParameter() async {
     var library = await bootPackageWithLibrary('''
 class C {
   C.requiredPositional(int a);
