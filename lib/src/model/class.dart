@@ -69,7 +69,7 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   bool get isFinal => element.isFinal && !element.isSealed;
 
   @override
-  bool get isInterface => element.isInterface && !element.isSealed;
+  bool get isImplementableInterface => element.isInterface && !element.isSealed;
 
   @override
   bool get isMixinClass => element.isMixinClass;

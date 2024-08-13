@@ -1,14 +1,12 @@
 <ol>
   {{ #container }}
 
-    {{ #isClassOrExtensionType }}
-      {{ #hasPublicConstructors }}
-        <li class="section-title"><a href="{{{ href }}}#constructors">Constructors</a></li>
-        {{ #publicConstructorsSorted }}
-          <li><a{{ #isDeprecated }} class="deprecated"{{ /isDeprecated }} href="{{{ href }}}">{{ shortName }}</a></li>
-        {{ /publicConstructorsSorted }}
-      {{ /hasPublicConstructors }}
-    {{ /isClassOrExtensionType }}
+    {{ #hasPublicConstructors }}
+      <li class="section-title"><a href="{{{ href }}}#constructors">Constructors</a></li>
+      {{ #publicConstructorsSorted }}
+        <li><a{{ #isDeprecated }} class="deprecated"{{ /isDeprecated }} href="{{{ href }}}">{{ shortName }}</a></li>
+      {{ /publicConstructorsSorted }}
+    {{ /hasPublicConstructors }}
 
     {{ #isEnum }}
       {{ #hasPublicEnumValues }}
@@ -20,7 +18,7 @@
     {{ /isEnum }}
 
     {{!-- Instance members which may or may not be inherited. --}}
-    {{ #isClassOrEnum }}
+    {{ #isInterface }}
       {{ #hasPublicInstanceFields }}
         <li class="section-title{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}">
           <a href="{{{ href }}}#instance-properties">Properties</a>
@@ -43,7 +41,7 @@
           <li{{ #isInherited }} class="inherited"{{ /isInherited }}>{{{ linkedName }}}</li>
         {{ /publicInstanceOperatorsSorted }}
       {{ /hasPublicInstanceOperators }}
-    {{ /isClassOrEnum }}
+    {{ /isInterface }}
 
     {{!-- Instance members with no inheritance concept. --}}
     {{ #isExtension }}
@@ -70,27 +68,25 @@
     {{ /isExtension }}
 
     {{!-- Static members. --}}
-    {{ #isInterfaceOrExtension }}
-      {{ #hasPublicVariableStaticFields }}
-        <li class="section-title"><a href="{{{ href }}}#static-properties">Static properties</a></li>
-        {{ #publicVariableStaticFieldsSorted }}
-          <li>{{{ linkedName }}}</li>
-        {{ /publicVariableStaticFieldsSorted }}
-      {{ /hasPublicVariableStaticFields }}
+    {{ #hasPublicVariableStaticFields }}
+      <li class="section-title"><a href="{{{ href }}}#static-properties">Static properties</a></li>
+      {{ #publicVariableStaticFieldsSorted }}
+        <li>{{{ linkedName }}}</li>
+      {{ /publicVariableStaticFieldsSorted }}
+    {{ /hasPublicVariableStaticFields }}
 
-      {{ #hasPublicStaticMethods }}
-        <li class="section-title"><a href="{{{ href }}}#static-methods">Static methods</a></li>
-        {{ #publicStaticMethodsSorted }}
-          <li>{{{ linkedName }}}</li>
-        {{ /publicStaticMethodsSorted }}
-      {{ /hasPublicStaticMethods }}
+    {{ #hasPublicStaticMethods }}
+      <li class="section-title"><a href="{{{ href }}}#static-methods">Static methods</a></li>
+      {{ #publicStaticMethodsSorted }}
+        <li>{{{ linkedName }}}</li>
+      {{ /publicStaticMethodsSorted }}
+    {{ /hasPublicStaticMethods }}
 
-      {{ #hasPublicConstantFields }}
-        <li class="section-title"><a href="{{{ href }}}#constants">Constants</a></li>
-        {{ #publicConstantFieldsSorted }}
-          <li>{{{ linkedName }}}</li>
-        {{ /publicConstantFieldsSorted }}
-      {{ /hasPublicConstantFields }}
-    {{ /isInterfaceOrExtension }}
+    {{ #hasPublicConstantFields }}
+      <li class="section-title"><a href="{{{ href }}}#constants">Constants</a></li>
+      {{ #publicConstantFieldsSorted }}
+        <li>{{{ linkedName }}}</li>
+      {{ /publicConstantFieldsSorted }}
+    {{ /hasPublicConstantFields }}
   {{ /container }}
 </ol>

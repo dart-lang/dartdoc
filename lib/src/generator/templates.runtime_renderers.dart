@@ -1655,12 +1655,12 @@ class _Renderer_Class extends RendererBase<Class> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isFinal,
                 ),
-                'isInterface': Property(
-                  getValue: (CT_ c) => c.isInterface,
+                'isImplementableInterface': Property(
+                  getValue: (CT_ c) => c.isImplementableInterface,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInterface,
+                  getBool: (CT_ c) => c.isImplementableInterface,
                 ),
                 'isMixinClass': Property(
                   getValue: (CT_ c) => c.isMixinClass,
@@ -2929,20 +2929,6 @@ class _Renderer_Container extends RendererBase<Container> {
                         _render_Operator(e, ast, r.template, sink, parent: r));
                   },
                 ),
-                'isClassOrEnum': Property(
-                  getValue: (CT_ c) => c.isClassOrEnum,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isClassOrEnum,
-                ),
-                'isClassOrExtensionType': Property(
-                  getValue: (CT_ c) => c.isClassOrExtensionType,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isClassOrExtensionType,
-                ),
                 'isEnum': Property(
                   getValue: (CT_ c) => c.isEnum,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -2957,12 +2943,12 @@ class _Renderer_Container extends RendererBase<Container> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isExtension,
                 ),
-                'isInterfaceOrExtension': Property(
-                  getValue: (CT_ c) => c.isInterfaceOrExtension,
+                'isInterface': Property(
+                  getValue: (CT_ c) => c.isInterface,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInterfaceOrExtension,
+                  getBool: (CT_ c) => c.isInterface,
                 ),
                 'isMixin': Property(
                   getValue: (CT_ c) => c.isMixin,
@@ -4392,12 +4378,12 @@ class _Renderer_Enum extends RendererBase<Enum> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isBase,
                 ),
-                'isInterface': Property(
-                  getValue: (CT_ c) => c.isInterface,
+                'isImplementableInterface': Property(
+                  getValue: (CT_ c) => c.isImplementableInterface,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInterface,
+                  getBool: (CT_ c) => c.isImplementableInterface,
                 ),
                 'isMixinClass': Property(
                   getValue: (CT_ c) => c.isMixinClass,
@@ -5146,12 +5132,12 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isBase,
                 ),
-                'isInterface': Property(
-                  getValue: (CT_ c) => c.isInterface,
+                'isImplementableInterface': Property(
+                  getValue: (CT_ c) => c.isImplementableInterface,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInterface,
+                  getBool: (CT_ c) => c.isImplementableInterface,
                 ),
                 'isMixinClass': Property(
                   getValue: (CT_ c) => c.isMixinClass,
@@ -7440,12 +7426,12 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isFinal,
                 ),
-                'isInterface': Property(
-                  getValue: (CT_ c) => c.isInterface,
+                'isImplementableInterface': Property(
+                  getValue: (CT_ c) => c.isImplementableInterface,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInterface,
+                  getBool: (CT_ c) => c.isImplementableInterface,
                 ),
                 'isMixinClass': Property(
                   getValue: (CT_ c) => c.isMixinClass,
@@ -9811,12 +9797,12 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.isFinal,
                 ),
-                'isInterface': Property(
-                  getValue: (CT_ c) => c.isInterface,
+                'isImplementableInterface': Property(
+                  getValue: (CT_ c) => c.isImplementableInterface,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.isInterface,
+                  getBool: (CT_ c) => c.isImplementableInterface,
                 ),
                 'isMixinClass': Property(
                   getValue: (CT_ c) => c.isMixinClass,

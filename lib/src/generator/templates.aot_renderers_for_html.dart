@@ -1694,27 +1694,25 @@ String renderSidebarForContainer<T extends Documentable>(
   buffer.write('''<ol>''');
   var context1 = context0.container;
   buffer.writeln();
-  if (context1.isClassOrExtensionType) {
-    if (context1.hasPublicConstructors) {
+  if (context1.hasPublicConstructors) {
+    buffer.writeln();
+    buffer.write('''
+      <li class="section-title"><a href="''');
+    buffer.write(context1.href);
+    buffer.write('''#constructors">Constructors</a></li>''');
+    var context2 = context1.publicConstructorsSorted;
+    for (var context3 in context2) {
       buffer.writeln();
       buffer.write('''
-        <li class="section-title"><a href="''');
-      buffer.write(context1.href);
-      buffer.write('''#constructors">Constructors</a></li>''');
-      var context2 = context1.publicConstructorsSorted;
-      for (var context3 in context2) {
-        buffer.writeln();
-        buffer.write('''
-          <li><a''');
-        if (context3.isDeprecated) {
-          buffer.write(''' class="deprecated"''');
-        }
-        buffer.write(''' href="''');
-        buffer.write(context3.href);
-        buffer.write('''">''');
-        buffer.writeEscaped(context3.shortName);
-        buffer.write('''</a></li>''');
+        <li><a''');
+      if (context3.isDeprecated) {
+        buffer.write(''' class="deprecated"''');
       }
+      buffer.write(''' href="''');
+      buffer.write(context3.href);
+      buffer.write('''">''');
+      buffer.writeEscaped(context3.shortName);
+      buffer.write('''</a></li>''');
     }
   }
   buffer.writeln();
@@ -1736,7 +1734,7 @@ String renderSidebarForContainer<T extends Documentable>(
     }
   }
   buffer.write('\n\n    ');
-  if (context1.isClassOrEnum) {
+  if (context1.isInterface) {
     if (context1.hasPublicInstanceFields) {
       buffer.writeln();
       buffer.write('''
@@ -1862,53 +1860,51 @@ String renderSidebarForContainer<T extends Documentable>(
     }
   }
   buffer.write('\n\n    ');
-  if (context1.isInterfaceOrExtension) {
-    if (context1.hasPublicVariableStaticFields) {
-      buffer.writeln();
-      buffer.write('''
-        <li class="section-title"><a href="''');
-      buffer.write(context1.href);
-      buffer.write('''#static-properties">Static properties</a></li>''');
-      var context18 = context1.publicVariableStaticFieldsSorted;
-      for (var context19 in context18) {
-        buffer.writeln();
-        buffer.write('''
-          <li>''');
-        buffer.write(context19.linkedName);
-        buffer.write('''</li>''');
-      }
-    }
+  if (context1.hasPublicVariableStaticFields) {
     buffer.writeln();
-    if (context1.hasPublicStaticMethods) {
+    buffer.write('''
+      <li class="section-title"><a href="''');
+    buffer.write(context1.href);
+    buffer.write('''#static-properties">Static properties</a></li>''');
+    var context18 = context1.publicVariableStaticFieldsSorted;
+    for (var context19 in context18) {
       buffer.writeln();
       buffer.write('''
-        <li class="section-title"><a href="''');
-      buffer.write(context1.href);
-      buffer.write('''#static-methods">Static methods</a></li>''');
-      var context20 = context1.publicStaticMethodsSorted;
-      for (var context21 in context20) {
-        buffer.writeln();
-        buffer.write('''
-          <li>''');
-        buffer.write(context21.linkedName);
-        buffer.write('''</li>''');
-      }
+        <li>''');
+      buffer.write(context19.linkedName);
+      buffer.write('''</li>''');
     }
+  }
+  buffer.writeln();
+  if (context1.hasPublicStaticMethods) {
     buffer.writeln();
-    if (context1.hasPublicConstantFields) {
+    buffer.write('''
+      <li class="section-title"><a href="''');
+    buffer.write(context1.href);
+    buffer.write('''#static-methods">Static methods</a></li>''');
+    var context20 = context1.publicStaticMethodsSorted;
+    for (var context21 in context20) {
       buffer.writeln();
       buffer.write('''
-        <li class="section-title"><a href="''');
-      buffer.write(context1.href);
-      buffer.write('''#constants">Constants</a></li>''');
-      var context22 = context1.publicConstantFieldsSorted;
-      for (var context23 in context22) {
-        buffer.writeln();
-        buffer.write('''
-          <li>''');
-        buffer.write(context23.linkedName);
-        buffer.write('''</li>''');
-      }
+        <li>''');
+      buffer.write(context21.linkedName);
+      buffer.write('''</li>''');
+    }
+  }
+  buffer.writeln();
+  if (context1.hasPublicConstantFields) {
+    buffer.writeln();
+    buffer.write('''
+      <li class="section-title"><a href="''');
+    buffer.write(context1.href);
+    buffer.write('''#constants">Constants</a></li>''');
+    var context22 = context1.publicConstantFieldsSorted;
+    for (var context23 in context22) {
+      buffer.writeln();
+      buffer.write('''
+        <li>''');
+      buffer.write(context23.linkedName);
+      buffer.write('''</li>''');
     }
   }
   buffer.writeln();
