@@ -37,6 +37,7 @@ void _initializeContents() {
   final dataUsingBaseHref = body.getAttribute('data-using-base-href');
   if (dataUsingBaseHref == null) {
     // This should never happen.
+    assert(false, '"data-using-base-href" attribute on "body" is null.');
     return;
   }
 
