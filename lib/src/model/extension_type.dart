@@ -30,7 +30,7 @@ class ExtensionType extends InheritingContainer with Constructable {
   bool get isBase => false;
 
   @override
-  bool get isInterface => false;
+  bool get isImplementableInterface => false;
 
   @override
   bool get isMixinClass => false;

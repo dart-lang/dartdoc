@@ -64,7 +64,7 @@ class Mixin extends InheritingContainer {
   bool get isFinal => false;
 
   @override
-  bool get isInterface => false;
+  bool get isImplementableInterface => false;
 
   @override
 

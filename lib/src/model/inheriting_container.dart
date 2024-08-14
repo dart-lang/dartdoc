@@ -85,7 +85,7 @@ abstract class InheritingContainer extends Container {
     if (isAbstract) ContainerModifier.abstract,
     if (isSealed) ContainerModifier.sealed,
     if (isBase) ContainerModifier.base,
-    if (isInterface) ContainerModifier.interface,
+    if (isImplementableInterface) ContainerModifier.interface,
     if (isFinal) ContainerModifier.finalModifier,
     if (isMixinClass) ContainerModifier.mixin,
   ]..sort();
@@ -350,7 +350,8 @@ abstract class InheritingContainer extends Container {
   @override
   bool get isFinal;
 
-  bool get isInterface;
+  /// Whether this element is a publicly implementable interface.
+  bool get isImplementableInterface;
 
   bool get isMixinClass;
 

@@ -58,7 +58,7 @@ class Enum extends InheritingContainer with Constructable, MixedInTypes {
   bool get isBase => false;
 
   @override
-  bool get isInterface => false;
+  bool get isImplementableInterface => false;
 
   @override
   bool get isMixinClass => false;

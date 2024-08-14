@@ -40,22 +40,11 @@ abstract class Container extends ModelElement
 
   bool get isExtension => element is ExtensionElement;
 
-  /// Whether this is an interface type (class, enum, mixin, extension type) or
-  /// an extension.
-  ///
-  /// For templates, interfaces and extensions have much in common despite
-  /// differing underlying implementations in the analyzer.
-  bool get isInterfaceOrExtension => element is InterfaceElement || isExtension;
-
   /// Whether this is an enum.
   bool get isEnum => element is EnumElement;
 
-  /// Whether this is a class or an enum.
-  bool get isClassOrEnum => element is InterfaceElement;
-
-  /// Whether this is a class or an extension type.
-  bool get isClassOrExtensionType =>
-      element is ClassElement || element is ExtensionTypeElement;
+  /// Whether this is an interface (e.g. class, enum, mixin, or extension type).
+  bool get isInterface => element is InterfaceElement;
 
   /// Whether this is a mixin.
   bool get isMixin => element is MixinElement;
