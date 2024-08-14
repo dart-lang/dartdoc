@@ -361,10 +361,10 @@ extension type One(int it) {
       htmlLines,
       containsAllInOrder([
         matches(
-          '<a href="../lib/One-extension-type.html#instance-methods">'
+          '<a href="lib/One-extension-type.html#instance-methods">'
           'Methods</a>',
         ),
-        matches('<a href="../lib/One/m1.html">m1</a>'),
+        matches('<a href="lib/One/m1.html">m1</a>'),
       ]),
     );
   }
@@ -381,8 +381,8 @@ extension type One(int it) {
       htmlLines,
       containsAllInOrder([
         matches(
-            '<a href="../lib/One-extension-type.html#operators">Operators</a>'),
-        matches('<a href="../lib/One/operator_greater.html">operator ></a>'),
+            '<a href="lib/One-extension-type.html#operators">Operators</a>'),
+        matches('<a href="lib/One/operator_greater.html">operator ></a>'),
       ]),
     );
   }
@@ -402,10 +402,10 @@ extension type One(int it) {
     expect(
       htmlLines,
       containsAllInOrder([
-        matches('<a href="../lib/One-extension-type.html#static-properties">'
+        matches('<a href="lib/One-extension-type.html#static-properties">'
             'Static properties</a>'),
-        matches('<a href="../lib/One/gs1.html">gs1</a>'),
-        matches('<a href="../lib/One/sf1.html">sf1</a>'),
+        matches('<a href="lib/One/gs1.html">gs1</a>'),
+        matches('<a href="lib/One/sf1.html">sf1</a>'),
       ]),
     );
   }
@@ -421,9 +421,9 @@ extension type One(int it) {
     expect(
       htmlLines,
       containsAllInOrder([
-        matches('<a href="../lib/One-extension-type.html#static-methods">'
+        matches('<a href="lib/One-extension-type.html#static-methods">'
             'Static methods</a>'),
-        matches('<a href="../lib/One/s1.html">s1</a>'),
+        matches('<a href="lib/One/s1.html">s1</a>'),
       ]),
     );
   }

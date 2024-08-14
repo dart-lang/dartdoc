@@ -70,7 +70,8 @@ class HtmlGeneratorBackend extends GeneratorBackend {
     var data = ExtensionTypeTemplateData(
         options, packageGraph, library, extensionType);
     var sidebarContent = templates.renderSidebarForContainer(data);
-    write(writer, extensionType.sidebarPath, data, sidebarContent);
+    write(writer, extensionType.sidebarPath, data, sidebarContent,
+        isSidebar: true);
     runtimeStats.incrementAccumulator('writtenSidebarFileCount');
   }
 
