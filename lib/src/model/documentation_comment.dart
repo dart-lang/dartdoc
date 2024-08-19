@@ -142,7 +142,10 @@ mixin DocumentationComment
 
   String? get sourceFileName;
 
-  String? get fullyQualifiedNameWithoutLibrary;
+  /// The name of this element, qualified with any enclosing element(s), up to
+  /// but not including an enclosing library.
+  @visibleForOverriding
+  String get qualifiedName;
 
   p.Context get pathContext;
 
@@ -279,7 +282,7 @@ mixin DocumentationComment
       'PACKAGE_PATH': package.packagePath,
       'PACKAGE_NAME': package.name,
       'LIBRARY_NAME': library?.fullyQualifiedName,
-      'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
+      'ELEMENT_NAME': qualifiedName,
       'INVOCATION_INDEX': invocationIndex.toString(),
       'PACKAGE_INVOCATION_INDEX': (package.toolInvocationIndex++).toString(),
     };

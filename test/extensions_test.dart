@@ -31,8 +31,10 @@ extension Ex on int {}
 var f() {}
 ''');
 
+    var f = library.functions.named('f');
+    expect(f.fullyQualifiedName, 'extension_methods.f');
     expect(
-      library.functions.named('f').documentationAsHtml,
+      f.documentationAsHtml,
       contains('<a href="$linkPrefix/Ex.html">Ex</a>'),
     );
   }
@@ -45,10 +47,12 @@ extension E on int {
 }
 ''');
 
+    var f = library.extensions.first.instanceFields.first;
+    expect(f.fullyQualifiedName, 'extension_methods.E.f');
     // We are primarily testing that dartdoc does not crash when trying to
     // resolve an unknown reference, from the position of an extension member.
     expect(
-      library.extensions.first.instanceFields.first.documentationAsHtml,
+      f.documentationAsHtml,
       contains('<p>Text <code>NotFound</code> text.</p>'),
     );
   }
@@ -63,8 +67,10 @@ extension Ex on int {
 var f() {}
 ''');
 
+    var f = library.functions.named('f');
+    expect(f.fullyQualifiedName, 'extension_methods.f');
     expect(
-      library.functions.named('f').documentationAsHtml,
+      f.documentationAsHtml,
       contains('<a href="$linkPrefix/Ex/m.html">Ex.m</a>'),
     );
   }
@@ -79,8 +85,10 @@ extension Ex on int {
 var f() {}
 ''');
 
+    var f = library.functions.named('f');
+    expect(f.fullyQualifiedName, 'extension_methods.f');
     expect(
-      library.functions.named('f').documentationAsHtml,
+      f.documentationAsHtml,
       contains('<a href="$linkPrefix/Ex/b.html">Ex.b</a>'),
     );
   }
@@ -95,8 +103,10 @@ extension Ex on int {
 var f() {}
 ''');
 
+    var f = library.functions.named('f');
+    expect(f.fullyQualifiedName, 'extension_methods.f');
     expect(
-      library.functions.named('f').documentationAsHtml,
+      f.documentationAsHtml,
       contains('<a href="$linkPrefix/Ex/b.html">Ex.b</a>'),
     );
   }

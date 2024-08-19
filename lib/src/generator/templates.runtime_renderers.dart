@@ -3974,30 +3974,6 @@ class _Renderer_DocumentationComment
                         getters: _invisibleGetters['Documentation']!);
                   },
                 ),
-                'fullyQualifiedNameWithoutLibrary': Property(
-                  getValue: (CT_ c) => c.fullyQualifiedNameWithoutLibrary,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) =>
-                      c.fullyQualifiedNameWithoutLibrary == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.fullyQualifiedNameWithoutLibrary!, ast,
-                        r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'hasDocumentationComment': Property(
                   getValue: (CT_ c) => c.hasDocumentationComment,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10313,29 +10289,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         parent: r);
                   },
                 ),
-                'fullyQualifiedNameWithoutLibrary': Property(
-                  getValue: (CT_ c) => c.fullyQualifiedNameWithoutLibrary,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.fullyQualifiedNameWithoutLibrary, ast,
-                        r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'hasAnnotations': Property(
                   getValue: (CT_ c) => c.hasAnnotations,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -10781,6 +10734,28 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.pathContext, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['Context']!);
+                  },
+                ),
+                'qualifiedName': Property(
+                  getValue: (CT_ c) => c.qualifiedName,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.qualifiedName, ast, r.template, sink,
+                        parent: r);
                   },
                 ),
                 'sourceCode': Property(
@@ -15888,11 +15863,11 @@ const _invisibleGetters = {
     'documentationLocal',
     'element',
     'elementDocumentation',
-    'fullyQualifiedNameWithoutLibrary',
     'hasDocumentationComment',
     'hasNodoc',
     'needsPrecache',
     'pathContext',
+    'qualifiedName',
     'sourceFileName'
   },
   'Element': {

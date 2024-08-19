@@ -10,7 +10,7 @@ import 'src/utils.dart';
 
 void main() {
   defineReflectiveSuite(() {
-    defineReflectiveTests(ConstantValuesWithConstructorTearoffsTest);
+    defineReflectiveTests(ConstantValuesTest);
     if (namedArgumentsAnywhereAllowed) {
       defineReflectiveTests(ConstantValuesWithNamedArgumentsAnywhereTest);
     }
@@ -22,9 +22,9 @@ void main() {
 // test_reflective_loader migration.
 
 @reflectiveTest
-class ConstantValuesWithConstructorTearoffsTest extends DartdocTestBase {
+class ConstantValuesTest extends DartdocTestBase {
   @override
-  String get libraryName => 'constructor_tearoffs';
+  String get libraryName => 'constant_values';
 
   void test_nonGenericFunctionReference() async {
     var library = await bootPackageWithLibrary('''
@@ -32,6 +32,7 @@ void func() {}
 const aFunc = func;
 ''');
     var aFuncConstant = library.constants.named('aFunc');
+    expect(aFuncConstant.fullyQualifiedName, equals('constant_values.aFunc'));
     expect(aFuncConstant.constantValue, equals('func'));
   }
 

@@ -36,6 +36,7 @@ typedef T = C;
 ''');
     final tTypedef = library.typedefs.named('T');
     expect(tTypedef.nameWithGenerics, 'T');
+    expect(tTypedef.fullyQualifiedName, equals('typedefs.T'));
     expect(tTypedef.genericParameters, '');
     expect(tTypedef.aliasedType, isA<InterfaceType>());
   }
@@ -96,8 +97,8 @@ Line _two_.''');
     var library = await bootPackageWithLibrary('''
 typedef Cb2<T> = T Function(T);
 ''');
-    final cb2Typedef = library.typedefs.named('Cb2');
-
+    var cb2Typedef = library.typedefs.named('Cb2');
+    expect(cb2Typedef.fullyQualifiedName, equals('typedefs.Cb2'));
     expect(
       cb2Typedef.nameWithGenerics,
       'Cb2&lt;<wbr><span class="type-parameter">T</span>&gt;',

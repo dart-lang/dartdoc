@@ -28,6 +28,8 @@ abstract final class C {
 ''');
     var c = library.classes.named('C').constructors.first;
     expect(c.name, equals('C'));
+    // TODO(srawlins): This should be `constructors.C.new`.
+    expect(c.fullyQualifiedName, 'constructors.C.C');
     expect(c.isPublic, isTrue);
     expect(c.documentationAsHtml, '<p>Constructor.</p>');
   }
@@ -41,6 +43,8 @@ abstract final class C {
 ''');
     var c = library.classes.named('C').constructors.first;
     expect(c.name, equals('C'));
+    // TODO(srawlins): This should be `constructors.C.new`.
+    expect(c.fullyQualifiedName, 'constructors.C.C');
     expect(c.isPublic, isFalse);
     expect(c.documentationAsHtml, '<p>Constructor.</p>');
   }
@@ -54,6 +58,8 @@ abstract interface class C {
 ''');
     var c = library.classes.named('C').constructors.first;
     expect(c.name, equals('C'));
+    // TODO(srawlins): This should be `constructors.C.new`.
+    expect(c.fullyQualifiedName, 'constructors.C.C');
     expect(c.isPublic, isFalse);
     expect(c.documentationAsHtml, '<p>Constructor.</p>');
   }
@@ -67,6 +73,7 @@ class C {
 ''');
     var c = library.classes.named('C').constructors.first;
     expect(c.name, equals('C._'));
+    expect(c.fullyQualifiedName, 'constructors.C._');
     expect(c.isPublic, isFalse);
     expect(c.documentationAsHtml, '<p>Constructor.</p>');
   }
@@ -103,6 +110,7 @@ class C {
 ''');
     var c = library.classes.named('C').constructors.first;
     expect(c.name, equals('C.named'));
+    expect(c.fullyQualifiedName, 'constructors.C.named');
     expect(c.isPublic, isTrue);
     expect(c.documentationAsHtml, '<p>Constructor.</p>');
   }
@@ -129,6 +137,8 @@ class C {
 ''');
     var c = library.classes.named('C').constructors.first;
     expect(c.name, equals('C'));
+    // TODO(srawlins): This should be `constructors.C.new`.
+    expect(c.fullyQualifiedName, 'constructors.C.C');
     expect(c.isPublic, isTrue);
     expect(c.documentationAsHtml, '<p>Constructor.</p>');
   }
@@ -156,6 +166,7 @@ enum E {
 ''');
     var e = library.enums.named('E').constructors.first;
     expect(e.name, equals('E.named'));
+    expect(e.fullyQualifiedName, 'constructors.E.named');
     expect(e.isPublic, isFalse);
     expect(e.documentationAsHtml, '<p>Constructor.</p>');
   }
@@ -170,6 +181,8 @@ enum E {
 ''');
     var e = library.enums.named('E').constructors.first;
     expect(e.name, equals('E'));
+    // TODO(srawlins): This should be `constructors.E.new`.
+    expect(e.fullyQualifiedName, 'constructors.E.E');
     expect(e.isPublic, isFalse);
     expect(e.documentationAsHtml, '<p>Constructor.</p>');
   }
@@ -184,6 +197,7 @@ extension type ET(int it) {
     var etNamed =
         library.extensionTypes.named('ET').constructors.named('ET.named');
     expect(etNamed.name, equals('ET.named'));
+    expect(etNamed.fullyQualifiedName, 'constructors.ET.named');
     expect(etNamed.isPublic, isTrue);
     expect(etNamed.documentationAsHtml, '<p>Constructor.</p>');
   }
@@ -195,6 +209,7 @@ extension type ET.named(int it) {}
     var etNamed =
         library.extensionTypes.named('ET').constructors.named('ET.named');
     expect(etNamed.name, equals('ET.named'));
+    expect(etNamed.fullyQualifiedName, 'constructors.ET.named');
     expect(etNamed.isPublic, isTrue);
   }
 
@@ -204,6 +219,8 @@ extension type ET(int it) {}
 ''');
     var et = library.extensionTypes.named('ET').constructors.named('ET');
     expect(et.name, equals('ET'));
+    // TODO(srawlins): This should be `constructors.ET.new`.
+    expect(et.fullyQualifiedName, 'constructors.ET.ET');
     expect(et.isPublic, isTrue);
   }
 
@@ -216,6 +233,8 @@ extension type ET.named(int it) {
 ''');
     var etNamed = library.extensionTypes.named('ET').constructors.named('ET');
     expect(etNamed.name, equals('ET'));
+    // TODO(srawlins): This should be `constructors.ET.new`.
+    expect(etNamed.fullyQualifiedName, 'constructors.ET.ET');
     expect(etNamed.isPublic, isTrue);
     expect(etNamed.documentationAsHtml, '<p>Constructor.</p>');
   }
