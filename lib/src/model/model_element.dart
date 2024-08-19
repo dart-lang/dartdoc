@@ -5,6 +5,7 @@
 /// The models used to represent Dart code.
 library;
 
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
@@ -571,18 +572,21 @@ abstract class ModelElement
   /// documented.
   String get filePath;
 
-  /// Returns the fully qualified name.
-  ///
-  /// For example: 'libraryName.className.methodName'
   @override
-  late final String fullyQualifiedName = _buildFullyQualifiedName(this, name);
-
-  late final String _fullyQualifiedNameWithoutLibrary =
-      fullyQualifiedName.replaceFirst('${library.fullyQualifiedName}.', '');
+  String get fullyQualifiedName =>
+      this is Library ? qualifiedName : '${library.name}.$qualifiedName';
 
   @override
-  String get fullyQualifiedNameWithoutLibrary =>
-      _fullyQualifiedNameWithoutLibrary;
+  late final String qualifiedName = () {
+    var enclosingElement = this.enclosingElement;
+
+    var result = name;
+    while (enclosingElement != null && enclosingElement is! Library) {
+      result = '${enclosingElement.name}.$result';
+      enclosingElement = enclosingElement.enclosingElement;
+    }
+    return result;
+  }();
 
   @override
   String get sourceFileName => element.source!.fullName;
@@ -782,14 +786,6 @@ abstract class ModelElement
 
   @override
   String toString() => '$runtimeType $name';
-
-  String _buildFullyQualifiedName(ModelElement e, String fullyQualifiedName) {
-    final enclosingElement = e.enclosingElement;
-    return enclosingElement == null
-        ? fullyQualifiedName
-        : _buildFullyQualifiedName(
-            enclosingElement, '${enclosingElement.name}.$fullyQualifiedName');
-  }
 
   @internal
   @override

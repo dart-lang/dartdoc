@@ -16,8 +16,16 @@ import 'package:dartdoc/src/model/package_graph.dart';
 mixin Nameable {
   String get name;
 
-  /// A qualified name, mostly for use in the web search functionality, and for
-  /// warnings printed in the terminal; not for display use in rendered HTML.
+  /// A "fully" qualified name, mostly for use in the web search functionality,
+  /// and for warnings printed in the terminal; not for display use in rendered
+  /// HTML.
+  ///
+  /// "Fully" means the name is qualified through the library. For example, a
+  /// method named 'baz' in a class named 'Bar' in a library named 'foo' has a
+  /// fully qualified name of 'foo.Bar.baz'.
+  ///
+  /// As dartdoc can document multiple packages at once, note that such
+  /// qualifying names may not be unique across all documented packages.
   String get fullyQualifiedName => name;
 
   /// The name to use as text in the rendered documentation.
