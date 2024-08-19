@@ -19,6 +19,15 @@ class TypeParameterTest extends DartdocTestBase {
   @override
   String get libraryName => 'type_parameters';
 
+  void test_name() async {
+    var library = await bootPackageWithLibrary('''
+void f<T>(int p) {}
+''');
+    var typeParameter = library.functions.named('f').typeParameters.first;
+    expect(typeParameter.name, equals('T'));
+    expect(typeParameter.fullyQualifiedName, equals('type_parameters.f.T'));
+  }
+
   void test_referenced() async {
     var library = await bootPackageWithLibrary('''
 /// Text [T].

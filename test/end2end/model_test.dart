@@ -1923,10 +1923,6 @@ void main() async {
       CatString = exLibrary.classes.named('CatString');
     });
 
-    test('has a fully qualified name', () {
-      expect(Apple.fullyQualifiedName, 'ex.Apple');
-    });
-
     test('does have a line number and column', () {
       expect(Apple.characterLocation, isNotNull);
     });
@@ -2984,10 +2980,6 @@ void main() async {
               '<a href="${htmlBasePlaceholder}reexport_two/DocumentThisExtensionOnce.html">DocumentThisExtensionOnce</a>'));
     });
 
-    test('has a fully qualified name', () {
-      expect(ext.fullyQualifiedName, 'ex.AppleExtension');
-    });
-
     test('does have a line number and column', () {
       expect(ext.characterLocation, isNotNull);
     });
@@ -3067,10 +3059,6 @@ void main() async {
       topLevelFunction = fakeLibrary.functions.named('topLevelFunction');
       typeParamOfFutureOr = fakeLibrary.functions.named('typeParamOfFutureOr');
       doAComplicatedThing = fakeLibrary.functions.named('doAComplicatedThing');
-    });
-
-    test('has a fully qualified name', () {
-      expect(thisIsAsync.fullyQualifiedName, 'fake.thisIsAsync');
     });
 
     test('does have a line number and column', () {
@@ -3368,10 +3356,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           getAFunctionReturningBool.modelType.returnType.linkedName,
           equals(
               'bool Function&lt;<wbr><span class="type-parameter">T4</span>&gt;<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">String</span>, </span><span class="parameter" id="param-"><span class="type-annotation">T1</span>, </span><span class="parameter" id="param-"><span class="type-annotation">T4</span></span>)</span>'));
-    });
-
-    test('has a fully qualified name', () {
-      expect(m1.fullyQualifiedName, 'ex.B.m1');
     });
 
     test('has abstract kind', () {
@@ -3725,10 +3709,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           equals('Getter doc for explicitGetterImplicitSetter'));
     });
 
-    test('has a fully qualified name', () {
-      expect(lengthX.fullyQualifiedName, 'fake.WithGetterAndSetter.lengthX');
-    });
-
     test('has extended documentation', () {
       expect(lengthX.oneLineDoc, equals('Returns a length.'));
       expect(lengthX.documentation, contains('the fourth dimension'));
@@ -4014,10 +3994,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           equals('Setter docs should be shown.'));
     });
 
-    test('has a fully qualified name', () {
-      expect(justGetter.fullyQualifiedName, 'fake.justGetter');
-    });
-
     test('type arguments are correct', () {
       var modelType = mapWithDynamicKeys.modelType as ParameterizedElementType;
       expect(modelType.typeArguments, hasLength(2));
@@ -4095,10 +4071,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('privately constructed constants are unlinked', () {
       expect(customClassPrivate.constantValue, 'const _APrivateConstClass()');
-    });
-
-    test('has a fully qualified name', () {
-      expect(greenConstant.fullyQualifiedName, 'ex.COLOR_GREEN');
     });
 
     test('has the correct kind', () {
@@ -4190,11 +4162,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           'ConstructorTester&lt;<wbr><span class="type-parameter">A</span>, <span class="type-parameter">B</span>&gt;');
       expect(constructorTesterFromSomething.nameWithGenerics,
           'ConstructorTester&lt;<wbr><span class="type-parameter">A</span>, <span class="type-parameter">B</span>&gt;.fromSomething');
-    });
-
-    test('has a fully qualified name', () {
-      expect(
-          appleConstructorFromString.fullyQualifiedName, 'ex.Apple.fromString');
     });
 
     test('has a line number and column', () {
@@ -4386,11 +4353,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
         '<li><span class="parameter" id="param-"><span class="type-annotation">String</span></span></li>\n'
         '</ol>',
       );
-    });
-
-    test('has a fully qualified name', () {
-      expect(processMessage.fullyQualifiedName, 'ex.processMessage');
-      expect(generic.fullyQualifiedName, 'fake.NewGenericTypedef');
     });
 
     test('has enclosing element', () {

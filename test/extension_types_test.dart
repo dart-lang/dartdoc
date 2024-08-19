@@ -40,8 +40,10 @@ extension type ET<T extends num>(int it) implements num {
 class C {}
 ''');
 
+    var et = library.extensionTypes.named('ET');
+    expect(et.fullyQualifiedName, 'extension_types.ET');
     expect(
-      library.extensionTypes.named('ET').documentationAsHtml,
+      et.documentationAsHtml,
       '<p>Doc referring to '
       '<a href="${placeholder}extension_types/C-class.html">C</a>.</p>',
     );
@@ -57,12 +59,10 @@ extension type ET(int it) {
 class C {}
 ''');
 
+    var et = library.extensionTypes.named('ET');
+    expect(et.fullyQualifiedName, 'extension_types.ET');
     expect(
-      library.extensionTypes
-          .named('ET')
-          .instanceMethods
-          .named('m')
-          .documentationAsHtml,
+      et.instanceMethods.named('m').documentationAsHtml,
       '<p>Doc referring to '
       '<a href="${placeholder}extension_types/C-class.html">C</a>.</p>',
     );
