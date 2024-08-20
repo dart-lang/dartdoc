@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/directives/categorization.dart';
 import 'package:dartdoc/src/model/indexable.dart';
+import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 
 String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
@@ -15,7 +16,7 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
         in categories.sorted(_compareElementRepresentations))
       <String, Object?>{
         'name': categorization.name,
-        'qualifiedName': categorization.fullyQualifiedName,
+        'qualifiedName': categorization.canonicalQualifiedName,
         'href': categorization.href,
         // TODO(srawlins): Rename to 'kind'.
         'type': categorization.kind.toString(),
@@ -42,7 +43,7 @@ String generateSearchIndexJson(Iterable<Indexable> indexedElements,
     for (final item in indexedElements.sorted(_compareElementRepresentations))
       {
         'name': item.name,
-        'qualifiedName': item.fullyQualifiedName,
+        'qualifiedName': item.canonicalQualifiedName,
         'href': item.href,
         'kind': item.kind.index,
         // TODO(srawlins): Only include this for [Inheritable] items.
@@ -112,9 +113,24 @@ final _htmlTagPattern =
 
 // Compares two elements, first by fully qualified name, then by kind.
 int _compareElementRepresentations(Indexable a, Indexable b) {
-  final value = compareNatural(a.fullyQualifiedName, b.fullyQualifiedName);
+  final value =
+      compareNatural(a.canonicalQualifiedName, b.canonicalQualifiedName);
   if (value == 0) {
     return compareNatural(a.kind.toString(), b.kind.toString());
   }
   return value;
+}
+
+extension on Indexable {
+  /// The fully qualified name of this element, but using the canonical library,
+  /// if it has one.
+  String get canonicalQualifiedName {
+    var self = this;
+    if (self is Library) return name;
+    if (self is ModelElement) {
+      var library = self.canonicalLibrary ?? self.library;
+      return '${library.name}.${self.qualifiedName}';
+    }
+    return name;
+  }
 }

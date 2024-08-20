@@ -72,66 +72,66 @@ class GeneratorFrontEnd implements Generator {
     var indexAccumulator = <Indexable>[];
     var multiplePackages = packageGraph.localPackages.length > 1;
 
-    void generateConstants(Container container) {
+    void generateConstants(Container container, Library library) {
       for (var constant in container.constantFields.whereDocumented) {
         if (!constant.isCanonical) continue;
         indexAccumulator.add(constant);
         _generatorBackend.generateProperty(
-            packageGraph, container.library, container, constant);
+            packageGraph, library, container, constant);
       }
     }
 
-    void generateConstructors(Constructable constructable) {
+    void generateConstructors(Constructable constructable, Library library) {
       for (var constructor in constructable.constructors.whereDocumented) {
         if (!constructor.isCanonical) continue;
         indexAccumulator.add(constructor);
         _generatorBackend.generateConstructor(
-            packageGraph, constructable.library, constructable, constructor);
+            packageGraph, library, constructable, constructor);
       }
     }
 
-    void generateInstanceMethods(Container container) {
+    void generateInstanceMethods(Container container, Library library) {
       for (var method in container.instanceMethods.whereDocumented) {
         if (!method.isCanonical) continue;
         indexAccumulator.add(method);
         _generatorBackend.generateMethod(
-            packageGraph, container.library, container, method);
+            packageGraph, library, container, method);
       }
     }
 
-    void generateInstanceOperators(Container container) {
+    void generateInstanceOperators(Container container, Library library) {
       for (var operator in container.instanceOperators.whereDocumented) {
         if (!operator.isCanonical) continue;
         indexAccumulator.add(operator);
         _generatorBackend.generateMethod(
-            packageGraph, container.library, container, operator);
+            packageGraph, library, container, operator);
       }
     }
 
-    void generateInstanceProperties(Container container) {
+    void generateInstanceProperties(Container container, Library library) {
       for (var property in container.instanceFields.whereDocumented) {
         if (!property.isCanonical) continue;
         indexAccumulator.add(property);
         _generatorBackend.generateProperty(
-            packageGraph, container.library, container, property);
+            packageGraph, library, container, property);
       }
     }
 
-    void generateStaticMethods(Container container) {
+    void generateStaticMethods(Container container, Library library) {
       for (var method in container.staticMethods.whereDocumented) {
         if (!method.isCanonical) continue;
         indexAccumulator.add(method);
         _generatorBackend.generateMethod(
-            packageGraph, container.library, container, method);
+            packageGraph, library, container, method);
       }
     }
 
-    void generateStaticProperties(Container container) {
+    void generateStaticProperties(Container container, Library library) {
       for (var property in container.variableStaticFields.whereDocumented) {
         if (!property.isCanonical) continue;
         indexAccumulator.add(property);
         _generatorBackend.generateProperty(
-            packageGraph, container.library, container, property);
+            packageGraph, library, container, property);
       }
     }
 
@@ -157,88 +157,93 @@ class GeneratorFrontEnd implements Generator {
         indexAccumulator.add(lib);
         _generatorBackend.generateLibrary(packageGraph, lib);
 
-        for (var class_ in lib.classesAndExceptions.whereDocumented) {
+        for (var class_ in lib.classesAndExceptions.whereDocumentedIn(lib)) {
           indexAccumulator.add(class_);
           _generatorBackend.generateClass(packageGraph, lib, class_);
 
-          generateConstants(class_);
-          generateConstructors(class_);
-          generateInstanceMethods(class_);
-          generateInstanceOperators(class_);
-          generateInstanceProperties(class_);
-          generateStaticMethods(class_);
-          generateStaticProperties(class_);
+          var canonicalLibrary = class_.canonicalLibraryOrThrow;
+          generateConstants(class_, canonicalLibrary);
+          generateConstructors(class_, canonicalLibrary);
+          generateInstanceMethods(class_, canonicalLibrary);
+          generateInstanceOperators(class_, canonicalLibrary);
+          generateInstanceProperties(class_, canonicalLibrary);
+          generateStaticMethods(class_, canonicalLibrary);
+          generateStaticProperties(class_, canonicalLibrary);
         }
 
-        for (var extension in lib.extensions.whereDocumented) {
+        for (var extension in lib.extensions.whereDocumentedIn(lib)) {
           indexAccumulator.add(extension);
           _generatorBackend.generateExtension(packageGraph, lib, extension);
 
-          generateConstants(extension);
-          generateInstanceMethods(extension);
-          generateInstanceOperators(extension);
-          generateInstanceProperties(extension);
-          generateStaticMethods(extension);
-          generateStaticProperties(extension);
+          var canonicalLibrary = extension.canonicalLibraryOrThrow;
+          generateConstants(extension, canonicalLibrary);
+          generateInstanceMethods(extension, canonicalLibrary);
+          generateInstanceOperators(extension, canonicalLibrary);
+          generateInstanceProperties(extension, canonicalLibrary);
+          generateStaticMethods(extension, canonicalLibrary);
+          generateStaticProperties(extension, canonicalLibrary);
         }
 
-        for (var extensionType in lib.extensionTypes.whereDocumented) {
+        for (var extensionType in lib.extensionTypes.whereDocumentedIn(lib)) {
           indexAccumulator.add(extensionType);
           _generatorBackend.generateExtensionType(
               packageGraph, lib, extensionType);
 
-          generateConstants(extensionType);
-          generateConstructors(extensionType);
-          generateInstanceMethods(extensionType);
-          generateInstanceOperators(extensionType);
-          generateInstanceProperties(extensionType);
-          generateStaticMethods(extensionType);
-          generateStaticProperties(extensionType);
+          var canonicalLibrary = extensionType.canonicalLibraryOrThrow;
+          generateConstants(extensionType, canonicalLibrary);
+          generateConstructors(extensionType, canonicalLibrary);
+          generateInstanceMethods(extensionType, canonicalLibrary);
+          generateInstanceOperators(extensionType, canonicalLibrary);
+          generateInstanceProperties(extensionType, canonicalLibrary);
+          generateStaticMethods(extensionType, canonicalLibrary);
+          generateStaticProperties(extensionType, canonicalLibrary);
         }
 
-        for (var mixin in lib.mixins.whereDocumented) {
+        for (var mixin in lib.mixins.whereDocumentedIn(lib)) {
           indexAccumulator.add(mixin);
           _generatorBackend.generateMixin(packageGraph, lib, mixin);
 
-          generateConstants(mixin);
-          generateInstanceMethods(mixin);
-          generateInstanceOperators(mixin);
-          generateInstanceProperties(mixin);
-          generateStaticMethods(mixin);
-          generateStaticProperties(mixin);
+          var canonicalLibrary = mixin.canonicalLibraryOrThrow;
+          generateConstants(mixin, canonicalLibrary);
+          generateInstanceMethods(mixin, canonicalLibrary);
+          generateInstanceOperators(mixin, canonicalLibrary);
+          generateInstanceProperties(mixin, canonicalLibrary);
+          generateStaticMethods(mixin, canonicalLibrary);
+          generateStaticProperties(mixin, canonicalLibrary);
         }
 
-        for (var enum_ in lib.enums.whereDocumented) {
+        for (var enum_ in lib.enums.whereDocumentedIn(lib)) {
           indexAccumulator.add(enum_);
           _generatorBackend.generateEnum(packageGraph, lib, enum_);
 
-          generateConstants(enum_);
-          generateConstructors(enum_);
-          generateInstanceMethods(enum_);
-          generateInstanceOperators(enum_);
-          generateInstanceProperties(enum_);
-          generateStaticMethods(enum_);
-          generateStaticProperties(enum_);
+          var canonicalLibrary = enum_.canonicalLibraryOrThrow;
+          generateConstants(enum_, canonicalLibrary);
+          generateConstructors(enum_, canonicalLibrary);
+          generateInstanceMethods(enum_, canonicalLibrary);
+          generateInstanceOperators(enum_, canonicalLibrary);
+          generateInstanceProperties(enum_, canonicalLibrary);
+          generateStaticMethods(enum_, canonicalLibrary);
+          generateStaticProperties(enum_, canonicalLibrary);
         }
 
-        for (var constant in lib.constants.whereDocumented) {
+        for (var constant in lib.constants.whereDocumentedIn(lib)) {
           indexAccumulator.add(constant);
           _generatorBackend.generateTopLevelProperty(
               packageGraph, lib, constant);
         }
 
-        for (var property in lib.properties.whereDocumented) {
+        for (var property in lib.properties.whereDocumentedIn(lib)) {
           indexAccumulator.add(property);
           _generatorBackend.generateTopLevelProperty(
               packageGraph, lib, property);
         }
 
-        for (var function in lib.functions.whereDocumented) {
+        for (var function in lib.functions.whereDocumentedIn(lib)) {
           indexAccumulator.add(function);
           _generatorBackend.generateFunction(packageGraph, lib, function);
         }
 
-        for (var typeDef in lib.typedefs.whereDocumented) {
+        for (var typeDef in lib.typedefs.whereDocumentedIn(lib)) {
           indexAccumulator.add(typeDef);
           _generatorBackend.generateTypeDef(packageGraph, lib, typeDef);
         }

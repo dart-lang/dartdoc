@@ -56,10 +56,6 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
       getModelFor(element.enclosingElement, library) as Container;
 
   @override
-  String get filePath =>
-      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
-
-  @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;
 
   @override

@@ -129,7 +129,7 @@ abstract class ModelElement
 
     // Return the cached ModelElement if it exists.
     var cachedModelElement = packageGraph.allConstructedModelElements[
-        ConstructedModelElementsKey(e, library, enclosingContainer)];
+        ConstructedModelElementsKey(e, enclosingContainer)];
     if (cachedModelElement != null) {
       return cachedModelElement;
     }
@@ -215,7 +215,7 @@ abstract class ModelElement
     }
 
     // Return the cached ModelElement if it exists.
-    var key = ConstructedModelElementsKey(e, library, enclosingContainer);
+    var key = ConstructedModelElementsKey(e, enclosingContainer);
     var cachedModelElement = packageGraph.allConstructedModelElements[key];
     if (cachedModelElement != null) {
       return cachedModelElement;
@@ -256,7 +256,7 @@ abstract class ModelElement
         '$enclosingContainer.library != $library');
     if (library != Library.sentinel && newModelElement is! Parameter) {
       runtimeStats.incrementAccumulator('modelElementCacheInsertion');
-      var key = ConstructedModelElementsKey(e, library, enclosingContainer);
+      var key = ConstructedModelElementsKey(e, enclosingContainer);
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
         library.packageGraph.allInheritableElements
@@ -378,9 +378,13 @@ abstract class ModelElement
     if (name.isEmpty) {
       return false;
     }
-    if (this is! Library &&
-        (library == Library.sentinel || !library.isPublic)) {
-      return false;
+    if (this is! Library) {
+      final canonicalLibrary = this.canonicalLibrary;
+      var isLibraryOrCanonicalLibraryPrivate = !library.isPublic &&
+          (canonicalLibrary == null || !canonicalLibrary.isPublic);
+      if (library == Library.sentinel || isLibraryOrCanonicalLibraryPrivate) {
+        return false;
+      }
     }
     if (enclosingElement is Class && !(enclosingElement as Class).isPublic) {
       return false;
@@ -448,15 +452,17 @@ abstract class ModelElement
 
   late final String sourceHref = SourceLinker.fromElement(this).href();
 
-  /// The library in which [element] is declared.
-  ///
-  /// This is different from [library] if this [ModelElement] is derived from
-  /// a library that exports [element] from another library.
-  Library get definingLibrary =>
-      getModelForElement(element.library!) as Library;
+  Library get canonicalLibraryOrThrow {
+    final canonicalLibrary = this.canonicalLibrary;
+    if (canonicalLibrary == null) {
+      throw StateError(
+          "Expected the canonical library of '$fullyQualifiedName' to be non-null.");
+    }
+    return canonicalLibrary;
+  }
 
   /// A public, documented library which exports this [ModelElement], ideally in
-  /// [definingLibrary]'s package.
+  /// [library]'s package.
   late final Library? canonicalLibrary = () {
     if (element.hasPrivateName) {
       // Privately named elements can never have a canonical library.
@@ -467,10 +473,9 @@ abstract class ModelElement
     assert(packageGraph.allLibrariesAdded);
 
     var definingLibraryIsLocalPublic =
-        packageGraph.localPublicLibraries.contains(definingLibrary);
-    var possibleCanonicalLibrary = definingLibraryIsLocalPublic
-        ? definingLibrary
-        : _searchForCanonicalLibrary();
+        packageGraph.localPublicLibraries.contains(library);
+    var possibleCanonicalLibrary =
+        definingLibraryIsLocalPublic ? library : _searchForCanonicalLibrary();
 
     if (possibleCanonicalLibrary != null) return possibleCanonicalLibrary;
 
@@ -488,9 +493,9 @@ abstract class ModelElement
   }();
 
   /// Searches [PackageGraph.libraryExports] for a public, documented library
-  /// which exports this [ModelElement], ideally in [definingLibrary]'s package.
+  /// which exports this [ModelElement], ideally in [library]'s package.
   Library? _searchForCanonicalLibrary() {
-    var thisAndExported = packageGraph.libraryExports[definingLibrary.element];
+    var thisAndExported = packageGraph.libraryExports[library.element];
     if (thisAndExported == null) {
       return null;
     }
@@ -510,10 +515,9 @@ abstract class ModelElement
       return null;
     }
 
-    final candidateLibraries = thisAndExported
-        .where((l) =>
-            l.isPublic && l.package.documentedWhere != DocumentLocation.missing)
-        .where((l) {
+    final candidateLibraries = thisAndExported.where((l) {
+      if (!l.isPublic) return false;
+      if (l.package.documentedWhere == DocumentLocation.missing) return false;
       var lookup = l.element.exportNamespace.definedNames[topLevelElementName];
       return topLevelElement ==
           (lookup is PropertyAccessorElement ? lookup.variable2 : lookup);
@@ -535,7 +539,7 @@ abstract class ModelElement
   @override
   bool get isCanonical {
     if (!isPublic) return false;
-    if (library != canonicalLibrary) return false;
+    if (this is Library && library != canonicalLibrary) return false;
     // If there's no inheritance to deal with, we're done.
     if (this is! Inheritable) return true;
     final self = this as Inheritable;
@@ -574,7 +578,7 @@ abstract class ModelElement
 
   @override
   String get fullyQualifiedName =>
-      this is Library ? qualifiedName : '${library.name}.$qualifiedName';
+      this is Library ? name : '${library.name}.$qualifiedName';
 
   @override
   late final String qualifiedName = () {
@@ -621,7 +625,6 @@ abstract class ModelElement
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    assert(canonicalLibrary == library);
     var packageBaseHref = package.baseHref;
     return '$packageBaseHref$filePath';
   }

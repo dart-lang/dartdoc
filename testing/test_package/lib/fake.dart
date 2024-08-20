@@ -1163,17 +1163,6 @@ abstract class MIEEThing<K, V> {
   void operator []=(K key, V value);
 }
 
-abstract class _NonCanonicalToolUser {
-  /// Invokes a tool without the $INPUT token or args.
-  ///
-  /// {@tool drill}
-  /// Some text in the drill that references [noInvokeTool].
-  /// {@end-tool}
-  void invokeToolNonCanonical();
-}
-
-abstract class CanonicalToolUser extends _NonCanonicalToolUser {}
-
 abstract class ImplementingClassForTool {
   /// Invokes a tool from inherited documentation via `implemented`
   ///

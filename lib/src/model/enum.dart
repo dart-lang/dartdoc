@@ -31,7 +31,8 @@ class Enum extends InheritingContainer with Constructable, MixedInTypes {
   ];
 
   @override
-  String get sidebarPath => '${library.dirName}/$name-enum-sidebar.html';
+  String get sidebarPath =>
+      '${canonicalLibraryOrThrow.dirName}/$name-enum-sidebar.html';
 
   @override
   Kind get kind => Kind.enum_;
@@ -110,7 +111,6 @@ class EnumField extends Field {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    assert(canonicalLibrary == library);
     assert(canonicalEnclosingContainer == enclosingElement);
     // TODO(jcollins-g): EnumField should not depend on enclosingElement, but
     // we sort of have to while we are half-converted to [FileStructure].

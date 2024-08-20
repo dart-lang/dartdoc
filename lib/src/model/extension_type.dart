@@ -70,7 +70,7 @@ class ExtensionType extends InheritingContainer with Constructable {
 
   @override
   String get sidebarPath =>
-      '${library.dirName}/$name-extension-type-sidebar.html';
+      '${canonicalLibraryOrThrow.dirName}/$name-extension-type-sidebar.html';
 
   Map<String, CommentReferable>? _referenceChildren;
   @override

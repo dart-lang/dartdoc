@@ -16,9 +16,8 @@ import 'package:dartdoc/src/model/package_graph.dart';
 mixin Nameable {
   String get name;
 
-  /// A "fully" qualified name, mostly for use in the web search functionality,
-  /// and for warnings printed in the terminal; not for display use in rendered
-  /// HTML.
+  /// A "fully" qualified name, used for things like for warnings printed in the
+  /// terminal; not for display use in rendered HTML.
   ///
   /// "Fully" means the name is qualified through the library. For example, a
   /// method named 'baz' in a class named 'Bar' in a library named 'foo' has a

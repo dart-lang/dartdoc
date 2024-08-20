@@ -520,46 +520,26 @@ void main() async {
 
   group('Tools', () {
     late final Class toolUser;
-    late final Class NonCanonicalToolUser,
-        CanonicalToolUser,
-        PrivateLibraryToolUser;
     late final Class ImplementingClassForTool,
         CanonicalPrivateInheritedToolUser;
     late final Method invokeTool;
     late final Method invokeToolNoInput;
     late final Method invokeToolMultipleSections;
-    late final Method invokeToolNonCanonical, invokeToolNonCanonicalSubclass;
-    late final Method invokeToolPrivateLibrary,
-        invokeToolPrivateLibraryOriginal;
     late final Method invokeToolParentDoc, invokeToolParentDocOriginal;
     // ignore: omit_local_variable_types
     final RegExp packageInvocationIndexRegexp =
         RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
 
     setUpAll(() {
-      NonCanonicalToolUser = fakeLibrary.classes.named('_NonCanonicalToolUser');
-      CanonicalToolUser = fakeLibrary.classes.named('CanonicalToolUser');
-      PrivateLibraryToolUser =
-          fakeLibrary.classes.named('PrivateLibraryToolUser');
       ImplementingClassForTool =
           fakeLibrary.classes.named('ImplementingClassForTool');
       CanonicalPrivateInheritedToolUser =
           fakeLibrary.classes.named('CanonicalPrivateInheritedToolUser');
       toolUser = exLibrary.classes.named('ToolUser');
       invokeTool = toolUser.instanceMethods.named('invokeTool');
-      invokeToolNonCanonical =
-          NonCanonicalToolUser.instanceMethods.named('invokeToolNonCanonical');
-      invokeToolNonCanonicalSubclass =
-          CanonicalToolUser.instanceMethods.named('invokeToolNonCanonical');
       invokeToolNoInput = toolUser.instanceMethods.named('invokeToolNoInput');
       invokeToolMultipleSections =
           toolUser.instanceMethods.named('invokeToolMultipleSections');
-      invokeToolPrivateLibrary = PrivateLibraryToolUser.instanceMethods
-          .named('invokeToolPrivateLibrary');
-      invokeToolPrivateLibraryOriginal =
-          (invokeToolPrivateLibrary.definingEnclosingContainer as Class)
-              .instanceMethods
-              .named('invokeToolPrivateLibrary');
       invokeToolParentDoc = CanonicalPrivateInheritedToolUser.instanceMethods
           .named('invokeToolParentDoc');
       invokeToolParentDocOriginal =
@@ -587,23 +567,7 @@ void main() async {
     });
 
     group('does _not_ invoke a tool multiple times unnecessarily', () {
-      test('non-canonical subclass case', () {
-        expect(invokeToolNonCanonical.isCanonical, isFalse);
-        expect(invokeToolNonCanonicalSubclass.isCanonical, isTrue);
-        expect(
-            packageInvocationIndexRegexp
-                .firstMatch(invokeToolNonCanonical.documentation)!
-                .group(1),
-            equals(packageInvocationIndexRegexp
-                .firstMatch(invokeToolNonCanonicalSubclass.documentation)!
-                .group(1)));
-        expect(
-            invokeToolPrivateLibrary.documentation, isNot(contains('{@tool')));
-        expect(
-            invokeToolPrivateLibraryOriginal.documentation, contains('{@tool'));
-      });
-
-      test('Documentation borrowed from implementer case', () {
+      test('for documentation inherited from the implementer', () {
         expect(
             packageInvocationIndexRegexp
                 .firstMatch(invokeToolParentDoc.documentation)!
@@ -915,17 +879,18 @@ void main() async {
     test('with ambiguous reexport warnings', () {
       final warningMsg =
           '(reexport_one, reexport_two) -> reexport_two (confidence 0.000)';
-      // Unicorn class has a warning because two @canonicalFors cancel each other out.
+      // Unicorn class has a warning because two `@canonicalFor`s cancel each
+      // other out.
       expect(
           packageGraph.packageWarningCounter.hasWarning(
               AUnicornClass, PackageWarning.ambiguousReexport, warningMsg),
           isTrue);
-      // This class is ambiguous without a @canonicalFor
+      // This class is ambiguous without a `@canonicalFor`.
       expect(
           packageGraph.packageWarningCounter.hasWarning(
               YetAnotherClass, PackageWarning.ambiguousReexport, warningMsg),
           isTrue);
-      // These two classes have a @canonicalFor
+      // These two classes have a `@canonicalFor`.
       expect(
           packageGraph.packageWarningCounter.hasWarning(
               SomeClass, PackageWarning.ambiguousReexport, warningMsg),
@@ -959,7 +924,7 @@ void main() async {
     });
 
     test('with correct show/hide behavior', () {
-      expect(ADuplicateClass.definingLibrary.name, equals('shadowing_lib'));
+      expect(ADuplicateClass.library.name, equals('shadowing_lib'));
     });
   });
 
@@ -985,7 +950,6 @@ void main() async {
     });
 
     test('via reexport does not leave behind template crumbs', () {
-      expect(ClassTemplateOneLiner.isCanonical, isFalse);
       expect(
           ClassTemplateOneLiner.oneLineDoc,
           equals(
@@ -2138,8 +2102,8 @@ void main() async {
       expect(methods[1].name, equals('addAll'));
     });
 
-    test('ExtendingClass is in the right library', () {
-      expect(ExtendingClass.library.name, equals('two_exports'));
+    test('ExtendingClass is in the right canonical library', () {
+      expect(ExtendingClass.canonicalLibrary!.name, equals('two_exports'));
     });
 
     // because both the sub and super classes, though from different libraries,
@@ -2148,10 +2112,8 @@ void main() async {
         () {
       // The real implementation of BaseClass is private, but it is exported.
       expect(ExtendingClass.superChain.first.name, equals('BaseClass'));
-      expect(ExtendingClass.superChain.first.modelElement.isCanonical,
-          equals(false));
-      expect(
-          ExtendingClass.superChain.first.modelElement.isPublic, equals(false));
+      expect(ExtendingClass.superChain.first.modelElement.isCanonical, isTrue);
+      expect(ExtendingClass.superChain.first.modelElement.isPublic, isTrue);
       // And it should still show up in the publicSuperChain, because it is
       // exported.
       expect(
@@ -2801,7 +2763,7 @@ void main() async {
     });
   });
 
-  group('Extension', () {
+  group('Extensions', () {
     late final Extension arm, leg, ext, fancyList, uphill;
     late final Extension documentOnceReexportOne, documentOnceReexportTwo;
     late final Extension staticFieldExtension;
@@ -2856,7 +2818,6 @@ void main() async {
     });
 
     test('basic canonicalization for extensions', () {
-      expect(documentOnceReexportOne.isCanonical, isFalse);
       expect(
           documentOnceReexportOne.href, equals(documentOnceReexportTwo.href));
       expect(documentOnceReexportTwo.isCanonical, isTrue);
@@ -2864,8 +2825,6 @@ void main() async {
 
     test('classes know about applicableExtensions', () {
       expect(apple.potentiallyApplicableExtensionsSorted, orderedEquals([ext]));
-      expect(string.potentiallyApplicableExtensionsSorted,
-          isNot(contains(documentOnceReexportOne)));
       expect(string.potentiallyApplicableExtensionsSorted,
           contains(documentOnceReexportTwo));
       expect(baseTest.potentiallyApplicableExtensionsSorted, isEmpty);

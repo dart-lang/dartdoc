@@ -380,12 +380,12 @@ extension IterableStringExtension on Iterable<String> {
 
 extension PackageExtension on Package {
   /// Gathers all extensions found across a package.
-  Iterable<Extension> get extensions =>
-      libraries.expand((library) => library.extensions.whereDocumented);
+  Iterable<Extension> get extensions => libraries.wherePublic
+      .expand((library) => library.extensions.whereDocumented);
 
   /// Gathers all functions found across a package.
-  Iterable<ModelFunction> get functions =>
-      libraries.expand((library) => library.functions.whereDocumented);
+  Iterable<ModelFunction> get functions => libraries.wherePublic
+      .expand((library) => library.functions.whereDocumented);
 }
 
 /// Extension methods just for tests.
