@@ -129,9 +129,11 @@ class SubprocessLauncher {
 
     if (exitCode != 0) {
       throw SubprocessException(
-          command: [executable, ...arguments].join(' '),
-          workingDirectory: workingDirectory,
-          exitCode: exitCode);
+        command: [executable, ...arguments].join(' '),
+        workingDirectory: workingDirectory,
+        exitCode: exitCode,
+        environment: environment,
+      );
     }
     return jsonObjects;
   }
@@ -182,15 +184,19 @@ class SubprocessException implements Exception {
   final String command;
   final String? workingDirectory;
   final int exitCode;
+  final Map<String, String> environment;
 
-  SubprocessException(
-      {required this.command,
-      required this.workingDirectory,
-      required this.exitCode});
+  SubprocessException({
+    required this.command,
+    required this.workingDirectory,
+    required this.environment,
+    required this.exitCode,
+  });
 
   @override
   String toString() => 'SubprocessException['
       'command: "$command", '
       'workingDirectory: "${workingDirectory ?? '(null)'}", '
-      'exitCode: $exitCode]';
+      'exitCode: $exitCode, '
+      'environment: $environment]';
 }
