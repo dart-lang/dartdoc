@@ -21,9 +21,6 @@ class RecordTest extends DartdocTestBase {
   @override
   String get libraryName => 'records';
 
-  @override
-  String get sdkConstraint => '>=3.0.0 <4.0.0';
-
   void test_noFields() async {
     var library = await bootPackageWithLibrary('''
 void f(() r) {}

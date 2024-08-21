@@ -21,13 +21,7 @@ void main() {
 @reflectiveTest
 class TypedefTest extends DartdocTestBase {
   @override
-  List<String> get experiments => ['inline-class'];
-
-  @override
   String get libraryName => 'typedefs';
-
-  @override
-  String get sdkConstraint => '>=3.3.0 <4.0.0';
 
   void test_class_basic() async {
     var library = await bootPackageWithLibrary('''

@@ -19,13 +19,7 @@ void main() {
 @reflectiveTest
 class ExtensionTypesTest extends DartdocTestBase {
   @override
-  List<String> get experiments => ['inline-class'];
-
-  @override
   String get libraryName => 'extension_types';
-
-  @override
-  String get sdkConstraint => '>=3.3.0 <4.0.0';
 
   // TODO(srawlins): Test superinterfaces, references to members which exist via
   // `implements`, references to primary constructor.

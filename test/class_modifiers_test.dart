@@ -27,12 +27,6 @@ class ClassModifiersTest extends DartdocTestBase {
   @override
   String get libraryName => 'class_modifiers';
 
-  @override
-  String get sdkConstraint => '>=3.0.0-0.0-dev <4.0.0';
-
-  @override
-  List<String> get experiments => ['class-modifiers', 'sealed-class'];
-
   /// From the table in the class modifiers feature specification.
   void test_tableOfModifiers() async {
     var library = await bootPackageWithLibrary('''
