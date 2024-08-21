@@ -48,5 +48,5 @@ class Prefix extends ModelElement with HasNoPage {
   Map<String, CommentReferable> get referenceChildren => {};
 
   @override
-  Iterable<CommentReferable> get referenceParents => [definingLibrary];
+  Iterable<CommentReferable> get referenceParents => [library];
 }

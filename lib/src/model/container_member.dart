@@ -21,6 +21,10 @@ mixin ContainerMember on ModelElement {
   @override
   Container get enclosingElement;
 
+  @override
+  String get filePath =>
+      '${canonicalLibraryOrThrow.dirName}/${enclosingElement.name}/$fileName';
+
   /// The container that contains this member.
   @protected
   @visibleForTesting
@@ -60,7 +64,7 @@ mixin ContainerMember on ModelElement {
       // and resolve the pieces with different scopes.  dart-lang/dartdoc#2693.
       // Until then, just pretend we're handling this correctly.
       [
-        (documentationFrom.first as ModelElement).definingLibrary,
+        (documentationFrom.first as ModelElement).library,
         if (this case Field(:var getter, :var setter))
           packageGraph.findCanonicalModelElementFor(getter ?? setter)?.library
         else

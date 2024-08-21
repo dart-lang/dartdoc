@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:dartdoc/src/generator/generator_utils.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -50,8 +51,16 @@ class SearchIndexTest extends DartdocTestBase {
         ...library.packageGraph.libraries
             .where((l) => l.name.startsWith('dart:')),
     ];
+    // TODO(srawlins): `Library.allModelElements` is not a great fit for this
+    // test, because we can only calculate the `href` properties of canonical,
+    // documented elements. But this filter gets us approximately what we want.
+    var elements = libraries.expand((library) => library.allModelElements
+        .whereDocumentedIn(library)
+        .where((e) => e is ContainerMember
+            ? e.enclosingElement.canonicalLibrary != null
+            : e.canonicalLibrary != null));
     var text = generateSearchIndexJson(
-      libraries.expand((library) => library.allModelElements),
+      elements,
       packageOrder: actAsFlutter ? const ['flutter', 'Dart'] : const [],
       pretty: false,
     );

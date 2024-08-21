@@ -86,19 +86,6 @@ mixin Inheritable on ContainerMember {
           previousNonSkippable = c;
         }
       }
-      // This is still OK because we're never supposed to cloak public
-      // classes.
-      if (definingEnclosingContainer.isCanonical &&
-          definingEnclosingContainer.isPublic) {
-        assert(
-            definingEnclosingContainer == found,
-            "For '$element' (${element.hashCode}) "
-            "(search element: '$searchElement', ${searchElement?.hashCode}, in "
-            "'${searchElement?.enclosingElement}'), expected "
-            "'$definingEnclosingContainer', which is canonical, to be '$found',"
-            "but was not. Here's the inheritance chain: "
-            '${inheritance.reversed}.');
-      }
       if (found != null) {
         return found;
       }

@@ -32,7 +32,7 @@ abstract class Typedef extends ModelElement
   String get linkedGenericParameters => _renderTypeParameters(isLinked: true);
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${canonicalLibraryOrThrow.dirName}/$fileName';
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;
@@ -49,7 +49,6 @@ abstract class Typedef extends ModelElement
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    assert(canonicalLibrary == library);
     return '${package.baseHref}$filePath';
   }
 
@@ -65,7 +64,7 @@ abstract class Typedef extends ModelElement
       .toList(growable: false);
 
   @override
-  Iterable<CommentReferable> get referenceParents => [definingLibrary];
+  Iterable<CommentReferable> get referenceParents => [library];
 
   late final Map<String, CommentReferable> _referenceChildren = {
     ...typeParameters.explicitOnCollisionWith(this),

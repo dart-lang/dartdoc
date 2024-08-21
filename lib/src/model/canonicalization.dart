@@ -5,7 +5,7 @@
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 
-/// Classes extending this class have canonicalization support in Dartdoc.
+/// Canonicalization support in Dartdoc.
 ///
 /// This provides heuristic scoring to determine which library a human likely
 /// considers this element to be primarily 'from', and therefore, canonical.
@@ -15,6 +15,7 @@ final class Canonicalization {
 
   Canonicalization(this._element);
 
+  /// Calculates a candidate for the canonical library of [_element], among [libraries].
   Library calculateCanonicalCandidate(Iterable<Library> libraries) {
     var locationPieces = _element.element.location
         .toString()

@@ -288,7 +288,7 @@ abstract class InheritingContainer extends Container {
 
   /// The [InheritingContainer] with the library in which [element] is defined.
   InheritingContainer get definingContainer =>
-      getModelFor(element, definingLibrary) as InheritingContainer;
+      getModelFor(element, library) as InheritingContainer;
 
   @override
   InterfaceElement get element;

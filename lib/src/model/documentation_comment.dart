@@ -9,6 +9,7 @@ import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/documentation.dart';
 import 'package:dartdoc/src/model/inheritable.dart';
 import 'package:dartdoc/src/model/locatable.dart';
+import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/source_code_mixin.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -273,6 +274,10 @@ mixin DocumentationComment
 
   /// The environment variables to use when running a tool.
   Map<String, String> _toolsEnvironment({required int invocationIndex}) {
+    var self = this;
+    var library = self is ModelElement
+        ? (self.canonicalLibrary ?? this.library)
+        : this.library;
     var env = {
       'SOURCE_LINE': characterLocation?.lineNumber.toString(),
       'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),

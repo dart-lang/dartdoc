@@ -98,3 +98,9 @@ extension IterableOfDocumentableExtension<E extends Documentable>
 extension IterableOfNameableExtension<E extends Nameable> on Iterable<E> {
   Iterable<E> get wherePublic => where((e) => e.isPublic);
 }
+
+extension IterableOfModelElementExtension<E extends ModelElement>
+    on Iterable<E> {
+  Iterable<E> whereDocumentedIn(Library library) =>
+      whereDocumented.where((e) => e.canonicalLibrary == library);
+}

@@ -913,15 +913,18 @@ Future<void> validateSdkDocs() async {
   }
   print('$foundSubLibCount index.html dart: entries in categories found');
 
-  // check for the existence of certain files/dirs
-  var libsCount =
-      _sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
-  if (!expectedTotalCounts.contains(libsCount)) {
-    throw StateError('Docs not generated for all the SDK libraries; expected '
-        '$expectedTotalCounts directories, but $libsCount directories were '
-        'generated');
+  // Check for the existence of certain files and directories.
+  var libraries =
+      _sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-'));
+  var libraryCount = libraries.length;
+  if (!expectedTotalCounts.contains(libraryCount)) {
+    var libraryNames =
+        libraries.map((l) => "'${path.basename(l.path)}'").join(', ');
+    throw StateError('Unexpected docs generated for SDK libraries; expected '
+        '$expectedTotalCounts directories, but $libraryCount directories were '
+        'generated: $libraryNames');
   }
-  print("Found $libsCount 'dart:' libraries");
+  print("Found $libraryCount 'dart:' libraries");
 
   var futureConstructorFile =
       File(path.join(_sdkDocsDir.path, 'dart-async', 'Future', 'Future.html'));

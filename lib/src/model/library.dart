@@ -21,7 +21,13 @@ class Library extends ModelElement
   @override
   final LibraryElement element;
 
-  final Set<Element> _exportedAndLocalElements;
+  /// The set of [Element]s declared directly in this library.
+  final Set<Element> _localElements;
+
+  /// The set of [Element]s exported by this library but not directly declared
+  /// in this library.
+  final Set<Element> _exportedElements;
+
   final String _restoredUri;
 
   @override
@@ -40,7 +46,7 @@ class Library extends ModelElement
   static final Library sentinel = _LibrarySentinel();
 
   Library._(this.element, PackageGraph packageGraph, this.package,
-      this._restoredUri, this._exportedAndLocalElements)
+      this._restoredUri, this._localElements, this._exportedElements)
       : super(sentinel, packageGraph);
 
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
@@ -49,10 +55,7 @@ class Library extends ModelElement
 
     var element = resolvedLibrary.element;
 
-    var exportedAndLocalElements = {
-      // Initialize the list of elements defined in this library and
-      // exported via its export directives.
-      ...element.exportNamespace.definedNames.values,
+    var localElements = {
       // TODO(jcollins-g): Consider switch to `element.topLevelElements`.
       ..._getDefinedElements(element.definingCompilationUnit),
       ...element.parts
@@ -60,12 +63,16 @@ class Library extends ModelElement
           .whereType<DirectiveUriWithUnit>()
           .map((part) => part.unit)
     };
+    var exportedElements = {...element.exportNamespace.definedNames.values}
+        .difference(localElements);
     var library = Library._(
-        element,
-        packageGraph,
-        package,
-        resolvedLibrary.element.source.uri.toString(),
-        exportedAndLocalElements);
+      element,
+      packageGraph,
+      package,
+      resolvedLibrary.element.source.uri.toString(),
+      localElements,
+      exportedElements,
+    );
 
     package.allLibraries.add(library);
     return library;
@@ -286,19 +293,26 @@ class Library extends ModelElement
   late final PackageMeta? packageMeta =
       packageGraph.packageMetaProvider.fromElement(element, config.sdkDir);
 
-  late final List<Class> classesAndExceptions =
-      _elementsOfType<ClassElement, Class>();
+  late final List<Class> classesAndExceptions = [
+    ..._localElementsOfType<ClassElement, Class>(),
+    ..._exportedElementsOfType<ClassElement, Class>(),
+  ];
 
   @override
   Iterable<Class> get classes =>
       classesAndExceptions.where((c) => !c.isErrorOrException);
 
   @override
-  Iterable<TopLevelVariable> get constants =>
-      _variables.where((v) => v.isConst);
+  late final Iterable<TopLevelVariable> constants = [
+    ..._localVariables.where((v) => v.isConst),
+    ..._exportedVariables.where((v) => v.isConst),
+  ];
 
   @override
-  late final List<Enum> enums = _elementsOfType<EnumElement, Enum>();
+  late final List<Enum> enums = [
+    ..._localElementsOfType<EnumElement, Enum>(),
+    ..._exportedElementsOfType<EnumElement, Enum>(),
+  ];
 
   @override
   late final List<Class> exceptions = classesAndExceptions
@@ -306,59 +320,91 @@ class Library extends ModelElement
       .toList(growable: false);
 
   @override
-  late final List<Extension> extensions =
-      _elementsOfType<ExtensionElement, Extension>();
+  late final List<Extension> extensions = [
+    ..._localElementsOfType<ExtensionElement, Extension>(),
+    ..._exportedElementsOfType<ExtensionElement, Extension>(),
+  ];
 
   @override
-  late final List<ExtensionType> extensionTypes =
-      _elementsOfType<ExtensionTypeElement, ExtensionType>();
+  late final List<ExtensionType> extensionTypes = [
+    ..._localElementsOfType<ExtensionTypeElement, ExtensionType>(),
+    ..._exportedElementsOfType<ExtensionTypeElement, ExtensionType>(),
+  ];
 
   @override
-  late final List<ModelFunction> functions =
-      _elementsOfType<FunctionElement, ModelFunction>();
+  late final List<ModelFunction> functions = [
+    ..._localElementsOfType<FunctionElement, ModelFunction>(),
+    ..._exportedElementsOfType<FunctionElement, ModelFunction>(),
+  ];
 
   @override
-  late final List<Mixin> mixins = _elementsOfType<MixinElement, Mixin>();
+  late final List<Mixin> mixins = [
+    ..._localElementsOfType<MixinElement, Mixin>(),
+    ..._exportedElementsOfType<MixinElement, Mixin>(),
+  ];
 
   @override
-  late final List<TopLevelVariable> properties =
-      _variables.where((v) => !v.isConst).toList(growable: false);
+  late final List<TopLevelVariable> properties = [
+    ..._localVariables.where((v) => !v.isConst),
+    ..._exportedVariables.where((v) => !v.isConst),
+  ];
 
   @override
-  late final List<Typedef> typedefs =
-      _elementsOfType<TypeAliasElement, Typedef>();
+  late final List<Typedef> typedefs = [
+    ..._localElementsOfType<TypeAliasElement, Typedef>(),
+    ..._exportedElementsOfType<TypeAliasElement, Typedef>(),
+  ];
 
-  List<U> _elementsOfType<T extends Element, U extends ModelElement>() =>
-      _exportedAndLocalElements
-          .whereType<T>()
-          .map((e) => packageGraph.getModelFor(e, this) as U)
-          .toList(growable: false);
+  Iterable<U>
+      _localElementsOfType<T extends Element, U extends ModelElement>() =>
+          _localElements
+              .whereType<T>()
+              .map((e) => packageGraph.getModelFor(e, this) as U);
 
-  /// All top-level variables, including "properties" and constants.
-  List<TopLevelVariable> get _variables {
-    var elements = {
-      ..._exportedAndLocalElements.whereType<TopLevelVariableElement>(),
-      ..._exportedAndLocalElements
+  Iterable<U>
+      _exportedElementsOfType<T extends Element, U extends ModelElement>() =>
+          _exportedElements.whereType<T>().map((e) {
+            var library = e.library;
+            if (library == null) {
+              throw StateError("The library of '$e' is null!");
+            }
+            return packageGraph.getModelFor(
+              e,
+              packageGraph.getModelForElement(library) as Library,
+            ) as U;
+          });
+
+  Iterable<TopLevelVariable> get _localVariables {
+    return {
+      ..._localElements.whereType<TopLevelVariableElement>(),
+      ..._localElements
           .whereType<PropertyAccessorElement>()
-          .map((a) => a.variable2! as TopLevelVariableElement)
-    };
-    var variables = <TopLevelVariable>[];
-    for (var element in elements) {
-      Accessor? getter;
-      var elementGetter = element.getter;
-      if (elementGetter != null) {
-        getter = packageGraph.getModelFor(elementGetter, this) as Accessor;
-      }
-      Accessor? setter;
-      var elementSetter = element.setter;
-      if (elementSetter != null) {
-        setter = packageGraph.getModelFor(elementSetter, this) as Accessor;
-      }
-      var me = getModelForPropertyInducingElement(element, this,
-          getter: getter, setter: setter);
-      variables.add(me as TopLevelVariable);
+          .map((a) => a.variable2! as TopLevelVariableElement),
+    }.map(_topLevelVariableFor);
+  }
+
+  Iterable<TopLevelVariable> get _exportedVariables {
+    return {
+      ..._exportedElements.whereType<TopLevelVariableElement>(),
+      ..._exportedElements
+          .whereType<PropertyAccessorElement>()
+          .map((a) => a.variable2! as TopLevelVariableElement),
+    }.map(_topLevelVariableFor);
+  }
+
+  TopLevelVariable _topLevelVariableFor(TopLevelVariableElement element) {
+    Accessor? getter;
+    var elementGetter = element.getter;
+    if (elementGetter != null) {
+      getter = packageGraph.getModelFor(elementGetter, this) as Accessor;
     }
-    return variables;
+    Accessor? setter;
+    var elementSetter = element.setter;
+    if (elementSetter != null) {
+      setter = packageGraph.getModelFor(elementSetter, this) as Accessor;
+    }
+    return getModelForPropertyInducingElement(element, this,
+        getter: getter, setter: setter) as TopLevelVariable;
   }
 
   /// All [ModelElement]s, direct and indirect, which are part of this library's

@@ -42,7 +42,7 @@ class TopLevelVariable extends ModelElement
   Library get enclosingElement => library;
 
   @override
-  String get filePath => '${library.dirName}/$fileName';
+  String get filePath => '${canonicalLibraryOrThrow.dirName}/$fileName';
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;
@@ -55,7 +55,6 @@ class TopLevelVariable extends ModelElement
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    assert(canonicalLibrary == library);
     return '${package.baseHref}$filePath';
   }
 
@@ -80,5 +79,5 @@ class TopLevelVariable extends ModelElement
   Set<Attribute> get attributes => {...super.attributes, ...comboAttributes};
 
   @override
-  Iterable<CommentReferable> get referenceParents => [definingLibrary];
+  Iterable<CommentReferable> get referenceParents => [library];
 }

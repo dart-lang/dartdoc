@@ -370,27 +370,6 @@ void main() {
       expect(IAmAClassWithCategories.displayedCategories, isEmpty);
     });
 
-    // For flutter, we allow reexports to pick up categories from the package
-    // they are exposed in.
-    test('Verify that reexported classes pick up categories', () {
-      var IAmAClassWithCategoriesReexport = ginormousPackageGraph.localPackages
-          .firstWhere((p) => p.name == 'test_package')
-          .libraries
-          .wherePublic
-          .named('fake')
-          .classes
-          .wherePublic
-          .named('IAmAClassWithCategories');
-      expect(IAmAClassWithCategoriesReexport.hasCategoryNames, isTrue);
-      expect(IAmAClassWithCategoriesReexport.categories, hasLength(1));
-      expect(IAmAClassWithCategoriesReexport.categories.first.name,
-          equals('Superb'));
-      expect(IAmAClassWithCategoriesReexport.displayedCategories, isNotEmpty);
-      var category = IAmAClassWithCategoriesReexport.displayedCategories.first;
-      expect(category.categoryIndex, equals(0));
-      expect(category.isDocumented, isTrue);
-    });
-
     test('Verify that multiple categories work correctly', () {
       var fakeLibrary = ginormousPackageGraph.localPackages
           .firstWhere((p) => p.name == 'test_package')

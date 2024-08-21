@@ -827,12 +827,12 @@ class PackageGraph with CommentReferable, Nameable {
     var candidates = <ModelElement>{};
     if (lib != null) {
       var constructedWithKey = allConstructedModelElements[
-          ConstructedModelElementsKey(element, lib, null)];
+          ConstructedModelElementsKey(element, null)];
       if (constructedWithKey != null) {
         candidates.add(constructedWithKey);
       }
       var constructedWithKeyWithClass = allConstructedModelElements[
-          ConstructedModelElementsKey(element, lib, preferredClass)];
+          ConstructedModelElementsKey(element, preferredClass)];
       if (constructedWithKeyWithClass != null) {
         candidates.add(constructedWithKeyWithClass);
       }
@@ -1044,20 +1044,17 @@ class PackageGraph with CommentReferable, Nameable {
 
 class ConstructedModelElementsKey {
   final Element element;
-  final Library library;
   final Container? enclosingElement;
 
-  ConstructedModelElementsKey(
-      this.element, this.library, this.enclosingElement);
+  ConstructedModelElementsKey(this.element, this.enclosingElement);
 
   @override
-  late final int hashCode = Object.hash(element, library, enclosingElement);
+  late final int hashCode = Object.hash(element, enclosingElement);
 
   @override
   bool operator ==(Object other) {
     if (other is! ConstructedModelElementsKey) return false;
     return other.element == element &&
-        other.library == library &&
         other.enclosingElement == enclosingElement;
   }
 }

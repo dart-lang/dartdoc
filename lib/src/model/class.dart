@@ -23,7 +23,8 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   ];
 
   @override
-  String get sidebarPath => '${library.dirName}/$name-class-sidebar.html';
+  String get sidebarPath =>
+      '${canonicalLibraryOrThrow.dirName}/$name-class-sidebar.html';
 
   @override
   late final List<InheritingContainer> inheritanceChain = [

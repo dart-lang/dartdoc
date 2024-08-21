@@ -21,6 +21,8 @@ class Category
         TopLevelContainer,
         Indexable
     implements Documentable {
+  /// The package in which this category is contained.
+  ///
   /// All libraries in [libraries] must come from [package].
   @override
   final Package package;
@@ -102,9 +104,6 @@ class Category
   @override
   late final bool isDocumented =
       documentedWhere != DocumentLocation.missing && documentationFile != null;
-
-  @override
-  String get fullyQualifiedName => name;
 
   String get filePath => 'topics/$name-topic.html';
 
