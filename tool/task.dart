@@ -814,7 +814,7 @@ Rebuild them with "dart tool/task.dart build" and check the results in.
 bool get _analyzerInUseIsTarget {
   // TODO(srawlins): Add validation that this number falls within the
   // constraints of the analyzer package which are set in `pubspec.yaml`.
-  const analyzerTarget = '6.5.2';
+  const analyzerTarget = '6.8.0';
 
   var lockfilePath = path.join(Directory.current.path, 'pubspec.lock');
   var lockfile = loadYaml(File(lockfilePath).readAsStringSync()) as YamlMap;

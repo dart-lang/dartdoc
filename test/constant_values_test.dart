@@ -11,9 +11,6 @@ import 'src/utils.dart';
 void main() {
   defineReflectiveSuite(() {
     defineReflectiveTests(ConstantValuesTest);
-    if (namedArgumentsAnywhereAllowed) {
-      defineReflectiveTests(ConstantValuesWithNamedArgumentsAnywhereTest);
-    }
     defineReflectiveTests(HiddenConstantsTest);
   });
 }
@@ -132,15 +129,6 @@ const aTearOffUnnamedConstructorArgsTypedef = Ft<String>.new;
     expect(aTearOffUnnamedConstructorArgsTypedef.constantValue,
         equals('Ft&lt;String&gt;.new'));
   }
-}
-
-@reflectiveTest
-class ConstantValuesWithNamedArgumentsAnywhereTest extends DartdocTestBase {
-  @override
-  String get libraryName => 'constant_values';
-
-  @override
-  String get sdkConstraint => '>=2.17.0 <3.0.0';
 
   void test_namedParametersInConstInvocationValue_specifiedLast() async {
     var library = await bootPackageWithLibrary('''
