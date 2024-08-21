@@ -1,3 +1,11 @@
+## 8.0.14
+
+* Library elements are now deduplicated in Dartdoc's model. This should be a
+  no-op with regards to generated docs, but noting here in case an issue crops
+  up. (#3838)
+* Add tests supporting the new Dart 'wildcards' feature.
+* Fix links in the sidebar of extension type pages. (#3831)
+
 ## 8.0.13
 
 * Fix an issue around referencing elements not explicitly included in a
