@@ -2,99 +2,97 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/file_system/memory_file_system.dart';
-import 'package:dartdoc/src/dartdoc.dart';
-import 'package:dartdoc/src/model/model.dart';
-import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
+import 'package:test_reflective_loader/test_reflective_loader.dart';
 
-import '../src/test_descriptor_utils.dart' as d;
 import '../src/utils.dart';
+import 'template_test_base.dart';
 
 void main() async {
-  const packageName = 'test_package';
-
-  late List<String> f1Lines;
-
-  group('methods', () {
-    setUpAll(() async {
-      final packageMetaProvider = testPackageMetaProvider;
-      final resourceProvider =
-          packageMetaProvider.resourceProvider as MemoryResourceProvider;
-      final packagePath = await d.createPackage(
-        packageName,
-        pubspec: '''
-name: fields
-version: 0.0.1
-environment:
-  sdk: '>=2.18.0 <3.0.0'
-''',
-        libFiles: [
-          d.file('lib.dart', '''
-class A {
-  const A(String m);
+  defineReflectiveSuite(() {
+    defineReflectiveTests(FieldTest);
+  });
 }
 
-class B {
+@reflectiveTest
+class FieldTest extends TemplateTestBase {
+  @override
+  String get packageName => 'field_test';
+
+  @override
+  String get libraryName => 'field';
+
+  void test_class_fieldName() async {
+    await createPackageWithLibrary('''
+class C {
+  int f1 = 1;
+}
+''');
+    var f1Lines = readLines(['lib', 'C', 'f1.html']);
+    f1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-property">f1</span> property'),
+      ],
+    );
+  }
+
+  void test_class_annotations() async {
+    await createPackageWithLibrary('''
+class C {
   @deprecated
   @A('message')
   int f1 = 1;
 }
-'''),
-        ],
-        resourceProvider: resourceProvider,
-      );
-      await writeDartdocResources(resourceProvider);
-      final context = await generatorContextFromArgv([
-        '--input',
-        packagePath,
-        '--output',
-        path.join(packagePath, 'doc'),
-        '--sdk-dir',
-        packageMetaProvider.defaultSdkDir.path,
-        '--no-link-to-remote',
-      ], packageMetaProvider);
 
-      final packageConfigProvider =
-          getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-      packageConfigProvider.addPackageToConfigFor(
-          packagePath, packageName, Uri.file('$packagePath/'));
-      final packageBuilder = PubPackageBuilder(
-        context,
-        packageMetaProvider,
-        packageConfigProvider,
-        skipUnreachableSdkLibraries: true,
-      );
-      await (await Dartdoc.fromContext(context, packageBuilder)).generateDocs();
-      f1Lines = resourceProvider
-          .getFile(path.join(packagePath, 'doc', 'lib', 'B', 'f1.html'))
-          .readAsStringSync()
-          .split('\n');
-    });
+class A {
+  const A(String m);
+}
+''');
+    var f1Lines = readLines(['lib', 'C', 'f1.html']);
+    f1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<ol class="annotation-list">'),
+        matches('<li>@deprecated</li>'),
+        matches(
+            r'<li>@<a href="../../lib/A-class.html">A</a>\(&#39;message&#39;\)</li>'),
+        matches('</ol>'),
+      ],
+    );
+  }
 
-    test('field page contains method name', () async {
-      f1Lines.expectMainContentContainsAllInOrder(
-        [
-          matches('<h1><span class="kind-property">f1</span> property'),
-        ],
-      );
-    });
+  void test_class_docComment() async {
+    await createPackageWithLibrary('''
+class C {
+  /// Documentation text.
+  int f1 = 1;
+}
+''');
+    var f1Lines = readLines(['lib', 'C', 'f1.html']);
+    f1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<section class="desc markdown">'),
+        matches('<p>Documentation text.</p>'),
+      ],
+    );
+  }
 
-    test('field page contains annotations', () async {
-      f1Lines.expectMainContentContainsAllInOrder(
-        [
-          matches('<ol class="annotation-list">'),
-          matches('<li>@deprecated</li>'),
-          matches(
-              r'<li>@<a href="../../lib/A-class.html">A</a>\(&#39;message&#39;\)</li>'),
-          matches('</ol>'),
-        ],
-      );
-    });
+  void test_extensionType_representationField_final() async {
+    await createPackageWithLibrary('''
+extension type ET(
+  /// Documentation text.
+  int f1) {}
+''');
+    var f1Lines = readLines(['lib', 'ET', 'f1.html']);
+    f1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches(
+            '<div class="features"><span class="feature">final</span></div>'),
+      ],
+    );
+  }
 
-    // TODO(srawlins): Add rendering tests.
-    // * how inherited fields look on subclass page ('inherited' feature)
-    // * static fields
-    // * linked elements in signature
-  });
+  // TODO(srawlins): Add rendering tests:
+  // * how inherited fields look on subclass page ('inherited' feature)
+  // * static fields
+  // * linked elements in signature
 }
