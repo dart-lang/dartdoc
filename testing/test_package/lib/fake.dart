@@ -1214,18 +1214,6 @@ extension ExtensionOnTypeParameter<T> on T {
   T aFunctionReturningT(T other) => other;
 }
 
-class Super1 {}
-
-class _Super2 implements Super1 {}
-
-class Super3 implements _Super2 {}
-
-class Super4 implements Super1 {}
-
-class _Super5 implements _Super2 {}
-
-class Super6 implements _Super5 {}
-
 abstract class IntermediateAbstract extends Object {
   /// This is an override.
   @override

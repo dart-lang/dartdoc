@@ -382,7 +382,8 @@ abstract class InheritingContainer extends Container {
 
   /// All the "immediate" public implementers of this container.
   ///
-  /// For a [Mixin], this is actually the mixin applications using the [Mixin].
+  /// For a [Mixin], this is actually the mixin applications that use the
+  /// [Mixin].
   ///
   /// If this container has a private implementer, then that is counted as a
   /// proxy for any public implementers of that private container.
@@ -580,14 +581,9 @@ abstract class InheritingContainer extends Container {
 
 /// Add the ability to support mixed-in types to an [InheritingContainer].
 mixin MixedInTypes on InheritingContainer {
-  @visibleForTesting
   late final List<DefinedElementType> mixedInTypes = element.mixins
       .map((f) => getTypeFor(f, library) as DefinedElementType)
       .toList(growable: false);
-
-  List<InheritingContainer> get mixedInElements => [
-        for (var t in mixedInTypes) t.modelElement as InheritingContainer,
-      ];
 
   @override
   bool get hasModifiers => super.hasModifiers || hasPublicMixedInTypes;
@@ -604,8 +600,8 @@ extension on InterfaceElement {
 
 extension DefinedElementTypeIterableExtension on Iterable<DefinedElementType> {
   /// The [ModelElement] for each element.
-  Iterable<InheritingContainer> get modelElements =>
-      map((e) => e.modelElement as InheritingContainer);
+  List<InheritingContainer> get modelElements =>
+      map((e) => e.modelElement as InheritingContainer).toList();
 }
 
 extension InheritingContainerIterableExtension

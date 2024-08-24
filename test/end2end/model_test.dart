@@ -1763,7 +1763,7 @@ void main() async {
 
     test('Verify inheritance/mixin structure and type inference', () {
       expect(
-          TypeInferenceMixedIn.mixedInElements
+          TypeInferenceMixedIn.mixedInTypes
               .map<String>((element) => element.name),
           orderedEquals(['GenericMixin']));
       expect(
@@ -1928,11 +1928,11 @@ void main() async {
     });
 
     test('mixins', () {
-      expect(Apple.mixedInElements, hasLength(0));
+      expect(Apple.mixedInTypes, hasLength(0));
     });
 
     test('mixins private', () {
-      expect(F.mixedInElements, hasLength(1));
+      expect(F.mixedInTypes, hasLength(1));
     });
 
     test('interfaces', () {
@@ -4487,30 +4487,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Implementors', () {
-    late final Class apple;
-    late final Class b;
-    late final List<InheritingContainer> implA, implC;
-
-    setUpAll(() {
-      apple = exLibrary.classes.named('Apple');
-      b = exLibrary.classes.named('B');
-      implA = apple.publicImplementersSorted;
-      implC = exLibrary.classes.named('Cat').publicImplementersSorted;
-    });
-
-    test('private classes do not break the implementor chain', () {
-      var Super1 = fakeLibrary.classes.named('Super1');
-      var publicImplementors =
-          Super1.publicImplementersSorted.map((i) => i.name);
-      expect(publicImplementors, hasLength(3));
-      // A direct implementor.
-      expect(publicImplementors, contains('Super4'));
-      // An implementor through _Super2.
-      expect(publicImplementors, contains('Super3'));
-      // An implementor through _Super5 and _Super2.
-      expect(publicImplementors, contains('Super6'));
-    });
-
     test(
         'private classes in internal libraries do not break the implementor chain',
         () {
@@ -4535,31 +4511,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(publicImplementors, hasLength(1));
       expect(publicImplementors, contains('GenericSuperInt'));
     });
-
-    test('the first class is Apple', () {
-      expect(apple.name, equals('Apple'));
-    });
-
-    test('apple has some implementors', () {
-      expect(apple.hasPublicImplementers, isTrue);
-      expect(implA, isNotNull);
-      expect(implA, hasLength(1));
-      expect(implA[0].name, equals('B'));
-    });
-
-    test('Cat has implementors', () {
-      expect(implC, hasLength(3));
-      var implementors = <String>['B', 'Dog', 'ConstantCat'];
-      expect(implementors, contains(implC[0].name));
-      expect(implementors, contains(implC[1].name));
-      expect(implementors, contains(implC[2].name));
-    });
-
-    test('B does not have implementors', () {
-      expect(b, isNotNull);
-      expect(b.name, equals('B'));
-      expect(b.publicImplementersSorted, hasLength(0));
-    });
   });
 
   group('Errors and exceptions', () {
@@ -4569,6 +4520,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       'MyErrorImplements',
       'MyExceptionImplements'
     ];
+
     test('library has the exact errors/exceptions we expect', () {
       expect(exLibrary.exceptions.map((e) => e.name),
           unorderedEquals(expectedNames));

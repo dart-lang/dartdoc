@@ -643,14 +643,11 @@ class PackageGraph with CommentReferable, Nameable {
             supertype.modelElement as InheritingContainer, container);
       }
       if (container is Class) {
-        for (var element in container.mixedInElements) {
+        for (var element in container.mixedInTypes.modelElements) {
           checkAndAddContainer(element, container);
         }
-        for (var element in container.interfaceElements) {
-          checkAndAddContainer(element, container);
-        }
-      } else if (container is ExtensionType) {
-        for (var element in container.interfaceElements) {
+      } else if (container is Mixin) {
+        for (var element in container.superclassConstraints.modelElements) {
           checkAndAddContainer(element, container);
         }
       }

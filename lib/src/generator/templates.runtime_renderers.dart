@@ -9568,17 +9568,17 @@ class _Renderer_MixedInTypes extends RendererBase<MixedInTypes> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasPublicMixedInTypes,
                 ),
-                'mixedInElements': Property(
-                  getValue: (CT_ c) => c.mixedInElements,
+                'mixedInTypes': Property(
+                  getValue: (CT_ c) => c.mixedInTypes,
                   renderVariable: (CT_ c, Property<CT_> self,
                           List<String> remainingNames) =>
                       self.renderSimpleVariable(
-                          c, remainingNames, 'List<InheritingContainer>'),
+                          c, remainingNames, 'List<DefinedElementType>'),
                   renderIterable: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    return c.mixedInElements.map((e) =>
-                        _render_InheritingContainer(e, ast, r.template, sink,
-                            parent: r));
+                    return c.mixedInTypes.map((e) => _render_DefinedElementType(
+                        e, ast, r.template, sink,
+                        parent: r));
                   },
                 ),
                 'publicMixedInTypes': Property(
