@@ -214,8 +214,11 @@ enum E<T> with M<T>, N { one, two, three; }
 ''');
     var eEnum = library.enums.named('E');
 
-    expect(eEnum.mixedInElements, hasLength(2));
-    expect(eEnum.mixedInElements.map((e) => e.name), equals(['M', 'N']));
+    expect(eEnum.mixedInTypes.modelElements, hasLength(2));
+    expect(
+      eEnum.mixedInTypes.modelElements.map((e) => e.name),
+      equals(['M', 'N']),
+    );
   }
 
   void test_operatorsAreDocumented() async {

@@ -25,7 +25,8 @@ class ClassTest extends TemplateTestBase {
   void test_implementers_class_extends() async {
     await createPackageWithLibrary('''
 class Base {}
-class Foo extends Base {}
+class _Foo extends Base {}
+class Foo extends _Foo {}
 ''');
     var baseLines = readLines(['lib', 'Base-class.html']);
 
@@ -40,7 +41,8 @@ class Foo extends Base {}
   void test_implementers_class_implements() async {
     await createPackageWithLibrary('''
 class Base {}
-class Foo implements Base {}
+class _Foo implements Base {}
+class Foo implements _Foo {}
 ''');
     var baseLines = readLines(['lib', 'Base-class.html']);
 
@@ -82,6 +84,22 @@ class Foo implements Base<int> {}
     ]);
   }
 
+  void test_implementers_class_mixesIn() async {
+    await createPackageWithLibrary('''
+class Base {}
+class _Foo with Base {}
+class Foo with _Foo {}
+''');
+    var baseLines = readLines(['lib', 'Base-class.html']);
+
+    baseLines.expectMainContentContainsAllInOrder([
+      matches('<dt>Implementers</dt>'),
+      matches('<dd><ul class="comma-separated clazz-relationships">'),
+      matches('<li><a href="../lib/Foo-class.html">Foo</a></li>'),
+      matches('</ul></dd>'),
+    ]);
+  }
+
   void test_implementers_extensionType_implements() async {
     await createPackageWithLibrary('''
 class Base1 {}
@@ -102,7 +120,8 @@ extension type ET(Base2 base) implements Base1 {}
   void test_implementers_mixin_implements() async {
     await createPackageWithLibrary('''
 class Base {}
-mixin M implements Base {}
+mixin _M implements Base {}
+mixin M implements _M {}
 ''');
     var baseLines = readLines(['lib', 'Base-class.html']);
 
@@ -114,11 +133,11 @@ mixin M implements Base {}
     ]);
   }
 
-  @FailingTest(reason: 'Not implemented yet; should be?')
   void test_implementers_mixin_superclassConstraint() async {
     await createPackageWithLibrary('''
 class Base {}
-mixin M on Base {}
+mixin _M on Base {}
+mixin M on _M {}
 ''');
     var baseLines = readLines(['lib', 'Base-class.html']);
 

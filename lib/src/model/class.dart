@@ -31,7 +31,7 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
     this,
 
     // Caching should make this recursion a little less painful.
-    for (var container in mixedInElements.reversed)
+    for (var container in mixedInTypes.modelElements.reversed)
       ...container.inheritanceChain,
 
     for (var container in superChain.modelElements)
