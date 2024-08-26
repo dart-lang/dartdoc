@@ -690,15 +690,10 @@ String renderExtension<T extends Extension>(ExtensionTemplateData<T> context0) {
       <dl class="dl-horizontal">
         <dt>on</dt>
         <dd>
-          <ul class="comma-separated clazz-relationships">''');
-  var context3 = context2.extendedType;
-  buffer.writeln();
-  buffer.write('''
-              <li>''');
-  buffer.write(context3.linkedName);
-  buffer.write('''</li>''');
-  buffer.writeln();
-  buffer.write('''
+          <ul class="comma-separated clazz-relationships">
+            <li>''');
+  buffer.write(context2.extendedElement.linkedName);
+  buffer.write('''</li>
           </ul>
         </dd>
       </dl>
@@ -720,7 +715,7 @@ String renderExtension<T extends Extension>(ExtensionTemplateData<T> context0) {
   buffer.write(_renderExtension_partial_static_methods_10(context2));
   buffer.write('\n    ');
   buffer.write(_renderExtension_partial_static_constants_11(context2));
-  var context4 = context0.extension;
+  var context3 = context0.extension;
   buffer.writeln();
   buffer.write('''
 
@@ -1397,7 +1392,7 @@ String renderMethod(MethodTemplateData context0) {
     buffer.write(' ');
     buffer.writeEscaped(context0.parent!.kind.toString());
     buffer.write(''' on ''');
-    buffer.write(context0.parentAsExtension.extendedType.linkedName);
+    buffer.write(context0.parentAsExtension.extendedElement.linkedName);
     buffer.write('''</h5>''');
   }
   if (!context0.isParentExtension) {
@@ -1626,7 +1621,7 @@ String renderProperty(PropertyTemplateData context0) {
     buffer.write(' ');
     buffer.writeEscaped(context0.parent!.kind.toString());
     buffer.write(''' on ''');
-    buffer.write(context0.parentAsExtension.extendedType.linkedName);
+    buffer.write(context0.parentAsExtension.extendedElement.linkedName);
     buffer.write('''</h5>''');
   }
   if (!context0.isParentExtension) {
@@ -3645,7 +3640,7 @@ String _deduplicated_lib_templates__extension_html(Extension context0) {
   buffer.write(context0.linkedName);
   buffer.write('''</span>
   on ''');
-  buffer.write(context0.extendedType.linkedName);
+  buffer.write(context0.extendedElement.linkedName);
   buffer.write('\n  ');
   buffer.write(
       __deduplicated_lib_templates__extension_html_partial_categorization_0(

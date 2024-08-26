@@ -160,7 +160,9 @@ class PackageGraph with CommentReferable, Nameable {
         _addToImplementers(library.classesAndExceptions);
         _addToImplementers(library.mixins);
         _addToImplementers(library.extensionTypes);
-        _extensions.addAll(library.extensions);
+        if (library.isCanonical) {
+          _extensions.addAll(library.extensions.whereDocumented);
+        }
       }
       if (package.isLocal && !package.hasPublicLibraries) {
         package.warn(PackageWarning.noDocumentableLibrariesInPackage);
@@ -383,7 +385,7 @@ class PackageGraph with CommentReferable, Nameable {
               clazz.definingContainer.hashCode);
 
   /// A list of extensions that exist in the package graph.
-  final List<Extension> _extensions = [];
+  final Set<Extension> _extensions = {};
 
   /// Name of the default package.
   String get defaultPackageName => packageMeta.name;

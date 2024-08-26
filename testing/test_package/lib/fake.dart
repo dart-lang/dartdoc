@@ -1196,24 +1196,6 @@ extension DoSomething2X<A, B, R> on Function1<A, Function1<B, R>> {
   Function2<A, B, R> something() => (A first, B second) => this(first)(second);
 }
 
-/// Extensions might exist on types defined by the language.
-extension ExtensionOnDynamic on dynamic {
-  void youCanAlwaysCallMe() {}
-}
-
-extension ExtensionOnVoid on void {
-  void youCanStillAlwaysCallMe() {}
-}
-
-extension ExtensionOnNull on Null {
-  void youCanOnlyCallMeOnNulls() {}
-}
-
-/// Extensions might exist on unbound type parameters.
-extension ExtensionOnTypeParameter<T> on T {
-  T aFunctionReturningT(T other) => other;
-}
-
 abstract class IntermediateAbstract extends Object {
   /// This is an override.
   @override

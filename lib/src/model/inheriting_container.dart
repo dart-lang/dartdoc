@@ -271,7 +271,7 @@ abstract class InheritingContainer extends Container {
   /// defined by [element] can exist where this extension applies, not including
   /// any extension that applies to every type.
   late final List<Extension> potentiallyApplicableExtensionsSorted =
-      packageGraph.extensions.whereDocumented
+      packageGraph.extensions
           .where((e) => !e.alwaysApplies)
           .where((e) => e.couldApplyTo(this))
           .toList(growable: false)

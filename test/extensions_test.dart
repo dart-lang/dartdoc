@@ -23,6 +23,156 @@ class ExtensionMethodsTest extends DartdocTestBase {
   @override
   String get libraryName => 'extension_methods';
 
+  void test_applicability_extensionOnClass_couldApplyToSameClass() async {
+    var library = await bootPackageWithLibrary('''
+class C {}
+extension Ex on C {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('C')), isTrue);
+  }
+
+  void test_applicability_extensionOnClass_couldApplyToDifferentClass() async {
+    var library = await bootPackageWithLibrary('''
+class C {}
+extension Ex on int {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('C')), isFalse);
+  }
+
+  void test_applicability_extensionOnClass_couldApplyToSubclass() async {
+    var library = await bootPackageWithLibrary('''
+class C {}
+class D extends C {}
+extension Ex on C {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('D')), isTrue);
+  }
+
+  void test_applicability_extensionOnClass_couldApplyToInstantiation() async {
+    var library = await bootPackageWithLibrary('''
+class C<T> {}
+extension Ex on C<int> {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('C')), isTrue);
+  }
+
+  void
+      test_applicability_extensionOnClass_couldApplyToSubclassInstantiation() async {
+    var library = await bootPackageWithLibrary('''
+class C<T> {}
+class D<T> extends C<T> {}
+extension Ex on C<int> {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('D')), isTrue);
+  }
+
+  void
+      test_applicability_extensionOnClass_couldApplyToSubclassInstantiation2() async {
+    var library = await bootPackageWithLibrary('''
+class C<T> {}
+class D extends C<String> {}
+extension Ex on C<int> {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('D')), isFalse);
+  }
+
+  void test_applicability_extensionOnObject_couldApplyToClass() async {
+    var library = await bootPackageWithLibrary('''
+extension Ex on Object {}
+class C {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('C')), isTrue);
+  }
+
+  void test_applicability_extensionOnObject_couldApplyToMixin() async {
+    var library = await bootPackageWithLibrary('''
+extension Ex on Object {}
+mixin M {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.mixins.named('M')), isTrue);
+  }
+
+  void test_applicability_extensionOnDynamic_couldApplyToClass() async {
+    var library = await bootPackageWithLibrary('''
+extension Ex on dynamic {}
+class C {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('C')), isTrue);
+  }
+
+  void test_applicability_extensionOnDynamic_alwaysApplies() async {
+    var library = await bootPackageWithLibrary('''
+extension Ex on dynamic {}
+''');
+    expect(library.extensions.named('Ex').alwaysApplies, isTrue);
+  }
+
+  void test_applicability_extensionOnVoid_couldApplyToClass() async {
+    var library = await bootPackageWithLibrary('''
+extension Ex on void {}
+class C {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('C')), isTrue);
+  }
+
+  void test_applicability_extensionOnNull_couldApplyToClass() async {
+    var library = await bootPackageWithLibrary('''
+extension Ex on Null {}
+class C {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('C')), isFalse);
+  }
+
+  void test_applicability_extensionOnTypeVariable_couldApplyToClass() async {
+    var library = await bootPackageWithLibrary('''
+extension Ex<T> on T {}
+class C {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('C')), isTrue);
+  }
+
+  void test_applicability_extensionOnTypeVariable_alwaysApplies() async {
+    var library = await bootPackageWithLibrary('''
+extension Ex<T> on T {}
+class C {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.alwaysApplies, isTrue);
+  }
+
+  void
+      test_applicability_extensionOnTypeVariableWithBound_couldApplyToSubtypeOfBound() async {
+    var library = await bootPackageWithLibrary('''
+class C {}
+class D extends C {}
+extension Ex<T extends C> on T {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('D')), isTrue);
+  }
+
+  void
+      test_applicability_extensionOnTypeVariableWithBound_couldApplyToUnrelated() async {
+    var library = await bootPackageWithLibrary('''
+extension Ex<T extends num> on T {}
+class C {}
+''');
+    var ex = library.extensions.named('Ex');
+    expect(ex.couldApplyTo(library.classes.named('C')), isFalse);
+  }
+
   void test_referenceToExtension() async {
     var library = await bootPackageWithLibrary('''
 extension Ex on int {}
