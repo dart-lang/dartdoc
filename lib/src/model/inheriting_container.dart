@@ -436,13 +436,29 @@ abstract class InheritingContainer extends Container {
   /// and so unlike other `public*` methods, is not a strict subset of
   /// [directInterfaces] (the direct interfaces).
   List<DefinedElementType> get publicInterfaces {
+    var interfaceElements = <InterfaceElement>{};
     var interfaces = <DefinedElementType>[];
+
+    // Only interfaces with unique elements should be returned. Elements can
+    // implement an interface through multiple inheritance routes (e.g.
+    // `List<E>` implements `Iterable<E>` but also `_ListIterable<E>` which
+    // implements `EfficientLengthIterable<T>` which implements `Iterable<T>`),
+    // but there is no chance of type arguments differing, as that is illegal.
+    void addInterfaceIfUnique(DefinedElementType type) {
+      var firstPublicSuperElement = type.modelElement.element;
+      if (firstPublicSuperElement is InterfaceElement) {
+        if (interfaceElements.add(firstPublicSuperElement)) {
+          interfaces.add(type);
+        }
+      }
+    }
+
     for (var interface in directInterfaces) {
       var interfaceElement = interface.modelElement;
 
       /// Do not recurse if we can find an element here.
       if (interfaceElement.canonicalModelElement != null) {
-        interfaces.add(interface);
+        addInterfaceIfUnique(interface);
         continue;
       }
       // Public types used to be unconditionally exposed here.  However,
@@ -466,9 +482,9 @@ abstract class InheritingContainer extends Container {
       }
       var publicSuperChain = interfaceElement.superChain.wherePublic;
       if (publicSuperChain.isNotEmpty) {
-        interfaces.add(publicSuperChain.first);
+        addInterfaceIfUnique(publicSuperChain.first);
       }
-      interfaces.addAll(interfaceElement.publicInterfaces);
+      interfaceElement.publicInterfaces.forEach(addInterfaceIfUnique);
     }
     return interfaces;
   }
