@@ -3467,18 +3467,6 @@ class _Renderer_DefinedElementType extends RendererBase<DefinedElementType> {
                         parent: r);
                   },
                 ),
-                'instantiatedType': Property(
-                  getValue: (CT_ c) => c.instantiatedType,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'DartType'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.instantiatedType, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['DartType']!);
-                  },
-                ),
                 'isPublic': Property(
                   getValue: (CT_ c) => c.isPublic,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4083,18 +4071,6 @@ class _Renderer_ElementType extends RendererBase<ElementType> {
                         parent: r);
                   },
                 ),
-                'instantiatedType': Property(
-                  getValue: (CT_ c) => c.instantiatedType,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'DartType'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.instantiatedType, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['DartType']!);
-                  },
-                ),
                 'isTypedef': Property(
                   getValue: (CT_ c) => c.isTypedef,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4611,8 +4587,8 @@ class _Renderer_Extension extends RendererBase<Extension> {
                         parent: r);
                   },
                 ),
-                'extendedType': Property(
-                  getValue: (CT_ c) => c.extendedType,
+                'extendedElement': Property(
+                  getValue: (CT_ c) => c.extendedElement,
                   renderVariable:
                       (CT_ c, Property<CT_> self, List<String> remainingNames) {
                     if (remainingNames.isEmpty) {
@@ -4629,7 +4605,8 @@ class _Renderer_Extension extends RendererBase<Extension> {
                   isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_ElementType(c.extendedType, ast, r.template, sink,
+                    _render_ElementType(
+                        c.extendedElement, ast, r.template, sink,
                         parent: r);
                   },
                 ),

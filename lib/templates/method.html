@@ -24,7 +24,7 @@
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     {{ >search_sidebar }}
     {{ #isParentExtension }}
-    <h5>{{ parent.name }} {{ parent.kind }} on {{{ parentAsExtension.extendedType.linkedName }}}</h5>
+    <h5>{{ parent.name }} {{ parent.kind }} on {{{ parentAsExtension.extendedElement.linkedName }}}</h5>
     {{ /isParentExtension }}
     {{ ^isParentExtension }}
     <h5>{{ parent.name }} {{ parent.kind }}</h5>

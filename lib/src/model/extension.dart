@@ -3,11 +3,11 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/type_utils.dart';
 import 'package:meta/meta.dart';
 
 /// Static extension on a given type, containing methods (including getters,
@@ -16,37 +16,50 @@ class Extension extends Container {
   @override
   final ExtensionElement element;
 
-  late final ElementType extendedType =
+  late final ElementType extendedElement =
       getTypeFor(element.extendedType, library);
 
   Extension(this.element, super.library, super.packageGraph);
 
-  /// Detect if this extension applies to every object.
-  bool get alwaysApplies =>
-      extendedType.instantiatedType is DynamicType ||
-      extendedType.instantiatedType is VoidType ||
-      extendedType.instantiatedType.isDartCoreObject;
+  /// Whether this extension applies to every static type.
+  bool get alwaysApplies {
+    var extendedType = extendedElement.type;
+    if (extendedType is TypeParameterType) extendedType = extendedType.bound;
+    return extendedType is DynamicType ||
+        extendedType is VoidType ||
+        extendedType.isDartCoreObject;
+  }
 
-  bool couldApplyTo<T extends InheritingContainer>(T c) =>
-      _couldApplyTo(c.modelType);
+  /// Whether this extension could apply to [container].
+  ///
+  /// This makes some assumptions in its calculations. For example, all
+  /// [InheritingContainer]s represent [InterfaceElement]s, so no care is taken
+  /// to consider function types or record types.
+  bool couldApplyTo(InheritingContainer container) {
+    var extendedType = extendedElement.type;
+    if (extendedType is TypeParameterType) {
+      extendedType = extendedType.bound;
+    }
+    if (extendedType is DynamicType || extendedType is VoidType) {
+      return true;
+    }
+    var otherType = container.modelType.type;
+    if (otherType is InterfaceType) {
+      otherType = library.element.typeSystem.instantiateInterfaceToBounds(
+        element: otherType.element,
+        nullabilitySuffix: NullabilitySuffix.none,
+      );
 
-  /// Whether this extension could apply to [type].
-  bool _couldApplyTo(DefinedElementType type) {
-    if (extendedType.instantiatedType is DynamicType ||
-        extendedType.instantiatedType is VoidType) {
-      return true;
+      for (var superType in [otherType, ...otherType.allSupertypes]) {
+        var isSameBaseType = superType.element == extendedType.element;
+        if (isSameBaseType &&
+            library.element.typeSystem.isSubtypeOf(extendedType, superType)) {
+          return true;
+        }
+      }
     }
-    var typeInstantiated = type.instantiatedType;
-    var extendedInstantiated = extendedType.instantiatedType;
-    if (typeInstantiated == extendedInstantiated) {
-      return true;
-    }
-    if (typeInstantiated.documentableElement ==
-            extendedInstantiated.documentableElement &&
-        extendedType.isSubtypeOf(type)) {
-      return true;
-    }
-    return extendedType.isBoundSupertypeTo(type);
+
+    return false;
   }
 
   @override
@@ -100,7 +113,7 @@ class Extension extends Container {
   @override
   Map<String, CommentReferable> get referenceChildren {
     return _referenceChildren ??= {
-      ...extendedType.referenceChildren,
+      ...extendedElement.referenceChildren,
       // Override extendedType entries with local items.
       ...super.referenceChildren,
     };

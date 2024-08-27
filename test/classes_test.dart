@@ -19,6 +19,60 @@ class ClassesTest extends DartdocTestBase {
   @override
   String get libraryName => 'classes';
 
+  void test_availableExtensions_onClass() async {
+    var library = await bootPackageWithLibrary('''
+class C {}
+extension Ex on C {}
+''');
+
+    var f = library.classes.named('C');
+    expect(
+      f.potentiallyApplicableExtensionsSorted,
+      contains(library.extensions.named('Ex')),
+    );
+  }
+
+  void test_availableExtensions_onClassWithInstantiatedType() async {
+    var library = await bootPackageWithLibrary('''
+class C<T> {}
+extension Ex on C<int> {}
+''');
+
+    var f = library.classes.named('C');
+    expect(
+      f.potentiallyApplicableExtensionsSorted,
+      contains(library.extensions.named('Ex')),
+    );
+  }
+
+  void test_availableExtensions_onSubtypeOfClass() async {
+    var library = await bootPackageWithLibrary('''
+class C {}
+class D extends C {}
+extension Ex on C {}
+''');
+
+    var f = library.classes.named('D');
+    expect(
+      f.potentiallyApplicableExtensionsSorted,
+      contains(library.extensions.named('Ex')),
+    );
+  }
+
+  void test_availableExtensions_onInstantiatedSubtypeOfClass() async {
+    var library = await bootPackageWithLibrary('''
+class C<T> {}
+class D<T> extends C<T> {}
+extension Ex on C<int> {}
+''');
+
+    var f = library.classes.named('D');
+    expect(
+      f.potentiallyApplicableExtensionsSorted,
+      contains(library.extensions.named('Ex')),
+    );
+  }
+
   void test_publicInterfaces_direct() async {
     var library = await bootPackageWithLibrary('''
 class A {}

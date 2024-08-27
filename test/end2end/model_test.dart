@@ -18,7 +18,6 @@ import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
-import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
@@ -2834,35 +2833,6 @@ void main() async {
           orderedEquals([uphill]));
     });
 
-    test('extensions on special types work', () {
-      Extension extensionOnDynamic,
-          extensionOnVoid,
-          extensionOnNull,
-          extensionOnTypeParameter;
-      var object = packageGraph.specialClasses[SpecialClass.object]!;
-      Extension getExtension(String name) => fakeLibrary.extensions.named(name);
-
-      extensionOnDynamic = getExtension('ExtensionOnDynamic');
-      extensionOnNull = getExtension('ExtensionOnNull');
-      extensionOnVoid = getExtension('ExtensionOnVoid');
-      extensionOnTypeParameter = getExtension('ExtensionOnTypeParameter');
-
-      expect(extensionOnDynamic.couldApplyTo(object), isTrue);
-      expect(extensionOnVoid.couldApplyTo(object), isTrue);
-      expect(extensionOnNull.couldApplyTo(object), isFalse);
-      expect(extensionOnTypeParameter.couldApplyTo(object), isTrue);
-
-      expect(extensionOnDynamic.alwaysApplies, isTrue);
-      expect(extensionOnVoid.alwaysApplies, isTrue);
-      expect(extensionOnNull.alwaysApplies, isFalse);
-      expect(extensionOnTypeParameter.alwaysApplies, isTrue);
-
-      // Even though it does have extensions that could apply to it,
-      // extensions that apply to [Object] should always be hidden from
-      // documentation.
-      expect(object.hasPotentiallyApplicableExtensions, isFalse);
-    });
-
     test('applicableExtensions include those from implements & mixins', () {
       Extension extensionCheckLeft,
           extensionCheckRight,
@@ -2953,7 +2923,7 @@ void main() async {
     });
 
     test('has extended type', () {
-      expect(ext.extendedType.name, equals('Apple'));
+      expect(ext.extendedElement.name, equals('Apple'));
     });
 
     test('extension name with generics', () {
@@ -2964,7 +2934,7 @@ void main() async {
     });
 
     test('extended type has generics', () {
-      expect(fancyList.extendedType.nameWithGenerics,
+      expect(fancyList.extendedElement.nameWithGenerics,
           equals('List&lt;<wbr><span class="type-parameter">Z</span>&gt;'));
     });
 

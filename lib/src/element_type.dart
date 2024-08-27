@@ -10,7 +10,6 @@ library;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:analyzer/dart/element/type_system.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
@@ -58,12 +57,7 @@ abstract class ElementType with CommentReferable, Nameable {
   @override
   String get breadcrumbName => throw UnimplementedError();
 
-  DartType get instantiatedType;
-
   Iterable<ElementType> get typeArguments;
-
-  bool isBoundSupertypeTo(ElementType t);
-  bool isSubtypeOf(ElementType t);
 
   @override
   String toString() => '$type';
@@ -111,16 +105,6 @@ class UndefinedElementType extends ElementType {
 
   @override
   String get nameWithGenerics => '$name$nullabilitySuffix';
-
-  /// Assume that undefined elements don't have useful bounds.
-  @override
-  DartType get instantiatedType => type;
-
-  @override
-  bool isBoundSupertypeTo(ElementType t) => false;
-
-  @override
-  bool isSubtypeOf(ElementType t) => type.isBottom && !t.type.isBottom;
 
   @override
   String get linkedName => name;
@@ -257,9 +241,6 @@ class TypeParameterElementType extends DefinedElementType {
 
   @override
   String get nameWithGenerics => '$name$nullabilitySuffix';
-
-  @override
-  DartType get _bound => type.bound;
 }
 
 /// An [ElementType] associated with an [Element].
@@ -311,45 +292,6 @@ abstract class DefinedElementType extends ElementType {
     var canonicalClass =
         packageGraph.findCanonicalModelElementFor(modelElement) ?? modelElement;
     return canonicalClass.isPublic;
-  }
-
-  TypeSystem get _typeSystem => library.element.typeSystem;
-
-  DartType get _bound => type;
-
-  /// This type, instantiated to bounds if it isn't already.
-  @override
-  late final DartType instantiatedType = () {
-    final bound = _bound;
-    if (bound is InterfaceType &&
-        !bound.typeArguments.every((t) => t is InterfaceType)) {
-      return _typeSystem.instantiateInterfaceToBounds(
-          element: bound.element, nullabilitySuffix: _bound.nullabilitySuffix);
-    } else {
-      return _bound;
-    }
-  }();
-
-  /// Returns whether the instantiated-to-bounds type of this type is a subtype
-  /// of [type].
-  @override
-  bool isSubtypeOf(ElementType type) =>
-      _typeSystem.isSubtypeOf(instantiatedType, type.instantiatedType);
-
-  /// Whether at least one supertype (including via mixins and interfaces) is
-  /// equivalent to or a subtype of `this` when instantiated to bounds.
-  @override
-  bool isBoundSupertypeTo(ElementType t) {
-    var type = t.instantiatedType;
-    if (type is InterfaceType) {
-      var superTypes = type.allSupertypes;
-      for (var superType in superTypes) {
-        if (_typeSystem.isSubtypeOf(superType, instantiatedType)) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 
   @override
