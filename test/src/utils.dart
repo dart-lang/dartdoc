@@ -322,35 +322,34 @@ MatchingLinkResult referenceLookup(Warnable element, String codeRef) =>
 
 /// Returns a matcher which compresses consecutive whitespace in [text] into a
 /// single space.
-Matcher matchesCompressed(String text) => matches(RegExp(text.replaceAll(
-      RegExp(r'\s\s+', multiLine: true),
-      ' *',
-    )));
+Matcher matchesCompressed(String text) => matches(RegExp(
+      text.replaceAll(RegExp(r'\s\s+', multiLine: true), r'\s*'),
+    ));
 
-/// We can not use [ExperimentalFeature.releaseVersion] or even
-/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
-/// even when partial analyzer implementations are available.
+// We can not use `ExperimentalFeature.releaseVersion` or even
+// `ExperimentalFeature.experimentalReleaseVersion` as these are set to `null`
+// even when partial analyzer implementations are available.
 bool get namedArgumentsAnywhereAllowed =>
     VersionRange(min: Version.parse('2.17.0-0'), includeMin: true)
         .allows(platformVersion);
 
-/// We can not use [ExperimentalFeature.releaseVersion] or even
-/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
-/// even when partial analyzer implementations are available.
+// We can not use `ExperimentalFeature.releaseVersion` or even
+// `ExperimentalFeature.experimentalReleaseVersion` as these are set to `null`
+// even when partial analyzer implementations are available.
 bool get recordsAllowed =>
     VersionRange(min: Version.parse('2.19.0-0'), includeMin: true)
         .allows(platformVersion);
 
-/// We can not use [ExperimentalFeature.releaseVersion] or even
-/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
-/// even when partial analyzer implementations are available.
+// We can not use `ExperimentalFeature.releaseVersion` or even
+// `ExperimentalFeature.experimentalReleaseVersion` as these are set to `null`
+// even when partial analyzer implementations are available.
 bool get extensionTypesAllowed =>
     VersionRange(min: Version.parse('3.2.0-0.0-dev'), includeMin: true)
         .allows(platformVersion);
 
-/// We can not use [ExperimentalFeature.releaseVersion] or even
-/// [ExperimentalFeature.experimentalReleaseVersion] as these are set to `null`
-/// even when partial analyzer implementations are available.
+// We can not use `ExperimentalFeature.releaseVersion` or even
+// `ExperimentalFeature.experimentalReleaseVersion` as these are set to `null`
+// even when partial analyzer implementations are available.
 bool get classModifiersAllowed =>
     VersionRange(min: Version.parse('3.0.0-0.0-dev'), includeMin: true)
         .allows(platformVersion);

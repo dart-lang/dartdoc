@@ -46,12 +46,36 @@ class Foo implements _Foo {}
 ''');
     var baseLines = readLines(['lib', 'Base-class.html']);
 
-    baseLines.expectMainContentContainsAllInOrder([
-      matches('<dt>Implementers</dt>'),
-      matches('<dd><ul class="comma-separated clazz-relationships">'),
-      matches('<li><a href="../lib/Foo-class.html">Foo</a></li>'),
-      matches('</ul></dd>'),
-    ]);
+    expect(
+      baseLines.join('\n'),
+      matchesCompressed('''
+        <dt>Implementers</dt>
+        <dd><ul class="comma-separated clazz-relationships">
+            <li><a href="../lib/Foo-class.html">Foo</a></li>
+        </ul></dd>
+'''),
+    );
+  }
+
+  void test_implementers_class_extends2() async {
+    await createPackageWithLibrary('''
+abstract class A {}
+abstract class B extends A {}
+class _C extends B {}
+class D extends _C {}
+''');
+    var baseLines = readLines(['lib', 'A-class.html']);
+
+    expect(
+      baseLines.join('\n'),
+      // D should not be found; it is indirect via B.
+      matchesCompressed('''
+        <dt>Implementers</dt>
+        <dd><ul class="comma-separated clazz-relationships">
+            <li><a href="../lib/B-class.html">B</a></li>
+        </ul></dd>
+'''),
+    );
   }
 
   void test_implementers_class_implements_withGenericType() async {
@@ -61,12 +85,15 @@ class Foo<E> implements Base<E> {}
 ''');
     var baseLines = readLines(['lib', 'Base-class.html']);
 
-    baseLines.expectMainContentContainsAllInOrder([
-      matches('<dt>Implementers</dt>'),
-      matches('<dd><ul class="comma-separated clazz-relationships">'),
-      matches('<li><a href="../lib/Foo-class.html">Foo</a></li>'),
-      matches('</ul></dd>'),
-    ]);
+    expect(
+      baseLines.join('\n'),
+      matchesCompressed(r'''
+        <dt>Implementers</dt>
+        <dd><ul class="comma-separated clazz-relationships">
+          <li><a href="../lib/Foo-class.html">Foo</a></li>
+        </ul></dd>
+'''),
+    );
   }
 
   void test_implementers_class_implements_withInstantiatedType() async {
