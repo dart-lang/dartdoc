@@ -16,7 +16,7 @@
       <section>
         <dl class="dl-horizontal">
           {{ #hasPublicSuperclassConstraints }}
-            <dt>Superclass Constraints</dt>
+            <dt>Superclass constraints</dt>
             <dd><ul class="comma-separated dark mixin-relationships">
               {{ #publicSuperclassConstraints }}
                 <li>{{{ linkedName }}}</li>
@@ -28,7 +28,7 @@
           {{ >interfaces }}
 
           {{ #hasPublicImplementers }}
-            <dt>Mixin Applications</dt>
+            <dt>Mixin applications</dt>
             <dd>
               <ul class="comma-separated mixin-relationships">
                 {{ #publicImplementersSorted }}
@@ -37,6 +37,7 @@
               </ul>
             </dd>
           {{ /hasPublicImplementers }}
+          {{ >available_extensions }}
 
           {{ >annotations }}
         </dl>

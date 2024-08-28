@@ -149,6 +149,21 @@ mixin M on _M {}
     ]);
   }
 
+  void test_availableExtensions_direct() async {
+    await createPackageWithLibrary('''
+class C {}
+extension E on C {}
+''');
+    var baseLines = readLines(['lib', 'C-class.html']);
+
+    baseLines.expectMainContentContainsAllInOrder([
+      matches('<dt>Available extensions</dt>'),
+      matches('<dd><ul class="comma-separated clazz-relationships">'),
+      matches('<li><a href="../lib/E.html">E</a></li>'),
+      matches('</ul></dd>'),
+    ]);
+  }
+
   void test_constructor_named() async {
     await createPackageWithLibrary('''
 class C {
