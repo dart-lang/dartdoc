@@ -17,7 +17,7 @@
         </section>
         {{ >documentation }}
         {{ >source_code }}
-      {{ ^hasGetterOrSetter }}
+      {{ /hasGetterOrSetter }}
 
       {{ #hasExplicitGetter }}
         {{ >accessor_getter }}
