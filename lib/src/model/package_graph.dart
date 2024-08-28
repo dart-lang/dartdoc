@@ -605,6 +605,9 @@ class PackageGraph with CommentReferable, Nameable {
       if (href == null) continue;
 
       hrefMap.putIfAbsent(href, () => {}).add(modelElement);
+      hrefMap
+          .putIfAbsent(href.replaceAll(htmlBasePlaceholder, ''), () => {})
+          .add(modelElement);
     }
 
     for (final library in _allLibraries.values) {
