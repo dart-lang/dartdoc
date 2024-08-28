@@ -91,6 +91,8 @@ enum EnumWithDefaultConstructor {
   /// Doc comment for [six].
   six;
 }
+
+extension Ext<T> on E<T> {}
 '''),
         ],
         resourceProvider: resourceProvider,
@@ -158,10 +160,19 @@ enum EnumWithDefaultConstructor {
       expect(
           eLines,
           containsAllInOrder([
-            matches('<dt>Mixed in types</dt>'),
+            matches('<dt>Mixed-in types</dt>'),
             matches('<a href="../lib/M-mixin.html">M</a>'
                 '<span class="signature">&lt;<wbr>'
                 '<span class="type-parameter">T</span>&gt;</span>'),
+          ]));
+    });
+
+    test('enum page contains available extensions', () async {
+      expect(
+          eLines,
+          containsAllInOrder([
+            matches('<dt>Available extensions</dt>'),
+            matches('<a href="../lib/E.html">E</a></span>'),
           ]));
     });
 

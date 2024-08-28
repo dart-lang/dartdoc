@@ -28,15 +28,7 @@
           </ul></dd>
         {{ /hasPublicImplementers }}
 
-        {{ #hasPotentiallyApplicableExtensions }}
-          <dt>Available Extensions</dt>
-          <dd><ul class="comma-separated clazz-relationships">
-            {{ #potentiallyApplicableExtensionsSorted }}
-              <li>{{{ linkedName }}}</li>
-            {{ /potentiallyApplicableExtensionsSorted }}
-          </ul></dd>
-        {{ /hasPotentiallyApplicableExtensions }}
-
+        {{ >available_extensions }}
         {{ >container_annotations }}
       </dl>
     </section>
