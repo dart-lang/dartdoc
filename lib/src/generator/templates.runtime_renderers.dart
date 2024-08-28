@@ -6484,13 +6484,6 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                       self.renderSimpleVariable(c, remainingNames, 'bool'),
                   getBool: (CT_ c) => c.hasGetterOrSetter,
                 ),
-                'hasNoGetterSetter': Property(
-                  getValue: (CT_ c) => c.hasNoGetterSetter,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.hasNoGetterSetter,
-                ),
                 'hasParameters': Property(
                   getValue: (CT_ c) => c.hasParameters,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -16010,7 +16003,6 @@ const _invisibleGetters = {
     'hasExplicitSetter',
     'hasGetter',
     'hasGetterOrSetter',
-    'hasNoGetterSetter',
     'hasParameters',
     'hasPublicGetter',
     'hasPublicGetterNoSetter',

@@ -1564,7 +1564,8 @@ String renderProperty(PropertyTemplateData context0) {
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.self;
-  if (context2.hasNoGetterSetter) {
+  buffer.write('\n    ');
+  if (!context2.hasGetterOrSetter) {
     buffer.writeln();
     buffer.write('''
       <section class="multi-line-signature">
@@ -1584,7 +1585,7 @@ String renderProperty(PropertyTemplateData context0) {
     buffer.write('\n      ');
     buffer.write(_renderProperty_partial_source_code_7(context2));
   }
-  buffer.writeln();
+  buffer.write('\n\n    ');
   if (context2.hasGetterOrSetter) {
     if (context2.hasGetter) {
       buffer.write('\n        ');
@@ -2102,7 +2103,7 @@ String renderTopLevelProperty(TopLevelPropertyTemplateData context0) {
   buffer.write(_renderTopLevelProperty_partial_categorization_3(context1));
   buffer.write('''</h1></div>
 ''');
-  if (context1.hasNoGetterSetter) {
+  if (!context1.hasGetterOrSetter) {
     buffer.writeln();
     buffer.write('''
         <section class="multi-line-signature">

@@ -10,7 +10,9 @@
   {{ /self }}
 
   {{ #self }}
-    {{ #hasNoGetterSetter }}
+    {{!-- If the property has neither an explicit getter nor an explicit setter,
+          display the "shared" documentation for the combined property. --}}
+    {{ ^hasGetterOrSetter }}
       <section class="multi-line-signature">
         {{ >annotations }}
         {{{ modelType.linkedName }}}
@@ -19,8 +21,10 @@
       </section>
       {{ >documentation }}
       {{ >source_code }}
-    {{ /hasNoGetterSetter }}
+    {{ /hasGetterOrSetter }}
 
+    {{!-- Otherwise, the property has an explicit getter or an explicit setter,
+      or both; display separate docs. --}}
     {{ #hasGetterOrSetter }}
       {{ #hasGetter }}
         {{ >accessor_getter }}
