@@ -259,8 +259,6 @@ mixin GetterSetterCombo on ModelElement {
 
   bool get hasGetter => getter != null;
 
-  bool get hasNoGetterSetter => !hasGetterOrSetter;
-
   bool get hasGetterOrSetter => hasExplicitGetter || hasExplicitSetter;
 
   bool get hasSetter => setter != null;

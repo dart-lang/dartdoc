@@ -1574,7 +1574,8 @@ String renderProperty(PropertyTemplateData context0) {
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.self;
-  if (context2.hasNoGetterSetter) {
+  buffer.write('\n    ');
+  if (!context2.hasGetterOrSetter) {
     buffer.writeln();
     buffer.write('''
       <section class="multi-line-signature">
@@ -1594,7 +1595,7 @@ String renderProperty(PropertyTemplateData context0) {
     buffer.write('\n      ');
     buffer.write(_renderProperty_partial_source_code_7(context2));
   }
-  buffer.writeln();
+  buffer.write('\n\n    ');
   if (context2.hasGetterOrSetter) {
     if (context2.hasGetter) {
       buffer.write('\n        ');
@@ -2112,7 +2113,7 @@ String renderTopLevelProperty(TopLevelPropertyTemplateData context0) {
   buffer.write(_renderTopLevelProperty_partial_categorization_3(context1));
   buffer.write('''</h1></div>
 ''');
-  if (context1.hasNoGetterSetter) {
+  if (!context1.hasGetterOrSetter) {
     buffer.writeln();
     buffer.write('''
         <section class="multi-line-signature">
@@ -2131,31 +2132,36 @@ String renderTopLevelProperty(TopLevelPropertyTemplateData context0) {
     buffer.write(_renderTopLevelProperty_partial_documentation_7(context1));
     buffer.write('\n        ');
     buffer.write(_renderTopLevelProperty_partial_source_code_8(context1));
-  }
-  buffer.writeln();
-  if (context1.hasExplicitGetter) {
-    buffer.write('\n        ');
-    buffer.write(_renderTopLevelProperty_partial_accessor_getter_9(context1));
-  }
-  buffer.writeln();
-  if (context1.hasExplicitSetter) {
-    buffer.write('\n        ');
-    buffer.write(_renderTopLevelProperty_partial_accessor_setter_10(context1));
-  }
-  buffer.writeln();
-  buffer.write('''
+    if (!context1.hasGetterOrSetter) {
+      buffer.writeln();
+      if (context1.hasExplicitGetter) {
+        buffer.write('\n        ');
+        buffer
+            .write(_renderTopLevelProperty_partial_accessor_getter_9(context1));
+      }
+      buffer.writeln();
+      if (context1.hasExplicitSetter) {
+        buffer.write('\n        ');
+        buffer.write(
+            _renderTopLevelProperty_partial_accessor_setter_10(context1));
+      }
+      buffer.writeln();
+      buffer.write('''
+    {{ /self }}''');
+      buffer.writeln();
+      buffer.write('''
   </div> <!-- /.main-content -->
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
     ''');
-  buffer.write(_renderTopLevelProperty_partial_search_sidebar_11(context0));
-  buffer.writeln();
-  buffer.write('''
+      buffer.write(_renderTopLevelProperty_partial_search_sidebar_11(context0));
+      buffer.writeln();
+      buffer.write('''
     <h5>''');
-  buffer.writeEscaped(context0.parent!.name);
-  buffer.write(' ');
-  buffer.writeEscaped(context0.parent!.kind.toString());
-  buffer.write('''</h5>
+      buffer.writeEscaped(context0.parent!.name);
+      buffer.write(' ');
+      buffer.writeEscaped(context0.parent!.kind.toString());
+      buffer.write('''</h5>
     <div id="dartdoc-sidebar-left-content"></div>
   </div><!--/.sidebar-offcanvas-left-->
 
@@ -2163,7 +2169,12 @@ String renderTopLevelProperty(TopLevelPropertyTemplateData context0) {
   </div><!--/.sidebar-offcanvas-->
 
 ''');
-  buffer.write(_renderTopLevelProperty_partial_footer_12(context0));
+      buffer.write(_renderTopLevelProperty_partial_footer_12(context0));
+      buffer.writeln();
+    }
+    buffer.writeln();
+  }
+  buffer.writeln();
   buffer.writeln();
 
   return buffer.toString();
