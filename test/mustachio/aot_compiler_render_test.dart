@@ -168,7 +168,6 @@ void main() {
     <div class="partial">
     l1: [1, 2, 3]
 </div>
-
     s1: hello
     b1? no
     l1:item: 1item: 2item: 3
