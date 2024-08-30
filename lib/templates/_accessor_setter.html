@@ -3,8 +3,9 @@
 
     <section class="multi-line-signature">
       {{ >annotations }}
-      <span class="returntype">void</span>
-      {{ >name_summary }}<span class="signature">(<wbr>{{{ linkedParamsNoMetadata }}})</span>
+      set
+      <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{ definingCombo.name }}</span>
+      <span class="signature">(<wbr>{{{ linkedParamsNoMetadata }}})</span>
       {{ >attributes }}
     </section>
 
