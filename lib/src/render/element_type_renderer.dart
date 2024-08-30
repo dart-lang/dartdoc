@@ -16,7 +16,7 @@ abstract class ElementTypeRenderer<T extends ElementType> {
   String wrapNullabilityParens(T elementType, String inner) =>
       elementType.nullabilitySuffix.isEmpty
           ? inner
-          : '($inner${elementType.nullabilitySuffix})';
+          : '$inner${elementType.nullabilitySuffix}';
 }
 
 // HTML implementations.
