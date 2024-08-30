@@ -397,7 +397,7 @@ class _BlockCompiler {
   /// The set of URIs of elements that need to be imported.
   final Set<String> _referenceUris = {};
 
-  final _buffer = StringBuffer();
+  final _buffer = _CompressingBuffer();
 
   _BlockCompiler(this._templateCompiler, this._contextStack);
 
@@ -778,4 +778,37 @@ extension on TypeSystem {
 
     return contextStackTypes;
   }
+}
+
+/// A wrapper around a [StringBuffer] that removes blank lines.
+final class _CompressingBuffer {
+  final StringBuffer _buffer = StringBuffer();
+
+  bool _prevEndsWithNewline = false;
+
+  void write(String text) {
+    if (text.isEmpty) return;
+    text = text
+        // Strip any trailing spaces on each line.
+        .replaceAll(RegExp(r'\s+\n'), '\n')
+        // Compress consecutive newlines.
+        .replaceAll(RegExp(r'\n+'), '\n');
+    if (_prevEndsWithNewline) {
+      var first = text.codeUnits.first;
+      if (first == 0x0A /* '\n' */) {
+        text = text.substring(1);
+      }
+    }
+    if (text.isEmpty) return;
+    var last = text.codeUnits.last;
+    if (last == 0x0A /* '\n' */) {
+      _prevEndsWithNewline = true;
+    }
+    _buffer.write(text);
+  }
+
+  void writeln(String text) => write('$text\n');
+
+  @override
+  String toString() => _buffer.toString();
 }
