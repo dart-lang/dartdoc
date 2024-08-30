@@ -453,38 +453,52 @@ abstract class InheritingContainer extends Container {
       }
     }
 
-    for (var interface in directInterfaces) {
-      var interfaceElement = interface.modelElement;
+    void addFromSupertype(DefinedElementType supertype,
+        {required bool addSupertypes}) {
+      var superElement = supertype.modelElement;
 
       /// Do not recurse if we can find an element here.
-      if (interfaceElement.canonicalModelElement != null) {
-        addInterfaceIfUnique(interface);
-        continue;
+      if (superElement.canonicalModelElement != null) {
+        if (addSupertypes) addInterfaceIfUnique(supertype);
+        return;
       }
-      // Public types used to be unconditionally exposed here.  However,
-      // if the packages are [DocumentLocation.missing] we generally treat types
-      // defined in them as actually defined in a documented package.
-      // That translates to them being defined here, but in 'src/' or similar,
-      // and so, are now always hidden.
 
-      // This type is not backed by a canonical Class; search
-      // the superchain and publicInterfaces of this interface to pretend
-      // as though the hidden class didn't exist and this class was declared
-      // directly referencing the canonical classes further up the chain.
-      if (interfaceElement is! InheritingContainer) {
+      // This type is not backed by a canonical Class; it is not documented.
+      // Search it's `superChain` and `publicInterfaces` to pretend that `this`
+      // container directly implements canonical classes further up the chain.
+
+      if (superElement is! InheritingContainer) {
         assert(
           false,
-          'Can not handle intermediate non-public interfaces created by '
+          'Cannot handle intermediate non-public interfaces created by '
           "ModelElements that are not classes or mixins: '$fullyQualifiedName' "
-          "contains an interface '$interface', defined by '$interfaceElement'",
+          "contains a supertype '$supertype', defined by '$superElement'",
         );
-        continue;
+        return;
       }
-      var publicSuperChain = interfaceElement.superChain.wherePublic;
-      if (publicSuperChain.isNotEmpty) {
+      var publicSuperChain = superElement.superChain.wherePublic;
+      if (publicSuperChain.isNotEmpty && addSupertypes) {
         addInterfaceIfUnique(publicSuperChain.first);
       }
-      interfaceElement.publicInterfaces.forEach(addInterfaceIfUnique);
+      superElement.publicInterfaces.forEach(addInterfaceIfUnique);
+    }
+
+    for (var interface in directInterfaces) {
+      addFromSupertype(interface, addSupertypes: true);
+    }
+    for (var supertype in superChain) {
+      var interfaceElement = supertype.modelElement;
+
+      // Do not recurse if we can find an element here.
+      if (interfaceElement.canonicalModelElement != null) {
+        continue;
+      }
+      addFromSupertype(supertype, addSupertypes: false);
+    }
+    if (this case Class(:var mixedInTypes) || Enum(:var mixedInTypes)) {
+      for (var mixin in mixedInTypes) {
+        addFromSupertype(mixin, addSupertypes: false);
+      }
     }
     return interfaces;
   }

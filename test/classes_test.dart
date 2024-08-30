@@ -25,9 +25,9 @@ class C {}
 extension Ex on C {}
 ''');
 
-    var f = library.classes.named('C');
+    var c = library.classes.named('C');
     expect(
-      f.potentiallyApplicableExtensionsSorted,
+      c.potentiallyApplicableExtensionsSorted,
       contains(library.extensions.named('Ex')),
     );
   }
@@ -38,9 +38,9 @@ class C<T> {}
 extension Ex on C<int> {}
 ''');
 
-    var f = library.classes.named('C');
+    var c = library.classes.named('C');
     expect(
-      f.potentiallyApplicableExtensionsSorted,
+      c.potentiallyApplicableExtensionsSorted,
       contains(library.extensions.named('Ex')),
     );
   }
@@ -52,9 +52,9 @@ class D extends C {}
 extension Ex on C {}
 ''');
 
-    var f = library.classes.named('D');
+    var d = library.classes.named('D');
     expect(
-      f.potentiallyApplicableExtensionsSorted,
+      d.potentiallyApplicableExtensionsSorted,
       contains(library.extensions.named('Ex')),
     );
   }
@@ -66,9 +66,9 @@ class D<T> extends C<T> {}
 extension Ex on C<int> {}
 ''');
 
-    var f = library.classes.named('D');
+    var d = library.classes.named('D');
     expect(
-      f.potentiallyApplicableExtensionsSorted,
+      d.potentiallyApplicableExtensionsSorted,
       contains(library.extensions.named('Ex')),
     );
   }
@@ -102,6 +102,67 @@ class C implements B {}
 class A {}
 class _B implements A {}
 class C implements _B {}
+''');
+
+    var c = library.classes.named('C');
+    expect(c.publicInterfaces, hasLength(1));
+    expect(c.publicInterfaces.first.modelElement, library.classes.named('A'));
+  }
+
+  void test_publicInterfaces_indirectViaPrivate2() async {
+    var library = await bootPackageWithLibrary('''
+class A {}
+class _B implements A {}
+class _C implements _B {}
+class D implements _C {}
+''');
+
+    var d = library.classes.named('D');
+    expect(d.publicInterfaces, hasLength(1));
+    expect(d.publicInterfaces.first.modelElement, library.classes.named('A'));
+  }
+
+  void test_publicInterfaces_indirectViaPrivateExtendedClass() async {
+    var library = await bootPackageWithLibrary('''
+class A {}
+class _B implements A {}
+class C extends _B {}
+''');
+
+    var c = library.classes.named('C');
+    expect(c.publicInterfaces, hasLength(1));
+    expect(c.publicInterfaces.first.modelElement, library.classes.named('A'));
+  }
+
+  void test_publicInterfaces_indirectViaPrivateExtendedClass2() async {
+    var library = await bootPackageWithLibrary('''
+class A {}
+class _B implements A {}
+class _C extends _B {}
+class D extends _C {}
+''');
+
+    var c = library.classes.named('D');
+    expect(c.publicInterfaces, hasLength(1));
+    expect(c.publicInterfaces.first.modelElement, library.classes.named('A'));
+  }
+
+  void test_publicInterfaces_onlyExtendedClasses() async {
+    var library = await bootPackageWithLibrary('''
+class A {}
+class B extends A {}
+class _C extends B {}
+class D extends _C {}
+''');
+
+    expect(library.classes.named('D').publicInterfaces, isEmpty);
+  }
+
+  void test_publicInterfaces_indirectViaPrivateMixedInMixin() async {
+    var library = await bootPackageWithLibrary('''
+class A {}
+mixin _M implements A {}
+class C with _M {}
 ''');
 
     var c = library.classes.named('C');
