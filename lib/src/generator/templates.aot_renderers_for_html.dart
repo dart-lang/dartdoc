@@ -4743,6 +4743,7 @@ String _deduplicated_lib_templates__accessor_getter_html(
     buffer.write('''      <span class="returntype">''');
     buffer.write(context1.modelType.returnType.linkedName);
     buffer.write('''</span>
+      get
       ''');
     buffer.write(
         __deduplicated_lib_templates__accessor_getter_html_partial_name_summary_1(
@@ -4869,27 +4870,30 @@ String _deduplicated_lib_templates__accessor_setter_html(
         __deduplicated_lib_templates__accessor_setter_html_partial_annotations_0(
             context1));
     buffer.writeln();
-    buffer.write('''      <span class="returntype">void</span>
-      ''');
-    buffer.write(
-        __deduplicated_lib_templates__accessor_setter_html_partial_name_summary_1(
-            context1));
-    buffer.write('''<span class="signature">(<wbr>''');
+    buffer.write('''      set
+      <span class="name ''');
+    if (context1.isDeprecated) {
+      buffer.write('''deprecated''');
+    }
+    buffer.write('''">''');
+    buffer.writeEscaped(context1.definingCombo.name);
+    buffer.write('''</span>
+      <span class="signature">(<wbr>''');
     buffer.write(context1.linkedParamsNoMetadata);
     buffer.write(''')</span>
       ''');
     buffer.write(
-        __deduplicated_lib_templates__accessor_setter_html_partial_attributes_2(
+        __deduplicated_lib_templates__accessor_setter_html_partial_attributes_1(
             context1));
     buffer.writeln();
     buffer.write('''    </section>
     ''');
     buffer.write(
-        __deduplicated_lib_templates__accessor_setter_html_partial_documentation_3(
+        __deduplicated_lib_templates__accessor_setter_html_partial_documentation_2(
             context1));
     buffer.write('\n    ');
     buffer.write(
-        __deduplicated_lib_templates__accessor_setter_html_partial_source_code_4(
+        __deduplicated_lib_templates__accessor_setter_html_partial_source_code_3(
             context1));
     buffer.writeln();
     buffer.write('''  </section>''');
@@ -4921,25 +4925,7 @@ String __deduplicated_lib_templates__accessor_setter_html_partial_annotations_0(
   return buffer.toString();
 }
 
-String
-    __deduplicated_lib_templates__accessor_setter_html_partial_name_summary_1(
-        Accessor context1) {
-  final buffer = StringBuffer();
-  if (context1.isConst) {
-    buffer.write('''const ''');
-  }
-  buffer.write('''<span class="name ''');
-  if (context1.isDeprecated) {
-    buffer.write('''deprecated''');
-  }
-  buffer.write('''">''');
-  buffer.writeEscaped(context1.name);
-  buffer.write('''</span>''');
-
-  return buffer.toString();
-}
-
-String __deduplicated_lib_templates__accessor_setter_html_partial_attributes_2(
+String __deduplicated_lib_templates__accessor_setter_html_partial_attributes_1(
     Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasAttributes) {
@@ -4953,7 +4939,7 @@ String __deduplicated_lib_templates__accessor_setter_html_partial_attributes_2(
 }
 
 String
-    __deduplicated_lib_templates__accessor_setter_html_partial_documentation_3(
+    __deduplicated_lib_templates__accessor_setter_html_partial_documentation_2(
         Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasDocumentation) {
@@ -4969,7 +4955,7 @@ String
   return buffer.toString();
 }
 
-String __deduplicated_lib_templates__accessor_setter_html_partial_source_code_4(
+String __deduplicated_lib_templates__accessor_setter_html_partial_source_code_3(
     Accessor context1) {
   final buffer = StringBuffer();
   if (context1.hasSourceCode) {

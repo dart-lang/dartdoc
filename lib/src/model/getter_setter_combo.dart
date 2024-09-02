@@ -57,6 +57,11 @@ mixin GetterSetterCombo on ModelElement {
   bool get isInherited;
 
   @override
+  // Food for mustachio; because this is a mixin, mustachio can't figure out
+  // that this implicitly has a `name` property.
+  String get name;
+
+  @override
   String get fileName => isConst ? '$name-constant.html' : '$name.html';
 
   /// Whether this has a constant value which should be displayed.

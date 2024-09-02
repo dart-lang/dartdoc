@@ -91,6 +91,93 @@ extension type ET(
     );
   }
 
+  void test_getter_signature() async {
+    await createPackageWithLibrary('''
+class C {
+  int get f1 => 1;
+}
+''');
+    var f1Lines = readLines(['lib', 'C', 'f1.html']);
+    f1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-property">f1</span> property'),
+        matches('<section class="multi-line-signature">'),
+        matches('<span class="returntype">int</span>'),
+        matches('get'),
+        matches('<span class="name ">f1</span>'),
+      ],
+    );
+  }
+
+  void test_getter_overridingProperty_signature() async {
+    await createPackageWithLibrary('''
+class C {
+  int f1 = 0;
+}
+class D extends C {
+  @override
+  int get f1 => 1;
+}
+''');
+    var f1Lines = readLines(['lib', 'D', 'f1.html']);
+    f1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-property">f1</span> property'),
+        matches('<section class="multi-line-signature">'),
+        matches('<span class="returntype">int</span>'),
+        matches('get'),
+        matches('<span class="name ">f1</span>'),
+      ],
+    );
+  }
+
+  void test_setter_signature() async {
+    await createPackageWithLibrary('''
+class C {
+  set f1(int value) {}
+}
+''');
+    var f1Lines = readLines(['lib', 'C', 'f1.html']);
+    f1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<section class="multi-line-signature">'),
+        matches('set'),
+        matches('<span class="name ">f1</span>'),
+        matches(r'<span class="signature">\('
+            '<wbr><span class="parameter" id="f1=-param-value">'
+            '<span class="type-annotation">int</span> '
+            '<span class="parameter-name">value</span>'
+            r'</span>\)'
+            '</span>'),
+      ],
+    );
+  }
+
+  void test_setter_overridingProperty_signature() async {
+    await createPackageWithLibrary('''
+class C {
+  int f1 = 0;
+}
+class D extends C {
+  set f1(int value) {}
+}
+''');
+    var f1Lines = readLines(['lib', 'D', 'f1.html']);
+    f1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<section class="multi-line-signature">'),
+        matches('set'),
+        matches('<span class="name ">f1</span>'),
+        matches(r'<span class="signature">\('
+            '<wbr><span class="parameter" id="f1=-param-value">'
+            '<span class="type-annotation">int</span> '
+            '<span class="parameter-name">value</span>'
+            r'</span>\)'
+            '</span>'),
+      ],
+    );
+  }
+
   // TODO(srawlins): Add rendering tests:
   // * how inherited fields look on subclass page ('inherited' feature)
   // * static fields
