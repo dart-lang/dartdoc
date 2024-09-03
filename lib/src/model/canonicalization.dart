@@ -74,6 +74,11 @@ final class Canonicalization {
       scoredCandidate._alterScore(1.0, _Reason.packageName);
     }
 
+    // Same idea as the above, for the Dart SDK.
+    if (library.name == 'dart:core') {
+      scoredCandidate._alterScore(0.9, _Reason.packageName);
+    }
+
     // Give a tiny boost for libraries with long names, assuming they're
     // more specific (and therefore more likely to be the owner of this symbol).
     scoredCandidate._alterScore(

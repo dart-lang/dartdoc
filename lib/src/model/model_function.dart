@@ -51,7 +51,7 @@ class ModelFunctionTyped extends ModelElement with TypeParameters {
   String get filePath => '${canonicalLibrary?.dirName}/$fileName';
 
   @override
-  String get aboveSidebarPath => enclosingElement.sidebarPath;
+  String get aboveSidebarPath => canonicalLibraryOrThrow.sidebarPath;
 
   @override
   String? get belowSidebarPath => null;

@@ -102,20 +102,21 @@ analyzer:
   /// Creates a single library named [libraryName], with optional preamble
   /// [libraryPreamble].  Optionally, pass [extraFiles] such as
   /// `dartdoc_options.yaml`.
-  Future<Library> bootPackageWithLibrary(String libraryContent,
-      {String libraryPreamble = '',
-      Iterable<d.Descriptor> extraFiles = const [],
-      List<String> additionalArguments = const []}) async {
+  Future<Library> bootPackageWithLibrary(
+    String libraryContent, {
+    String libraryFilePath = 'lib/library.dart',
+    String libraryPreamble = '',
+    Iterable<d.Descriptor> extraFiles = const [],
+    List<String> additionalArguments = const [],
+  }) async {
     return (await bootPackageFromFiles([
-      d.dir('lib', [
-        d.file('lib.dart', '''
+      d.file(libraryFilePath, '''
 $libraryPreamble
 library $libraryName;
 
 $libraryContent
 '''),
-      ]),
-      ...extraFiles
+      ...extraFiles,
     ], additionalArguments: additionalArguments))
         .libraries
         .named(libraryName);

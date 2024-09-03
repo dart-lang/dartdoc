@@ -394,6 +394,22 @@ abstract class ModelElement
         !(enclosingElement as Extension).isPublic) {
       return false;
     }
+
+    if (element case LibraryElement(:var identifier, :var source)) {
+      // Private Dart SDK libraries are not public.
+      if (identifier.startsWith('dart:_') ||
+          identifier.startsWith('dart:nativewrappers/') ||
+          'dart:nativewrappers' == identifier) {
+        return false;
+      }
+      // Package-private libraries are not public.
+      var elementUri = source.uri;
+      if (elementUri.scheme == 'package' &&
+          elementUri.pathSegments[1] == 'src') {
+        return false;
+      }
+    }
+
     return !element.hasPrivateName && !hasNodoc;
   }();
 
@@ -518,6 +534,7 @@ abstract class ModelElement
     final candidateLibraries = thisAndExported.where((l) {
       if (!l.isPublic) return false;
       if (l.package.documentedWhere == DocumentLocation.missing) return false;
+      if (this is Library) return true;
       var lookup = l.element.exportNamespace.definedNames[topLevelElementName];
       return topLevelElement ==
           (lookup is PropertyAccessorElement ? lookup.variable2 : lookup);
