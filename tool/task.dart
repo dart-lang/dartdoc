@@ -23,7 +23,6 @@ import 'src/warnings_collection.dart';
 void main(List<String> args) async {
   var parser = ArgParser()
     ..addCommand('analyze')
-    ..addCommand('build')
     ..addCommand('buildbot')
     ..addCommand('clean')
     ..addCommand('compare')
@@ -31,6 +30,8 @@ void main(List<String> args) async {
     ..addCommand('test')
     ..addCommand('try-publish')
     ..addCommand('validate');
+  var buildCommand = parser.addCommand('build')
+    ..addFlag('debug', help: 'build unoptimized JavaScript');
   var docCommand = parser.addCommand('doc')
     ..addOption('name', help: 'package name')
     ..addOption('version', help: 'package version')
@@ -45,6 +46,7 @@ void main(List<String> args) async {
     return;
   }
 
+  buildUsage = buildCommand.usage;
   docUsage = docCommand.usage;
   serveUsage = serveCommand.usage;
 
@@ -64,6 +66,7 @@ void main(List<String> args) async {
   };
 }
 
+late String buildUsage;
 late String docUsage;
 late String serveUsage;
 
@@ -116,15 +119,24 @@ Future<void> analyzeTestPackages() async {
   }
 }
 
+Future<void> _buildHelp() async {
+  print('''
+Usage:
+dart tool/task.dart build [renderers|dartdoc-options|web]
+$buildUsage
+''');
+}
+
 Future<void> runBuild(ArgResults commandResults) async {
   if (commandResults.rest.isEmpty) {
     await buildAll();
   }
+  var debug = (commandResults['debug'] ?? false) as bool;
   for (var target in commandResults.rest) {
     await switch (target) {
       'renderers' => buildRenderers(),
       'dartdoc-options' => buildDartdocOptions(),
-      'web' => buildWeb(),
+      'web' => buildWeb(debug: debug),
       _ => throw UnimplementedError('Unknown build target: "$target"'),
     };
   }
@@ -154,13 +166,14 @@ Future<void> buildDartdocOptions() async {
 ''');
 }
 
-Future<void> buildWeb() async {
+Future<void> buildWeb({bool debug = false}) async {
   await SubprocessLauncher('build').runStreamedDartCommand([
     'compile',
     'js',
     '--output=lib/resources/docs.dart.js',
     'web/docs.dart',
-    '-O4',
+    if (debug) '--enable-asserts',
+    debug ? '-O0' : '-O4',
   ]);
   _delete(File('lib/resources/docs.dart.js.deps'));
 
@@ -294,7 +307,7 @@ Future<void> runDoc(ArgResults commandResults) async {
     throw ArgumentError('"doc" command requires a single target.');
   }
   var target = commandResults.rest.single;
-  var stats = commandResults['stats'];
+  var stats = commandResults['stats'] as bool;
   await switch (target) {
     'flutter' => docFlutter(withStats: stats),
     'help' => _docHelp(),
@@ -616,6 +629,7 @@ Help usage:
   }
   var command = commandResults.rest.single;
   return switch (command) {
+    'build' => _buildHelp(),
     'doc' => _docHelp(),
     'serve' => _serveHelp(),
     _ => throw UnimplementedError(
