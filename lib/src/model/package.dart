@@ -269,7 +269,7 @@ class Package extends LibraryContainer
   void initializeCategories() {
     defaultCategory = Category(null, this, config);
     nameToCategory = {};
-    for (var library in libraries) {
+    for (var library in libraries.wherePublic) {
       addToCategories(library, (c) => c.libraries.add(library));
       for (var constant in library.constants) {
         addToCategories(constant, (c) => c.constants.add(constant));
