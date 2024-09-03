@@ -19,8 +19,6 @@ class PrefixesTest extends DartdocTestBase {
   @override
   String get libraryName => 'prefixes';
 
-  @FailingTest(
-      reason: 'requires https://github.com/dart-lang/dartdoc/pull/3865')
   void test_referenced() async {
     var library = await bootPackageWithLibrary(
       '''
@@ -38,7 +36,6 @@ int x = 0;
     );
   }
 
-  @FailingTest(issue: 'https://github.com/dart-lang/dartdoc/issues/3769')
   void test_referenced_wildcard() async {
     var library = await bootPackageWithLibrary(
       '''
