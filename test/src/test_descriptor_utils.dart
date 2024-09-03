@@ -131,7 +131,8 @@ extension on d.FileDescriptor {
   Future<String> createInMemory(
       MemoryResourceProvider resourceProvider, String parent) async {
     var content = await readAsBytes().transform(utf8.decoder).join('');
-    var fullPath = resourceProvider.pathContext.join(parent, name);
+    var fullPath = resourceProvider
+        .convertPath(resourceProvider.pathContext.join(parent, name));
     resourceProvider.newFile(fullPath, content);
     return fullPath;
   }

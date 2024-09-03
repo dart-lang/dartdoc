@@ -45,7 +45,7 @@ class TopLevelVariable extends ModelElement
   String get filePath => '${canonicalLibraryOrThrow.dirName}/$fileName';
 
   @override
-  String get aboveSidebarPath => enclosingElement.sidebarPath;
+  String get aboveSidebarPath => canonicalLibraryOrThrow.sidebarPath;
 
   @override
   String? get belowSidebarPath => null;

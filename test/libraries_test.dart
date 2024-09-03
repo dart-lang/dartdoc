@@ -5,13 +5,19 @@
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:test/test.dart';
+import 'package:test_reflective_loader/test_reflective_loader.dart';
 
+import 'dartdoc_test_base.dart';
 import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart';
 
-// TODO(srawlins): Migrate to test_reflective_loader tests.
-
 void main() {
+  defineReflectiveSuite(() {
+    defineReflectiveTests(LibrariesTest);
+  });
+
+  // TODO(srawlins): Migrate to test_reflective_loader tests.
+
   test('A named library', () async {
     var packageMetaProvider = testPackageMetaProvider;
 
@@ -168,4 +174,36 @@ A doc comment.
     expect(dartAsyncLib.href,
         '${htmlBasePlaceholder}dart-async/dart-async-library.html');
   }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
+}
+
+@reflectiveTest
+class LibrariesTest extends DartdocTestBase {
+  @override
+  String get libraryName => 'libraries';
+
+  void test_publicLibrary() async {
+    var library = await bootPackageWithLibrary(
+      'var x = 1;',
+      libraryFilePath: 'lib/library.dart',
+    );
+
+    expect(library.qualifiedName, 'libraries');
+    expect(library.href, '${placeholder}libraries/libraries-library.html');
+  }
+
+  void test_exportedLibrary() async {
+    var library = await bootPackageWithLibrary(
+      'var x = 1;',
+      libraryFilePath: 'lib/src/library.dart',
+      extraFiles: [
+        d.dir('lib', [
+          d.file('public.dart', '''
+export 'src/library.dart';
+''')
+        ]),
+      ],
+    );
+    expect(library.qualifiedName, 'libraries');
+    expect(library.href, '${placeholder}public/public-library.html');
+  }
 }

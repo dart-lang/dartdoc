@@ -195,6 +195,7 @@ class PackageGraph with CommentReferable, Nameable {
       // that might not _have_ a canonical [ModelElement], too.
       if (element.isCanonical ||
           element.canonicalModelElement == null ||
+          element is Library ||
           element.enclosingElement!.isCanonical) {
         for (var d in element.documentationFrom
             .where((d) => d.hasDocumentationComment)) {
@@ -771,6 +772,8 @@ class PackageGraph with CommentReferable, Nameable {
       if (canonicalClass != null) preferredClass = canonicalClass;
     }
     var lib = modelElement.canonicalLibrary;
+    if (modelElement is Library) return lib;
+
     if (lib == null && preferredClass != null) {
       lib = preferredClass.canonicalLibrary;
     }
