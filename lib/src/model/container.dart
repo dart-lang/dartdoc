@@ -238,7 +238,7 @@ abstract class Container extends ModelElement
   String get sidebarPath;
 
   @override
-  String get aboveSidebarPath => library.sidebarPath;
+  String get aboveSidebarPath => canonicalLibraryOrThrow.sidebarPath;
 
   @override
   String get belowSidebarPath => sidebarPath;

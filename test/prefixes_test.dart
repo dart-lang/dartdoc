@@ -29,11 +29,14 @@ int x = 0;
 ''',
       additionalArguments: ['--link-to-remote'],
     );
-    var f = library.properties.named('x');
-    // There is no link, but also no wrong link or crash.
-    expect(f.documentationAsHtml, '<p>Text <code>async</code>.</p>');
+    var x = library.properties.named('x');
+    expect(
+      x.documentationAsHtml,
+      '<p>Text <a href="$dartAsyncUrlPrefix/dart-async-library.html">async</a>.</p>',
+    );
   }
 
+  @FailingTest(issue: 'https://github.com/dart-lang/dartdoc/issues/3769')
   void test_referenced_wildcard() async {
     var library = await bootPackageWithLibrary(
       '''
@@ -44,8 +47,8 @@ int x = 0;
 ''',
       additionalArguments: ['--link-to-remote'],
     );
-    var f = library.properties.named('x');
+    var x = library.properties.named('x');
     // There is no link, but also no wrong link or crash.
-    expect(f.documentationAsHtml, '<p>Text <code>_</code>.</p>');
+    expect(x.documentationAsHtml, '<p>Text <code>_</code>.</p>');
   }
 }
