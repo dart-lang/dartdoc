@@ -1,17 +1,18 @@
 ## 8.1.0
 
-* Fix many library sidebars, and search (#3865)
-* Make getters and setters actually look like their declarations (#3858)
-* Display indirectly 'Implemented types' via extended and mixed-in types (#3855)
+* Fix many library sidebars, and search. (#3865)
+* Make getters and setters actually look like their declarations. (#3858)
+* Display indirectly 'Implemented types' via extended and mixed-in types.
+  (#3855)
 * Add mixins with superclass constraints to the 'Implementers' list. (#3844)
 * Deduplicate 'Implemented types' in cases of multiple inheritance (#3848)
-* Display 'Available extensions' in more, correct, places (#3852)
+* Display 'Available extensions' in more, correct, places. (#3852)
 * Fix 'Available extension' logic so that, for example, the `FutureIterable`
   extension appears on the `List` page. (#3846)
-* Trim blank lines from generated renderers; may slightly reduce output size
+* Trim blank lines from generated renderers; may slightly reduce output size.
   (#3857)
-* Remove extraneous parens from function-types (#3856)
-* Fix referrable information on broken link messages (#3854)
+* Remove extraneous parens from function-types. (#3856)
+* Fix referrable information on broken link messages. (#3854)
 
 ## 8.0.14
 
