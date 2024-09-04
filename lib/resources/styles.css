@@ -314,6 +314,8 @@ a {
 }
 
 section {
+  /* Note that the generated HTML for pub packages may have `section` tags
+     transformed into `div` tags. */
   margin-bottom: 36px;
 }
 
@@ -462,7 +464,9 @@ dt.constant + dd p {
 }
 
 /* indents wrapped lines */
-section.summary dt {
+/* Note that the generated HTML for pub packages may have `section` tags
+   transformed into `div` tags, so we have two selectors here. */
+section.summary dt, div.summary dt {
   margin-left: 24px;
   text-indent: -24px;
 }
@@ -820,7 +824,10 @@ ol.breadcrumbs li a {
   font-style: italic;
 }
 
-section.multi-line-signature div.parameters {
+/* Note that the generated HTML for pub packages may have `section` tags
+   transformed into `div` tags, so we have two selectors here. */
+section.multi-line-signature div.parameters,
+div.multi-line-signature div.parameters {
   margin-left: 24px;
 }
 
@@ -1213,7 +1220,9 @@ a.tt-container {
   box-shadow: 3px 3px 5px rgba(0,0,0,0.1);
 }
 
-section#setter {
+/* Note that the generated HTML for pub packages may have `section` tags
+   transformed into `div` tags, so we have two selectors here. */
+section#setter, div#setter {
   border-top: 1px solid #ddd;
   padding-top: 36px;
 }
