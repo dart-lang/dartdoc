@@ -568,9 +568,6 @@ extension on Set<String> {
           add(part.source.fullName);
         }
       }
-      for (var augmentation in element.augmentationImports) {
-        addFilesReferencedBy(augmentation.importedAugmentation);
-      }
     }
   }
 }
