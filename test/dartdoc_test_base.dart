@@ -41,7 +41,7 @@ abstract class DartdocTestBase {
 
   String get dartCoreUrlPrefix => 'https://api.dart.dev/stable/3.2.0/dart-core';
 
-  String get sdkConstraint => '>=3.3.0 <4.0.0';
+  String get sdkConstraint => '>=3.6.0 <4.0.0';
 
   List<String> get experiments => ['wildcard-variables'];
 

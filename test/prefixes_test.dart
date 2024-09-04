@@ -36,7 +36,6 @@ int x = 0;
     );
   }
 
-  @FailingTest(issue: 'https://github.com/dart-lang/dartdoc/issues/3769')
   void test_referenced_wildcard() async {
     var library = await bootPackageWithLibrary(
       '''

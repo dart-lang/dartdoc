@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/source/line_info.dart';
@@ -442,6 +443,11 @@ class Library extends ModelElement
     // ambiguous.  dart-lang/dartdoc#2683.
     for (var MapEntry(key: prefix, value: libraries)
         in _prefixToLibrary.entries) {
+      if (prefix == '_' &&
+          element.featureSet.isEnabled(Feature.wildcard_variables)) {
+        // A wildcard import prefix is non-binding.
+        continue;
+      }
       referenceChildrenBuilder.putIfAbsent(prefix, () => libraries.first);
     }
     return referenceChildrenBuilder;

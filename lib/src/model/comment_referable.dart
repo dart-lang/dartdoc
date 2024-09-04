@@ -7,12 +7,14 @@ library;
 
 import 'dart:core';
 
+import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/nameable.dart';
+import 'package:dartdoc/src/model/prefix.dart';
 import 'package:meta/meta.dart';
 
 class _ReferenceChildrenLookup {
@@ -55,6 +57,12 @@ mixin CommentReferable implements Nameable {
       // First attempt: Ask analyzer's `Scope.lookup` API.
       var result = _lookupViaScope(referenceLookup, filter: filter);
       if (result != null) {
+        if (result is Prefix &&
+            result.name == '_' &&
+            library!.element.featureSet.isEnabled(Feature.wildcard_variables)) {
+          // A wildcard import prefix is non-binding.
+          continue;
+        }
         return result;
       }
 
