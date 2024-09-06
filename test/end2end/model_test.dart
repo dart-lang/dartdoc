@@ -2094,7 +2094,7 @@ void main() async {
 
     test('SpecialList has many inherited methods', () {
       expect(SpecialList.inheritedMethods.wherePublic, hasLength(49));
-      var methods = SpecialList.publicInstanceMethodsSorted
+      var methods = SpecialList.availableInstanceMethodsSorted
           .where((m) => m.isInherited)
           .toList();
       expect(methods.first.name, equals('add'));

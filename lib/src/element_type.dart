@@ -48,8 +48,12 @@ abstract class ElementType with CommentReferable, Nameable {
 
   String get linkedName;
 
-  /// Name with generics and nullability indication.
+  /// Name with generics and nullability indication, in HTML tags.
   String get nameWithGenerics;
+
+  /// Name with generics and nullability indication, in plain text, with
+  /// unescaped angle brackets.
+  String get nameWithGenericsPlain;
 
   @override
   String get displayName => throw UnimplementedError();
@@ -104,10 +108,13 @@ class UndefinedElementType extends ElementType {
   }
 
   @override
+  String get linkedName => name;
+
+  @override
   String get nameWithGenerics => '$name$nullabilitySuffix';
 
   @override
-  String get linkedName => name;
+  String get nameWithGenericsPlain => '$name$nullabilitySuffix';
 
   @override
   Iterable<ElementType> get typeArguments => const [];
@@ -241,6 +248,9 @@ class TypeParameterElementType extends DefinedElementType {
 
   @override
   String get nameWithGenerics => '$name$nullabilitySuffix';
+
+  @override
+  String get nameWithGenericsPlain => '$name$nullabilitySuffix';
 }
 
 /// An [ElementType] associated with an [Element].
@@ -340,6 +350,10 @@ mixin Rendered implements ElementType {
 
   @override
   late final String nameWithGenerics = _renderer.renderNameWithGenerics(this);
+
+  @override
+  late final String nameWithGenericsPlain =
+      _renderer.renderNameWithGenerics(this, plain: true);
 
   ElementTypeRenderer<ElementType> get _renderer;
 }

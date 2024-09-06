@@ -555,7 +555,7 @@ String renderExtension<T extends Extension>(ExtensionTemplateData<T> context0) {
   buffer.writeln();
   buffer.write('''<div
     id="dartdoc-main-content"
-    class="main-content"
+    class="main-content extension-page"
     data-above-sidebar="''');
   buffer.writeEscaped(context0.aboveSidebarPath);
   buffer.write('''"
@@ -1486,7 +1486,7 @@ String renderSidebarForContainer<T extends Documentable>(
   }
   buffer.write('\n\n    ');
   if (context1.isInterface) {
-    if (context1.hasPublicInstanceFields) {
+    if (context1.hasAvailableInstanceFields) {
       buffer.writeln();
       buffer.write('''        <li class="section-title''');
       if (context1.publicInheritedInstanceFields) {
@@ -1497,20 +1497,31 @@ String renderSidebarForContainer<T extends Documentable>(
       buffer.write(context1.href);
       buffer.write('''#instance-properties">Properties</a>
         </li>''');
-      var context6 = context1.publicInstanceFieldsSorted;
+      var context6 = context1.availableInstanceFieldsSorted;
       for (var context7 in context6) {
         buffer.writeln();
         buffer.write('''          <li''');
         if (context7.isInherited) {
           buffer.write(''' class="inherited"''');
         }
-        buffer.write('''>''');
+        buffer.write('''>
+            ''');
         buffer.write(context7.linkedName);
-        buffer.write('''</li>''');
+        if (context7.isProvidedByExtension) {
+          var context8 = context7.enclosingExtension;
+          buffer.writeln();
+          buffer.write('''                <sup
+                    class="muted"
+                    title="Available on ''');
+          buffer.writeEscaped(context8.extendedElement.nameWithGenericsPlain);
+          buffer.write('''">(ext)</sup>''');
+        }
+        buffer.writeln();
+        buffer.write('''          </li>''');
       }
     }
     buffer.writeln();
-    if (context1.hasPublicInstanceMethods) {
+    if (context1.hasAvailableInstanceMethods) {
       buffer.writeln();
       buffer.write('''        <li class="section-title''');
       if (context1.publicInheritedInstanceMethods) {
@@ -1519,20 +1530,31 @@ String renderSidebarForContainer<T extends Documentable>(
       buffer.write('''"><a href="''');
       buffer.write(context1.href);
       buffer.write('''#instance-methods">Methods</a></li>''');
-      var context8 = context1.publicInstanceMethodsSorted;
-      for (var context9 in context8) {
+      var context9 = context1.availableInstanceMethodsSorted;
+      for (var context10 in context9) {
         buffer.writeln();
         buffer.write('''          <li''');
-        if (context9.isInherited) {
+        if (context10.isInherited) {
           buffer.write(''' class="inherited"''');
         }
-        buffer.write('''>''');
-        buffer.write(context9.linkedName);
-        buffer.write('''</li>''');
+        buffer.write('''>
+            ''');
+        buffer.write(context10.linkedName);
+        if (context10.isProvidedByExtension) {
+          var context11 = context10.enclosingExtension;
+          buffer.writeln();
+          buffer.write('''              <sup
+                  class="muted"
+                  title="Available on ''');
+          buffer.writeEscaped(context11.extendedElement.nameWithGenericsPlain);
+          buffer.write('''">(ext)</sup>''');
+        }
+        buffer.writeln();
+        buffer.write('''          </li>''');
       }
     }
     buffer.writeln();
-    if (context1.hasPublicInstanceOperators) {
+    if (context1.hasAvailableInstanceOperators) {
       buffer.writeln();
       buffer.write('''        <li class="section-title''');
       if (context1.publicInheritedInstanceOperators) {
@@ -1541,59 +1563,70 @@ String renderSidebarForContainer<T extends Documentable>(
       buffer.write('''"><a href="''');
       buffer.write(context1.href);
       buffer.write('''#operators">Operators</a></li>''');
-      var context10 = context1.publicInstanceOperatorsSorted;
-      for (var context11 in context10) {
+      var context12 = context1.availableInstanceOperatorsSorted;
+      for (var context13 in context12) {
         buffer.writeln();
         buffer.write('''          <li''');
-        if (context11.isInherited) {
+        if (context13.isInherited) {
           buffer.write(''' class="inherited"''');
         }
-        buffer.write('''>''');
-        buffer.write(context11.linkedName);
-        buffer.write('''</li>''');
+        buffer.write('''>
+            ''');
+        buffer.write(context13.linkedName);
+        if (context13.isProvidedByExtension) {
+          var context14 = context13.enclosingExtension;
+          buffer.writeln();
+          buffer.write('''              <sup
+                  class="muted"
+                  title="Available on ''');
+          buffer.writeEscaped(context14.extendedElement.nameWithGenericsPlain);
+          buffer.write('''">(ext)</sup>''');
+        }
+        buffer.writeln();
+        buffer.write('''          </li>''');
       }
     }
   }
   buffer.write('\n\n    ');
   if (context1.isExtension) {
-    if (context1.hasPublicInstanceFields) {
+    if (context1.hasAvailableInstanceFields) {
       buffer.writeln();
       buffer.write('''        <li class="section-title"> <a href="''');
       buffer.write(context1.href);
       buffer.write('''#instance-properties">Properties</a></li>''');
-      var context12 = context1.publicInstanceFieldsSorted;
-      for (var context13 in context12) {
+      var context15 = context1.availableInstanceFieldsSorted;
+      for (var context16 in context15) {
         buffer.writeln();
         buffer.write('''          <li>''');
-        buffer.write(context13.linkedName);
+        buffer.write(context16.linkedName);
         buffer.write('''</li>''');
       }
     }
     buffer.writeln();
-    if (context1.hasPublicInstanceMethods) {
+    if (context1.hasAvailableInstanceMethods) {
       buffer.writeln();
       buffer.write('''        <li class="section-title"><a href="''');
       buffer.write(context1.href);
       buffer.write('''#instance-methods">Methods</a></li>''');
-      var context14 = context1.publicInstanceMethodsSorted;
-      for (var context15 in context14) {
+      var context17 = context1.availableInstanceMethodsSorted;
+      for (var context18 in context17) {
         buffer.writeln();
         buffer.write('''          <li>''');
-        buffer.write(context15.linkedName);
+        buffer.write(context18.linkedName);
         buffer.write('''</li>''');
       }
     }
     buffer.writeln();
-    if (context1.hasPublicInstanceOperators) {
+    if (context1.hasAvailableInstanceOperators) {
       buffer.writeln();
       buffer.write('''        <li class="section-title"><a href="''');
       buffer.write(context1.href);
       buffer.write('''#operators">Operators</a></li>''');
-      var context16 = context1.publicInstanceOperatorsSorted;
-      for (var context17 in context16) {
+      var context19 = context1.availableInstanceOperatorsSorted;
+      for (var context20 in context19) {
         buffer.writeln();
         buffer.write('''          <li>''');
-        buffer.write(context17.linkedName);
+        buffer.write(context20.linkedName);
         buffer.write('''</li>''');
       }
     }
@@ -1604,11 +1637,11 @@ String renderSidebarForContainer<T extends Documentable>(
     buffer.write('''      <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#static-properties">Static properties</a></li>''');
-    var context18 = context1.publicVariableStaticFieldsSorted;
-    for (var context19 in context18) {
+    var context21 = context1.publicVariableStaticFieldsSorted;
+    for (var context22 in context21) {
       buffer.writeln();
       buffer.write('''        <li>''');
-      buffer.write(context19.linkedName);
+      buffer.write(context22.linkedName);
       buffer.write('''</li>''');
     }
   }
@@ -1618,11 +1651,11 @@ String renderSidebarForContainer<T extends Documentable>(
     buffer.write('''      <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#static-methods">Static methods</a></li>''');
-    var context20 = context1.publicStaticMethodsSorted;
-    for (var context21 in context20) {
+    var context23 = context1.publicStaticMethodsSorted;
+    for (var context24 in context23) {
       buffer.writeln();
       buffer.write('''        <li>''');
-      buffer.write(context21.linkedName);
+      buffer.write(context24.linkedName);
       buffer.write('''</li>''');
     }
   }
@@ -1632,11 +1665,11 @@ String renderSidebarForContainer<T extends Documentable>(
     buffer.write('''      <li class="section-title"><a href="''');
     buffer.write(context1.href);
     buffer.write('''#constants">Constants</a></li>''');
-    var context22 = context1.publicConstantFieldsSorted;
-    for (var context23 in context22) {
+    var context25 = context1.publicConstantFieldsSorted;
+    for (var context26 in context25) {
       buffer.writeln();
       buffer.write('''        <li>''');
-      buffer.write(context23.linkedName);
+      buffer.write(context26.linkedName);
       buffer.write('''</li>''');
     }
   }
@@ -1954,8 +1987,64 @@ String _renderCategory_partial_extension_4(Extension context2) =>
 String _renderCategory_partial_constant_5(TopLevelVariable context2) =>
     _deduplicated_lib_templates__constant_html(context2);
 
-String _renderCategory_partial_property_6(TopLevelVariable context2) =>
-    _deduplicated_lib_templates__property_html(context2);
+String _renderCategory_partial_property_6(TopLevelVariable context2) {
+  final buffer = StringBuffer();
+  buffer.write('''<dt id="''');
+  buffer.writeEscaped(context2.htmlId);
+  buffer.write('''" class="property''');
+  if (context2.isInherited) {
+    buffer.write(''' inherited''');
+  }
+  buffer.write('''">
+  <span class="name">''');
+  buffer.write(context2.linkedName);
+  buffer.write('''</span>
+  <span class="signature">''');
+  buffer.write(context2.arrow);
+  buffer.write(' ');
+  buffer.write(context2.modelType.linkedName);
+  buffer.write('''</span>
+  ''');
+  buffer.write(
+      __renderCategory_partial_property_6_partial_categorization_0(context2));
+  buffer.writeln();
+  buffer.write('''</dt>
+<dd''');
+  if (context2.isInherited) {
+    buffer.write(''' class="inherited"''');
+  }
+  buffer.write('''>''');
+  if (context2.isProvidedByExtension) {
+    var context3 = context2.enclosingExtension;
+    buffer.writeln();
+    buffer.write('''      <p class="from-extension">
+        <span>Available on ''');
+    buffer.write(context3.extendedElement.linkedName);
+    buffer.write(''',
+        provided by the ''');
+    buffer.write(context3.linkedName);
+    buffer.write(''' extension</span>
+      </p>''');
+  }
+  buffer.write('\n  ');
+  buffer.write(context2.oneLineDoc);
+  buffer.write('\n  ');
+  buffer.write(
+      __renderCategory_partial_property_6_partial_attributes_1(context2));
+  buffer.writeln();
+  buffer.write('''</dd>
+''');
+
+  return buffer.toString();
+}
+
+String __renderCategory_partial_property_6_partial_categorization_0(
+        TopLevelVariable context2) =>
+    _deduplicated_lib_templates__categorization_html(context2);
+
+String __renderCategory_partial_property_6_partial_attributes_1(
+        TopLevelVariable context2) =>
+    _deduplicated_lib_templates__attributes_html(context2);
 
 String _renderCategory_partial_callable_7(ModelFunctionTyped context2) {
   final buffer = StringBuffer();
@@ -1990,8 +2079,20 @@ String _renderCategory_partial_callable_7(ModelFunctionTyped context2) {
   if (context2.isInherited) {
     buffer.write(''' class="inherited"''');
   }
-  buffer.write('''>
-  ''');
+  buffer.write('''>''');
+  if (context2.isProvidedByExtension) {
+    var context3 = context2.enclosingExtension;
+    buffer.writeln();
+    buffer.write('''      <p class="from-extension">
+        <span>Available on ''');
+    buffer.write(context3.extendedElement.linkedName);
+    buffer.write(''',
+        provided by the ''');
+    buffer.write(context3.linkedName);
+    buffer.write(''' extension</span>
+      </p>''');
+  }
+  buffer.write('\n  ');
   buffer.write(context2.oneLineDoc);
   buffer.write('\n  ');
   buffer.write(
@@ -2641,8 +2742,64 @@ String _renderLibrary_partial_extension_7(Extension context3) =>
 String _renderLibrary_partial_constant_8(TopLevelVariable context3) =>
     _deduplicated_lib_templates__constant_html(context3);
 
-String _renderLibrary_partial_property_9(TopLevelVariable context3) =>
-    _deduplicated_lib_templates__property_html(context3);
+String _renderLibrary_partial_property_9(TopLevelVariable context3) {
+  final buffer = StringBuffer();
+  buffer.write('''<dt id="''');
+  buffer.writeEscaped(context3.htmlId);
+  buffer.write('''" class="property''');
+  if (context3.isInherited) {
+    buffer.write(''' inherited''');
+  }
+  buffer.write('''">
+  <span class="name">''');
+  buffer.write(context3.linkedName);
+  buffer.write('''</span>
+  <span class="signature">''');
+  buffer.write(context3.arrow);
+  buffer.write(' ');
+  buffer.write(context3.modelType.linkedName);
+  buffer.write('''</span>
+  ''');
+  buffer.write(
+      __renderLibrary_partial_property_9_partial_categorization_0(context3));
+  buffer.writeln();
+  buffer.write('''</dt>
+<dd''');
+  if (context3.isInherited) {
+    buffer.write(''' class="inherited"''');
+  }
+  buffer.write('''>''');
+  if (context3.isProvidedByExtension) {
+    var context4 = context3.enclosingExtension;
+    buffer.writeln();
+    buffer.write('''      <p class="from-extension">
+        <span>Available on ''');
+    buffer.write(context4.extendedElement.linkedName);
+    buffer.write(''',
+        provided by the ''');
+    buffer.write(context4.linkedName);
+    buffer.write(''' extension</span>
+      </p>''');
+  }
+  buffer.write('\n  ');
+  buffer.write(context3.oneLineDoc);
+  buffer.write('\n  ');
+  buffer
+      .write(__renderLibrary_partial_property_9_partial_attributes_1(context3));
+  buffer.writeln();
+  buffer.write('''</dd>
+''');
+
+  return buffer.toString();
+}
+
+String __renderLibrary_partial_property_9_partial_categorization_0(
+        TopLevelVariable context3) =>
+    _deduplicated_lib_templates__categorization_html(context3);
+
+String __renderLibrary_partial_property_9_partial_attributes_1(
+        TopLevelVariable context3) =>
+    _deduplicated_lib_templates__attributes_html(context3);
 
 String _renderLibrary_partial_callable_10(ModelFunctionTyped context3) {
   final buffer = StringBuffer();
@@ -2677,8 +2834,20 @@ String _renderLibrary_partial_callable_10(ModelFunctionTyped context3) {
   if (context3.isInherited) {
     buffer.write(''' class="inherited"''');
   }
-  buffer.write('''>
-  ''');
+  buffer.write('''>''');
+  if (context3.isProvidedByExtension) {
+    var context4 = context3.enclosingExtension;
+    buffer.writeln();
+    buffer.write('''      <p class="from-extension">
+        <span>Available on ''');
+    buffer.write(context4.extendedElement.linkedName);
+    buffer.write(''',
+        provided by the ''');
+    buffer.write(context4.linkedName);
+    buffer.write(''' extension</span>
+      </p>''');
+  }
+  buffer.write('\n  ');
   buffer.write(context3.oneLineDoc);
   buffer.write('\n  ');
   buffer.write(
@@ -3409,74 +3578,6 @@ String _deduplicated_lib_templates__attributes_html(ModelElement context0) {
   return buffer.toString();
 }
 
-String _deduplicated_lib_templates__property_html(GetterSetterCombo context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<dt id="''');
-  buffer.writeEscaped(context0.htmlId);
-  buffer.write('''" class="property''');
-  if (context0.isInherited) {
-    buffer.write(''' inherited''');
-  }
-  buffer.write('''">
-  <span class="name">''');
-  buffer.write(context0.linkedName);
-  buffer.write('''</span>
-  <span class="signature">''');
-  buffer.write(context0.arrow);
-  buffer.write(' ');
-  buffer.write(context0.modelType.linkedName);
-  buffer.write('''</span>
-  ''');
-  buffer.write(
-      __deduplicated_lib_templates__property_html_partial_categorization_0(
-          context0));
-  buffer.writeln();
-  buffer.write('''</dt>
-<dd''');
-  if (context0.isInherited) {
-    buffer.write(''' class="inherited"''');
-  }
-  buffer.write('''>
-  ''');
-  buffer.write(context0.oneLineDoc);
-  buffer.write('\n  ');
-  buffer.write(__deduplicated_lib_templates__property_html_partial_attributes_1(
-      context0));
-  buffer.writeln();
-  buffer.write('''</dd>
-''');
-
-  return buffer.toString();
-}
-
-String __deduplicated_lib_templates__property_html_partial_categorization_0(
-    GetterSetterCombo context0) {
-  final buffer = StringBuffer();
-  if (context0.hasCategoryNames) {
-    var context1 = context0.displayedCategories;
-    for (var context2 in context1) {
-      buffer.write('\n    ');
-      buffer.write(context2!.categoryLabel);
-    }
-  }
-  buffer.writeln();
-
-  return buffer.toString();
-}
-
-String __deduplicated_lib_templates__property_html_partial_attributes_1(
-    GetterSetterCombo context0) {
-  final buffer = StringBuffer();
-  if (context0.hasAttributes) {
-    buffer.write('''<div class="features">''');
-    buffer.write(context0.attributesAsString);
-    buffer.write('''</div>''');
-  }
-  buffer.writeln();
-
-  return buffer.toString();
-}
-
 String _deduplicated_lib_templates__typedef_html(Typedef context0) {
   final buffer = StringBuffer();
   if (context0.isCallable) {
@@ -4053,7 +4154,7 @@ String _deduplicated_lib_templates__constructors_html(Constructable context0) {
 
 String _deduplicated_lib_templates__instance_fields_html(Container context0) {
   final buffer = StringBuffer();
-  if (context0.hasPublicInstanceFields) {
+  if (context0.hasAvailableInstanceFields) {
     buffer.writeln();
     buffer.write('''  <section
       class="summary offset-anchor''');
@@ -4064,7 +4165,7 @@ String _deduplicated_lib_templates__instance_fields_html(Container context0) {
       id="instance-properties">
     <h2>Properties</h2>
     <dl class="properties">''');
-    var context1 = context0.publicInstanceFieldsSorted;
+    var context1 = context0.availableInstanceFieldsSorted;
     for (var context2 in context1) {
       buffer.write('\n        ');
       buffer.write(
@@ -4075,6 +4176,7 @@ String _deduplicated_lib_templates__instance_fields_html(Container context0) {
     buffer.write('''    </dl>
   </section>''');
   }
+  buffer.writeln();
 
   return buffer.toString();
 }
@@ -4107,8 +4209,20 @@ String __deduplicated_lib_templates__instance_fields_html_partial_property_0(
   if (context1.isInherited) {
     buffer.write(''' class="inherited"''');
   }
-  buffer.write('''>
-  ''');
+  buffer.write('''>''');
+  if (context1.isProvidedByExtension) {
+    var context2 = context1.enclosingExtension;
+    buffer.writeln();
+    buffer.write('''      <p class="from-extension">
+        <span>Available on ''');
+    buffer.write(context2.extendedElement.linkedName);
+    buffer.write(''',
+        provided by the ''');
+    buffer.write(context2.linkedName);
+    buffer.write(''' extension</span>
+      </p>''');
+  }
+  buffer.write('\n  ');
   buffer.write(context1.oneLineDoc);
   buffer.write('\n  ');
   buffer.write(
@@ -4153,7 +4267,7 @@ String
 
 String _deduplicated_lib_templates__instance_methods_html(Container context0) {
   final buffer = StringBuffer();
-  if (context0.hasPublicInstanceMethods) {
+  if (context0.hasAvailableInstanceMethods) {
     buffer.writeln();
     buffer.write('''  <section
       class="summary offset-anchor''');
@@ -4164,7 +4278,7 @@ String _deduplicated_lib_templates__instance_methods_html(Container context0) {
       id="instance-methods">
     <h2>Methods</h2>
     <dl class="callables">''');
-    var context1 = context0.publicInstanceMethodsSorted;
+    var context1 = context0.availableInstanceMethodsSorted;
     for (var context2 in context1) {
       buffer.write('\n        ');
       buffer.write(
@@ -4214,8 +4328,20 @@ String __deduplicated_lib_templates__instance_methods_html_partial_callable_0(
   if (context1.isInherited) {
     buffer.write(''' class="inherited"''');
   }
-  buffer.write('''>
-  ''');
+  buffer.write('''>''');
+  if (context1.isProvidedByExtension) {
+    var context2 = context1.enclosingExtension;
+    buffer.writeln();
+    buffer.write('''      <p class="from-extension">
+        <span>Available on ''');
+    buffer.write(context2.extendedElement.linkedName);
+    buffer.write(''',
+        provided by the ''');
+    buffer.write(context2.linkedName);
+    buffer.write(''' extension</span>
+      </p>''');
+  }
+  buffer.write('\n  ');
   buffer.write(context1.oneLineDoc);
   buffer.write('\n  ');
   buffer.write(
@@ -4261,7 +4387,7 @@ String
 String _deduplicated_lib_templates__instance_operators_html(
     Container context0) {
   final buffer = StringBuffer();
-  if (context0.hasPublicInstanceOperators) {
+  if (context0.hasAvailableInstanceOperators) {
     buffer.writeln();
     buffer.write('''  <section
       class="summary offset-anchor''');
@@ -4272,7 +4398,7 @@ String _deduplicated_lib_templates__instance_operators_html(
       id="operators">
     <h2>Operators</h2>
     <dl class="callables">''');
-    var context1 = context0.publicInstanceOperatorsSorted;
+    var context1 = context0.availableInstanceOperatorsSorted;
     for (var context2 in context1) {
       buffer.write('\n        ');
       buffer.write(
@@ -4322,8 +4448,20 @@ String __deduplicated_lib_templates__instance_operators_html_partial_callable_0(
   if (context1.isInherited) {
     buffer.write(''' class="inherited"''');
   }
-  buffer.write('''>
-  ''');
+  buffer.write('''>''');
+  if (context1.isProvidedByExtension) {
+    var context2 = context1.enclosingExtension;
+    buffer.writeln();
+    buffer.write('''      <p class="from-extension">
+        <span>Available on ''');
+    buffer.write(context2.extendedElement.linkedName);
+    buffer.write(''',
+        provided by the ''');
+    buffer.write(context2.linkedName);
+    buffer.write(''' extension</span>
+      </p>''');
+  }
+  buffer.write('\n  ');
   buffer.write(context1.oneLineDoc);
   buffer.write('\n  ');
   buffer.write(
@@ -4417,8 +4555,20 @@ String __deduplicated_lib_templates__static_properties_html_partial_property_0(
   if (context1.isInherited) {
     buffer.write(''' class="inherited"''');
   }
-  buffer.write('''>
-  ''');
+  buffer.write('''>''');
+  if (context1.isProvidedByExtension) {
+    var context2 = context1.enclosingExtension;
+    buffer.writeln();
+    buffer.write('''      <p class="from-extension">
+        <span>Available on ''');
+    buffer.write(context2.extendedElement.linkedName);
+    buffer.write(''',
+        provided by the ''');
+    buffer.write(context2.linkedName);
+    buffer.write(''' extension</span>
+      </p>''');
+  }
+  buffer.write('\n  ');
   buffer.write(context1.oneLineDoc);
   buffer.write('\n  ');
   buffer.write(
@@ -4519,8 +4669,20 @@ String __deduplicated_lib_templates__static_methods_html_partial_callable_0(
   if (context1.isInherited) {
     buffer.write(''' class="inherited"''');
   }
-  buffer.write('''>
-  ''');
+  buffer.write('''>''');
+  if (context1.isProvidedByExtension) {
+    var context2 = context1.enclosingExtension;
+    buffer.writeln();
+    buffer.write('''      <p class="from-extension">
+        <span>Available on ''');
+    buffer.write(context2.extendedElement.linkedName);
+    buffer.write(''',
+        provided by the ''');
+    buffer.write(context2.linkedName);
+    buffer.write(''' extension</span>
+      </p>''');
+  }
+  buffer.write('\n  ');
   buffer.write(context1.oneLineDoc);
   buffer.write('\n  ');
   buffer.write(

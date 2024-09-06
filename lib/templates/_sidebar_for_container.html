@@ -19,52 +19,79 @@
 
     {{!-- Instance members which may or may not be inherited. --}}
     {{ #isInterface }}
-      {{ #hasPublicInstanceFields }}
+      {{ #hasAvailableInstanceFields }}
         <li class="section-title{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}">
           <a href="{{{ href }}}#instance-properties">Properties</a>
         </li>
-        {{ #publicInstanceFieldsSorted }}
-          <li{{ #isInherited }} class="inherited"{{ /isInherited }}>{{{ linkedName }}}</li>
-        {{ /publicInstanceFieldsSorted }}
-      {{ /hasPublicInstanceFields }}
+        {{ #availableInstanceFieldsSorted }}
+          <li{{ #isInherited }} class="inherited"{{ /isInherited }}>
+            {{{ linkedName }}}
+            {{ #isProvidedByExtension }}
+              {{ #enclosingExtension }}
+                <sup
+                    class="muted"
+                    title="Available on {{ extendedElement.nameWithGenericsPlain }}">(ext)</sup>
+              {{ /enclosingExtension }}
+            {{ /isProvidedByExtension }}
+          </li>
+        {{ /availableInstanceFieldsSorted }}
+      {{ /hasAvailableInstanceFields }}
 
-      {{ #hasPublicInstanceMethods }}
+      {{ #hasAvailableInstanceMethods }}
         <li class="section-title{{ #publicInheritedInstanceMethods }} inherited{{ /publicInheritedInstanceMethods }}"><a href="{{{ href }}}#instance-methods">Methods</a></li>
-        {{ #publicInstanceMethodsSorted }}
-          <li{{ #isInherited }} class="inherited"{{ /isInherited }}>{{{ linkedName }}}</li>
-        {{ /publicInstanceMethodsSorted }}
-      {{ /hasPublicInstanceMethods }}
+        {{ #availableInstanceMethodsSorted }}
+          <li{{ #isInherited }} class="inherited"{{ /isInherited }}>
+            {{{ linkedName }}}
+            {{ #isProvidedByExtension }}
+              {{ #enclosingExtension }}
+              <sup
+                  class="muted"
+                  title="Available on {{ extendedElement.nameWithGenericsPlain }}">(ext)</sup>
+              {{ /enclosingExtension }}
+            {{ /isProvidedByExtension }}
+          </li>
+        {{ /availableInstanceMethodsSorted }}
+      {{ /hasAvailableInstanceMethods }}
 
-      {{ #hasPublicInstanceOperators }}
+      {{ #hasAvailableInstanceOperators }}
         <li class="section-title{{ #publicInheritedInstanceOperators }} inherited{{ /publicInheritedInstanceOperators }}"><a href="{{{ href }}}#operators">Operators</a></li>
-        {{ #publicInstanceOperatorsSorted }}
-          <li{{ #isInherited }} class="inherited"{{ /isInherited }}>{{{ linkedName }}}</li>
-        {{ /publicInstanceOperatorsSorted }}
-      {{ /hasPublicInstanceOperators }}
+        {{ #availableInstanceOperatorsSorted }}
+          <li{{ #isInherited }} class="inherited"{{ /isInherited }}>
+            {{{ linkedName }}}
+            {{ #isProvidedByExtension }}
+              {{ #enclosingExtension }}
+              <sup
+                  class="muted"
+                  title="Available on {{ extendedElement.nameWithGenericsPlain }}">(ext)</sup>
+              {{ /enclosingExtension }}
+            {{ /isProvidedByExtension }}
+          </li>
+        {{ /availableInstanceOperatorsSorted }}
+      {{ /hasAvailableInstanceOperators }}
     {{ /isInterface }}
 
     {{!-- Instance members with no inheritance concept. --}}
     {{ #isExtension }}
-      {{ #hasPublicInstanceFields }}
+      {{ #hasAvailableInstanceFields }}
         <li class="section-title"> <a href="{{{ href }}}#instance-properties">Properties</a></li>
-        {{ #publicInstanceFieldsSorted }}
+        {{ #availableInstanceFieldsSorted }}
           <li>{{{ linkedName }}}</li>
-        {{ /publicInstanceFieldsSorted }}
-      {{ /hasPublicInstanceFields }}
+        {{ /availableInstanceFieldsSorted }}
+      {{ /hasAvailableInstanceFields }}
 
-      {{ #hasPublicInstanceMethods }}
+      {{ #hasAvailableInstanceMethods }}
         <li class="section-title"><a href="{{{ href }}}#instance-methods">Methods</a></li>
-        {{ #publicInstanceMethodsSorted }}
+        {{ #availableInstanceMethodsSorted }}
           <li>{{{ linkedName }}}</li>
-        {{ /publicInstanceMethodsSorted }}
-      {{ /hasPublicInstanceMethods }}
+        {{ /availableInstanceMethodsSorted }}
+      {{ /hasAvailableInstanceMethods }}
 
-      {{ #hasPublicInstanceOperators }}
+      {{ #hasAvailableInstanceOperators }}
         <li class="section-title"><a href="{{{ href }}}#operators">Operators</a></li>
-        {{ #publicInstanceOperatorsSorted }}
+        {{ #availableInstanceOperatorsSorted }}
           <li>{{{ linkedName }}}</li>
-        {{ /publicInstanceOperatorsSorted }}
-      {{ /hasPublicInstanceOperators }}
+        {{ /availableInstanceOperatorsSorted }}
+      {{ /hasAvailableInstanceOperators }}
     {{ /isExtension }}
 
     {{!-- Static members. --}}

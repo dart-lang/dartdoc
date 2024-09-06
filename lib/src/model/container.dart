@@ -49,6 +49,8 @@ abstract class Container extends ModelElement
   /// Whether this is a mixin.
   bool get isMixin => element is MixinElement;
 
+  /// The model elements of all of the members of this container, including
+  /// declared and inherited ones.
   Iterable<ModelElement> get allModelElements => [
         ...instanceMethods,
         ...instanceFields,
@@ -62,16 +64,15 @@ abstract class Container extends ModelElement
   late final List<ModelElement> allCanonicalModelElements =
       allModelElements.where((e) => e.isCanonical).toList(growable: false);
 
-  /// All methods, including operators and statics, declared as part of this
-  /// [Container].
+  /// All methods, including operators and statics, declared on [element].
   ///
   /// [declaredMethods] must be the union of [instanceMethods],
   /// [staticMethods], and [instanceOperators].
   Iterable<Method> get declaredMethods;
 
-  Iterable<Method> get instanceMethods => declaredMethods
-      .where((m) => !m.isStatic && !m.isOperator)
-      .toList(growable: false);
+  /// The instance methods available on [element], including declared and
+  /// inherited ones.
+  Iterable<Method> get instanceMethods;
 
   /// Whether all instance fields are inherited.
   bool get publicInheritedInstanceFields => false;
@@ -87,11 +88,10 @@ abstract class Container extends ModelElement
 
   List<Constructor> get publicConstructorsSorted => const [];
 
-  @nonVirtual
-  bool get hasPublicInstanceMethods => instanceMethods.any((e) => e.isPublic);
+  bool get hasAvailableInstanceMethods =>
+      availableInstanceMethodsSorted.isNotEmpty;
 
-  List<Method> get publicInstanceMethodsSorted =>
-      instanceMethods.wherePublic.toList(growable: false)..sort();
+  List<Method> get availableInstanceMethodsSorted;
 
   @nonVirtual
   late final List<Operator> declaredOperators =
@@ -100,14 +100,13 @@ abstract class Container extends ModelElement
   @override
   ModelElement get enclosingElement;
 
+  /// The instance operators declared on [element].
   Iterable<Operator> get instanceOperators => declaredOperators;
 
-  @nonVirtual
-  bool get hasPublicInstanceOperators =>
-      instanceOperators.any((e) => e.isPublic);
+  bool get hasAvailableInstanceOperators =>
+      availableInstanceOperatorsSorted.isNotEmpty;
 
-  List<Operator> get publicInstanceOperatorsSorted =>
-      instanceOperators.wherePublic.toList(growable: false)..sort();
+  List<Operator> get availableInstanceOperatorsSorted;
 
   /// Fields fully declared in this [Container].
   Iterable<Field> get declaredFields;
@@ -119,10 +118,9 @@ abstract class Container extends ModelElement
   bool get hasInstanceFields => instanceFields.isNotEmpty;
 
   @nonVirtual
-  bool get hasPublicInstanceFields => instanceFields.any((e) => e.isPublic);
+  bool get hasAvailableInstanceFields => instanceFields.any((e) => e.isPublic);
 
-  List<Field> get publicInstanceFieldsSorted =>
-      instanceFields.wherePublic.toList(growable: false)..sort(byName);
+  List<Field> get availableInstanceFieldsSorted;
 
   Iterable<Field> get constantFields => declaredFields.where((f) => f.isConst);
 
@@ -143,17 +141,19 @@ abstract class Container extends ModelElement
   /// `ContainerSidebar` Mustache template needs to refer to this field.
   bool get hasPublicEnumValues => publicEnumValues.isNotEmpty;
 
+  /// The instance accessors declared on [element].
   Iterable<Accessor> get instanceAccessors =>
       instanceFields.expand((f) => f.allAccessors);
 
+  /// The static accessors declared on [element].
   Iterable<Accessor> get staticAccessors =>
       staticFields.expand((f) => f.allAccessors);
 
   /// This container might be canonical for elements it does not contain.
   /// See [Inheritable.canonicalEnclosingContainer].
-  bool containsElement(Element? element) => allElements.contains(element);
+  bool containsElement(Element? element) => _allElements.contains(element);
 
-  late final Set<Element?> allElements =
+  late final Set<Element> _allElements =
       allModelElements.map((e) => e.element).toSet();
 
   late final Map<String, List<ModelElement>> _membersByName = () {
@@ -199,6 +199,7 @@ abstract class Container extends ModelElement
   List<Field> get publicVariableStaticFieldsSorted =>
       variableStaticFields.wherePublic.toList(growable: false)..sort();
 
+  /// The static methods declared on [element].
   Iterable<Method> get staticMethods =>
       declaredMethods.where((m) => m.isStatic);
 

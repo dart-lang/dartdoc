@@ -1,12 +1,12 @@
-{{ #hasPublicInstanceFields }}
+{{ #hasAvailableInstanceFields }}
   <section
       class="summary offset-anchor{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}"
       id="instance-properties">
     <h2>Properties</h2>
     <dl class="properties">
-      {{ #publicInstanceFieldsSorted }}
+      {{ #availableInstanceFieldsSorted }}
         {{ >property }}
-      {{ /publicInstanceFieldsSorted }}
+      {{ /availableInstanceFieldsSorted }}
     </dl>
   </section>
-{{ /hasPublicInstanceFields }}
+{{ /hasAvailableInstanceFields }}

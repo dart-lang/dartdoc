@@ -385,7 +385,7 @@ class PackageGraph with CommentReferable, Nameable {
           hashCode: (InheritingContainer clazz) =>
               clazz.definingContainer.hashCode);
 
-  /// A list of extensions that exist in the package graph.
+  /// The public, documented extensions that exist in the package graph.
   final Set<Extension> _extensions = {};
 
   /// Name of the default package.

@@ -120,7 +120,7 @@ class Accessor extends ModelElement {
       return getModelForElement(element.enclosingElement.enclosingElement!);
     }
 
-    return packageGraph.getModelFor(element.enclosingElement, library);
+    return getModelFor(element.enclosingElement, library);
   }
 
   @override
@@ -145,9 +145,7 @@ class Accessor extends ModelElement {
   bool get isCanonical => enclosingCombo.isCanonical;
 
   @override
-  String? get href {
-    return enclosingCombo.href;
-  }
+  String? get href => enclosingCombo.href;
 
   bool get isGetter => element.isGetter;
 
@@ -171,6 +169,12 @@ class Accessor extends ModelElement {
 
 /// A getter or setter that is a member of a [Container].
 class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
+  ContainerAccessor(super.element, super.library, super.packageGraph,
+      [Container? enclosingElement])
+      : isInherited = false {
+    _enclosingElement = enclosingElement ?? super.enclosingElement as Container;
+  }
+
   /// The index and values fields are never declared, and must be special cased.
   bool get _isEnumSynthetic =>
       enclosingCombo is EnumField && (name == 'index' || name == 'values');
@@ -191,11 +195,6 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
 
   @override
   bool get isCovariant => isSetter && parameters.first.isCovariant;
-
-  ContainerAccessor(super.element, super.library, super.packageGraph)
-      : isInherited = false {
-    _enclosingElement = super.enclosingElement as Container;
-  }
 
   ContainerAccessor.inherited(
       super.element, super.library, super.packageGraph, this._enclosingElement,

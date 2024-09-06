@@ -96,14 +96,15 @@ abstract class ModelElement
     if (e is PropertyInducingElement) {
       var elementGetter = e.getter;
       var getter = elementGetter != null
-          ? ModelElement.for_(elementGetter, library, p)
+          ? ModelElement.for_(elementGetter, library, p) as Accessor
           : null;
       var elementSetter = e.setter;
       var setter = elementSetter != null
-          ? ModelElement.for_(elementSetter, library, p)
+          ? ModelElement.for_(elementSetter, library, p) as Accessor
           : null;
+
       return ModelElement.forPropertyInducingElement(e, library, p,
-          getter: getter as Accessor?, setter: setter as Accessor?);
+          getter: getter, setter: setter);
     }
     return ModelElement.for_(e, library, p);
   }
@@ -166,14 +167,27 @@ abstract class ModelElement
               getter as ContainerAccessor?, setter as ContainerAccessor?);
         }
       } else {
-        newModelElement = Field.inherited(
-          e,
-          enclosingContainer,
-          library,
-          packageGraph,
-          getter as ContainerAccessor?,
-          setter as ContainerAccessor?,
-        );
+        // Enum fields and extension getters can't be inherited, so this case is
+        // simpler.
+        if (e.enclosingElement is ExtensionElement) {
+          newModelElement = Field.providedByExtension(
+            e,
+            enclosingContainer,
+            library,
+            packageGraph,
+            getter as ContainerAccessor?,
+            setter as ContainerAccessor?,
+          );
+        } else {
+          newModelElement = Field.inherited(
+            e,
+            enclosingContainer,
+            library,
+            packageGraph,
+            getter as ContainerAccessor?,
+            setter as ContainerAccessor?,
+          );
+        }
       }
     } else {
       throw UnimplementedError(
@@ -293,14 +307,24 @@ abstract class ModelElement
           when e.aliasedType.documentableElement is InterfaceElement =>
         ClassTypedef(e, library, packageGraph),
       TypeAliasElement() => GeneralizedTypedef(e, library, packageGraph),
-      MethodElement(isOperator: true) => enclosingContainer == null
-          ? Operator(e, library, packageGraph)
-          : Operator.inherited(e, enclosingContainer, library, packageGraph,
-              originalMember: originalMember),
-      MethodElement(isOperator: false) => enclosingContainer == null
-          ? Method(e, library, packageGraph)
-          : Method.inherited(e, enclosingContainer, library, packageGraph,
-              originalMember: originalMember as ExecutableMember?),
+      MethodElement(isOperator: true) when enclosingContainer == null =>
+        Operator(e, library, packageGraph),
+      MethodElement(isOperator: true)
+          when e.enclosingElement is ExtensionElement =>
+        Operator.providedByExtension(
+            e, enclosingContainer, library, packageGraph),
+      MethodElement(isOperator: true) => Operator.inherited(
+          e, enclosingContainer, library, packageGraph,
+          originalMember: originalMember),
+      MethodElement(isOperator: false) when enclosingContainer == null =>
+        Method(e, library, packageGraph),
+      MethodElement(isOperator: false)
+          when e.enclosingElement is ExtensionElement =>
+        Method.providedByExtension(
+            e, enclosingContainer, library, packageGraph),
+      MethodElement(isOperator: false) => Method.inherited(
+          e, enclosingContainer, library, packageGraph,
+          originalMember: originalMember as ExecutableMember?),
       ParameterElement() => Parameter(e, library, packageGraph,
           originalMember: originalMember as ParameterMember?),
       PropertyAccessorElement() => _constructFromPropertyAccessor(
@@ -328,7 +352,7 @@ abstract class ModelElement
         e.enclosingElement is InterfaceElement ||
         e is MultiplyInheritedExecutableElement) {
       if (enclosingContainer == null || enclosingContainer is Extension) {
-        return ContainerAccessor(e, library, packageGraph);
+        return ContainerAccessor(e, library, packageGraph, enclosingContainer);
       }
 
       return ContainerAccessor.inherited(
@@ -691,8 +715,8 @@ abstract class ModelElement
   Library get library => _library;
 
   late final String linkedName = () {
-    // If we're calling this with an empty name, we probably have the wrong
-    // element associated with a ModelElement or there's an analysis bug.
+    // If `name` is empty, we probably have the wrong Element association or
+    // there's an analyzer issue.
     assert(name.isNotEmpty ||
         element.kind == ElementKind.DYNAMIC ||
         element.kind == ElementKind.NEVER ||
