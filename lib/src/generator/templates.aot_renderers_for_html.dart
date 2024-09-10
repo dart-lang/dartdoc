@@ -1507,6 +1507,7 @@ String renderSidebarForContainer<T extends Documentable>(
         buffer.write('''>
             ''');
         buffer.write(context7.linkedName);
+        buffer.write('\n            ');
         if (context7.isProvidedByExtension) {
           var context8 = context7.enclosingExtension;
           buffer.writeln();

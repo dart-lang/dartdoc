@@ -26,6 +26,9 @@
         {{ #availableInstanceFieldsSorted }}
           <li{{ #isInherited }} class="inherited"{{ /isInherited }}>
             {{{ linkedName }}}
+            {{!-- TODO(srawlins): Look into moving this block into a partial;
+              currently Mustachio cannot handle multiple partial calls to the
+              same partial with different types. --}}
             {{ #isProvidedByExtension }}
               {{ #enclosingExtension }}
                 <sup
