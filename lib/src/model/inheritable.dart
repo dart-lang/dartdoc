@@ -24,11 +24,10 @@ import 'package:dartdoc/src/special_elements.dart';
 /// place in the documentation, and we pick a canonical class because that's
 /// the one in the public namespace that will be documented.
 mixin Inheritable on ContainerMember {
-  /// True if this [Inheritable] is inherited from a different class.
+  /// Whether this is inherited from a different class or mixin.
   bool get isInherited;
 
-  /// True if this [Inheritable] has a parameter whose type is overridden
-  /// by a subtype.
+  /// Whether this has a parameter whose type is overridden by a subtype.
   bool get isCovariant;
 
   @override

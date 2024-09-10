@@ -173,7 +173,7 @@ abstract class InheritingContainer extends Container {
       // Elements in the inheritance chain starting from `this.element` up to,
       // but not including, `Object`.
       var enclosingElement =
-          inheritedElement.enclosingElement as InterfaceElement;
+          inheritedElement.enclosingElement3 as InterfaceElement;
       assert(inheritanceChainElements.contains(enclosingElement) ||
           enclosingElement.isDartCoreObject);
 
@@ -183,7 +183,7 @@ abstract class InheritingContainer extends Container {
       // accounts for intermediate abstract classes that have method/field
       // implementations.
       var enclosingElementFromCombined =
-          combinedMapElement.enclosingElement as InterfaceElement;
+          combinedMapElement.enclosingElement3 as InterfaceElement;
       if (inheritanceChainElements.indexOf(enclosingElementFromCombined) <
           inheritanceChainElements.indexOf(enclosingElement)) {
         combinedMap[name.name] = inheritedElement;
@@ -257,7 +257,7 @@ abstract class InheritingContainer extends Container {
   late final List<TypeParameter> typeParameters = element.typeParameters
       .map((typeParameter) => getModelFor(
           typeParameter,
-          getModelForElement(typeParameter.enclosingElement!.library!)
+          getModelForElement(typeParameter.enclosingElement3!.library!)
               as Library) as TypeParameter)
       .toList(growable: false);
 
@@ -333,12 +333,58 @@ abstract class InheritingContainer extends Container {
   Iterable<Field> get instanceFields => allFields.where((f) => !f.isStatic);
 
   @override
-  Iterable<Method> get instanceMethods =>
-      [...super.instanceMethods, ...inheritedMethods];
+  late final List<Field> availableInstanceFieldsSorted = [
+    ...instanceFields.wherePublic,
+    ..._extensionInstanceFields.wherePublic,
+  ]..sort();
+
+  List<Field> get _extensionInstanceFields => [
+        for (var extension in potentiallyApplicableExtensionsSorted)
+          for (var field in extension.instanceFields)
+            getModelForPropertyInducingElement(
+              field.element,
+              library,
+              enclosingContainer: extension,
+              getter: field.getter,
+              setter: field.setter,
+            ) as Field,
+      ];
+
+  @override
+  Iterable<Method> get instanceMethods => [
+        ...declaredMethods.where((m) => !m.isStatic && !m.isOperator),
+        ...inheritedMethods,
+      ];
+
+  @override
+  late final List<Method> availableInstanceMethodsSorted = [
+    ...instanceMethods.wherePublic,
+    ..._extensionInstanceMethods.wherePublic,
+  ]..sort();
+
+  List<Method> get _extensionInstanceMethods => [
+        for (var extension in potentiallyApplicableExtensionsSorted)
+          for (var method in extension.instanceMethods)
+            getModelFor(method.element, library, enclosingContainer: extension)
+                as Method,
+      ];
 
   @override
   Iterable<Operator> get instanceOperators =>
       [...super.instanceOperators, ...inheritedOperators];
+
+  @override
+  late final List<Operator> availableInstanceOperatorsSorted = [
+    ...instanceOperators.wherePublic,
+    ..._extensionInstanceOperators.wherePublic,
+  ]..sort();
+
+  List<Operator> get _extensionInstanceOperators => [
+        for (var extension in potentiallyApplicableExtensionsSorted)
+          for (var operator in extension.instanceOperators)
+            getModelFor(operator.element, library,
+                enclosingContainer: extension) as Operator,
+      ];
 
   bool get isAbstract;
 

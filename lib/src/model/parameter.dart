@@ -20,7 +20,7 @@ class Parameter extends ModelElement with HasNoPage {
 
   @override
   ModelElement? get enclosingElement {
-    final enclosingElement = element.enclosingElement;
+    final enclosingElement = element.enclosingElement3;
     return enclosingElement == null
         ? null
         : getModelFor(enclosingElement, library);
@@ -36,7 +36,7 @@ class Parameter extends ModelElement with HasNoPage {
 
   @override
   String get htmlId {
-    final enclosingElement = element.enclosingElement;
+    final enclosingElement = element.enclosingElement3;
     if (enclosingElement == null) {
       return 'param-$name';
     }
@@ -46,8 +46,8 @@ class Parameter extends ModelElement with HasNoPage {
       // name. Also, allowing null here is allowed as a workaround for
       // dart-lang/sdk#32005.
       for (Element e = enclosingElement;
-          e.enclosingElement != null;
-          e = e.enclosingElement!) {
+          e.enclosingElement3 != null;
+          e = e.enclosingElement3!) {
         enclosingName = e.name;
         if (enclosingName != null && enclosingName.isNotEmpty) break;
       }

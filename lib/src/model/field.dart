@@ -33,8 +33,21 @@ class Field extends ModelElement
     this.setter,
   )   : isInherited = false,
         enclosingElement =
-            ModelElement.for_(element.enclosingElement, library, packageGraph)
+            ModelElement.for_(element.enclosingElement3, library, packageGraph)
                 as Container,
+        assert(getter != null || setter != null) {
+    getter?.enclosingCombo = this;
+    setter?.enclosingCombo = this;
+  }
+
+  Field.providedByExtension(
+    this.element,
+    this.enclosingElement,
+    super.library,
+    super.packageGraph,
+    this.getter,
+    this.setter,
+  )   : isInherited = false,
         assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
     setter?.enclosingCombo = this;
@@ -111,6 +124,12 @@ class Field extends ModelElement
 
   String get fullkind =>
       element.isAbstract ? 'abstract $kind' : kind.toString();
+
+  bool get isProvidedByExtension =>
+      element.enclosingElement3 is ExtensionElement;
+
+  /// The [enclosingElement], which is expected to be an [Extension].
+  Extension get enclosingExtension => enclosingElement as Extension;
 
   @override
   Set<Attribute> get attributes {

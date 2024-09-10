@@ -385,7 +385,7 @@ class PackageGraph with CommentReferable, Nameable {
           hashCode: (InheritingContainer clazz) =>
               clazz.definingContainer.hashCode);
 
-  /// A list of extensions that exist in the package graph.
+  /// The public, documented extensions that exist in the package graph.
   final Set<Extension> _extensions = {};
 
   /// Name of the default package.
@@ -771,20 +771,21 @@ class PackageGraph with CommentReferable, Nameable {
           findCanonicalModelElementFor(preferredClass) as Container?;
       if (canonicalClass != null) preferredClass = canonicalClass;
     }
-    var lib = modelElement.canonicalLibrary;
-    if (modelElement is Library) return lib;
+    var library = modelElement.canonicalLibrary;
+    if (modelElement is Library) return library;
 
-    if (lib == null && preferredClass != null) {
-      lib = preferredClass.canonicalLibrary;
+    if (library == null && preferredClass != null) {
+      library = preferredClass.canonicalLibrary;
     }
     // For elements defined in extensions, they are canonical.
-    var enclosingElement = element.enclosingElement;
+    var enclosingElement = element.enclosingElement3;
     if (enclosingElement is ExtensionElement) {
-      lib ??= getModelForElement(enclosingElement.library) as Library?;
+      library ??= getModelForElement(enclosingElement.library) as Library?;
       // TODO(keertip): Find a better way to exclude members of extensions
       // when libraries are specified using the "--include" flag.
-      if (lib != null && lib.isDocumented) {
-        return getModelFor(element, lib, enclosingContainer: preferredClass);
+      if (library != null && library.isDocumented) {
+        return getModelFor(element, library,
+            enclosingContainer: preferredClass);
       }
     }
     // TODO(jcollins-g): The data structures should be changed to eliminate
@@ -796,20 +797,20 @@ class PackageGraph with CommentReferable, Nameable {
       modelElement = getModelForElement(declaration);
       element = modelElement.element;
       canonicalModelElement = _findCanonicalModelElementForAmbiguous(
-          modelElement, lib,
+          modelElement, library,
           preferredClass: preferredClass as InheritingContainer?);
     } else {
-      if (lib != null) {
+      if (library != null) {
         if (element case PropertyInducingElement(:var getter, :var setter)) {
           var getterElement =
-              getter == null ? null : getModelFor(getter, lib) as Accessor;
+              getter == null ? null : getModelFor(getter, library) as Accessor;
           var setterElement =
-              setter == null ? null : getModelFor(setter, lib) as Accessor;
+              setter == null ? null : getModelFor(setter, library) as Accessor;
           canonicalModelElement = getModelForPropertyInducingElement(
-              element, lib,
+              element, library,
               getter: getterElement, setter: setterElement);
         } else {
-          canonicalModelElement = getModelFor(element, lib);
+          canonicalModelElement = getModelFor(element, library);
         }
       }
       assert(canonicalModelElement is! Inheritable);

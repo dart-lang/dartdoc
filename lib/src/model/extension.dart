@@ -8,6 +8,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:meta/meta.dart';
 
 /// Static extension on a given type, containing methods (including getters,
@@ -69,9 +70,27 @@ class Extension extends Container {
   Kind get kind => Kind.extension;
 
   @override
+  List<Field> get availableInstanceFieldsSorted =>
+      instanceFields.wherePublic.toList(growable: false)..sort(byName);
+
+  @override
   late final List<Method> declaredMethods = element.methods
-      .map((e) => getModelFor(e, library) as Method)
+      .map((e) => getModelFor(e, library, enclosingContainer: this) as Method)
       .toList(growable: false);
+
+  @override
+  Iterable<Method> get instanceMethods =>
+      declaredMethods.where((m) => !m.isStatic && !m.isOperator);
+
+  @override
+  late final List<Method> availableInstanceMethodsSorted = [
+    ...instanceMethods.wherePublic,
+  ]..sort();
+
+  @override
+  late final List<Operator> availableInstanceOperatorsSorted = [
+    ...instanceOperators.wherePublic,
+  ]..sort();
 
   @override
   String get name => element.name == null ? '' : super.name;
@@ -81,11 +100,13 @@ class Extension extends Container {
     ContainerAccessor? getter, setter;
     final fieldGetter = field.getter;
     if (fieldGetter != null) {
-      getter = ContainerAccessor(fieldGetter, library, packageGraph);
+      getter = ModelElement.for_(fieldGetter, library, packageGraph,
+          enclosingContainer: this) as ContainerAccessor;
     }
     final fieldSetter = field.setter;
     if (fieldSetter != null) {
-      setter = ContainerAccessor(fieldSetter, library, packageGraph);
+      setter = ModelElement.for_(fieldSetter, library, packageGraph,
+          enclosingContainer: this) as ContainerAccessor;
     }
     return getModelForPropertyInducingElement(field, library,
         getter: getter, setter: setter, enclosingContainer: this) as Field;
@@ -95,7 +116,7 @@ class Extension extends Container {
   late final List<TypeParameter> typeParameters = element.typeParameters
       .map((typeParameter) => getModelFor(
           typeParameter,
-          getModelForElement(typeParameter.enclosingElement!.library!)
+          getModelForElement(typeParameter.enclosingElement3!.library!)
               as Library) as TypeParameter)
       .toList(growable: false);
 

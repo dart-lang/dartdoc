@@ -66,7 +66,7 @@ extension ElementExtension on Element {
     // GenericFunctionTypeElements have the name we care about in the enclosing
     // element.
     if (self is GenericFunctionTypeElement) {
-      var enclosingElementName = self.enclosingElement?.name;
+      var enclosingElementName = self.enclosingElement3?.name;
       if (enclosingElementName != null &&
           enclosingElementName.startsWith('_')) {
         return true;

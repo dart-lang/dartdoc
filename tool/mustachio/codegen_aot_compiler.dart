@@ -60,7 +60,8 @@ Future<String> compileTemplatesToRenderers(
     buffer.writeln();
     buffer.writeln();
   }
-  return DartFormatter().format('''
+  return DartFormatter(languageVersion: DartFormatter.latestLanguageVersion)
+      .format('''
 // GENERATED CODE. DO NOT EDIT.
 //
 // To change the contents of this library, make changes to the builder source

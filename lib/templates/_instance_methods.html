@@ -1,12 +1,12 @@
-{{ #hasPublicInstanceMethods }}
+{{ #hasAvailableInstanceMethods }}
   <section
       class="summary offset-anchor{{ #publicInheritedInstanceMethods }} inherited{{ /publicInheritedInstanceMethods }}"
       id="instance-methods">
     <h2>Methods</h2>
     <dl class="callables">
-      {{ #publicInstanceMethodsSorted }}
+      {{ #availableInstanceMethodsSorted }}
         {{ >callable }}
-      {{ /publicInstanceMethodsSorted }}
+      {{ /availableInstanceMethodsSorted }}
     </dl>
   </section>
-{{ /hasPublicInstanceMethods }}
+{{ /hasAvailableInstanceMethods }}

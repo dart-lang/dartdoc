@@ -11,10 +11,22 @@ import 'package:dartdoc/src/model/model.dart';
 class Operator extends Method {
   Operator(super.element, super.library, super.packageGraph);
 
-  Operator.inherited(super.element, Container super.enclosingContainer,
-      super.library, super.packageGraph,
-      {Member? originalMember})
-      : super.inherited(originalMember: originalMember as ExecutableMember?);
+  Operator.providedByExtension(
+    super.element,
+    super.enclosingContainer,
+    super.library,
+    super.packageGraph, {
+    Member? originalMember,
+  }) : super.providedByExtension(
+            originalMember: originalMember as ExecutableMember?);
+
+  Operator.inherited(
+    super.element,
+    super.enclosingContainer,
+    super.library,
+    super.packageGraph, {
+    Member? originalMember,
+  }) : super.inherited(originalMember: originalMember as ExecutableMember?);
 
   @override
   String get fullyQualifiedName =>

@@ -11,7 +11,7 @@ abstract class ElementTypeRenderer<T extends ElementType> {
 
   String renderLinkedName(T elementType);
 
-  String renderNameWithGenerics(T elementType) => '';
+  String renderNameWithGenerics(T elementType, {bool plain = false}) => '';
 
   String wrapNullabilityParens(T elementType, String inner) =>
       elementType.nullabilitySuffix.isEmpty
@@ -43,15 +43,23 @@ abstract class ElementTypeRendererHtml<T extends ElementType>
   }
 
   String _renderNameWithGenerics(
-      T elementType, String name, Iterable<ElementType> typeArguments) {
+      T elementType, String name, Iterable<ElementType> typeArguments,
+      {bool plain = false}) {
     var buffer = StringBuffer()..write(name);
     if (typeArguments.isNotEmpty &&
         !typeArguments.every((t) => t.name == 'dynamic')) {
-      buffer
-        ..write('&lt;<wbr><span class="type-parameter">')
-        ..writeAll(typeArguments.map((t) => t.nameWithGenerics),
-            '</span>, <span class="type-parameter">')
-        ..write('</span>&gt;');
+      if (plain) {
+        buffer
+          ..write('<')
+          ..writeAll(typeArguments.map((t) => t.nameWithGenericsPlain), ', ')
+          ..write('>');
+      } else {
+        buffer
+          ..write('&lt;<wbr><span class="type-parameter">')
+          ..writeAll(typeArguments.map((t) => t.nameWithGenerics),
+              '</span>, <span class="type-parameter">')
+          ..write('</span>&gt;');
+      }
     }
     buffer.write(elementType.nullabilitySuffix);
     return buffer.toString();
@@ -76,15 +84,23 @@ class FunctionTypeElementTypeRendererHtml
   }
 
   @override
-  String renderNameWithGenerics(FunctionTypeElementType elementType) {
+  String renderNameWithGenerics(FunctionTypeElementType elementType,
+      {bool plain = false}) {
     var buffer = StringBuffer()..write(elementType.name);
     if (elementType.typeFormals.isNotEmpty) {
       if (!elementType.typeFormals.every((t) => t.name == 'dynamic')) {
-        buffer
-          ..write('&lt;<wbr><span class="type-parameter">')
-          ..writeAll(elementType.typeFormals.map((t) => t.name),
-              '</span>, <span class="type-parameter">')
-          ..write('</span>&gt;');
+        if (plain) {
+          buffer
+            ..write('<')
+            ..writeAll(elementType.typeFormals.map((t) => t.name), ', ')
+            ..write('>');
+        } else {
+          buffer
+            ..write('&lt;<wbr><span class="type-parameter">')
+            ..writeAll(elementType.typeFormals.map((t) => t.name),
+                '</span>, <span class="type-parameter">')
+            ..write('</span>&gt;');
+        }
       }
     }
     return buffer.toString();
@@ -104,11 +120,13 @@ class ParameterizedElementTypeRendererHtml
       );
 
   @override
-  String renderNameWithGenerics(ParameterizedElementType elementType) =>
+  String renderNameWithGenerics(ParameterizedElementType elementType,
+          {bool plain = false}) =>
       _renderNameWithGenerics(
         elementType,
         elementType.modelElement.name,
         elementType.typeArguments,
+        plain: plain,
       );
 }
 
@@ -131,7 +149,8 @@ class RecordElementTypeRendererHtml
   }
 
   @override
-  String renderNameWithGenerics(RecordElementType elementType) {
+  String renderNameWithGenerics(RecordElementType elementType,
+      {bool plain = false}) {
     return '${elementType.name}${elementType.nullabilitySuffix}';
   }
 }
@@ -149,11 +168,13 @@ class AliasedUndefinedElementTypeRendererHtml
       );
 
   @override
-  String renderNameWithGenerics(AliasedUndefinedElementType elementType) =>
+  String renderNameWithGenerics(AliasedUndefinedElementType elementType,
+          {bool plain = false}) =>
       _renderNameWithGenerics(
         elementType,
         elementType.aliasElement.name,
         elementType.aliasArguments,
+        plain: plain,
       );
 }
 
@@ -169,10 +190,12 @@ class AliasedElementTypeRendererHtml
       );
 
   @override
-  String renderNameWithGenerics(AliasedElementType elementType) =>
+  String renderNameWithGenerics(AliasedElementType elementType,
+          {bool plain = false}) =>
       _renderNameWithGenerics(
         elementType,
         elementType.aliasElement.name,
         elementType.aliasArguments,
+        plain: plain,
       );
 }

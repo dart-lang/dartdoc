@@ -256,4 +256,142 @@ abstract class C {
       matches('An instance method.'),
     ]);
   }
+
+  void test_instanceMethod_fromExtension() async {
+    await createPackageWithLibrary('''
+class C {}
+
+extension E on C {
+  /// An instance method.
+  void m() {}
+}
+''');
+    var htmlLines = readLines(['lib', 'C-class.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Methods</h2>'),
+      matches('<dt id="m" class="callable">'),
+      matches('<a href="../lib/E/m.html">m</a>'),
+      matches('An instance method.'),
+    ]);
+  }
+
+  void test_operator_fromExtension() async {
+    await createPackageWithLibrary('''
+class C {}
+
+extension E on C {
+  /// An operator.
+  int operator +(int other) => 7;
+}
+''');
+    var htmlLines = readLines(['lib', 'C-class.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Operators</h2>'),
+      matches('<dt id="operator \\+" class="callable">'),
+      matches('<a href="../lib/E/operator_plus.html">operator \\+</a>'),
+      matches('An operator.'),
+    ]);
+  }
+
+  void test_instancePropertyAccessor_fromExtension() async {
+    await createPackageWithLibrary('''
+class C {}
+
+extension E on C {
+  /// An instance getter.
+  int get f => 1;
+}
+''');
+    var htmlLines = readLines(['lib', 'C-class.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Properties</h2>'),
+      matches('<dt id="f" class="property">'),
+      matches('<a href="../lib/E/f.html">f</a>'),
+      matches('An instance getter.'),
+    ]);
+  }
+
+  void test_instancePropertyAccessor_fromExtensionOfSupertype() async {
+    await createPackageWithLibrary('''
+class C<T> {}
+
+class D<T> extends C<T> {}
+
+extension E on C<int> {
+  /// An instance getter.
+  int get f => 1;
+}
+''');
+    var htmlLines = readLines(['lib', 'D-class.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Properties</h2>'),
+      matches('<dt id="f" class="property">'),
+      matches('<a href="../lib/E/f.html">f</a>'),
+      matches('An instance getter.'),
+    ]);
+  }
+
+  void test_sidebar_method_providedByExtension() async {
+    await createPackageWithLibrary('''
+class C {}
+
+extension E on C {
+  /// An instance method.
+  void m() {}
+}
+''');
+    var htmlLines = readLines(['lib', 'C-class-sidebar.html']);
+
+    htmlLines.expectContentContainsAllInOrder([
+      matches('<a href="lib/C-class.html#instance-methods">Methods</a>'),
+      matches('<a href="lib/E/m.html">m</a>'),
+      matches('<sup'),
+      matches('    class="muted"'),
+      matches('    title="Available on C">\\(ext\\)</sup>'),
+    ]);
+  }
+
+  void test_sidebar_operator_providedByExtension() async {
+    await createPackageWithLibrary('''
+class C {}
+
+extension E on C {
+  /// An operator.
+  int operator +(int other) => 7;
+}
+''');
+    var htmlLines = readLines(['lib', 'C-class-sidebar.html']);
+
+    htmlLines.expectContentContainsAllInOrder([
+      matches('<a href="lib/C-class.html#operators">Operators</a>'),
+      matches('<a href="lib/E/operator_plus.html">operator \\+</a>'),
+      matches('<sup'),
+      matches('    class="muted"'),
+      matches('    title="Available on C">\\(ext\\)</sup>'),
+    ]);
+  }
+
+  void test_sidebar_propertyAccessor_providedByExtension() async {
+    await createPackageWithLibrary('''
+class C {}
+
+extension E on C {
+  /// An instance getter.
+  int get f => 1;
+}
+''');
+    var htmlLines = readLines(['lib', 'C-class-sidebar.html']);
+
+    htmlLines.expectContentContainsAllInOrder([
+      matches('<a href="lib/C-class.html#instance-properties">Properties</a>'),
+      matches('<a href="lib/E/f.html">f</a>'),
+      matches('<sup'),
+      matches('    class="muted"'),
+      matches('    title="Available on C">\\(ext\\)</sup>'),
+    ]);
+  }
 }

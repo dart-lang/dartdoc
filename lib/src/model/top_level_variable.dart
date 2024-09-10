@@ -72,6 +72,13 @@ class TopLevelVariable extends ModelElement
   @override
   bool get isLate => isFinal && element.isLate;
 
+  // For use in templates.
+  bool get isProvidedByExtension => false;
+
+  // For use in templates.
+  Extension get enclosingExtension => throw UnsupportedError(
+      'Top-level variables are not provided by extensions');
+
   @override
   Kind get kind => isConst ? Kind.topLevelConstant : Kind.topLevelProperty;
 

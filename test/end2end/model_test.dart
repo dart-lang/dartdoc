@@ -1083,13 +1083,13 @@ void main() async {
     });
 
     test('Verify behavior of imperfect resolver', () {
-      expect(aImplementingThingy.element.enclosingElement,
+      expect(aImplementingThingy.element.enclosingElement3,
           equals(BaseThingy2.element));
-      expect(aImplementingThingyMethod.element.enclosingElement,
+      expect(aImplementingThingyMethod.element.enclosingElement3,
           equals(BaseThingy.element));
-      expect(aImplementingThingyField.element.enclosingElement,
+      expect(aImplementingThingyField.element.enclosingElement3,
           equals(BaseThingy.element));
-      expect(aImplementingThingyAccessor.element.enclosingElement,
+      expect(aImplementingThingyAccessor.element.enclosingElement3,
           equals(BaseThingy.element));
     });
   });
@@ -1698,7 +1698,7 @@ void main() async {
           fakeLibrary.classes.wherePublic.named('MIEEMixinWithOverride');
       var problematicOperator =
           MIEEMixinWithOverride.inheritedOperators.named('operator []=');
-      expect(problematicOperator.element.enclosingElement.name,
+      expect(problematicOperator.element.enclosingElement3.name,
           equals('_MIEEPrivateOverride'));
       expect(problematicOperator.canonicalModelElement!.enclosingElement!.name,
           equals('MIEEMixinWithOverride'));
@@ -2094,7 +2094,7 @@ void main() async {
 
     test('SpecialList has many inherited methods', () {
       expect(SpecialList.inheritedMethods.wherePublic, hasLength(49));
-      var methods = SpecialList.publicInstanceMethodsSorted
+      var methods = SpecialList.availableInstanceMethodsSorted
           .where((m) => m.isInherited)
           .toList();
       expect(methods.first.name, equals('add'));
