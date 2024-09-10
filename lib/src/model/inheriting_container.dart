@@ -173,7 +173,7 @@ abstract class InheritingContainer extends Container {
       // Elements in the inheritance chain starting from `this.element` up to,
       // but not including, `Object`.
       var enclosingElement =
-          inheritedElement.enclosingElement as InterfaceElement;
+          inheritedElement.enclosingElement3 as InterfaceElement;
       assert(inheritanceChainElements.contains(enclosingElement) ||
           enclosingElement.isDartCoreObject);
 
@@ -183,7 +183,7 @@ abstract class InheritingContainer extends Container {
       // accounts for intermediate abstract classes that have method/field
       // implementations.
       var enclosingElementFromCombined =
-          combinedMapElement.enclosingElement as InterfaceElement;
+          combinedMapElement.enclosingElement3 as InterfaceElement;
       if (inheritanceChainElements.indexOf(enclosingElementFromCombined) <
           inheritanceChainElements.indexOf(enclosingElement)) {
         combinedMap[name.name] = inheritedElement;
@@ -257,7 +257,7 @@ abstract class InheritingContainer extends Container {
   late final List<TypeParameter> typeParameters = element.typeParameters
       .map((typeParameter) => getModelFor(
           typeParameter,
-          getModelForElement(typeParameter.enclosingElement!.library!)
+          getModelForElement(typeParameter.enclosingElement3!.library!)
               as Library) as TypeParameter)
       .toList(growable: false);
 

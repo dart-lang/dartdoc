@@ -22,7 +22,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        sdk: [dev, stable]
+        # TODO(srawlins): Re-enable stable when stable works with analyzer 6.9.0
+        # (Dart 3.6.0).
+        sdk: [dev]
         job: [main, flutter, packages, sdk-docs]
         include:
           - os: macos-latest

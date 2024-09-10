@@ -66,7 +66,7 @@ class Method extends ModelElement
 
   @override
   Container get enclosingElement => _enclosingContainer ??=
-      getModelFor(element.enclosingElement, library) as Container;
+      getModelFor(element.enclosingElement3, library) as Container;
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;
@@ -94,7 +94,7 @@ class Method extends ModelElement
   bool get isOperator => false;
 
   bool get isProvidedByExtension =>
-      element.enclosingElement is ExtensionElement;
+      element.enclosingElement3 is ExtensionElement;
 
   /// The [enclosingElement], which is expected to be an [Extension].
   Extension get enclosingExtension => enclosingElement as Extension;
@@ -120,17 +120,17 @@ class Method extends ModelElement
   @override
   Method? get overriddenElement {
     if (_enclosingContainer is Extension ||
-        element.enclosingElement is ExtensionElement) {
+        element.enclosingElement3 is ExtensionElement) {
       return null;
     }
-    var parent = element.enclosingElement as InterfaceElement;
+    var parent = element.enclosingElement3 as InterfaceElement;
     for (var t in parent.augmented.declaration.allSupertypes) {
       Element? e = t.getMethod(element.name);
       if (e != null) {
         assert(
-          e.enclosingElement is InterfaceElement,
-          'Expected "${e.enclosingElement?.name}" to be a InterfaceElement, '
-          'but was ${e.enclosingElement.runtimeType}',
+          e.enclosingElement3 is InterfaceElement,
+          'Expected "${e.enclosingElement3?.name}" to be a InterfaceElement, '
+          'but was ${e.enclosingElement3.runtimeType}',
         );
         return getModelForElement(e) as Method?;
       }
