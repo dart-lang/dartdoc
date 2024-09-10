@@ -6,6 +6,7 @@
 library;
 
 import 'dart:io';
+
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
@@ -157,6 +158,59 @@ import 'annotations.dart';
     expect(
       generatedContent,
       contains('String _deduplicated_lib_templates__base_html('),
+    );
+  });
+
+  test('deduplicates partials used multiple times in the same template',
+      () async {
+    await testMustachioBuilder(
+      '''
+abstract class Foo {
+  List<A> get l1;
+  List<B> get l2;
+}
+
+class Base {
+  String s1 = 's1';
+}
+class A extends Base {}
+class B extends Base {}
+''',
+      libraryFrontMatter: '''
+@Renderer(#renderFoo, Context<Foo>(), 'foo')
+library foo;
+import 'annotations.dart';
+''',
+      additionalAssets: () => [
+        d.dir('lib', [
+          d.dir('templates', [
+            d.file('foo.html', '''
+{{ #l1 }}
+  {{ >base }}
+{{ /l1 }}
+{{ #l2 }}
+  {{ >base }}
+{{ /l2 }}
+'''),
+            d.file('_base.html', 's1 is {{ s1 }}'),
+          ]),
+        ]),
+      ],
+    );
+    var generatedContent = await File(aotRenderersForHtmlPath).readAsString();
+    expect(
+      generatedContent,
+      contains('String _renderFoo_partial_base_0(A context1) =>\n'
+          '    _deduplicated_lib_templates__base_html(context1);\n'),
+    );
+    expect(
+      generatedContent,
+      contains('String _renderFoo_partial_base_1(B context1) =>\n'
+          '    _deduplicated_lib_templates__base_html(context1);\n'),
+    );
+    expect(
+      generatedContent,
+      contains('String _deduplicated_lib_templates__base_html(Base context0)'),
     );
   });
 

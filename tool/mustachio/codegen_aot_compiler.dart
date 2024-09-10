@@ -296,7 +296,7 @@ class _AotCompiler {
         _contextNameCounter = contextStack.length;
 
   /// Returns a copy of [original], replacing each variable's name with
-  /// `context0` through `contextN` for `N` variables.
+  /// `context0` through `contextN` for `N - 1` variables.
   ///
   /// This ensures that each renderer accepts a simple list of context objects
   /// with predictable names.
@@ -449,8 +449,8 @@ class _BlockCompiler {
     filePath.add('_$fileName.$extension');
     var partialPath = path.join(
         path.dirname(_templateCompiler._templatePath), filePath.join('/'));
-    var partialCompiler = _templateCompiler._partialCompilers
-        .firstWhereOrNull((p) => p._templatePath == partialPath);
+    var partialCompiler = _templateCompiler._partialCompilers.firstWhereOrNull(
+        (p) => p._templatePath == partialPath && p._contextType == contextType);
     if (partialCompiler == null) {
       var sanitizedKey = node.key.replaceAll('.', '_').replaceAll('/', '_');
       var name = '${partialBaseName}_'
@@ -459,7 +459,8 @@ class _BlockCompiler {
       partialCompiler = await _AotCompiler._readAndParse(
           contextType, name, partialPath, _templateCompiler._buildData,
           contextStack: _contextStack);
-      // Add this partial renderer; to be written later.
+      // Add this partial renderer; it is compiled here, but not written until
+      // later.
       _templateCompiler._partialCompilers.add(partialCompiler);
       _templateCompiler._partialCounter++;
       _templateCompiler._compiledPartials[partialCompiler] =
