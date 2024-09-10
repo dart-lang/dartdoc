@@ -159,7 +159,7 @@ abstract class ModelElement
           var index = constantIndex.toIntValue()!;
           newModelElement =
               EnumField.forConstant(index, e, library, packageGraph, getter);
-        } else if (e.enclosingElement is ExtensionElement) {
+        } else if (e.enclosingElement3 is ExtensionElement) {
           newModelElement = Field(e, library, packageGraph,
               getter as ContainerAccessor?, setter as ContainerAccessor?);
         } else {
@@ -169,7 +169,7 @@ abstract class ModelElement
       } else {
         // Enum fields and extension getters can't be inherited, so this case is
         // simpler.
-        if (e.enclosingElement is ExtensionElement) {
+        if (e.enclosingElement3 is ExtensionElement) {
           newModelElement = Field.providedByExtension(
             e,
             enclosingContainer,
@@ -310,7 +310,7 @@ abstract class ModelElement
       MethodElement(isOperator: true) when enclosingContainer == null =>
         Operator(e, library, packageGraph),
       MethodElement(isOperator: true)
-          when e.enclosingElement is ExtensionElement =>
+          when e.enclosingElement3 is ExtensionElement =>
         Operator.providedByExtension(
             e, enclosingContainer, library, packageGraph),
       MethodElement(isOperator: true) => Operator.inherited(
@@ -319,7 +319,7 @@ abstract class ModelElement
       MethodElement(isOperator: false) when enclosingContainer == null =>
         Method(e, library, packageGraph),
       MethodElement(isOperator: false)
-          when e.enclosingElement is ExtensionElement =>
+          when e.enclosingElement3 is ExtensionElement =>
         Method.providedByExtension(
             e, enclosingContainer, library, packageGraph),
       MethodElement(isOperator: false) => Method.inherited(
@@ -348,8 +348,8 @@ abstract class ModelElement
     required Member? originalMember,
   }) {
     // Accessors can be part of a [Container], or a part of a [Library].
-    if (e.enclosingElement is ExtensionElement ||
-        e.enclosingElement is InterfaceElement ||
+    if (e.enclosingElement3 is ExtensionElement ||
+        e.enclosingElement3 is InterfaceElement ||
         e is MultiplyInheritedExecutableElement) {
       if (enclosingContainer == null || enclosingContainer is Extension) {
         return ContainerAccessor(e, library, packageGraph, enclosingContainer);
@@ -543,10 +543,10 @@ abstract class ModelElement
     // Since we're looking for a library, find the [Element] immediately
     // contained by a [CompilationUnitElement] in the tree.
     var topLevelElement = element;
-    while (topLevelElement.enclosingElement is! LibraryElement &&
-        topLevelElement.enclosingElement is! CompilationUnitElement &&
-        topLevelElement.enclosingElement != null) {
-      topLevelElement = topLevelElement.enclosingElement!;
+    while (topLevelElement.enclosingElement3 is! LibraryElement &&
+        topLevelElement.enclosingElement3 is! CompilationUnitElement &&
+        topLevelElement.enclosingElement3 != null) {
+      topLevelElement = topLevelElement.enclosingElement3!;
     }
     var topLevelElementName = topLevelElement.name;
     if (topLevelElementName == null) {

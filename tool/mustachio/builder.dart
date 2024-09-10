@@ -47,7 +47,7 @@ Future<void> build(
   var typeSystem = library.typeSystem;
   var rendererSpecs = <RendererSpec>{};
   for (var renderer in library.metadata
-      .where((e) => e.element!.enclosingElement!.name == 'Renderer')) {
+      .where((e) => e.element!.enclosingElement3!.name == 'Renderer')) {
     rendererSpecs.add(_buildRendererSpec(renderer));
   }
 

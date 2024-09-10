@@ -30,7 +30,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
   bool get isPublic {
     if (!super.isPublic) return false;
     if (element.hasPrivateName) return false;
-    var class_ = element.enclosingElement;
+    var class_ = element.enclosingElement3;
     // Enums cannot be explicitly constructed or extended.
     if (class_ is EnumElement) return false;
     if (class_ is ClassElement) {
@@ -53,7 +53,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
 
   @override
   Container get enclosingElement =>
-      getModelFor(element.enclosingElement, library) as Container;
+      getModelFor(element.enclosingElement3, library) as Container;
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;
@@ -108,7 +108,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
 
   String? get shortName {
     if (name.contains('.')) {
-      return name.substring(element.enclosingElement.name.length + 1);
+      return name.substring(element.enclosingElement3.name.length + 1);
     } else {
       return name;
     }

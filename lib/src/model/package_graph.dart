@@ -778,7 +778,7 @@ class PackageGraph with CommentReferable, Nameable {
       lib = preferredClass.canonicalLibrary;
     }
     // For elements defined in extensions, they are canonical.
-    var enclosingElement = element.enclosingElement;
+    var enclosingElement = element.enclosingElement3;
     if (enclosingElement is ExtensionElement) {
       lib ??= getModelForElement(enclosingElement.library) as Library?;
       // TODO(keertip): Find a better way to exclude members of extensions

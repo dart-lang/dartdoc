@@ -116,7 +116,7 @@ class Extension extends Container {
   late final List<TypeParameter> typeParameters = element.typeParameters
       .map((typeParameter) => getModelFor(
           typeParameter,
-          getModelForElement(typeParameter.enclosingElement!.library!)
+          getModelForElement(typeParameter.enclosingElement3!.library!)
               as Library) as TypeParameter)
       .toList(growable: false);
 

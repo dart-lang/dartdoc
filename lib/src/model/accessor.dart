@@ -115,13 +115,11 @@ class Accessor extends ModelElement {
   }
 
   @override
-  ModelElement get enclosingElement {
-    if (element.enclosingElement is CompilationUnitElement) {
-      return getModelForElement(element.enclosingElement.enclosingElement!);
-    }
-
-    return getModelFor(element.enclosingElement, library);
-  }
+  ModelElement get enclosingElement => switch (element.enclosingElement3) {
+        CompilationUnitElement enclosingCompilationUnit =>
+          getModelForElement(enclosingCompilationUnit.library),
+        _ => getModelFor(element.enclosingElement3, library)
+      };
 
   @override
   String get filePath => enclosingCombo.filePath;
@@ -207,7 +205,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   @override
   ContainerAccessor? get overriddenElement {
     assert(packageGraph.allLibrariesAdded);
-    final parent = element.enclosingElement;
+    final parent = element.enclosingElement3;
     if (parent is! InterfaceElement) {
       return null;
     }
