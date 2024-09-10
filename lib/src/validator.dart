@@ -195,7 +195,7 @@ class Validator {
     final links = doc.querySelectorAll('a');
     final stringLinks = links
         .map((link) => link.attributes['href'])
-        .whereType<String>()
+        .nonNulls
         .where((href) =>
             href.isNotEmpty &&
             !href.startsWith('https:') &&

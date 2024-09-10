@@ -53,13 +53,10 @@ void init() {
     final url = Uri.parse(window.location.toString());
     final searchQuery = url.queryParameters['search'];
     if (searchQuery != null) {
-      final matches = index.find(searchQuery);
-      if (matches.isNotEmpty) {
-        final href = matches.first.href;
-        if (href != null) {
-          window.location.assign('$_htmlBase$href');
-          return;
-        }
+      final href = index.find(searchQuery).firstOrNull?.href;
+      if (href != null) {
+        window.location.assign('$_htmlBase$href');
+        return;
       }
     }
 
