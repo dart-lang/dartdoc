@@ -26,7 +26,7 @@ class Accessor extends ModelElement {
   /// constructor.
   // TODO(srawlins): This might be super fragile. This field should somehow be
   // initialized by code inside this library.
-  late GetterSetterCombo enclosingCombo;
+  late final GetterSetterCombo enclosingCombo;
 
   Accessor(this.element, super.library, super.packageGraph,
       {ExecutableMember? super.originalMember});
@@ -167,11 +167,21 @@ class Accessor extends ModelElement {
 
 /// A getter or setter that is a member of a [Container].
 class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
+  late final Container _enclosingElement;
+
+  @override
+  final bool isInherited;
+
   ContainerAccessor(super.element, super.library, super.packageGraph,
       [Container? enclosingElement])
       : isInherited = false {
     _enclosingElement = enclosingElement ?? super.enclosingElement as Container;
   }
+
+  ContainerAccessor.inherited(
+      super.element, super.library, super.packageGraph, this._enclosingElement,
+      {super.originalMember})
+      : isInherited = true;
 
   /// The index and values fields are never declared, and must be special cased.
   bool get _isEnumSynthetic =>
@@ -186,18 +196,8 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
     return super.characterLocation;
   }
 
-  late final Container _enclosingElement;
-
-  @override
-  final bool isInherited;
-
   @override
   bool get isCovariant => isSetter && parameters.first.isCovariant;
-
-  ContainerAccessor.inherited(
-      super.element, super.library, super.packageGraph, this._enclosingElement,
-      {super.originalMember})
-      : isInherited = true;
 
   @override
   Container get enclosingElement => _enclosingElement;
