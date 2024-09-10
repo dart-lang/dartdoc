@@ -29,7 +29,8 @@ String buildRuntimeRenderers(Set<RendererSpec> specs, Uri sourceUri,
           sourceUri, typeProvider, typeSystem, visibleElements,
           rendererClassesArePublic: rendererClassesArePublic)
       ._buildTemplateRenderers(specs);
-  return DartFormatter().format(raw);
+  return DartFormatter(languageVersion: DartFormatter.latestLanguageVersion)
+      .format(raw);
 }
 
 /// This class builds runtime Mustache renderers from a set of [RendererSpec]s.
