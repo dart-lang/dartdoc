@@ -595,6 +595,22 @@ h1 .category {
   vertical-align: middle;
 }
 
+/* Do not display "provided by X extension" text on extension pages. */
+.main-content.extension-page .from-extension {
+  display: none;
+}
+
+sup.muted {
+  color: var(--main-sidebar-color);
+  font-size: 0.6em;
+}
+
+.from-extension > span {
+  background-color: var(--alert-warning);
+  font-style: italic;
+  padding: 2px;
+}
+
 /* The badge under a declaration for things like "const", "read-only", etc. and for the badges inline like sealed or interface */
 /* See https://github.com/dart-lang/dartdoc/blob/main/lib/src/model/feature.dart */
 .feature {

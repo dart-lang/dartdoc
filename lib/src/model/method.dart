@@ -35,6 +35,16 @@ class Method extends ModelElement
     _calcTypeParameters();
   }
 
+  Method.providedByExtension(
+    this.element,
+    this._enclosingContainer,
+    super.library,
+    super.packageGraph, {
+    ExecutableMember? super.originalMember,
+  }) : _isInherited = false {
+    _calcTypeParameters();
+  }
+
   void _calcTypeParameters() {
     typeParameters = element.typeParameters.map((f) {
       return getModelFor(f, library) as TypeParameter;
@@ -83,6 +93,12 @@ class Method extends ModelElement
 
   bool get isOperator => false;
 
+  bool get isProvidedByExtension =>
+      element.enclosingElement is ExtensionElement;
+
+  /// The [enclosingElement], which is expected to be an [Extension].
+  Extension get enclosingExtension => enclosingElement as Extension;
+
   @override
   Set<Attribute> get attributes => {
         ...super.attributes,
@@ -103,7 +119,8 @@ class Method extends ModelElement
 
   @override
   Method? get overriddenElement {
-    if (_enclosingContainer is Extension) {
+    if (_enclosingContainer is Extension ||
+        element.enclosingElement is ExtensionElement) {
       return null;
     }
     var parent = element.enclosingElement as InterfaceElement;

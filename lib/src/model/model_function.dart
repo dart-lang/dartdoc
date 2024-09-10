@@ -80,4 +80,11 @@ class ModelFunctionTyped extends ModelElement with TypeParameters {
   Iterable<CommentReferable> get referenceParents => [library];
 
   late final Callable modelType = getTypeFor(element.type, library) as Callable;
+
+  // For use in templates.
+  bool get isProvidedByExtension => false;
+
+  // For use in templates.
+  Extension get enclosingExtension => throw UnsupportedError(
+      'Top-level variables are not provided by extensions');
 }

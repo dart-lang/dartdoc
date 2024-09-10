@@ -375,6 +375,15 @@ extension IterableStringExtension on Iterable<String> {
       reason: 'main content:\n\n${mainContent.join('\n')}',
     );
   }
+
+  /// Verifies that this contains [matchers] in order.
+  void expectContentContainsAllInOrder(Iterable<Object?> matchers) {
+    expect(
+      this,
+      containsAllInOrder(matchers),
+      reason: 'content:\n\n${join('\n')}',
+    );
+  }
 }
 
 extension PackageExtension on Package {

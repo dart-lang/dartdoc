@@ -76,6 +76,20 @@ class C {
     );
   }
 
+  void test_extension_fieldName() async {
+    await createPackageWithLibrary('''
+extension E on String {
+  int f1 = 1;
+}
+''');
+    var f1Lines = readLines(['lib', 'E', 'f1.html']);
+    f1Lines.expectMainContentContainsAllInOrder(
+      [
+        matches('<h1><span class="kind-property">f1</span> property'),
+      ],
+    );
+  }
+
   void test_extensionType_representationField_final() async {
     await createPackageWithLibrary('''
 extension type ET(
