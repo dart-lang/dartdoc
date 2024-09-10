@@ -147,7 +147,7 @@ class PackageGraph with CommentReferable, Nameable {
     allLibrariesAdded = true;
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
-    await Future.wait(_precacheLocalDocs());
+    await _precacheLocalDocs().wait;
     _localDocumentationBuilt = true;
 
     // Scan all model elements to insure that interceptor and other special
@@ -897,10 +897,7 @@ class PackageGraph with CommentReferable, Nameable {
     }
 
     assert(matches.length <= 1);
-    if (matches.isNotEmpty) {
-      return matches.first;
-    }
-    return null;
+    return matches.firstOrNull;
   }
 
   /// This is used when we might need a Library object that isn't actually

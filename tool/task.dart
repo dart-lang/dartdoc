@@ -298,7 +298,7 @@ Future<void> compareFlutterWarnings() async {
       '--path',
       path.join(flutterDir.absolute.path, 'dev', 'docs', 'doc'),
     ]);
-    await Future.wait([original, current]);
+    await [original, current].wait;
   }
 }
 
