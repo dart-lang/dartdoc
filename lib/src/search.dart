@@ -130,13 +130,6 @@ class IndexItem {
     EnclosedBy? enclosedBy;
     if (data['enclosedBy'] != null) {
       final map = data['enclosedBy'] as Map<String, dynamic>;
-      assert(
-        map['href'] != null,
-        "'enclosedBy' element expected to have a non-null 'href', "
-        "but was null: '${data['qualifiedName']}', "
-        "enclosed by the ${Kind.values[map['kind'] as int]} '${map['name']}' "
-        "('${map['qualifiedName']}')",
-      );
       enclosedBy = EnclosedBy._(
           name: map['name'] as String,
           kind: Kind.values[map['kind'] as int],

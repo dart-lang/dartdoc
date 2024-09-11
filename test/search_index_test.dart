@@ -56,6 +56,7 @@ class SearchIndexTest extends DartdocTestBase {
     // documented elements. But this filter gets us approximately what we want.
     var elements = libraries.expand((library) => library.allModelElements
         .whereDocumentedIn(library)
+        .where((e) => e is! TypeParameter)
         .where((e) => e is ContainerMember
             ? e.enclosingElement.canonicalLibrary != null
             : e.canonicalLibrary != null));
