@@ -24,51 +24,21 @@
           <a href="{{{ href }}}#instance-properties">Properties</a>
         </li>
         {{ #availableInstanceFieldsSorted }}
-          <li{{ #isInherited }} class="inherited"{{ /isInherited }}>
-            {{{ linkedName }}}
-            {{!-- TODO(srawlins): Look into moving this block into a partial;
-              currently Mustachio cannot handle multiple partial calls to the
-              same partial with different types. --}}
-            {{ #isProvidedByExtension }}
-              {{ #enclosingExtension }}
-                <sup
-                    class="muted"
-                    title="Available on {{ extendedElement.nameWithGenericsPlain }}">(ext)</sup>
-              {{ /enclosingExtension }}
-            {{ /isProvidedByExtension }}
-          </li>
+          {{ >container_sidebar_item }}
         {{ /availableInstanceFieldsSorted }}
       {{ /hasAvailableInstanceFields }}
 
       {{ #hasAvailableInstanceMethods }}
         <li class="section-title{{ #publicInheritedInstanceMethods }} inherited{{ /publicInheritedInstanceMethods }}"><a href="{{{ href }}}#instance-methods">Methods</a></li>
         {{ #availableInstanceMethodsSorted }}
-          <li{{ #isInherited }} class="inherited"{{ /isInherited }}>
-            {{{ linkedName }}}
-            {{ #isProvidedByExtension }}
-              {{ #enclosingExtension }}
-              <sup
-                  class="muted"
-                  title="Available on {{ extendedElement.nameWithGenericsPlain }}">(ext)</sup>
-              {{ /enclosingExtension }}
-            {{ /isProvidedByExtension }}
-          </li>
+          {{ >container_sidebar_item }}
         {{ /availableInstanceMethodsSorted }}
       {{ /hasAvailableInstanceMethods }}
 
       {{ #hasAvailableInstanceOperators }}
         <li class="section-title{{ #publicInheritedInstanceOperators }} inherited{{ /publicInheritedInstanceOperators }}"><a href="{{{ href }}}#operators">Operators</a></li>
         {{ #availableInstanceOperatorsSorted }}
-          <li{{ #isInherited }} class="inherited"{{ /isInherited }}>
-            {{{ linkedName }}}
-            {{ #isProvidedByExtension }}
-              {{ #enclosingExtension }}
-              <sup
-                  class="muted"
-                  title="Available on {{ extendedElement.nameWithGenericsPlain }}">(ext)</sup>
-              {{ /enclosingExtension }}
-            {{ /isProvidedByExtension }}
-          </li>
+          {{ >container_sidebar_item }}
         {{ /availableInstanceOperatorsSorted }}
       {{ /hasAvailableInstanceOperators }}
     {{ /isInterface }}
