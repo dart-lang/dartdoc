@@ -124,7 +124,7 @@ class Method extends ModelElement
       return null;
     }
     var parent = element.enclosingElement3 as InterfaceElement;
-    for (var t in parent.augmented.declaration.allSupertypes) {
+    for (var t in parent.allSupertypes) {
       Element? e = t.getMethod(element.name);
       if (e != null) {
         assert(
