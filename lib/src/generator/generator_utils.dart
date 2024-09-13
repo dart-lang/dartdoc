@@ -39,26 +39,45 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
 /// Passing `pretty: true` will use a [JsonEncoder] with a single-space indent.
 String generateSearchIndexJson(Iterable<Indexable> indexedElements,
     {required List<String> packageOrder, required bool pretty}) {
-  final indexItems = [
-    for (final item in indexedElements.sorted(_compareElementRepresentations))
-      {
-        'name': item.name,
-        'qualifiedName': item.canonicalQualifiedName,
-        'href': item.href,
-        'kind': item.kind.index,
-        // TODO(srawlins): Only include this for [Inheritable] items.
-        'overriddenDepth': item.overriddenDepth,
-        if (item is ModelElement)
-          'packageRank': _packageRank(packageOrder, item),
-        if (item is ModelElement) 'desc': _removeHtmlTags(item.oneLineDoc),
-        if (item case ModelElement(:var enclosingElement?))
-          'enclosedBy': {
-            'name': enclosingElement.name,
-            'kind': enclosingElement.kind.index,
-            'href': enclosingElement.href,
-          },
+  var indexItems = <Map<String, Object?>>[];
+
+  for (var element in indexedElements.sorted(_compareElementRepresentations)) {
+    assert(
+      element.href != null,
+      "element expected to have a non-null 'href', but was null: "
+      "'$element'",
+    );
+    var item = {
+      'name': element.name,
+      'qualifiedName': element.canonicalQualifiedName,
+      'href': element.href,
+      'kind': element.kind.index,
+      // TODO(srawlins): Only include this for [Inheritable] items.
+      'overriddenDepth': element.overriddenDepth,
+    };
+
+    if (element is ModelElement) {
+      item['packageRank'] = _packageRank(packageOrder, element);
+      item['desc'] = _removeHtmlTags(element.oneLineDoc);
+      var enclosingElement = element.enclosingElement is Library
+          ? element.canonicalLibrary
+          : element.enclosingElement;
+      if (enclosingElement != null) {
+        assert(
+          enclosingElement.href != null,
+          "'enclosedBy' element expected to have a non-null 'href', "
+          "but was null: '$element', enclosed by the "
+          "${enclosingElement.runtimeType} '$enclosingElement'",
+        );
+        item['enclosedBy'] = {
+          'name': enclosingElement.name,
+          'kind': enclosingElement.kind.index,
+          'href': enclosingElement.href,
+        };
       }
-  ];
+    }
+    indexItems.add(item);
+  }
 
   final encoder =
       pretty ? const JsonEncoder.withIndent(' ') : const JsonEncoder();
