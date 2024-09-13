@@ -1,3 +1,19 @@
+## 8.2.0
+
+* Include extension members on the extended type's page. Each extension
+  instance method, getter, setter, and operator that is applicable on a type or
+  one of a type's subtypes, is displayed on that type's page. For example, the
+  `Queue<E>` class implements the `Iterable<E>` class, so the Queue page shows
+  `elementAtOrNull` (a method provided by the `IterableExtensions<T>`
+  extension, which extends `Iterable<T>`), `nonNulls` (a getter provided by the
+  `NullableIterableExtensions<T extends Object>` extension, which extends
+  `Iterable<T?>`), and `wait` (a getter provided by the `FutureIterable<T>`
+  extension, which extends `Iterable<Future<T>>`). (#3863)
+* Require analyzer 6.9.0 APIs. (#3874)
+* Fix search which is not using canonical libraries as enclosing elements.
+  (#3877)
+* Deduplicate exported members in categories. (#3867)
+
 ## 8.1.0
 
 * Fix many library sidebars, and search. (#3865)
