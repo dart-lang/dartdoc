@@ -167,15 +167,17 @@ class Library extends ModelElement
           '"$_restoredUri" must not start with "file:"');
       // Strip the package prefix if the library is part of the default package
       // or if it is being documented remotely.
-      var packageToHide = package.documentedWhere == DocumentLocation.remote
+      var defaultPackage = package.documentedWhere == DocumentLocation.remote
           ? package.packageMeta
           : package.packageGraph.packageMeta;
-      var schemaToHide = 'package:$packageToHide/';
+      var packageNameToHide = defaultPackage.toString().toLowerCase();
+      var schemaToHide = 'package:$packageNameToHide/';
 
       nameFromPath = _restoredUri;
       if (nameFromPath.startsWith(schemaToHide)) {
         nameFromPath = nameFromPath.substring(schemaToHide.length);
       }
+      // Remove the trailing `.dart`.
       if (nameFromPath.endsWith('.dart')) {
         const dartExtensionLength = '.dart'.length;
         nameFromPath = nameFromPath.substring(
@@ -184,6 +186,7 @@ class Library extends ModelElement
     } else {
       nameFromPath = name;
     }
+    // Turn `package:foo/bar/baz` into `package-foo_bar_baz`.
     return nameFromPath.replaceAll(':', '-').replaceAll('/', '_');
   }();
 
