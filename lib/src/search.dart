@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:dartdoc/src/model/indexable.dart';
+import 'package:dartdoc/src/model/kind.dart';
 import 'package:meta/meta.dart';
 
 enum _MatchPosition {

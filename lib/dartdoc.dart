@@ -9,7 +9,7 @@ library;
 export 'package:dartdoc/src/dartdoc.dart';
 export 'package:dartdoc/src/dartdoc_options.dart';
 export 'package:dartdoc/src/generator/generator.dart';
-export 'package:dartdoc/src/model/indexable.dart' show Kind;
+export 'package:dartdoc/src/model/kind.dart';
 export 'package:dartdoc/src/model/package_builder.dart';
 export 'package:dartdoc/src/model/package_graph.dart';
 export 'package:dartdoc/src/package_config_provider.dart';

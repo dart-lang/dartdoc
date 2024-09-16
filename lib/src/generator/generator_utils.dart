@@ -6,9 +6,11 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/directives/categorization.dart';
-import 'package:dartdoc/src/model/indexable.dart';
+import 'package:dartdoc/src/model/documentable.dart';
+import 'package:dartdoc/src/model/inheritable.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
+import 'package:dartdoc/src/model/nameable.dart';
 
 String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   final indexItems = [
@@ -37,7 +39,7 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
 /// [indexedElements] and [packageOrder].
 ///
 /// Passing `pretty: true` will use a [JsonEncoder] with a single-space indent.
-String generateSearchIndexJson(Iterable<Indexable> indexedElements,
+String generateSearchIndexJson(Iterable<Documentable> indexedElements,
     {required List<String> packageOrder, required bool pretty}) {
   var indexItems = <Map<String, Object?>>[];
 
@@ -52,8 +54,7 @@ String generateSearchIndexJson(Iterable<Indexable> indexedElements,
       'qualifiedName': element.canonicalQualifiedName,
       'href': element.href,
       'kind': element.kind.index,
-      // TODO(srawlins): Only include this for [Inheritable] items.
-      'overriddenDepth': element.overriddenDepth,
+      if (element is Inheritable) 'overriddenDepth': element.overriddenDepth,
     };
 
     if (element is ModelElement) {
@@ -131,7 +132,7 @@ final _htmlTagPattern =
     RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
 
 // Compares two elements, first by fully qualified name, then by kind.
-int _compareElementRepresentations(Indexable a, Indexable b) {
+int _compareElementRepresentations(Documentable a, Documentable b) {
   final value =
       compareNatural(a.canonicalQualifiedName, b.canonicalQualifiedName);
   if (value == 0) {
@@ -140,7 +141,7 @@ int _compareElementRepresentations(Indexable a, Indexable b) {
   return value;
 }
 
-extension on Indexable {
+extension on Nameable {
   /// The fully qualified name of this element, but using the canonical library,
   /// if it has one.
   String get canonicalQualifiedName {

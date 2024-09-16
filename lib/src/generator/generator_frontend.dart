@@ -48,7 +48,7 @@ class GeneratorFrontEnd implements Generator {
 
   /// Traverses the [packageGraph] and generates documentation for all contained
   /// elements.
-  List<Indexable> _generateDocs(PackageGraph packageGraph) {
+  List<Documentable> _generateDocs(PackageGraph packageGraph) {
     runtimeStats.resetAccumulators({
       'writtenCategoryFileCount',
       'writtenClassFileCount',
@@ -69,7 +69,7 @@ class GeneratorFrontEnd implements Generator {
     _generatorBackend.generatePackage(
         packageGraph, packageGraph.defaultPackage);
 
-    var indexAccumulator = <Indexable>[];
+    var indexAccumulator = <Documentable>[];
     var multiplePackages = packageGraph.localPackages.length > 1;
 
     void generateConstants(Container container, Library library) {

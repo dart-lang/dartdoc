@@ -20,6 +20,7 @@ import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
+import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/prefix.dart';
 import 'package:dartdoc/src/model_utils.dart';
@@ -67,7 +68,6 @@ abstract class ModelElement
         Locatable,
         Nameable,
         SourceCode,
-        Indexable,
         FeatureSet,
         DocumentationComment
     implements Comparable<ModelElement>, Documentable {

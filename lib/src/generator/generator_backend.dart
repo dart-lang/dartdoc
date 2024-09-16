@@ -105,7 +105,7 @@ abstract class GeneratorBackend {
   }
 
   /// Emits a JSON catalog of [indexedElements] for use with a search index.
-  void generateSearchIndex(List<Indexable> indexedElements) {
+  void generateSearchIndex(List<Documentable> indexedElements) {
     var json = generator_util.generateSearchIndexJson(
       indexedElements,
       packageOrder: options.packageOrder,
