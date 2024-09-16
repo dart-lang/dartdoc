@@ -760,8 +760,8 @@ featured post's `title`.
 
 ### Rendering a partial
 
-Partials are allowed to reference themselves, so they must be implemented as new
-functions which can reference themselves. This template code:
+Partials are allowed to reference themselves, so they must be implemented as
+separate functions which can call themselves recursively. This template code:
 
 ```html
 {{ #posts }}{{ >post }}{{ /posts }}
@@ -803,6 +803,322 @@ separate parameter, so that they are easily accessed by name. `context1` is
 accessed in order to write the post's `title`, and `context0` is accessed in
 order to write the author's `name`.
 
-### High level design for generating renderers
+### Compiler for generating renderers
 
-TODO(srawlins): Write.
+The AOT compiler is a tool that builds render functions from Mustache templates.
+In order to understand the types of Mustache keys encounted in the templates,
+the compiler must also know the singular static context type that will be
+"rendered into" each template.
+
+The AOT compiler only needs to be executed by a Dartdoc developer, when a
+template changes, or when any one of the types that may be rendered into a
+template changes, or when the complier changes. The generated renderer functions
+are checked in as Dartdoc source code. In other words, the ahead-of-time
+compiled renderer functions only need to be compiled when making a change to
+Dartdoc. These renderer functions, on the other hand, need to run every single
+time Dartdoc runs, generating HTML documentation. Therefore we generally aim to
+remove complexity from the renderer functions, even at the cost of added
+complexity in the AOT compiler.
+
+#### Basic example
+
+As a basic example of how the compiler chooses what to write into a renderer
+function, see the code below. The User class is rendered into the `user.html`
+template, as specified in this `@Renderer` annotation:
+
+```dart
+@Renderer(#renderUser, Context<User>(), 'user')
+```
+
+```dart
+abstract class User {
+  String get name;
+  Post? get featuredPost;
+  List<Post> get posts;
+}
+```
+
+```html
+<h1>{{ name }}</h1>
+{{ #featuredPost }}{{ >post }}{{ /featuredPost }}
+```
+
+The AOT compiler takes the parsed Mustache template, which contains a rendered
+variable (`{{ name }}`) and a section (`{{ #featuredPost }}...`).
+
+The first step is to write the function name and parameters. The `@Renderer`
+annotation specifies that the public name for the renderer function is
+`renderUser`. As a top-level, public render function, there is only one context
+variable in the context stack, which is `User`. The only parameter therefore is
+`User context0`:
+
+```dart
+String renderUser(User context0) {
+  final buffer = StringBuffer();
+  // ...
+  return buffer.toString();
+}
+```
+
+The compiler looks up the `name` property on `User`, finds that it exists, and
+returns a `String`, which is valid for a rendered variable. When generating the
+renderer, the compiler can just write to the function's `buffer`.
+
+The compiler then looks up the `featuredPost` property on `User`, finds that it
+exists, and returns a nullable `Post`. This means the section is a "value"
+section; the compiler writes the renderer to only write to `buffer` if
+`context0.featuredPost` is non-`null`. If instead the compiler were to see that
+`featuredPost` were a `bool`-typed property, it would write the renderer to
+write the section content depending on whether the property is `true` or
+`false`. And finally if instead the compiler were to see that `featuredPost`
+were an `Iterable`-typed property, it would write the renderer to loop over the
+value of the property and write the section repeatedly.
+
+#### Partials
+
+Most of the complexity in the AOT compiler is found in the handling of partials.
+The compiler attempts to generate a minimal amount of code for the renderer
+functions.
+
+Each partial template is compiled into it's own (private) renderer function,
+complete with a name, a list of parameters, and a body. They must be very
+flexible in order to satisfy a variety of legal situations allowed by the
+Mustache template system:
+
+1. Just as with a top-level template, and as with a section, a partial has
+   access to the entire context stack.
+
+   As a quick example, if a reference to a partial is a point in a template with
+   3 context variables, then the partial must also have access to those 3
+   context variables; it will have 3 parameters (modulo the optimizations
+   below).
+
+2. A partial can reference itself. For this reason, partials are compiled into
+   their own named functions.
+
+3. A single partial can be referenced by multiple templates, and the context
+   stacks of these templates may be completely different from each other.
+
+   For example two templates may reference one partial, and one may have as the
+   top context variable a `String`, while the other may have as the top context
+   variable a `List<int>`. The partial may then contain a rendered variable for
+   a property named `length`; this is all legal. Therefore, at the outset, it
+   looks like each _reference_ to a partial, even the same partial, requires
+   generating a separate renderer function. In this example, one partial
+   renderer function will take a `String` parameter, and the other will take a
+   `List<int>` parameter.
+
+   (In practice, while a given partial template may be referenced by multiple
+   templates with different context stacks, the types of corresponding context
+   variables will typically have LUB types that are more narrow than `Object`
+   and that can be legally used as parameter types. This allows for
+   deduplication, and is described below.)
+
+4. A partial may be referenced multiple times from the same template. Again, the
+   points at which these references occur may have differing context stacks.
+   This is just another reason that each reference to a partial _may_ require
+   generating a separate renderer function.
+
+Because we may need to generate a partial function for each _reference_ to a
+partial template, they are uniquely named with their call stack. For example, if
+the `renderUser` function references the `_post` partial, then the generated
+renderer function for that partial is called `_renderUser_partial_post_0`. If it
+references that partial twice, the second rendered function is called
+`_renderUser_partial_post_1`. If one of these partials references the `_author`
+partial, the generated rendered function for that partial is called
+`_renderUser_partial_post_0_partial_author_0`. One can see how this can quickly
+get out-of-hand, and how this system can really benefit from some optimizations.
+
+#### High level code walkthrough
+
+The AOT compiler is found in `tool/mustachio/codegen_aot_compiler.dart`. The
+entrypoint into this code is the top-level `compileTemplatesToRenderers`
+function. This function takes a set of `RendererSpec`s (just the info derived
+from each `@Renderer` annotation) and returns a single String, the source text
+for a Dart library containing all of the compiled renderer functions.
+
+The `compileTemplatesToRenderers` function is fairly simple; it walks over the
+`RendererSpec` objects, creating an `_AotCompiler` object for each. The
+`_AotCompiler._readAndParse` function takes a context type, a renderer name, a
+path to a template, and some extra data, parses the template, and returns an
+`_AotCompiler` instance. The `compileTemplatesToRenderers` function then takes
+that compiler instance, compiles the template into a renderer function (a String
+of Dart source code), and also collects a mapping of partial renderer functions
+that were compiled in the process. When the compiler instance compiles its given
+template into a renderer, it recursvely creates a compiler instance for each
+referenced partial and compiles the reference partial into a renderer function
+(see `_BlockCompiler._compilePartial`).
+
+In this way, `compileTemplatesToRenderers` collects all of the compiler
+instances and the renderer function source code that has been compiled by each.
+Finally, it writes out all of the function source code to one giant
+StringBuffer; some import directives are prepended, and everything is ultimately
+written to a single file on disk.
+
+We track the mapping of each compiler to the source code it compiled, in order
+to perform some optimizations before the final list of renderer functions is
+written to the StringBuffer. These are detailed below.
+
+#### Used context stacks
+
+The first optimization in Mustachio's partial renderer function generation is to
+strip out unused context stacks.
+
+For example, take the following template and partial:
+
+```html
+<!-- home template -->
+{{ #loggedInUser }}
+  {{ #featuredPost }}
+    {{ #authors }}{{ >author }}{{ /authors }}
+  {{ /featuredPost }}
+{{ /loggedInUser }}
+
+<!-- _author partial -->
+{{ name }}
+```
+
+Let's say that some generic `HomePageData` object is rendered into this
+template; the `loggedInUser` property has a `User` type; `featuredPost` is a
+property on `User`, with a `Post` type; `authors` is a property on `Post` with a
+`List<User>`. The `_author` partial template can legally access any property on
+the context stack: `User`, `Post`, `User`, `HomePageData`. As per the rules of
+Mustache, a renderer must first search the top context type, `User`, for a
+property named `name`, and if that is not found, continue down the context
+stack.
+
+Without any further investigation, it looks like the renderer function for the
+`_author` partial will have 4 parameters, `User context0`, `Post context1`,
+`User context2`, and `HomePageData context3`. However, as we know the entire
+parsed contents of the partial, we can simplify the list of parameters down to
+the ones which are actually _used_.
+
+(The attentive reader will note that right off the bat, if `name` is not found
+on the first context variable, a `User`-typed variable, then it's not going to
+be found on the third context variable, also a `User`, so we can immediately
+strip out the 3rd parameter; this behavior comes out of the broader optimization
+as well.)
+
+In order to reduce the `_author` renderer function's parameters down to the ones
+which are used, we must walk the parsed partial and track the variables on the
+context stack which are used in order to access a variable or a section key. In
+this example where `name` is the only property accessed, and where `name` is a
+property on `User`, we can reduce the number of parameters from 4 down to 1.
+
+Note that the `_author` partial template may itself reference other templates.
+If it refers to an `_avatar` partial, and a `_badges` partial, then each of
+those partials _can also legally access_ any variable in the context stack. So
+when walking the parsed `_author` partial, tracking the used variables, we must
+take `_avatar` and `_badges` into account, walking those partials, etc.
+
+In practice this can immensely simplify the generated renderers as the vast
+majority of rendered variables and section keys are properties on the top-most
+context variable. This means reducing the number of parameters that each
+renderer function takes and reducing the number of arguments that each renderer
+function needs to pass to partial calls.
+
+In the `codegen_aot_compiler.dart` source, here are the steps that carry out
+this optimization:
+
+1. The `_AotCompiler._compileToRenderer` function creates a `_BlockCompiler` (a
+   class that compiles a single Mustache block into a String) with the current
+   context stack, in order to compile the Mustache block that is the top-level
+   unit of a template.
+2. The `_BlockCompiler` compiles the block of Mustache into a series of Dart
+   statements (as source code), and tracks the referenced context variables in a
+   set, `_BlockCompiler._usedContextTypes`.
+3. At this point we have the body of the renderer that we are creating, and its
+   name. We write the return type (`String`) and the nameo of the render
+   function, and then must write the list of parameters. Instead of writing the
+   list of _all_ of the context variables as parameters, we only write the
+   _used_ ones, collected up by the `_BlockCompiler` (and any nested
+   `_AotCompiler`s and `_BlockCompiler`s that were also created).
+4. (Sometimes type parameters must also be added to the render functions, and
+   sometime type arguments must also be added to the parameter types; this is
+   omitted here.)
+5. After writing the parameters, we can write the body, and we're done.
+
+Note that there is a shortcoming of this implementation in the names of the
+parameters of a partial renderer function. A given `_BlockCompiler` has a
+context stack and a template. The context stack is a list of "variable lookup"
+objects, which each describe a contect variable's type and name. So before the
+block compiler knows what the used context variables are, the names of all
+context variables is hard-coded. The block compiler then generates statements
+for the body of the function, using those variable names. Because of this
+implementation, some partial renderer functions are created with a seemingly
+arbitrary list of parameter names. For a given partial, maybe the 1st and 3rd
+parameters (`context0` and `context2`) in the context stack are unused, and so 
+the two parameters left that the function is written to accept are called
+`context1` and `context3`.
+
+#### Deduplicating partials
+
+The second optimization the AOT compiler makes is to deduplicate the partial
+renderer functions. Generating an entire set of partial functions for every call
+stack of each reference to each partial yields a lot of code. In most cases of
+real Mustache templates, simplification is possible.
+
+The idea is based on the Least Upper Bound (LUB) of Dart types. If we generate 3
+renderer functions for a partial template, that each have a context stack with 2
+context variables, we might be able to replace the 3 functions with a new
+function that uses slightly different context stack types. In particular, it is
+often the case that one template refers to a partial with type `A` as the
+topmost context type, and that another template refers to the same partial with
+type `B` as the topmost context type, and that `A` and `B` are closely related
+(for example they share the same base class, which is not `Object`, or one is a
+supertype of the other). So we can often get away with calculating the Least
+Upper Bound of pairwise items in each context stack, creating a new context
+stack. If the context stacks of our 3 renderer functions have types `T1, U1`,
+`T2, U2`, and `T3, U3`, then we can create a new context stack with types
+`LUB(T1, LUB(T2, T3)), LUB(U1, LUB(U2, U3))`. (Given an LUB function that can
+take arbitrarily many types, this can be written `LUB(T1, ..., Tn)` for each
+of `n` context types in the set of context stacks.)
+
+Care must be taken however, as using an LUB type may escape beyond the static
+type on which properties have been previously resolved. If the partial compiled
+into the 3 renderer functions above refers to a property `foo`, and the LUB of
+the individual types does not have any property `foo`, then the LUB type does
+not work, and cannot be used. In practice though, this strategy allows us to
+deduplicate many renderer functions for Dartdoc.
+
+In the `codegen_aot_compiler.dart` source, here are the steps that carry out
+this optimization:
+
+1. After gathering the list of all `_AotCompiler` instances that each compiled a
+   renderer function (as Dart source code), we enter `_deduplicateRenderers` to
+   deduplicate the list.
+2. This function first creates a new mapping that maps each partial's path to
+   the list of compilers that each compiled that partial to a renderer function,
+   and walks each entry in the map.
+   1. For each partial path and relevant list of compilers, we create a list of
+      the "used context stacks"; so the first item in this list is the used
+      context stack calculated by the first compiler, etc.
+   2. We then calculate the LUB of the types in each position in the list, with
+      the `contextStackLub` function. For example, if a list of used context
+      stacks has 3 context stacks (derived from 3 compilers), and each context
+      stack has 2 context variables, then the result is a context stack, again
+      with 2 context variables, such that the first context variable is the LUB
+      of the first variable in each of the 3 original context stacks, and the
+      second context variable is the LUB of the second variable in each of the 3
+      original context stacks. (If the context stacks in the list do not all
+      have exactly the same length, we say the "LUB context stack" is `null`,
+      and we cannot deduplicate the renderer functions.)
+   3. If the context stacks have some valid LUB context stack, then we may be
+      able to replace each renderer function that was compiled for this partial
+      with a single renderer function that uses the LUB context stack. We
+      proceed by creating a new `_AotCompiler` and a fresh, "deduplicated"
+      renderer name.
+   4. We try to compile the partial with the new deduplicated compiler. It is
+      possible that this fails: if the partial depended on properties that were
+      available on the individual context stacks, but are unavailable on the LUB
+      context stack, then compilation will fail. In this case, we can just keep
+      the individual renderer functions.
+   5. If the new deduplicated compiler successfully compiles a renderer
+      function, we move forward with it: for each replaced compiler, we replace
+      its renderer function with a "redirecting" renderer function, that simply
+      redirects to a call to the deduplicated renderer function.
+   6. In order to reduce the amount of generated code, we can also _remove_ any
+      partial renderer functions that were only referenced by _replaced_
+      partial renderer functions. This is calculated recursively.
+3. Finally, the new mapping of compilers to compiled renderer functions is
+   passed back to the `compileTemplatesToRenderers` to be written out.
