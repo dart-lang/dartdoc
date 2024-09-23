@@ -35,10 +35,9 @@ The two popular Mustache packages for Dart ([mustache][] and [mustache4dart][])
 each use [mirrors][], which is slow, and whose future is unknown. The
 [mustache_template][] package avoids mirrors by restricting context objects to
 just Maps and Lists of values. Neither of these existing solutions were optimal
-for Dartdoc. For a time, dartdoc used the mustache package. When dartdoc creates
-documentation for a package, the majority of the time is spent generating the
-HTML output from package metadata. Benchmarking shows that much time is spent
-using mirrors.
+for Dartdoc. For a time, dartdoc used the mustache package. At that time, the
+majority of dartdoc's execution time was spent generating the HTML output from
+package metadata. Benchmarking showed that much time was spent using mirrors.
 
 [Mustache templating]: https://mustache.github.io/
 [mustache]: https://pub.dev/packages/mustache
@@ -49,12 +48,8 @@ using mirrors.
 ## Motivation
 
 The primary motivation to design a new template rendering solution is to reduce
-the time to generate package documentation. In mid-2020, on a current MacBook
-Pro, it took 12 minutes to generate the Flutter documentation. A solution which
-uses static dispatch instead of mirrors's runtime reflection will be much
-faster. A prototype demonstrated that a new system which parses templates
-ahead-of-time against known context types could render the Flutter documentation
-in 3 minutes.
+the time to generate package documentation. A system that uses static dispatch
+in lieu of mirror-based dispatch is faster on the Dart VM.
 
 There are several secondary benefits:
 
@@ -647,18 +642,22 @@ keys at the time of code generation. For example, given the following template:
 
 ```html
 <h1>{{ name }}</h1>
-{{ #isFeatured }}<strong>Featured</strong>{{ /isFeatured }}
 <div class="posts">
 {{ #featuredPost }}<h2>{{ title }}</h2>{{ /featuredPost }}
-{{ #posts }}<h2>{{ title }}</h2>{{ /posts }}
+{{ #posts }}
+  {{ #isPublished }}
+    <h2>{{ title }}</h2>
+  {{ /isPublished }}
+{{ /posts }}
 </div>
 ```
 
-The code generator resolves `name` to a String getter on User, `posts` to a
-`List<Post>` getter on User, `isPublished` to a `bool` getter on `Post`, and
-`title` to a String getter on `Post`. It has all of the information it needs to
-write out the logic of the template as a simple state machine. This state
-machine is written out as the render function and helper functions for partials:
+The code generator resolves `name` to a String getter on User, `featuredPost` to
+a Post getter on User, `posts` to a `List<Post>` getter on User, `isPublished`
+to a `bool` getter on `Post`, and `title` to a String getter on `Post`. It has
+all of the information it needs to write out the logic of the template as a
+simple state machine. This state machine is written out as the render function
+and helper functions for partials:
 
 ```dart
 String renderUser(User context0) {
@@ -668,7 +667,7 @@ String renderUser(User context0) {
 }
 ```
 
-The `renderFoo` function takes a `Foo` object, the context object, as
+The `renderUser` function takes a `User` object, the context object, as
 `context0`. Since the context objects exist in a stack and can each be accessed,
 we must enumerate them. We write various text to the buffer, according to the
 template, and then return the rendered output.
@@ -693,7 +692,7 @@ that provide each getter.
   buffer.write(htmlEscape.convert(context0.name.toString()));
 ```
 
-This code calls the `name` getter on `conext0`, and then `toString()`. Since
+This code calls the `name` getter on `context0`, and then `toString()`. Since
 `{{ name }}` uses two brackets, the output must be HTML-escaped. If it were
 written `{{{ name }}}`, then the HTML-escaping call would not be made.
 
@@ -708,14 +707,14 @@ the renderer.
 `{{ #isFeatured }}<strong>Featured</strong>{{ /isFeatured }}` compiles to:
 
 ```dart
-  if (context0.b1 == true) {
+  if (context0.isFeatured) {
     buffer.write('''<strong>Featured</strong>''');
   }
 ```
 
-The text is written only if `b1` is `true` (not `false` or `null`). If the
-section were inverted (starting with `{{ ^isFeatured }}`), this would be a
-`!= true` check.
+The text is written only if `isFeatured` is `true`. If the section were
+inverted (starting with `{{ ^isFeatured }}`), then the condition would be
+`!context0.isFeatured`.
 
 #### Rendering a repeated section
 
