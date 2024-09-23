@@ -77,7 +77,7 @@ class C {}
     var classItem = jsonIndex.named('index_json.C');
 
     expect(classItem['kind'], equals(Kind.class_.index));
-    expect(classItem['overriddenDepth'], null);
+    expect(classItem['overriddenDepth'], isNull);
     expect(classItem['desc'], equals('A class.'));
     expect(
       classItem['enclosedBy'],
@@ -98,7 +98,7 @@ library;
     var libraryItem = jsonIndex.named('index_json');
 
     expect(libraryItem['kind'], equals(Kind.library.index));
-    expect(libraryItem['overriddenDepth'], null);
+    expect(libraryItem['overriddenDepth'], isNull);
     // TODO(srawlins): Should not be blank.
     expect(libraryItem['desc'], equals(''));
   }
