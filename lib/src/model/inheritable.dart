@@ -175,7 +175,10 @@ mixin Inheritable on ContainerMember {
     return isOverride;
   }();
 
-  @override
+  /// The depth of overrides at which this element lives.
+  ///
+  /// Just a count of how long the chain of this element's `overriddenElement`.
+  /// For use in ranking search results.
   int get overriddenDepth {
     var depth = 0;
     var e = this;

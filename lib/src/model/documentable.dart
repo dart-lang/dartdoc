@@ -5,6 +5,7 @@
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 import 'model.dart';
@@ -29,9 +30,10 @@ abstract class Documentable with Nameable {
 
   DartdocOptionContext get config;
 
-  String? get href;
-
+  /// A human-friendly name for the kind of element this is.
   Kind get kind;
+
+  String? get href;
 
   /// The full path of the sidebar for elements "above" this element.
   ///

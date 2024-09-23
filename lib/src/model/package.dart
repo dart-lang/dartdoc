@@ -6,6 +6,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
+import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';

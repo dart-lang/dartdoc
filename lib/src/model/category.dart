@@ -6,6 +6,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
+import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 
@@ -18,8 +19,7 @@ class Category
         Locatable,
         MarkdownFileDocumentation,
         LibraryContainer,
-        TopLevelContainer,
-        Indexable
+        TopLevelContainer
     implements Documentable {
   /// The package in which this category is contained.
   ///

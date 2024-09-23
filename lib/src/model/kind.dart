@@ -1,8 +1,6 @@
-// Copyright (c) 2019, the Dart project authors. Please see the AUTHORS file
+// Copyright (c) 2024, the Dart project authors. Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
-
-import 'package:dartdoc/src/model/model.dart';
 
 enum Kind {
   accessor,
@@ -81,13 +79,4 @@ enum Kind {
         'type parameter' => typeParameter,
         _ => throw ArgumentError('Unknown kind "$value"'),
       };
-}
-
-/// Something able to be indexed.
-mixin Indexable implements Nameable {
-  String? get href;
-
-  Kind get kind;
-
-  int? get overriddenDepth => 0;
 }

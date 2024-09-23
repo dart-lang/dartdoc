@@ -9,7 +9,7 @@ final RegExp _categoryRegExp =
     RegExp(r'[ ]*{@(category|subCategory) (.+?)}[ ]*\n?', multiLine: true);
 
 /// Mixin parsing the `@category` directive for ModelElements.
-mixin Categorization on DocumentationComment implements Indexable {
+mixin Categorization on DocumentationComment {
   @override
   String buildDocumentationAddition(String rawDocs) =>
       _stripAndSetDartdocCategories(super.buildDocumentationAddition(rawDocs));

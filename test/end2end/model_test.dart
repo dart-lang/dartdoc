@@ -13,6 +13,7 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/attribute.dart';
+import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_config_provider.dart';

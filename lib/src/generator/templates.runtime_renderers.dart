@@ -841,7 +841,6 @@ class _Renderer_Category extends RendererBase<Category> {
                 ..._Renderer_MarkdownFileDocumentation.propertyMap<CT_>(),
                 ..._Renderer_LibraryContainer.propertyMap<CT_>(),
                 ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
-                ..._Renderer_Indexable.propertyMap<CT_>(),
                 'aboveSidebarPath': Property(
                   getValue: (CT_ c) => c.aboveSidebarPath,
                   renderVariable:
@@ -6888,73 +6887,6 @@ class _Renderer_HasNoPage extends RendererBase<HasNoPage> {
   }
 }
 
-class _Renderer_Indexable extends RendererBase<Indexable> {
-  static final Map<Type, Object> _propertyMapCache = {};
-  static Map<String, Property<CT_>> propertyMap<CT_ extends Indexable>() =>
-      _propertyMapCache.putIfAbsent(
-          CT_,
-          () => {
-                'href': Property(
-                  getValue: (CT_ c) => c.href,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => c.href == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.href!, ast, r.template, sink, parent: r);
-                  },
-                ),
-                'kind': Property(
-                  getValue: (CT_ c) => c.kind,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'Kind'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.kind, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Kind']!);
-                  },
-                ),
-                'overriddenDepth': Property(
-                  getValue: (CT_ c) => c.overriddenDepth,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'int'),
-                  isNullValue: (CT_ c) => c.overriddenDepth == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.overriddenDepth, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['int']!);
-                  },
-                ),
-              }) as Map<String, Property<CT_>>;
-
-  _Renderer_Indexable(Indexable context, RendererBase<Object>? parent,
-      Template template, StringSink sink)
-      : super(context, parent, template, sink);
-
-  @override
-  Property<Indexable>? getProperty(String key) {
-    if (propertyMap<Indexable>().containsKey(key)) {
-      return propertyMap<Indexable>()[key];
-    } else {
-      return null;
-    }
-  }
-}
-
 class _Renderer_Inheritable extends RendererBase<Inheritable> {
   static final Map<Type, Object> _propertyMapCache = {};
   static Map<String, Property<CT_>> propertyMap<CT_ extends Inheritable>() =>
@@ -10072,7 +10004,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                 ..._Renderer_Locatable.propertyMap<CT_>(),
                 ..._Renderer_Nameable.propertyMap<CT_>(),
                 ..._Renderer_SourceCode.propertyMap<CT_>(),
-                ..._Renderer_Indexable.propertyMap<CT_>(),
                 ..._Renderer_FeatureSet.propertyMap<CT_>(),
                 ..._Renderer_DocumentationComment.propertyMap<CT_>(),
                 'annotations': Property(
@@ -12313,7 +12244,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12551,13 +12482,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();

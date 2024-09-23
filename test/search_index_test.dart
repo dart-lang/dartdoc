@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:dartdoc/src/generator/generator_utils.dart';
+import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:test/test.dart';
@@ -76,7 +77,7 @@ class C {}
     var classItem = jsonIndex.named('index_json.C');
 
     expect(classItem['kind'], equals(Kind.class_.index));
-    expect(classItem['overriddenDepth'], equals(0));
+    expect(classItem['overriddenDepth'], isNull);
     expect(classItem['desc'], equals('A class.'));
     expect(
       classItem['enclosedBy'],
@@ -97,7 +98,7 @@ library;
     var libraryItem = jsonIndex.named('index_json');
 
     expect(libraryItem['kind'], equals(Kind.library.index));
-    expect(libraryItem['overriddenDepth'], equals(0));
+    expect(libraryItem['overriddenDepth'], isNull);
     // TODO(srawlins): Should not be blank.
     expect(libraryItem['desc'], equals(''));
   }
