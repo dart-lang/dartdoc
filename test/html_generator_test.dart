@@ -22,7 +22,9 @@ import 'package:test/test.dart';
 import 'src/utils.dart' as utils;
 
 void main() {
-  group('HTML generator tests', () {
+  group('HTML generator tests', onPlatform: {
+    'windows': Skip('Tests do not work on Windows after NNBD conversion')
+  }, () {
     late MemoryResourceProvider resourceProvider;
     late path.Context pathContext;
 
@@ -86,7 +88,9 @@ void main() {
       }
     });
 
-    test('libraries with no duplicates are not warned about', () async {
+    test('libraries with no duplicates are not warned about',
+        onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')},
+        () async {
       getConvertedFile('$projectPath/lib/a.dart')
           .writeAsStringSync('library a;');
       getConvertedFile('$projectPath/lib/b.dart')
@@ -96,9 +100,11 @@ void main() {
       await generator.generate(packageGraph);
 
       expect(packageGraph.packageWarningCounter.errorCount, 0);
-    }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
+    });
 
-    test('libraries with duplicate names are warned about', () async {
+    test('libraries with duplicate names are warned about',
+        onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')},
+        () async {
       getConvertedFile('$projectPath/lib/a.dart')
           .writeAsStringSync('library a;');
       getConvertedFile('$projectPath/lib/b.dart')
@@ -112,9 +118,7 @@ void main() {
           packageGraph.localPublicLibraries,
           anyElement((Library l) => packageGraph.packageWarningCounter
               .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
-    }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
-  }, onPlatform: {
-    'windows': Skip('Tests do not work on Windows after NNBD conversion')
+    });
   });
 }
 
