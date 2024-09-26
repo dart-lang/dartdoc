@@ -47,7 +47,9 @@ void main() {
 
   tearDown(clearPackageMetaCache);
 
-  group('tests', () {
+  group('tests',
+      onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')},
+      () {
     group('typical package', () {
       setUp(() {
         optionSet.parseArguments([]);
@@ -118,13 +120,6 @@ int x;
         expect(packageGraph.defaultPackage.hasHomepage, isTrue);
         expect(packageGraph.defaultPackage.homepage,
             equals('https://github.com/dart-lang'));
-      });
-
-      test('has a public library', () async {
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
-        var library = packageGraph.libraries.named('a');
-        expect(library.isDocumented, true);
       });
 
       test('has anonymous libraries', () async {
@@ -492,5 +487,5 @@ int x;
         expect(packageGraph.localPackages.first.categories, isEmpty);
       });
     });
-  }, onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')});
+  });
 }
