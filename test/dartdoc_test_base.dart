@@ -43,7 +43,7 @@ abstract class DartdocTestBase {
 
   String get sdkConstraint => '>=3.6.0 <4.0.0';
 
-  List<String> get experiments => ['wildcard-variables'];
+  List<String> get experiments => ['enhanced-parts', 'wildcard-variables'];
 
   bool get skipUnreachableSdkLibraries => true;
 

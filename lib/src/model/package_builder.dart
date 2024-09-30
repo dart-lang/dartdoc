@@ -283,6 +283,9 @@ class PubPackageBuilder implements PackageBuilder {
           continue;
         }
         newFiles.addFilesReferencedBy(resolvedLibrary.element);
+        for (var unit in resolvedLibrary.units) {
+          newFiles.addFilesReferencedBy(unit.declaredElement);
+        }
         if (processedLibraries.contains(resolvedLibrary.element)) {
           continue;
         }
@@ -548,24 +551,37 @@ class DartDocResolvedLibrary {
 extension on Set<String> {
   /// Adds [element]'s path and all of its part files' paths to `this`, and
   /// recursively adds the paths of all imported and exported libraries.
-  void addFilesReferencedBy(LibraryOrAugmentationElement? element) {
+  ///
+  /// [element] must be a [LibraryElement] or [CompilationUnitElement].
+  void addFilesReferencedBy(Element? element) {
     if (element == null) return;
 
     var path = element.source?.fullName;
     if (path == null) return;
 
     if (add(path)) {
-      for (var import in element.libraryImports) {
+      var libraryImports = switch (element) {
+        LibraryElement(:var libraryImports) ||
+        CompilationUnitElement(:var libraryImports) =>
+          libraryImports,
+        _ => const <LibraryImportElement>[],
+      };
+      for (var import in libraryImports) {
         addFilesReferencedBy(import.importedLibrary);
       }
-      for (var export in element.libraryExports) {
+
+      var libraryExports = switch (element) {
+        LibraryElement(:var libraryExports) ||
+        CompilationUnitElement(:var libraryExports) =>
+          libraryExports,
+        _ => const <LibraryExportElement>[],
+      };
+      for (var export in libraryExports) {
         addFilesReferencedBy(export.exportedLibrary);
       }
       if (element is LibraryElement) {
-        for (var part in element.parts
-            .map((e) => e.uri)
-            .whereType<DirectiveUriWithUnit>()) {
-          add(part.source.fullName);
+        for (var unit in element.units) {
+          addFilesReferencedBy(unit);
         }
       }
     }

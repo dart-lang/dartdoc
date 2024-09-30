@@ -554,7 +554,12 @@ class PackageGraph with CommentReferable, Nameable {
     alreadyTagged.add(key);
     // Mark that `publicLibrary` exports `libraryElement`.
     _libraryExports.putIfAbsent(libraryElement, () => {}).add(publicLibrary);
-    for (var exportedElement in libraryElement.libraryExports) {
+
+    var exported = [
+      ...libraryElement.libraryExports,
+      for (var unit in libraryElement.units) ...unit.libraryExports,
+    ];
+    for (var exportedElement in exported) {
       var exportedLibrary = exportedElement.exportedLibrary;
       if (exportedLibrary != null) {
         // Follow the exports down; as `publicLibrary` exports `libraryElement`,
