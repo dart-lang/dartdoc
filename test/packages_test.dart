@@ -5,16 +5,26 @@
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/model/class.dart';
 import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:test/test.dart';
+import 'package:test_reflective_loader/test_reflective_loader.dart';
 
+import 'dartdoc_test_base.dart';
+import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart' as utils;
 
 void main() {
+  defineReflectiveSuite(() {
+    defineReflectiveTests(PackagesTest);
+  });
+
+  // TODO(srawlins): Migrate to test_reflective_loader tests.
+
   late MemoryResourceProvider resourceProvider;
   late PackageMetaProvider packageMetaProvider;
   late FakePackageConfigProvider packageConfigProvider;
@@ -103,6 +113,8 @@ int x;
             projectPath, packageMetaProvider, packageConfigProvider);
 
         expect(packageGraph.localPublicLibraries, hasLength(1));
+        var library = packageGraph.libraries.named('a');
+        expect(library.isDocumented, true);
       });
 
       test('has private libraries', () async {
@@ -488,4 +500,89 @@ int x;
       });
     });
   });
+}
+
+@reflectiveTest
+class PackagesTest extends DartdocTestBase {
+  @override
+  String get libraryName => 'lib';
+
+  void test_exportedElements() async {
+    var graph = await bootPackageFromFiles(
+      [
+        d.dir('lib', [
+          d.file('lib.dart', "export 'src/impl.dart';"),
+          d.dir('src', [
+            d.file('impl.dart', 'class C {}'),
+          ]),
+        ]),
+      ],
+    );
+    var library = graph.libraries.named('lib');
+    expect(library.classes.single.name, 'C');
+  }
+
+  void test_exportedElements_indirectlyExported() async {
+    var graph = await bootPackageFromFiles(
+      [
+        d.dir('lib', [
+          d.file('lib.dart', "export 'src/impl.dart';"),
+          d.dir('src', [
+            d.file('impl.dart', "export 'impl2.dart';"),
+            d.file('impl2.dart', 'class C {}'),
+          ]),
+        ]),
+      ],
+    );
+    var library = graph.libraries.named('lib');
+    expect(library.classes.single.name, 'C');
+  }
+
+  void test_exportedElements_fromPart() async {
+    var graph = await bootPackageFromFiles(
+      [
+        d.dir('lib', [
+          d.file('lib.dart', "part 'part.dart';"),
+          d.file('part.dart', '''
+part of 'lib.dart';
+export 'src/impl.dart';
+'''),
+          d.dir('src', [
+            d.file('impl.dart', 'class C {}'),
+          ]),
+        ]),
+      ],
+    );
+    var library = graph.libraries.named('lib');
+    expect(library.qualifiedName, 'lib');
+    expect(library.classes, isNotEmpty);
+    expect(library.classes.single,
+        isA<Class>().having((c) => c.name, 'name', 'C'));
+  }
+
+  void test_exportedElements_fromPartOfPart() async {
+    var graph = await bootPackageFromFiles(
+      [
+        d.dir('lib', [
+          d.file('lib.dart', "part 'part1.dart';"),
+          d.file('part1.dart', '''
+part of 'lib.dart';
+part 'part2.dart';
+'''),
+          d.file('part2.dart', '''
+part of 'part1.dart';
+export 'src/impl.dart';
+'''),
+          d.dir('src', [
+            d.file('impl.dart', 'class C {}'),
+          ]),
+        ]),
+      ],
+    );
+    var library = graph.libraries.named('lib');
+    expect(library.qualifiedName, 'lib');
+    expect(library.classes, isNotEmpty);
+    expect(library.classes.single,
+        isA<Class>().having((c) => c.name, 'name', 'C'));
+  }
 }
