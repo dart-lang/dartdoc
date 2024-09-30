@@ -559,4 +559,30 @@ export 'src/impl.dart';
     expect(library.classes.single,
         isA<Class>().having((c) => c.name, 'name', 'C'));
   }
+
+  void test_exportedElements_fromPartOfPart() async {
+    var graph = await bootPackageFromFiles(
+      [
+        d.dir('lib', [
+          d.file('lib.dart', "part 'part1.dart';"),
+          d.file('part1.dart', '''
+part of 'lib.dart';
+part 'part2.dart';
+'''),
+          d.file('part2.dart', '''
+part of 'part1.dart';
+export 'src/impl.dart';
+'''),
+          d.dir('src', [
+            d.file('impl.dart', 'class C {}'),
+          ]),
+        ]),
+      ],
+    );
+    var library = graph.libraries.named('lib');
+    expect(library.qualifiedName, 'lib');
+    expect(library.classes, isNotEmpty);
+    expect(library.classes.single,
+        isA<Class>().having((c) => c.name, 'name', 'C'));
+  }
 }
