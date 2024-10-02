@@ -834,6 +834,15 @@ Rebuild them with "dart tool/task.dart build" and check the results in.
         'The web frontend (web/docs.dart) needs to be recompiled; rebuild it '
         'with "dart tool/task.dart build web".');
   }
+
+  // Reset some files for `try-publish` step. This check looks for changes in
+  // the current git checkout: https://github.com/dart-lang/pub/pull/4373.
+  Process.runSync('git', [
+    'checkout',
+    '--',
+    'lib/resources/docs.dart.js',
+    'lib/resources/docs.dart.js.map',
+  ]);
 }
 
 /// Whether the analyzer in use (as found in `pubspec.lock`) is the target
