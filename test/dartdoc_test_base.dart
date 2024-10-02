@@ -43,6 +43,11 @@ abstract class DartdocTestBase {
 
   String get sdkConstraint => '>=3.7.0 <4.0.0';
 
+  /// A mapping of pub dependency names to the paths.
+  ///
+  /// These are written out to a pubspec file using `path` keys.
+  Map<String, String> get pubDependencyPaths => const {};
+
   List<String> get experiments => ['enhanced-parts', 'wildcard-variables'];
 
   bool get skipUnreachableSdkLibraries => true;
@@ -61,7 +66,10 @@ abstract class DartdocTestBase {
   }
 
   Future<void> _setUpPackage() async {
-    var pubspec = d.buildPubspecText(sdkConstraint: sdkConstraint);
+    var pubspec = d.buildPubspecText(
+      sdkConstraint: sdkConstraint,
+      dependencies: pubDependencyPaths,
+    );
     String? analysisOptions;
     if (experiments.isNotEmpty) {
       analysisOptions = '''

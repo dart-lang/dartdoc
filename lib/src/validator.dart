@@ -26,7 +26,11 @@ class Validator {
 
   final Map<String, Set<ModelElement>> _hrefs;
 
+  /// The set of files that have already been visited.
   final Set<String> _visited = {};
+
+  /// The set of files that simply redirect to a different file.
+  final Set<String> _redirects = {};
 
   Validator(this._packageGraph, this._config, String origin, this._writtenFiles,
       this._onCheckProgress)
@@ -60,9 +64,11 @@ class Validator {
       _visited.remove(fullPath);
       return;
     }
+    var _PageData(:links, :baseHref, :isRedirect) = pageLinks;
     _visited.add(fullPath);
-    final links = pageLinks.links;
-    final baseHref = pageLinks.baseHref;
+    if (isRedirect) {
+      _redirects.add(fullPath);
+    }
 
     // Prevent extremely large stacks by storing the paths we are using
     // here instead -- occasionally, very large jobs have overflowed
@@ -75,10 +81,8 @@ class Validator {
     for (final href in links) {
       final uri = Uri.tryParse(href);
       if (uri == null || !uri.hasAuthority && !uri.hasFragment) {
-        var linkPath = '$pathDirectory/$href';
-
-        linkPath = path.normalize(linkPath);
-        final newFullPath = path.join(_origin, linkPath);
+        var linkPath = path.normalize(path.url.join(pathDirectory, href));
+        var newFullPath = path.join(_origin, linkPath);
         if (!_visited.contains(newFullPath)) {
           toVisit.add((linkPath, newFullPath));
           _visited.add(newFullPath);
@@ -156,16 +160,20 @@ class Validator {
     found.add(indexPath);
     for (var entry in jsonData.cast<Map<String, dynamic>>()) {
       if (entry.containsKey('href')) {
-        final entryPath = path
-            .joinAll([_origin, ...path.posix.split(entry['href'] as String)]);
-        if (!_visited.contains(entryPath)) {
-          _warn(PackageWarning.brokenLink, entryPath, _origin,
+        var href =
+            path.joinAll([_origin, ...path.url.split(entry['href'] as String)]);
+        if (path.extension(href).isEmpty) {
+          // An aliased link to an `index.html` file.
+          href = path.join(href, 'index.html');
+        }
+        if (!_visited.contains(href)) {
+          _warn(PackageWarning.brokenLink, href, _origin,
               referredFrom: fullPath);
         }
-        found.add(entryPath);
+        found.add(href);
       }
     }
-    final missingFromSearch = _visited.difference(found);
+    final missingFromSearch = _visited.difference(_redirects).difference(found);
     for (final missingFile in missingFromSearch) {
       _warn(PackageWarning.missingFromSearchIndex, missingFile, _origin,
           referredFrom: fullPath);
@@ -177,7 +185,7 @@ class Validator {
   ///
   /// This is extracted to save memory during the check; be careful not to hang
   /// on to anything referencing the full file and doc tree.
-  _PageLinks? _getLinksAndBaseHref(String fullPath) {
+  _PageData? _getLinksAndBaseHref(String fullPath) {
     final file = _config.resourceProvider.getFile(fullPath);
     if (!file.exists) {
       return null;
@@ -196,15 +204,29 @@ class Validator {
     final stringLinks = links
         .map((link) => link.attributes['href'])
         .nonNulls
-        .where((href) =>
-            href.isNotEmpty &&
-            !href.startsWith('https:') &&
-            !href.startsWith('http:') &&
-            !href.startsWith('mailto:') &&
-            !href.startsWith('ftp:'))
+        .where((uri) =>
+            uri.isNotEmpty &&
+            !uri.startsWith('https:') &&
+            !uri.startsWith('http:') &&
+            !uri.startsWith('mailto:') &&
+            !uri.startsWith('ftp:'))
+        .map((uri) =>
+            // An aliased link to an `index.html` file.
+            path.extension(uri).isEmpty
+                ? path.url.join(uri, 'index.html')
+                : uri)
         .toSet();
+    var refreshTag = doc
+        .querySelectorAll('meta')
+        .firstWhereOrNull((e) => e.attributes['http-equiv'] == 'refresh');
+    if (refreshTag != null) {
+      var refreshUrl = refreshTag.attributes['url'];
+      if (refreshUrl != null) {
+        stringLinks.add(refreshUrl);
+      }
+    }
 
-    return _PageLinks(stringLinks, baseHref);
+    return _PageData(stringLinks, baseHref, refreshTag != null);
   }
 
   /// Warns on erroneous file paths.
@@ -247,10 +269,11 @@ class Validator {
   }
 }
 
-/// Stores all links found in a page, and the base href.
-class _PageLinks {
+/// Various data found in a given generate page
+class _PageData {
   final Set<String> links;
   final String? baseHref;
+  final bool isRedirect;
 
-  const _PageLinks(this.links, this.baseHref);
+  const _PageData(this.links, this.baseHref, this.isRedirect);
 }

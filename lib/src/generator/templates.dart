@@ -22,6 +22,8 @@
 @Renderer(#renderFunction, Context<FunctionTemplateData>(), 'function')
 @Renderer(#renderIndex, Context<PackageTemplateData>(), 'index')
 @Renderer(#renderLibrary, Context<LibraryTemplateData>(), 'library')
+@Renderer(
+    #renderLibraryRedirect, Context<LibraryTemplateData>(), 'library_redirect')
 @Renderer(#renderMethod, Context<MethodTemplateData>(), 'method')
 @Renderer(#renderMixin, Context<MixinTemplateData>(), 'mixin')
 @Renderer(#renderProperty, Context<PropertyTemplateData>(), 'property')
@@ -99,6 +101,7 @@ abstract class Templates {
   String renderFunction(FunctionTemplateData context);
   String renderIndex(PackageTemplateData context);
   String renderLibrary(LibraryTemplateData context);
+  String renderLibraryRedirect(LibraryTemplateData context);
   String renderMethod(MethodTemplateData context);
   String renderMixin(MixinTemplateData context);
   String renderProperty(PropertyTemplateData context);
@@ -173,6 +176,10 @@ class HtmlAotTemplates implements Templates {
   @override
   String renderLibrary(LibraryTemplateData context) =>
       aot_renderers_for_html.renderLibrary(context);
+
+  @override
+  String renderLibraryRedirect(LibraryTemplateData context) =>
+      aot_renderers_for_html.renderLibraryRedirect(context);
 
   @override
   String renderMethod(MethodTemplateData context) =>
@@ -250,6 +257,10 @@ class RuntimeTemplates implements Templates {
   @override
   String renderLibrary(LibraryTemplateData context) =>
       runtime_renderers.renderLibrary(context, _libraryTemplate);
+
+  @override
+  String renderLibraryRedirect(LibraryTemplateData context) =>
+      runtime_renderers.renderLibraryRedirect(context, _libraryTemplate);
 
   @override
   String renderMethod(MethodTemplateData context) =>

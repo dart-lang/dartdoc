@@ -1227,7 +1227,7 @@ void main() async {
         expect(
           aFunctionUsingRenamedLib.documentationAsHtml,
           contains(
-              'Link to library: <a href="${htmlBasePlaceholder}mylibpub/mylibpub-library.html">renamedLib</a>'),
+              'Link to library: <a href="${htmlBasePlaceholder}mylibpub">renamedLib</a>'),
         );
         expect(
           aFunctionUsingRenamedLib.documentationAsHtml,
