@@ -5,11 +5,15 @@
 // See the Mustachio README at tool/mustachio/README.md for high-level
 // documentation.
 
+/// @docImport 'package:source_span/source_span.dart';
+library;
+
 import 'dart:collection';
 import 'dart:convert' show htmlEscape;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:meta/meta.dart';
+
 import 'parser.dart';
 
 // TODO(devoncarew): See is we can make this synchronous.
@@ -119,7 +123,7 @@ class Template {
                   partialTemplates: {...partialTemplates});
               partialTemplates[partialFile] = partialTemplate;
             } on FileSystemException catch (e) {
-              throw MustachioResolutionError(span.message(
+              throw MustachioResolutionException(span.message(
                   'FileSystemException (${e.message}) when reading partial:'));
             }
           }
@@ -188,27 +192,26 @@ abstract class RendererBase<T extends Object?> {
       if (property != null) {
         try {
           return property.renderVariable(context, property, remainingNames);
-          // ignore: avoid_catching_errors
-        } on PartialMustachioResolutionError catch (e) {
-          // The error thrown by [Property.renderVariable] does not have all of
-          // the names required for a decent error. We throw a new error here.
-          throw MustachioResolutionError(node.keySpan.message(
+        } on PartialMustachioResolutionException catch (e) {
+          // The exception thrown by [Property.renderVariable] does not have all
+          // of the names required for a decent error. We throw a new error
+          // here.
+          throw MustachioResolutionException(node.keySpan.message(
               "Failed to resolve '${e.name}' on ${e.contextType} while "
               'resolving $remainingNames as a property chain on any types in '
               'the context chain: $contextChainString, after first resolving '
               "'$firstName' to a property on $T"));
         }
       }
-      // ignore: avoid_catching_errors
-    } on _MustachioResolutionErrorWithoutSpan catch (e) {
-      throw MustachioResolutionError(node.keySpan.message(e.message));
+    } on _MustachioResolutionExceptionWithoutSpan catch (e) {
+      throw MustachioResolutionException(node.keySpan.message(e.message));
     }
 
     final parent = this.parent;
     if (parent != null) {
       return parent.getFields(node);
     } else {
-      throw MustachioResolutionError(node.keySpan.message(
+      throw MustachioResolutionException(node.keySpan.message(
           "Failed to resolve '${names.first}' as a property on any types in "
           'the context chain: $contextChainString'));
     }
@@ -241,7 +244,7 @@ abstract class RendererBase<T extends Object?> {
     if (property == null) {
       final parent = this.parent;
       if (parent == null) {
-        throw MustachioResolutionError(node.keySpan.message(
+        throw MustachioResolutionException(node.keySpan.message(
             "Failed to resolve '$key' as a property on any types in the "
             'current context'));
       } else {
@@ -312,7 +315,7 @@ class SimpleRenderer extends RendererBase<Object?> {
   @override
   Property<Object>? getProperty(String key) {
     if (_invisibleGetters.contains(key)) {
-      throw MustachioResolutionError(_failedKeyVisibilityMessage(key));
+      throw MustachioResolutionException(_failedKeyVisibilityMessage(key));
     } else {
       return null;
     }
@@ -325,7 +328,8 @@ class SimpleRenderer extends RendererBase<Object?> {
     if (names.length == 1 && firstName == '.') {
       return context.toString();
     } else if (_invisibleGetters.contains(firstName)) {
-      throw MustachioResolutionError(_failedKeyVisibilityMessage(firstName));
+      throw MustachioResolutionException(
+          _failedKeyVisibilityMessage(firstName));
     } else if (parent != null) {
       return parent!.getFields(node);
     } else {
@@ -380,7 +384,7 @@ class Property<T extends Object?> {
     if (remainingNames.isEmpty) {
       return getValue(c).toString();
     } else {
-      throw MustachioResolutionError(
+      throw MustachioResolutionException(
           _simpleResolveErrorMessage(remainingNames, typeString));
     }
   }
@@ -391,35 +395,35 @@ class Property<T extends Object?> {
       "annotation's 'visibleTypes' list";
 }
 
-/// An error indicating that a renderer failed to resolve a key.
-class MustachioResolutionError extends Error {
+/// An exception indicating that a renderer failed to resolve a key.
+class MustachioResolutionException implements Exception {
   final String message;
 
-  MustachioResolutionError(this.message);
+  MustachioResolutionException(this.message);
 
   @override
-  String toString() => 'MustachioResolutionError: $message';
+  String toString() => 'MustachioResolutionException: $message';
 }
 
-/// An error indicating that a renderer failed to resolve a follow-on name in a
-/// multi-name key.
-class PartialMustachioResolutionError extends Error {
+/// An exception indicating that a renderer failed to resolve a follow-on name
+/// in a multi-name key.
+class PartialMustachioResolutionException implements Exception {
   final String name;
 
   final Type contextType;
 
-  PartialMustachioResolutionError(this.name, this.contextType);
+  PartialMustachioResolutionException(this.name, this.contextType);
 }
 
-/// A Mustachio resolution error which is thrown in a position where the AST
-/// node is not known.
+/// A Mustachio resolution exception which is thrown in a position where the
+/// AST node is not known.
 ///
-/// This error should be caught and "re-thrown" as a [MustachioResolutionError]
-/// with a message derived from a [SourceSpan].
-class _MustachioResolutionErrorWithoutSpan extends Error {
+/// This exception should be caught and "re-thrown" as a
+/// [MustachioResolutionException] with a message derived from a [SourceSpan].
+class _MustachioResolutionExceptionWithoutSpan implements Exception {
   final String message;
 
-  _MustachioResolutionErrorWithoutSpan(this.message);
+  _MustachioResolutionExceptionWithoutSpan(this.message);
 }
 
 extension MapExtensions<T> on Map<String, Property<T>> {
@@ -427,7 +431,7 @@ extension MapExtensions<T> on Map<String, Property<T>> {
     if (containsKey(name)) {
       return this[name]!;
     } else {
-      throw PartialMustachioResolutionError(name, T);
+      throw PartialMustachioResolutionException(name, T);
     }
   }
 }

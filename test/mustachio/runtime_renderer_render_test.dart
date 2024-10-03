@@ -478,7 +478,7 @@ World
     var foo = Foo();
     expect(
         () => renderFoo(foo, fooTemplate),
-        throwsA(const TypeMatcher<MustachioResolutionError>()
+        throwsA(const TypeMatcher<MustachioResolutionException>()
             .having((e) => e.message, 'message', contains('''
 line 1, column 8 of ${fooTemplateFile.path}: Failed to resolve 's2' as a property on any types in the context chain: Foo
   ╷
@@ -494,7 +494,7 @@ line 1, column 8 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
     var foo = Foo();
     expect(
         () => renderFoo(foo, fooTemplate),
-        throwsA(const TypeMatcher<MustachioResolutionError>()
+        throwsA(const TypeMatcher<MustachioResolutionException>()
             .having((e) => e.message, 'message', contains('''
 line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a property on any types in the current context
   ╷
@@ -511,7 +511,7 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
     var bar = Bar()..foo = Foo();
     expect(
         () => renderBar(bar, barTemplate),
-        throwsA(const TypeMatcher<MustachioResolutionError>().having(
+        throwsA(const TypeMatcher<MustachioResolutionException>().having(
             (e) => e.message,
             'message',
             contains("Failed to resolve 'x' on Foo while resolving [x] as a "
@@ -527,7 +527,7 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
     var bar = Bar()..foo = Foo();
     expect(
         () => renderBar(bar, barTemplate),
-        throwsA(const TypeMatcher<MustachioResolutionError>().having(
+        throwsA(const TypeMatcher<MustachioResolutionException>().having(
             (e) => e.message,
             'message',
             contains("Failed to resolve 'x' as a property on any types in the "
@@ -542,7 +542,7 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
     var foo = Foo();
     expect(
         () => renderFoo(foo, fooTemplate),
-        throwsA(const TypeMatcher<MustachioResolutionError>().having(
+        throwsA(const TypeMatcher<MustachioResolutionException>().having(
             (e) => e.message,
             'message',
             contains('Failed to resolve [length] property chain on String'))));
@@ -556,7 +556,7 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
     var foo = Foo()..s1 = 'String';
     expect(
         () => renderFoo(foo, fooTemplate),
-        throwsA(const TypeMatcher<MustachioResolutionError>().having(
+        throwsA(const TypeMatcher<MustachioResolutionException>().having(
             (e) => e.message,
             'message',
             contains('[length] is a getter on String, which is not visible to '
@@ -571,7 +571,7 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
     var foo = Foo()..s1 = 'String';
     expect(
         () => renderFoo(foo, fooTemplate),
-        throwsA(const TypeMatcher<MustachioResolutionError>().having(
+        throwsA(const TypeMatcher<MustachioResolutionException>().having(
             (e) => e.message,
             'message',
             contains('[length] is a getter on String, which is not visible to '
@@ -591,7 +591,7 @@ line 1, column 9 of ${fooTemplateFile.path}: Failed to resolve 's2' as a propert
       ..writeAsStringSync('Text {{#foo}}{{>missing.mustache}}{{/foo}}');
     expect(
         () async => await Template.parse(barTemplateFile),
-        throwsA(const TypeMatcher<MustachioResolutionError>().having(
+        throwsA(const TypeMatcher<MustachioResolutionException>().having(
             (e) => e.message,
             'message',
             allOf(
