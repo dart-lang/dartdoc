@@ -158,8 +158,7 @@ Future<Map<_AotCompiler, String>> _deduplicateRenderers(
     String compiledLubRenderer;
     try {
       compiledLubRenderer = await lubCompiler._compileToRenderer(referenceUris);
-      // ignore: avoid_catching_errors
-    } on MustachioResolutionError {
+    } on MustachioResolutionException {
       // Oops, switching to the LUB type prevents the renderer from compiling;
       // likely the properties accessed in the partial are not all declared on
       // the LUB type.
@@ -624,7 +623,7 @@ class _BlockCompiler {
     }
     if (getter == null) {
       var contextTypes = [for (var c in _contextStack) c.type];
-      throw MustachioResolutionError(node.keySpan
+      throw MustachioResolutionException(node.keySpan
           .message("Failed to resolve '$key' as a property on any types in the "
               'context chain: $contextTypes'));
     }
@@ -642,7 +641,7 @@ class _BlockCompiler {
     for (var secondaryKey in remainingNames) {
       getter = type.lookUpGetter2(secondaryKey, type.element.library);
       if (getter == null) {
-        throw MustachioResolutionError(node.keySpan.message(
+        throw MustachioResolutionException(node.keySpan.message(
             "Failed to resolve '$secondaryKey' on ${context.type} while "
             'resolving $remainingNames as a property chain on any types in '
             'the context chain: $contextChain, after first resolving '

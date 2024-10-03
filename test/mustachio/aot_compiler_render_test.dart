@@ -554,7 +554,7 @@ void main() {
         ],
         'Foo()',
       ),
-      throwsA(const TypeMatcher<MustachioResolutionError>()
+      throwsA(const TypeMatcher<MustachioResolutionException>()
           .having((e) => e.message, 'message', contains('''
 line 1, column 8 of lib/templates/foo.html: Failed to resolve '[s2]' as a property on any types in the context chain: [Foo]
   ╷
@@ -573,7 +573,7 @@ line 1, column 8 of lib/templates/foo.html: Failed to resolve '[s2]' as a proper
         ],
         'Foo()',
       ),
-      throwsA(const TypeMatcher<MustachioResolutionError>()
+      throwsA(const TypeMatcher<MustachioResolutionException>()
           .having((e) => e.message, 'message', contains('''
 line 1, column 9 of lib/templates/foo.html: Failed to resolve '[s2]' as a property on any types in the context chain: [Foo]
   ╷
@@ -592,7 +592,7 @@ line 1, column 9 of lib/templates/foo.html: Failed to resolve '[s2]' as a proper
         ],
         'Bar()..foo = Foo()',
       ),
-      throwsA(const TypeMatcher<MustachioResolutionError>()
+      throwsA(const TypeMatcher<MustachioResolutionException>()
           .having((e) => e.message, 'message', contains('''
 line 1, column 8 of lib/templates/bar.html: Failed to resolve 'x' on Bar while resolving [x] as a property chain on any types in the context chain: context0.foo, after first resolving 'foo' to a property on Foo?
   ╷
@@ -612,7 +612,7 @@ line 1, column 8 of lib/templates/bar.html: Failed to resolve 'x' on Bar while r
         ],
         'Bar()..foo = Foo()',
       ),
-      throwsA(const TypeMatcher<MustachioResolutionError>()
+      throwsA(const TypeMatcher<MustachioResolutionException>()
           .having((e) => e.message, 'message', contains('''
 line 1, column 13 of lib/templates/bar.html: Failed to resolve '[x]' as a property on any types in the context chain: [Foo, Bar]
   ╷
