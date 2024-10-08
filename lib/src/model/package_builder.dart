@@ -561,9 +561,8 @@ extension on Set<String> {
 
     if (add(path)) {
       var libraryImports = switch (element) {
-        LibraryElement(:var libraryImports) ||
-        CompilationUnitElement(:var libraryImports) =>
-          libraryImports,
+        LibraryElement() => element.definingCompilationUnit.libraryImports,
+        CompilationUnitElement(:var libraryImports) => libraryImports,
         _ => const <LibraryImportElement>[],
       };
       for (var import in libraryImports) {
@@ -571,9 +570,8 @@ extension on Set<String> {
       }
 
       var libraryExports = switch (element) {
-        LibraryElement(:var libraryExports) ||
-        CompilationUnitElement(:var libraryExports) =>
-          libraryExports,
+        LibraryElement() => element.definingCompilationUnit.libraryExports,
+        CompilationUnitElement(:var libraryExports) => libraryExports,
         _ => const <LibraryExportElement>[],
       };
       for (var export in libraryExports) {

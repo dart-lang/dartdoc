@@ -60,7 +60,7 @@ class Library extends ModelElement
     var localElements = {
       // TODO(jcollins-g): Consider switch to `element.topLevelElements`.
       ..._getDefinedElements(element.definingCompilationUnit),
-      ...element.parts
+      ...element.definingCompilationUnit.parts
           .map((e) => e.uri)
           .whereType<DirectiveUriWithUnit>()
           .map((part) => part.unit)
@@ -96,7 +96,7 @@ class Library extends ModelElement
 
   /// Allow scope for Libraries.
   @override
-  Scope get scope => element.scope;
+  Scope get scope => element.definingCompilationUnit.scope;
 
   bool get isInSdk => element.isInSdk;
 
@@ -142,7 +142,7 @@ class Library extends ModelElement
   Map<String, Set<Library>> get _prefixToLibrary {
     var prefixToLibrary = <String, Set<Library>>{};
     // It is possible to have overlapping prefixes.
-    for (var i in element.libraryImports) {
+    for (var i in element.definingCompilationUnit.libraryImports) {
       var prefixName = i.prefix?.element.name;
       // Ignore invalid imports.
       if (prefixName != null && i.importedLibrary != null) {
