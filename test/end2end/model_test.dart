@@ -909,8 +909,14 @@ void main() async {
     test('can import other libraries with unusual URIs', () {
       final fakeLibraryImportedExported = <Library>{
         for (final l in <LibraryElement>{
-          ...fakeLibrary.element.importedLibraries,
-          ...fakeLibrary.element.exportedLibraries
+          ...fakeLibrary.element.definingCompilationUnit.libraryImports
+              .map((import) => import.uri)
+              .whereType<DirectiveUriWithLibrary>()
+              .map((uri) => uri.library),
+          ...fakeLibrary.element.definingCompilationUnit.libraryExports
+              .map((import) => import.uri)
+              .whereType<DirectiveUriWithLibrary>()
+              .map((uri) => uri.library)
         })
           packageGraph.getModelForElement(l) as Library
       };
