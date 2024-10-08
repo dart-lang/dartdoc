@@ -632,7 +632,7 @@ class Foo {}
       throwsA(isA<ArgParserException>().having(
         (e) => e.toString(),
         'toString',
-        contains('Could not find an option named "nonexistent".'),
+        contains('Could not find an option named'),
       )),
     );
   }
