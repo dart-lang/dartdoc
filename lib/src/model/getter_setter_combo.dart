@@ -6,7 +6,6 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/ast/ast.dart'
     show Expression, InstanceCreationExpression;
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/element.dart'
@@ -67,18 +66,20 @@ mixin GetterSetterCombo on ModelElement {
   /// Whether this has a constant value which should be displayed.
   bool get hasConstantValueForDisplay => false;
 
-  Expression? get constantInitializer =>
+  late final Expression? _constantInitializer =
       (element as ConstVariableElement).constantInitializer;
 
   String linkifyConstantValue(String original) {
-    if (constantInitializer is! InstanceCreationExpression) return original;
-    var creationExpression = constantInitializer as InstanceCreationExpression;
-    var constructorName = creationExpression.constructorName.toString();
-    Element? staticElement = creationExpression.constructorName.staticElement;
+    if (_constantInitializer is! InstanceCreationExpression) return original;
+
+    var constructorName = _constantInitializer.constructorName.toString();
+    var staticElement = _constantInitializer.constructorName.staticElement;
     if (staticElement == null) return original;
+
     var target = getModelForElement(staticElement) as Constructor;
     var enclosingElement = target.enclosingElement;
     if (enclosingElement is! Class) return original;
+
     // TODO(jcollins-g): this logic really should be integrated into
     // `Constructor`, but that's not trivial because of `linkedName`'s usage.
     if (enclosingElement.name == target.name) {
@@ -114,23 +115,23 @@ mixin GetterSetterCombo on ModelElement {
   String get constantValueTruncated =>
       linkifyConstantValue(truncateString(constantValueBase, 200));
 
+  /// The base text for this property's constant value as an unlinked String.
   late final String constantValueBase = () {
-    final constantInitializer = this.constantInitializer;
-    if (constantInitializer == null) {
+    if (_constantInitializer == null) {
       return '';
     }
 
-    var initializerString = constantInitializer.toString();
+    var initializerString = _constantInitializer.toString();
 
     final self = this;
     if (self is! EnumField ||
-        constantInitializer is! InstanceCreationExpression) {
+        _constantInitializer is! InstanceCreationExpression) {
       return _htmlEscape.convert(initializerString);
     }
 
     initializerString = 'const $initializerString';
 
-    var isImplicitConstructorCall = constantInitializer
+    var isImplicitConstructorCall = _constantInitializer
             .constructorName.staticElement?.isDefaultConstructor ??
         false;
     if (isImplicitConstructorCall) {

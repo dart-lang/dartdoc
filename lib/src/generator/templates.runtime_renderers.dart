@@ -6331,19 +6331,6 @@ class _Renderer_GetterSetterCombo extends RendererBase<GetterSetterCombo> {
                         getters: _invisibleGetters['CharacterLocation']!);
                   },
                 ),
-                'constantInitializer': Property(
-                  getValue: (CT_ c) => c.constantInitializer,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'Expression'),
-                  isNullValue: (CT_ c) => c.constantInitializer == null,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.constantInitializer, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['Expression']!);
-                  },
-                ),
                 'constantValue': Property(
                   getValue: (CT_ c) => c.constantValue,
                   renderVariable:
@@ -12244,7 +12231,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12482,7 +12469,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -16109,17 +16096,6 @@ const _invisibleGetters = {
     'typeParameters',
     'typeParameters2'
   },
-  'Expression': {
-    'correspondingParameter',
-    'hashCode',
-    'inConstantContext',
-    'isAssignable',
-    'precedence',
-    'runtimeType',
-    'staticParameterElement',
-    'staticType',
-    'unParenthesized'
-  },
   'ExtensionElement': {
     'augmentation',
     'augmentationTarget',
@@ -16195,7 +16171,6 @@ const _invisibleGetters = {
     'arrow',
     'characterLocation',
     'comboAttributes',
-    'constantInitializer',
     'constantValue',
     'constantValueBase',
     'constantValueTruncated',
