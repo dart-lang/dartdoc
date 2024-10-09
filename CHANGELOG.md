@@ -1,3 +1,12 @@
+## 8.2.1
+
+* When calculating the "directory name" of an anonymous library, strip the
+  enclosing package's lowercase name. This should only affect documentation
+  generated with the `--auto-include-dependencies` flag, like the Flutter SDK.
+  (#3883)
+* Add basic support for the "Enhanced Parts" Dart language feature.
+* Require analyzer 6.10.0 APIs. (#3899)
+
 ## 8.2.0
 
 * Include extension members on the extended type's page. Each extension
