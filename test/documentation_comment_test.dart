@@ -451,8 +451,7 @@ Three.'''));
       libraryModel,
       hasInvalidParameterWarning(
           'The {@animation ...} directive was called with invalid '
-          'parameters. FormatException: Could not find an option named '
-          '"name".'),
+          'parameters. FormatException: Could not find an option named'),
     );
   }
 

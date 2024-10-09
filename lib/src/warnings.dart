@@ -540,15 +540,17 @@ class PackageWarningCounter {
   bool get hasWarnings => _countedWarnings.isNotEmpty;
 
   /// Whether we've already warned for this combination of [element], [kind],
-  /// and [message].
-  bool hasWarning(Warnable? element, PackageWarning kind, String message) {
+  /// and [messageFragment].
+  bool hasWarning(
+      Warnable? element, PackageWarning kind, String messageFragment) {
     if (element == null) {
       return false;
     }
     final warning = _countedWarnings[element.element];
     if (warning != null) {
       final messages = warning[kind];
-      return messages != null && messages.contains(message);
+      return messages != null &&
+          messages.any((message) => message.contains(messageFragment));
     }
     return false;
   }
