@@ -10,12 +10,26 @@ import 'package:yaml/yaml.dart' as yaml;
 
 export 'package:test_descriptor/test_descriptor.dart';
 
-String buildPubspecText({String sdkConstraint = '>=3.2.0 <4.0.0'}) => '''
+/// Builds and returns the content of a pubspec file.
+String buildPubspecText({
+  String sdkConstraint = '>=3.2.0 <4.0.0',
+  Map<String, String> dependencies = const {},
+}) {
+  var buffer = StringBuffer('''
 name: test_package
 version: 0.0.1
 environment:
   sdk: '$sdkConstraint'
-''';
+''');
+  if (dependencies.isNotEmpty) {
+    buffer.writeln('dependencies:');
+    dependencies.forEach((name, path) {
+      buffer.writeln('  $name:');
+      buffer.writeln('    path: $path');
+    });
+  }
+  return buffer.toString();
+}
 
 /// Creates a pub package in a directory named [name].
 ///

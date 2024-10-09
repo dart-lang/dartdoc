@@ -232,9 +232,6 @@ abstract class Container extends ModelElement
   @override
   Iterable<CommentReferable> get referenceParents => [library];
 
-  @override
-  String get filePath => '${canonicalLibraryOrThrow.dirName}/$fileName';
-
   /// The full path of this element's sidebar file.
   String get sidebarPath;
 

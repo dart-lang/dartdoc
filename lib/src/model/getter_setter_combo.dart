@@ -61,7 +61,11 @@ mixin GetterSetterCombo on ModelElement {
   String get name;
 
   @override
-  String get fileName => isConst ? '$name-constant.html' : '$name.html';
+  String get fileName => isConst
+      ? '$name-constant.html'
+      : name == 'index'
+          ? '$name-property.html'
+          : '$name.html';
 
   /// Whether this has a constant value which should be displayed.
   bool get hasConstantValueForDisplay => false;

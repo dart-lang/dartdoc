@@ -32,6 +32,10 @@ class Enum extends InheritingContainer with Constructable, MixedInTypes {
   ];
 
   @override
+  // Prevent a collision with the library file.
+  String get fileName => name == 'index' ? '$name-enum.html' : '$name.html';
+
+  @override
   String get sidebarPath =>
       '${canonicalLibraryOrThrow.dirName}/$name-enum-sidebar.html';
 

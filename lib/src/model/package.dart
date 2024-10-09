@@ -136,9 +136,13 @@ class Package extends LibraryContainer
   bool get isPublic =>
       _isLocalPublicByDefault || libraries.any((l) => l.isPublic);
 
-  /// Return true if this is the default package, this is part of an embedder
-  /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
-  /// only if the package was not excluded on the command line.
+  /// Whether this package is local.
+  ///
+  /// A package can be local in three ways:
+  /// * this is the default package,
+  /// * this is part of an embedder SDK, or
+  /// * [DartdocOptionContext.autoIncludeDependencies] is true, and this
+  ///   package is not excluded with `exclude-packages`.
   bool get isLocal {
     // Do not document as local if we excluded this package by name.
     if (_isExcluded) return false;

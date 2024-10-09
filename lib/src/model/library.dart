@@ -199,7 +199,7 @@ class Library extends ModelElement
   String get filePath => '$dirName/$fileName';
 
   @override
-  String get fileName => '$dirName-library.html';
+  String get fileName => 'index.html';
 
   String get sidebarPath => '$dirName/$dirName-library-sidebar.html';
 
@@ -216,9 +216,20 @@ class Library extends ModelElement
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    return '${package.baseHref}$filePath';
+    // The file name for a library is 'index.html', so we just link to the
+    // directory name. This keeps the URL looking short, _without_ the
+    // 'index.html' in the URL.
+    return '${package.baseHref}$dirName';
   }
 
+  /// The previous value of [filePath].
+  ///
+  /// This path is used to write a file that ontains an HTML redirect (not an
+  /// HTTP redirect) to a library's current [filePath].
+  String get redirectingPath => '$dirName/$dirName-library.html';
+
+  /// Whether a libary is anonymous, either because it has no library directive
+  /// or it has a library directive without a name.
   bool get isAnonymous => element.name.isEmpty;
 
   @override

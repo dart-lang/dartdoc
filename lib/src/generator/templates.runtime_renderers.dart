@@ -2760,28 +2760,6 @@ class _Renderer_Container extends RendererBase<Container> {
                         parent: r);
                   },
                 ),
-                'filePath': Property(
-                  getValue: (CT_ c) => c.filePath,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.filePath, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'hasAvailableInstanceFields': Property(
                   getValue: (CT_ c) => c.hasAvailableInstanceFields,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -4281,6 +4259,28 @@ class _Renderer_Enum extends RendererBase<Enum> {
                       List<MustachioNode> ast, StringSink sink) {
                     renderSimple(c.element, ast, r.template, sink,
                         parent: r, getters: _invisibleGetters['EnumElement']!);
+                  },
+                ),
+                'fileName': Property(
+                  getValue: (CT_ c) => c.fileName,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.fileName, ast, r.template, sink,
+                        parent: r);
                   },
                 ),
                 'hasPublicEnumValues': Property(
@@ -8430,6 +8430,28 @@ class _Renderer_Library extends RendererBase<Library> {
                         parent: r));
                   },
                 ),
+                'redirectingPath': Property(
+                  getValue: (CT_ c) => c.redirectingPath,
+                  renderVariable:
+                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                    if (remainingNames.isEmpty) {
+                      return self.getValue(c).toString();
+                    }
+                    var name = remainingNames.first;
+                    var nextProperty =
+                        _Renderer_String.propertyMap().getValue(name);
+                    return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)]);
+                  },
+                  isNullValue: (CT_ c) => false,
+                  renderValue: (CT_ c, RendererBase<CT_> r,
+                      List<MustachioNode> ast, StringSink sink) {
+                    _render_String(c.redirectingPath, ast, r.template, sink,
+                        parent: r);
+                  },
+                ),
                 'referenceChildren': Property(
                   getValue: (CT_ c) => c.referenceChildren,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -8793,6 +8815,12 @@ class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData> {
       return null;
     }
   }
+}
+
+String renderLibraryRedirect(LibraryTemplateData context, Template template) {
+  var buffer = StringBuffer();
+  _render_LibraryTemplateData(context, template.ast, template, buffer);
+  return buffer.toString();
 }
 
 class _Renderer_Locatable extends RendererBase<Locatable> {
@@ -11037,8 +11065,8 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
                         parent: r);
                   },
                 ),
-                'filePath': Property(
-                  getValue: (CT_ c) => c.filePath,
+                'fileName': Property(
+                  getValue: (CT_ c) => c.fileName,
                   renderVariable:
                       (CT_ c, Property<CT_> self, List<String> remainingNames) {
                     if (remainingNames.isEmpty) {
@@ -11055,7 +11083,7 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
                   isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.filePath, ast, r.template, sink,
+                    _render_String(c.fileName, ast, r.template, sink,
                         parent: r);
                   },
                 ),
@@ -12231,7 +12259,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -12469,13 +12497,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14653,28 +14681,6 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                         parent: r);
                   },
                 ),
-                'filePath': Property(
-                  getValue: (CT_ c) => c.filePath,
-                  renderVariable:
-                      (CT_ c, Property<CT_> self, List<String> remainingNames) {
-                    if (remainingNames.isEmpty) {
-                      return self.getValue(c).toString();
-                    }
-                    var name = remainingNames.first;
-                    var nextProperty =
-                        _Renderer_String.propertyMap().getValue(name);
-                    return nextProperty.renderVariable(
-                        self.getValue(c) as String,
-                        nextProperty,
-                        [...remainingNames.skip(1)]);
-                  },
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.filePath, ast, r.template, sink,
-                        parent: r);
-                  },
-                ),
                 'getter': Property(
                   getValue: (CT_ c) => c.getter,
                   renderVariable:
@@ -15347,8 +15353,8 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                         parent: r);
                   },
                 ),
-                'filePath': Property(
-                  getValue: (CT_ c) => c.filePath,
+                'fileName': Property(
+                  getValue: (CT_ c) => c.fileName,
                   renderVariable:
                       (CT_ c, Property<CT_> self, List<String> remainingNames) {
                     if (remainingNames.isEmpty) {
@@ -15365,7 +15371,7 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                   isNullValue: (CT_ c) => false,
                   renderValue: (CT_ c, RendererBase<CT_> r,
                       List<MustachioNode> ast, StringSink sink) {
-                    _render_String(c.filePath, ast, r.template, sink,
+                    _render_String(c.fileName, ast, r.template, sink,
                         parent: r);
                   },
                 ),

@@ -615,7 +615,7 @@ abstract class ModelElement
 
   /// The full path of the output file in which this element will be primarily
   /// documented.
-  String get filePath;
+  String get filePath => '${canonicalLibraryOrThrow.dirName}/$fileName';
 
   @override
   String get fullyQualifiedName =>
