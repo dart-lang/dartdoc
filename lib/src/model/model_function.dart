@@ -49,7 +49,8 @@ class ModelFunctionTyped extends ModelElement with TypeParameters {
   Library get enclosingElement => library;
 
   @override
-  String get filePath => '${canonicalLibrary?.dirName}/$fileName';
+  // Prevent a collision with the library file.
+  String get fileName => name == 'index' ? '$name-function.html' : '$name.html';
 
   @override
   String get aboveSidebarPath => canonicalLibraryOrThrow.sidebarPath;

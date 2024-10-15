@@ -33,7 +33,8 @@ abstract class Typedef extends ModelElement
   String get linkedGenericParameters => _renderTypeParameters(isLinked: true);
 
   @override
-  String get filePath => '${canonicalLibraryOrThrow.dirName}/$fileName';
+  // Prevent a collision with the library file.
+  String get fileName => name == 'index' ? '$name-typedef.html' : '$name.html';
 
   @override
   String get aboveSidebarPath => canonicalLibraryOrThrow.sidebarPath;

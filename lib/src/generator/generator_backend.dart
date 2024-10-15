@@ -179,11 +179,14 @@ abstract class GeneratorBackend {
     runtimeStats.incrementAccumulator('writtenFunctionFileCount');
   }
 
-  /// Emits documentation content for the [library].
+  /// Emits documentation content for the [library], and the content for the
+  /// library's previous location (which just redirects to the new location).
   void generateLibrary(PackageGraph packageGraph, Library library) {
     var data = LibraryTemplateData(options, packageGraph, library);
     var content = templates.renderLibrary(data);
+    var redirectContent = templates.renderLibraryRedirect(data);
     write(writer, library.filePath, data, content);
+    write(writer, library.redirectingPath, data, redirectContent);
     runtimeStats.incrementAccumulator('writtenLibraryFileCount');
   }
 

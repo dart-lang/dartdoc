@@ -14,6 +14,7 @@ import 'src/utils.dart';
 void main() {
   defineReflectiveSuite(() {
     defineReflectiveTests(LibrariesTest);
+    defineReflectiveTests(LibrariesInAdditionalPackageTest);
   });
 
   // TODO(srawlins): Migrate to test_reflective_loader tests.
@@ -173,8 +174,7 @@ A doc comment.
     var dartAsyncLib = sdkPackage.libraries.named('dart:async');
     expect(dartAsyncLib.name, 'dart:async');
     expect(dartAsyncLib.dirName, 'dart-async');
-    expect(dartAsyncLib.href,
-        '${htmlBasePlaceholder}dart-async/dart-async-library.html');
+    expect(dartAsyncLib.href, '${htmlBasePlaceholder}dart-async');
   });
 }
 
@@ -189,8 +189,21 @@ class LibrariesTest extends DartdocTestBase {
       libraryFilePath: 'lib/library.dart',
     );
 
+    expect(library.name, 'libraries');
     expect(library.qualifiedName, 'libraries');
-    expect(library.href, '${placeholder}libraries/libraries-library.html');
+    expect(library.href, '${placeholder}libraries');
+  }
+
+  void test_publicLibrary_unnamed() async {
+    var library =
+        (await bootPackageFromFiles([d.file('lib/lib1.dart', 'library;')]))
+            .libraries
+            .named('lib1');
+
+    expect(library.name, 'lib1');
+    expect(library.qualifiedName, 'lib1');
+    expect(library.href, '${placeholder}lib1');
+    expect(library.redirectingPath, 'lib1/lib1-library.html');
   }
 
   void test_exportedLibrary() async {
@@ -206,6 +219,84 @@ export 'src/library.dart';
       ],
     );
     expect(library.qualifiedName, 'libraries');
-    expect(library.href, '${placeholder}public/public-library.html');
+    expect(library.name, 'libraries');
+    expect(library.href, '${placeholder}public');
+  }
+}
+
+@reflectiveTest
+class LibrariesInAdditionalPackageTest extends DartdocTestBase {
+  @override
+  String get libraryName => 'libraries';
+
+  @override
+  Map<String, String> get pubDependencyPaths => const {'two': './vendor/two'};
+
+  /// Boots up a package with an additional dependency package inside.
+  ///
+  /// This emulates the Flutter SDK layout (or the fake layout created by
+  /// Flutter's `create_api_docs.dart` script), so that we have library's whose
+  /// `dirName` contains long text based on the package URI, something like
+  /// 'package-two_lib2'.
+  Future<PackageGraph> bootPackageWithInnerPackageLibrary(
+    d.FileDescriptor libraryFile,
+  ) {
+    packageConfigProvider.addPackageToConfigFor(
+        '$packagePath/vendor/two', 'two', Uri.file('$packagePath/vendor/two/'));
+
+    return bootPackageFromFiles(
+      [
+        d.file('lib/lib1.dart', "import 'package:two/lib2.dart';"),
+        d.dir(resourceProvider.convertPath('vendor/two'), [
+          d.file('pubspec.yaml', '''
+name: two
+version: 0.0.1
+'''),
+          libraryFile,
+        ]),
+      ],
+      additionalArguments: [
+        '--auto-include-dependencies',
+      ],
+    );
+  }
+
+  void test_dependencyPackageLibrary_noLibraryDirective() async {
+    var graph = await bootPackageWithInnerPackageLibrary(
+        d.file('lib/lib2.dart', '// No content.'));
+    var library = graph.libraries.named('lib2');
+
+    expect(library.name, 'lib2');
+    expect(library.qualifiedName, 'lib2');
+    expect(library.href, '${placeholder}package-two_lib2');
+    expect(
+      library.redirectingPath,
+      'package-two_lib2/package-two_lib2-library.html',
+    );
+  }
+
+  void test_dependencyPackageLibrary_unnamedLibraryDirective() async {
+    var graph = await bootPackageWithInnerPackageLibrary(
+        d.file('lib/lib2.dart', 'library;'));
+    var library = graph.libraries.named('lib2');
+
+    expect(library.name, 'lib2');
+    expect(library.qualifiedName, 'lib2');
+    expect(library.href, '${placeholder}package-two_lib2');
+    expect(
+      library.redirectingPath,
+      'package-two_lib2/package-two_lib2-library.html',
+    );
+  }
+
+  void test_dependencyPackageLibrary_namedLibraryDirective() async {
+    var graph = await bootPackageWithInnerPackageLibrary(
+        d.file('lib/lib2.dart', 'library lib2;'));
+    var library = graph.libraries.named('lib2');
+
+    expect(library.name, 'lib2');
+    expect(library.qualifiedName, 'lib2');
+    expect(library.href, '${placeholder}lib2');
+    expect(library.redirectingPath, 'lib2/lib2-library.html');
   }
 }
