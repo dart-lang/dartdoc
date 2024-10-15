@@ -946,7 +946,7 @@ that compiler instance, compiles the template into a renderer function (a String
 of Dart source code), and also collects a mapping of partial renderer functions
 that were compiled in the process. When the compiler instance compiles its given
 template into a renderer, it recursvely creates a compiler instance for each
-referenced partial and compiles the reference partial into a renderer function
+referenced partial and compiles the referenced partial into a renderer function
 (see `_BlockCompiler._compilePartial`).
 
 In this way, `compileTemplatesToRenderers` collects all of the compiler
@@ -1028,7 +1028,7 @@ this optimization:
    statements (as source code), and tracks the referenced context variables in a
    set, `_BlockCompiler._usedContextTypes`.
 3. At this point we have the body of the renderer that we are creating, and its
-   name. We write the return type (`String`) and the nameo of the render
+   name. We write the return type (`String`) and the name of the render
    function, and then must write the list of parameters. Instead of writing the
    list of _all_ of the context variables as parameters, we only write the
    _used_ ones, collected up by the `_BlockCompiler` (and any nested
@@ -1081,19 +1081,40 @@ the individual types does not have any property `foo`, then the LUB type does
 not work, and cannot be used. In practice though, this strategy allows us to
 deduplicate many renderer functions for Dartdoc.
 
-In the `codegen_aot_compiler.dart` source, here are the steps that carry out
-this optimization:
+In the `codegen_aot_compiler.dart` source, all template compilers and template
+renderer functions are tracked in a "renderer cache" (`_RendererCache`). This
+cache maps each template path to a collection of renderers (a
+`_RenderersForPath`). The collection of renderers is a map, mapping each used
+context stack to some renderer data (`_RendererData`). The renderer data is
+simply the compler, the compiled renderer string, and a reference count of how
+many other templates reference that renderer:
 
-1. After gathering the list of all `_AotCompiler` instances that each compiled a
-   renderer function (as Dart source code), we enter `_deduplicateRenderers` to
+```none
+renderer cache: {
+  path1 -> renderers1 {
+                        [context0, context1] => (compiler1, renderer1)
+                        [context0, context1, context2] => (compiler2, renderer2)
+  }
+  path2 -> renderers2 {
+                        [context1, context2, context3] => (compiler3, renderer3)
+                        [context1, context3] => (compiler4, renderer4)
+  }
+}
+```
+
+As compilers are created and used to calculate used context stacks and compile
+renderer functions, they are inserted into the renderer cache.
+
+Here are the steps that carry out the deduplicating optimization:
+
+1. After gathering all `_AotCompiler` instances that each compiled a renderer
+   function (as Dart source code), we enter `_deduplicateRenderers` to
    deduplicate the list.
-2. This function first creates a new mapping that maps each partial's path to
-   the list of compilers that each compiled that partial to a renderer function,
-   and walks each entry in the map.
-   1. For each partial path and relevant list of compilers, we create a list of
-      the "used context stacks"; so the first item in this list is the used
-      context stack calculated by the first compiler, etc.
-   2. We then calculate the LUB of the types in each position in the list, with
+
+2. This function iterates over each partial path in the cache, looking at the
+   list of used context stacks.
+
+   1. We then calculate the LUB of the types in each position in the list, with
       the `contextStackLub` function. For example, if a list of used context
       stacks has 3 context stacks (derived from 3 compilers), and each context
       stack has 2 context variables, then the result is a context stack, again
@@ -1103,22 +1124,27 @@ this optimization:
       original context stacks. (If the context stacks in the list do not all
       have exactly the same length, we say the "LUB context stack" is `null`,
       and we cannot deduplicate the renderer functions.)
-   3. If the context stacks have some valid LUB context stack, then we may be
+   2. If the context stacks have some valid LUB context stack, then we may be
       able to replace each renderer function that was compiled for this partial
       with a single renderer function that uses the LUB context stack. We
       proceed by creating a new `_AotCompiler` and a fresh, "deduplicated"
       renderer name.
-   4. We try to compile the partial with the new deduplicated compiler. It is
+   3. We try to compile the partial with the new deduplicated compiler. It is
       possible that this fails: if the partial depended on properties that were
       available on the individual context stacks, but are unavailable on the LUB
       context stack, then compilation will fail. In this case, we can just keep
       the individual renderer functions.
-   5. If the new deduplicated compiler successfully compiles a renderer
+   4. If the new deduplicated compiler successfully compiles a renderer
       function, we move forward with it: for each replaced compiler, we replace
       its renderer function with a "redirecting" renderer function, that simply
       redirects to a call to the deduplicated renderer function.
-   6. In order to reduce the amount of generated code, we can also _remove_ any
-      partial renderer functions that were only referenced by _replaced_
-      partial renderer functions. This is calculated recursively.
+   5. In order to reduce the amount of generated code, we also _mark for
+      removal_ each of the replaced partial renderer functions. Since each
+      partial may be referenced by more than one other template, we support the
+      removals with reference-tracking; we track each reference from one
+      template to another, and when renderer functions are marked for removal,
+      those reference counts are decremented. A renderer function is only
+      actually removed when the reference count reaches 0.
+
 3. Finally, the new mapping of compilers to compiled renderer functions is
    passed back to the `compileTemplatesToRenderers` to be written out.

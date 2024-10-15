@@ -147,17 +147,17 @@ import 'annotations.dart';
     var generatedContent = await File(aotRenderersForHtmlPath).readAsString();
     expect(
       generatedContent,
-      contains('String _renderFoo_partial_base_0(Foo context0) =>\n'
-          '    _deduplicated_lib_templates__base_html(context0);\n'),
+      contains('String _renderFoo_partial_base_0(Foo context0) => '
+          '_deduplicated__base(context0);\n'),
     );
     expect(
       generatedContent,
-      contains('String _renderBar_partial_base_0(Bar context0) =>\n'
-          '    _deduplicated_lib_templates__base_html(context0);\n'),
+      contains('String _renderBar_partial_base_0(Bar context0) => '
+          '_deduplicated__base(context0);\n'),
     );
     expect(
       generatedContent,
-      contains('String _deduplicated_lib_templates__base_html('),
+      contains('String _deduplicated__base(Base context0)'),
     );
   });
 
@@ -200,17 +200,17 @@ import 'annotations.dart';
     var generatedContent = await File(aotRenderersForHtmlPath).readAsString();
     expect(
       generatedContent,
-      contains('String _renderFoo_partial_base_0(A context1) =>\n'
-          '    _deduplicated_lib_templates__base_html(context1);\n'),
+      contains('String _renderFoo_partial_base_0(A context1) => '
+          '_deduplicated__base(context1);\n'),
     );
     expect(
       generatedContent,
-      contains('String _renderFoo_partial_base_1(B context1) =>\n'
-          '    _deduplicated_lib_templates__base_html(context1);\n'),
+      contains('String _renderFoo_partial_base_1(B context1) => '
+          '_deduplicated__base(context1);\n'),
     );
     expect(
       generatedContent,
-      contains('String _deduplicated_lib_templates__base_html(Base context0)'),
+      contains('String _deduplicated__base(Base context0)'),
     );
   });
 

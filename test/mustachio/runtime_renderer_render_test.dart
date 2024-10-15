@@ -10,6 +10,7 @@ import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:path/path.dart' as path show Context;
 import 'package:test/test.dart';
+
 import 'foo.dart';
 import 'foo.runtime_renderers.dart';
 
