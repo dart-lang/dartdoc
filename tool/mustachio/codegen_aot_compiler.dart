@@ -31,8 +31,6 @@ Future<String> compileTemplatesToRenderers(
   required String sourcePath,
 }) async {
   var buildData = _BuildData(typeProvider, typeSystem, sourcePath, root);
-  var rendererFunctions = <String>[];
-  var partialRendererFunctions = <_AotCompiler, String>{};
   var referenceUris = <String>{};
   print('Compiling ${specs.length} renderer specs into renderer functions...');
   for (var spec in specs) {
@@ -43,20 +41,28 @@ Future<String> compileTemplatesToRenderers(
       templatePath,
       buildData,
     );
-    rendererFunctions.add(await compiler._compileToRenderer(referenceUris));
-    partialRendererFunctions.addAll(compiler._compiledPartials);
+    await compiler._compileToRenderer(referenceUris);
   }
-  partialRendererFunctions = await _deduplicateRenderers(
-      partialRendererFunctions, typeSystem, referenceUris);
+  await _deduplicateRenderers(
+      buildData._rendererCache, typeSystem, referenceUris);
   var buffer = StringBuffer();
   for (var uri in referenceUris.sorted()) {
     buffer.writeln("import '$uri';");
   }
 
-  for (var function in [
-    ...rendererFunctions,
-    ...partialRendererFunctions.values,
-  ]) {
+  const returnTypeText = 'String ';
+  var sortedRenderers = buildData._rendererCache.allRendererFunctions.toList()
+    // Sort by the renderer's name, which is the text right after the return
+    // type.
+    ..sortBy((renderer) {
+      assert(renderer.startsWith(returnTypeText));
+      var firstLineEnd = renderer.indexOf('\n');
+      var firstLine = renderer.substring(returnTypeText.length, firstLineEnd);
+      // Replace '_' characters with '~', so that, in ASCII order, names that
+      // begin with '_' are sorted at the end.
+      return firstLine.replaceAll('_', '~');
+    });
+  for (var function in sortedRenderers) {
     buffer.write(function);
     buffer.writeln();
     buffer.writeln();
@@ -92,39 +98,41 @@ extension on StringBuffer {
 /// Deduplicates multiple renderers which are each used to render a partial
 /// into a single renderer.
 ///
-/// When a partial is referenced by more than one template, multiple compilers
-/// are used to build multiple render functions, because the context stack of
-/// types may be different in each case. But it is perfectly logical to expect
-/// that these can be deduplicated, as they should be able to use one common
-/// context stack of interfaces.
+/// When a partial is referenced by more than one template (or more than once by
+/// a single template), multiple compilers are used to build multiple renderer
+/// functions, because the context stack of types may be different in each case.
+/// But it is perfectly logical to expect that these can be deduplicated, as
+/// they should be able to use one common context stack of interfaces.
 ///
 /// Attempts to deduplicate the compilers (which build the renderers) by
 /// replacing context types in each stack with their collective LUB.
-Future<Map<_AotCompiler, String>> _deduplicateRenderers(
-  Map<_AotCompiler, String> partialRendererFunctions,
+Future<void> _deduplicateRenderers(
+  _RendererCache rendererCache,
   TypeSystem typeSystem,
   Set<String> referenceUris,
 ) async {
-  if (partialRendererFunctions.length < 2) return partialRendererFunctions;
-  print('Deduplicating the initial set of ${partialRendererFunctions.length} '
-      'partial renderer functions...');
-  // Map each template (represented by its path) to the list of compilers which
-  // compile it to a renderer function.
-  var compilersPerPartial = <String, List<_AotCompiler>>{};
-  for (var compiler in partialRendererFunctions.keys) {
-    compilersPerPartial
-        .putIfAbsent(compiler._templatePath, () => [])
-        .add(compiler);
+  var initialRendererCount = rendererCache.rendererCount;
+  if (initialRendererCount < 2) return;
+  print('Deduplicating the initial set of $initialRendererCount partial '
+      'renderer functions...');
+
+  var partialsCompilersToRemove = <_AotCompiler>{};
+  void markCompilerForRemoval(_AotCompiler c) {
+    for (var partial in c._partialCompilers) {
+      markCompilerForRemoval(partial);
+    }
+    partialsCompilersToRemove.add(c);
   }
-  var partialsToRemove = <_AotCompiler>{};
-  for (var (MapEntry(key: filePath, value: compilers))
-      in compilersPerPartial.entries) {
-    if (compilers.length < 2) {
-      // Nothing to deduplicate.
+
+  // Map each template (represented by its path) to the list of compilers which
+  // compile it.
+  for (var templatePath in rendererCache.allTemplatePaths) {
+    var contextStacks = rendererCache.allContextStacksFor(templatePath);
+    if (contextStacks.length < 2) {
+      // Nothing to deduplicate; there is only one context stack, and therefore
+      // only one generated renderer function.
       continue;
     }
-    var firstCompiler = compilers.first;
-    var contextStacks = compilers.map((c) => c._usedContextStack).toList();
     var contextStackTypes = typeSystem.contextStackLub(contextStacks);
     if (contextStackTypes == null) {
       // The stack lengths are different; it is impossible to fully deduplicate
@@ -140,58 +148,62 @@ Future<Map<_AotCompiler, String>> _deduplicateRenderers(
     // possibly more generic renderer which accepts the LUB types. The body of
     // each replaced renderer can perform a simple redirect to the more generic
     // renderer.
-    var rendererName = filePath.replaceAll('.', '_').replaceAll('/', '_');
 
     // The names of the renderers which are being replaced all include some
     // reference to the template/partial which referred to them; we must create
     // a new renderer name from scratch.
+    var rendererName =
+        path.basenameWithoutExtension(templatePath).replaceAll('.', '_');
+    var firstCompiler = rendererCache.allCompilersFor(templatePath)!.first;
     var lubCompiler = _AotCompiler._(
       contextStackTypes.first,
       '_deduplicated_$rendererName',
-      filePath,
+      templatePath,
       firstCompiler._syntaxTree,
       firstCompiler._buildData,
       contextStack: [
         ...contextStackTypes.map((t) => _VariableLookup(t, 'UNUSED'))
       ],
     );
-    String compiledLubRenderer;
     try {
-      compiledLubRenderer = await lubCompiler._compileToRenderer(referenceUris);
+      await lubCompiler._compileToRenderer(referenceUris);
     } on MustachioResolutionException {
       // Oops, switching to the LUB type prevents the renderer from compiling;
       // likely the properties accessed in the partial are not all declared on
       // the LUB type.
+      var compilers = rendererCache.allCompilersFor(templatePath)!;
       var names = compilers.map((c) => "'${c._rendererName}'");
-      print("Could not deduplicate '$filePath', keeping: ${names.join(', ')}");
+      if (names.length > 5) {
+        names = [...names.take(5), '... (${names.length - 5} more)'];
+      }
+      print("Could not deduplicate '$templatePath' with context types: "
+          '$contextStackTypes, from ${names.join(', ')}');
+      // Any partials generated before the exception was thrown are not needed.
+      markCompilerForRemoval(lubCompiler);
       continue;
     }
 
-    void removeUnusedPartials(_AotCompiler c) {
-      for (var partial in c._partialCompilers) {
-        removeUnusedPartials(partial);
-      }
-      partialsToRemove.add(c);
-    }
-
-    for (var compiler in compilers) {
-      partialRendererFunctions[compiler] =
-          await _redirectingMethod(compiler, lubCompiler);
-
+    for (var contextStack in contextStacks) {
+      var compiler = rendererCache.getCompiler(templatePath, contextStack)!;
+      // Replace the renderer function at [templatePath, contextStack] with one
+      // that just redirects to `lubCompiler`.
+      rendererCache.put(
+        templatePath,
+        contextStack,
+        compiler,
+        await _redirectingMethod(compiler, lubCompiler),
+      );
       for (var c in compiler._partialCompilers) {
-        removeUnusedPartials(c);
+        markCompilerForRemoval(c);
       }
     }
-    partialRendererFunctions[lubCompiler] = compiledLubRenderer;
-    partialRendererFunctions.addAll(lubCompiler._compiledPartials);
   }
-  for (var c in partialsToRemove) {
-    partialRendererFunctions.remove(c);
+  for (var compiler in partialsCompilersToRemove) {
+    rendererCache.remove(compiler._templatePath, compiler._usedContextStack);
   }
 
-  print('Deduplicated down to ${partialRendererFunctions.length} '
+  print('Deduplicated down to ${rendererCache.rendererCount} '
       'partial renderer functions.');
-  return partialRendererFunctions;
 }
 
 /// Returns a method body for the render function for [compiler], which simply
@@ -256,12 +268,12 @@ class _AotCompiler {
   /// This field is only complete after [_compileToRenderer] has run.
   final Set<_AotCompiler> _partialCompilers = {};
 
-  final Map<_AotCompiler, String> _compiledPartials = {};
-
   /// The current stack of context objects (as variable lookups).
   final ContextStack _contextStack;
 
   /// The set of context objects which are ultimately used by this compiler.
+  ///
+  /// This field is only complete after [_compileToRenderer] has run.
   final Set<_VariableLookup> _usedContexts = {};
 
   ContextStack get _usedContextStack =>
@@ -321,7 +333,7 @@ class _AotCompiler {
     return [...result.reversed];
   }
 
-  Future<String> _compileToRenderer(Set<String> referenceUris) async {
+  Future<void> _compileToRenderer(Set<String> referenceUris) async {
     if (_contextStack.isEmpty) {
       var contextVariable = _VariableLookup(_contextType, 'context0');
       _contextStack.push(contextVariable);
@@ -333,6 +345,14 @@ class _AotCompiler {
     var rendererBody = blockCompiler._buffer.toString();
     _usedContexts.addAll(_contextStack
         .where((c) => blockCompiler._usedContextTypes.contains(c)));
+
+    var cachedRenderer =
+        _buildData._rendererCache.get(_templatePath, _usedContextStack);
+    if (cachedRenderer != null) {
+      // No need to keep compiling a new renderer.
+      return;
+    }
+
     referenceUris.addAll(blockCompiler._referenceUris);
 
     var buffer = StringBuffer()..write('String $_rendererName');
@@ -380,7 +400,9 @@ class _AotCompiler {
   return buffer.toString();
 }
 ''');
-    return buffer.toString();
+
+    _buildData._rendererCache
+        .put(_templatePath, _usedContextStack, this, buffer.toString());
   }
 
   /// Returns the URI of [element] for use in generated import directives.
@@ -459,25 +481,25 @@ class _BlockCompiler {
     filePath.add('_$fileName.$extension');
     var partialPath = path.join(
         path.dirname(_templateCompiler._templatePath), filePath.join('/'));
-    var partialCompiler = _templateCompiler._partialCompilers.firstWhereOrNull(
+    // First see if there is a compiler in the global cache.
+    var sanitizedKey = node.key.replaceAll('.', '_').replaceAll('/', '_');
+    var name = '${partialBaseName}_'
+        '${sanitizedKey}_'
+        '${_templateCompiler._partialCounter}';
+    var potentialPartialCompiler = await _AotCompiler._readAndParse(
+        contextType, name, partialPath, _templateCompiler._buildData,
+        contextStack: _contextStack);
+    await potentialPartialCompiler._compileToRenderer(referenceUris);
+    var partialCompiler = _templateCompiler._buildData._rendererCache
+        .get(partialPath, potentialPartialCompiler._usedContextStack)
+        ?.compiler;
+    // Check the set of partial compilers this _BlockCompiler has created.
+    partialCompiler ??= _templateCompiler._partialCompilers.firstWhereOrNull(
         (p) => p._templatePath == partialPath && p._contextType == contextType);
-    if (partialCompiler == null) {
-      var sanitizedKey = node.key.replaceAll('.', '_').replaceAll('/', '_');
-      var name = '${partialBaseName}_'
-          '${sanitizedKey}_'
-          '${_templateCompiler._partialCounter}';
-      partialCompiler = await _AotCompiler._readAndParse(
-          contextType, name, partialPath, _templateCompiler._buildData,
-          contextStack: _contextStack);
-      // Add this partial renderer; it is compiled here, but not written until
-      // later.
-      _templateCompiler._partialCompilers.add(partialCompiler);
-      _templateCompiler._partialCounter++;
-      _templateCompiler._compiledPartials[partialCompiler] =
-          await partialCompiler._compileToRenderer(referenceUris);
-      _templateCompiler._compiledPartials
-          .addAll(partialCompiler._compiledPartials);
-    }
+    // If we still don't have an existing one, then use the one we just created.
+    partialCompiler ??= potentialPartialCompiler;
+    _templateCompiler._partialCompilers.add(partialCompiler);
+    _templateCompiler._partialCounter++;
     // Call the partial's renderer function here; the definition of the renderer
     // function is written later.
     write('buffer.write(');
@@ -713,8 +735,166 @@ class _BuildData {
 
   final String _root;
 
-  _BuildData(
-      this._typeProvider, this._typeSystem, this._sourcePath, this._root);
+  final _RendererCache _rendererCache;
+
+  _BuildData(this._typeProvider, this._typeSystem, this._sourcePath, this._root)
+      : _rendererCache = _RendererCache(_typeSystem);
+}
+
+/// A cache which maps template paths to the various compilers and renderer data
+/// that may be used to render them.
+class _RendererCache {
+  final Map<String, _RenderersForPath> _renderers = {};
+  final TypeSystem _typeSystem;
+
+  _RendererCache(this._typeSystem);
+
+  /// Returns the renderer data for [templatePath] and [usedContextStack], or
+  /// `null` if there is no such data.
+  _RendererData? get(String templatePath, ContextStack usedContextStack) =>
+      _renderers[templatePath]?.getSuitable(usedContextStack);
+
+  /// Returns the compiler for [templatePath] and [usedContextStack], or `null`
+  /// if there is no such compiler in the cache.
+  _AotCompiler? getCompiler(
+          String templatePath, ContextStack usedContextStack) =>
+      _renderers[templatePath]?.get(usedContextStack)?.compiler;
+
+  /// Inserts [compiler] and [renderer] as the data for [templatePath] and
+  /// [usedContextStack].
+  void put(
+    String templatePath,
+    ContextStack usedContextStack,
+    _AotCompiler compiler,
+    String renderer,
+  ) {
+    _renderers
+        .putIfAbsent(templatePath, () => _RenderersForPath(_typeSystem))
+        .put(usedContextStack, compiler, renderer);
+  }
+
+  /// Decrements the renderer data 'references' counter for [templatePath] and
+  /// [usedContextStack], if it exists, and removes the data if the references
+  /// counter becomes 0.
+  void remove(String templatePath, ContextStack usedContextStack) =>
+      _renderers[templatePath]?.remove(usedContextStack);
+
+  /// All of the template paths known to the renderer cache.
+  Iterable<String> get allTemplatePaths => _renderers.keys;
+
+  /// A mapping of all template paths to their used context stacks.
+  Map<String, List<ContextStack>> get allUsedContextStacks =>
+      _renderers.map((templatePath, renderers) =>
+          MapEntry(templatePath, renderers._renderers.keys.toList()));
+
+  /// All of the context stacks for [templatePath].
+  List<ContextStack> allContextStacksFor(String templatePath) =>
+      _renderers[templatePath]!._renderers.keys.toList();
+
+  /// All of the compilers for [templatePath].
+  Iterable<_AotCompiler>? allCompilersFor(String templatePath) =>
+      _renderers[templatePath]?._renderers.values.map((e) => e.compiler);
+
+  /// All of the compiled renderer functions for all of the templates known to
+  /// the renderer cache.
+  Iterable<String> get allRendererFunctions => _renderers.values
+      .expand((e) => e._renderers.values.map((f) => f.renderer));
+
+  /// The total number of renderers.
+  int get rendererCount =>
+      _renderers.values.fold(0, (sum, e) => sum + e._renderers.length);
+}
+
+/// Data for all of the renderers available to render a partial at a given path.
+///
+/// The path is not tracked here; it is tracked in [_RendererCache].
+class _RenderersForPath {
+  final Map<ContextStack, _RendererData> _renderers = {};
+  final TypeSystem _typeSystem;
+
+  _RenderersForPath(this._typeSystem);
+
+  /// Gets renderer data for [usedContextStack] or render data for a suitable
+  /// replacement for [usedContextStack], if a suitable replacement exists.
+  ///
+  /// A suitable replacement is a [ContextStack] where each type is a supertype
+  /// of the corresponding type in [usedContextStack].
+  _RendererData? getSuitable(ContextStack usedContextStack) {
+    for (var existingContextStack in _renderers.keys) {
+      if (usedContextStack.length != existingContextStack.length) continue;
+      var keyIsAllSubtypes = true;
+      for (var i = 0; i < usedContextStack.length; i++) {
+        if (!_typeSystem.isSubtypeOf(
+            usedContextStack[i].type, existingContextStack[i].type)) {
+          keyIsAllSubtypes = false;
+          break;
+        }
+      }
+      if (!keyIsAllSubtypes) continue;
+      // The types in [key] are all subtypes of the types in [existingKey] so
+      // [existingKey] can be considered to be a suitable existing key.
+      var usage = _renderers[existingContextStack]!;
+      usage.referenceCount++;
+      return usage;
+    }
+    return null;
+  }
+
+  /// Gets the [_RendererData] for [usedContextStack], if it exists.
+  _RendererData? get(ContextStack usedContextStack) {
+    var existingKey = _existingKey(usedContextStack);
+    return (existingKey == null) ? null : _renderers[existingKey]!;
+  }
+
+  /// Returns the first [ContextStack] that is "equal" to [key].
+  ///
+  /// Since a [ContextStack] is just a [List], this is just pairwise equality.
+  ContextStack? _existingKey(ContextStack key) {
+    return _renderers.keys.firstWhereOrNull((k) {
+      if (key.length != k.length) return false;
+      for (var i = 0; i < key.length; i++) {
+        if (key[i] != k[i]) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  /// Inserts [compiler] and [renderer] as the data for [usedContextStack].
+  void put(
+      ContextStack usedContextStack, _AotCompiler compiler, String renderer) {
+    var existingContextStack = _existingKey(usedContextStack);
+    if (existingContextStack == null) {
+      _renderers[usedContextStack] = _RendererData(compiler, renderer);
+      return;
+    }
+    var data = _renderers[existingContextStack]!;
+    _renderers[_existingKey(usedContextStack)!] =
+        _RendererData(compiler, renderer)..referenceCount = data.referenceCount;
+  }
+
+  /// Decrements the renderer data 'references' counter for [usedContextStack],
+  /// if it exists, and removes the data if the references counter becomes 0.
+  void remove(ContextStack usedContextStack) {
+    var existingContextStack = _existingKey(usedContextStack);
+    if (existingContextStack == null) return;
+    var usage = _renderers[existingContextStack]!;
+    usage.referenceCount--;
+    if (usage.referenceCount == 0) {
+      _renderers.remove(existingContextStack);
+    }
+  }
+}
+
+/// The data for the usage of a [renderer], generated by a [compiler], and
+/// referenced [referenceCount] times.
+class _RendererData {
+  final _AotCompiler compiler;
+  final String renderer;
+  int referenceCount = 0;
+
+  _RendererData(this.compiler, this.renderer);
 }
 
 /// Represents a variable lookup via property access chain [name] which returns

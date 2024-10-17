@@ -16,6 +16,18 @@ import 'dart:convert';
 
 import 'foo.dart';
 
+String renderBar() {
+  final buffer = StringBuffer();
+
+  return buffer.toString();
+}
+
+String renderBaz() {
+  final buffer = StringBuffer();
+
+  return buffer.toString();
+}
+
 String renderFoo(Foo context0) {
   final buffer = StringBuffer();
   buffer.write('''<div>
@@ -55,18 +67,6 @@ String renderFoo(Foo context0) {
   }
   buffer.writeln();
   buffer.write('''</div>''');
-
-  return buffer.toString();
-}
-
-String renderBar() {
-  final buffer = StringBuffer();
-
-  return buffer.toString();
-}
-
-String renderBaz() {
-  final buffer = StringBuffer();
 
   return buffer.toString();
 }
