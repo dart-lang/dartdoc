@@ -314,6 +314,25 @@ extension E on C {
     ]);
   }
 
+  void test_instancePropertyAccessor_fromExtension_onNullableType() async {
+    await createPackageWithLibrary('''
+class C {}
+
+extension E on C? {
+  /// An instance getter.
+  int get f => 1;
+}
+''');
+    var htmlLines = readLines(['lib', 'C-class.html']);
+
+    htmlLines.expectMainContentContainsAllInOrder([
+      matches('<h2>Properties</h2>'),
+      matches('<dt id="f" class="property">'),
+      matches('<a href="../lib/E/f.html">f</a>'),
+      matches('An instance getter.'),
+    ]);
+  }
+
   void test_instancePropertyAccessor_fromExtensionOfSupertype() async {
     await createPackageWithLibrary('''
 class C<T> {}

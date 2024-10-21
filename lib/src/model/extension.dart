@@ -45,6 +45,7 @@ class Extension extends Container {
     if (extendedType is DynamicType || extendedType is VoidType) {
       return true;
     }
+    extendedType = library.element.typeSystem.promoteToNonNull(extendedType);
     var otherType = container.modelType.type;
     if (otherType is InterfaceType) {
       otherType = library.element.typeSystem.instantiateInterfaceToBounds(
