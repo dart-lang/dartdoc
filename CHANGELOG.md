@@ -1,3 +1,11 @@
+## 8.3.0
+
+* The URL for library pages has moved "<em>library-name</em>-library.html" to
+  "index.html" in the same directory. A redirecting file is left in the
+  previous location. (#3895)
+* Display extension members on the extended type's page, when the extended type
+  is nullable. (#3908)
+
 ## 8.2.1
 
 * When calculating the "directory name" of an anonymous library, strip the
