@@ -751,8 +751,9 @@ class PackageGraph with CommentReferable, Nameable {
     return buffer.toString();
   }
 
-  /// Tries to find a canonical [ModelElement] for this [modelElement].  If we
-  /// know this element is related to a particular class, pass a
+  /// Tries to find a canonical [ModelElement] for [modelElement].
+  ///
+  /// If we know the element is related to a particular class, pass a
   /// [preferredClass] to disambiguate.
   ///
   /// This doesn't know anything about [PackageGraph.inheritThrough] and
@@ -795,10 +796,10 @@ class PackageGraph with CommentReferable, Nameable {
     ModelElement? canonicalModelElement;
     if (declaration != null &&
         (element is ClassMemberElement || element is PropertyAccessorElement)) {
-      modelElement = getModelForElement(declaration);
-      element = modelElement.element;
+      var declarationModelElement = getModelForElement(declaration);
+      element = declarationModelElement.element;
       canonicalModelElement = _findCanonicalModelElementForAmbiguous(
-          modelElement, library,
+          declarationModelElement, library,
           preferredClass: preferredClass as InheritingContainer?);
     } else {
       if (library != null) {
