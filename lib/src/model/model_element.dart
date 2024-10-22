@@ -466,14 +466,14 @@ abstract class ModelElement
         .join();
   }
 
-  // True if this is a function, or if it is an type alias to a function.
+  /// Whether this is a function, or if it is an type alias to a function.
   bool get isCallable =>
       element is FunctionTypedElement ||
       (element is TypeAliasElement &&
           (element as TypeAliasElement).aliasedType is FunctionType);
 
-  // The canonical ModelElement for this ModelElement,
-  // or null if there isn't one.
+  /// The canonical ModelElement for this ModelElement, or null if there isn't
+  /// one.
   late final ModelElement? canonicalModelElement = () {
     final enclosingElement = this.enclosingElement;
     var preferredClass = switch (enclosingElement) {
@@ -514,8 +514,9 @@ abstract class ModelElement
 
     var definingLibraryIsLocalPublic =
         packageGraph.localPublicLibraries.contains(library);
-    var possibleCanonicalLibrary =
-        definingLibraryIsLocalPublic ? library : _searchForCanonicalLibrary();
+    var possibleCanonicalLibrary = definingLibraryIsLocalPublic
+        ? library
+        : canonicalLibraryCandidate(this);
 
     if (possibleCanonicalLibrary != null) return possibleCanonicalLibrary;
 
@@ -531,51 +532,6 @@ abstract class ModelElement
 
     return null;
   }();
-
-  /// Searches [PackageGraph.libraryExports] for a public, documented library
-  /// which exports this [ModelElement], ideally in [library]'s package.
-  Library? _searchForCanonicalLibrary() {
-    var thisAndExported = packageGraph.libraryExports[library.element];
-    if (thisAndExported == null) {
-      return null;
-    }
-
-    // Since we're looking for a library, find the [Element] immediately
-    // contained by a [CompilationUnitElement] in the tree.
-    var topLevelElement = element;
-    while (topLevelElement.enclosingElement3 is! LibraryElement &&
-        topLevelElement.enclosingElement3 is! CompilationUnitElement &&
-        topLevelElement.enclosingElement3 != null) {
-      topLevelElement = topLevelElement.enclosingElement3!;
-    }
-    var topLevelElementName = topLevelElement.name;
-    if (topLevelElementName == null) {
-      // Any member of an unnamed extension is not public, and has no
-      // canonical library.
-      return null;
-    }
-
-    final candidateLibraries = thisAndExported.where((l) {
-      if (!l.isPublic) return false;
-      if (l.package.documentedWhere == DocumentLocation.missing) return false;
-      if (this is Library) return true;
-      var lookup = l.element.exportNamespace.definedNames[topLevelElementName];
-      return topLevelElement ==
-          (lookup is PropertyAccessorElement ? lookup.variable2 : lookup);
-    }).toList(growable: true);
-
-    if (candidateLibraries.isEmpty) {
-      return null;
-    }
-    if (candidateLibraries.length == 1) {
-      return candidateLibraries.single;
-    }
-
-    var topLevelModelElement =
-        ModelElement.forElement(topLevelElement, packageGraph);
-    return Canonicalization(topLevelModelElement)
-        .calculateCanonicalCandidate(candidateLibraries);
-  }
 
   @override
   bool get isCanonical {

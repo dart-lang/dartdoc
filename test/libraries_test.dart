@@ -194,6 +194,16 @@ class LibrariesTest extends DartdocTestBase {
     expect(library.href, '${placeholder}libraries');
   }
 
+  void test_library_containsClassWithSameNameAsDartSdk() async {
+    var library = await bootPackageWithLibrary(
+      'export "dart:io";',
+      libraryFilePath: 'lib/library.dart',
+    );
+
+    expect(library.classes.named('FileSystemEntity').linkedName,
+        '<a href="$dartSdkUrlPrefix/dart-io/FileSystemEntity-class.html">FileSystemEntity</a>');
+  }
+
   void test_publicLibrary_unnamed() async {
     var library =
         (await bootPackageFromFiles([d.file('lib/lib1.dart', 'library;')]))

@@ -2,21 +2,78 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
+
+/// Searches [PackageGraph.libraryExports] for a public, documented library
+/// which exports this [ModelElement], ideally in its library's package.
+Library? canonicalLibraryCandidate(ModelElement modelElement) {
+  var thisAndExported =
+      modelElement.packageGraph.libraryExports[modelElement.library.element];
+  if (thisAndExported == null) {
+    return null;
+  }
+
+  // Since we're looking for a library, find the [Element] immediately
+  // contained by a [CompilationUnitElement] in the tree.
+  var topLevelElement = modelElement.element;
+  while (topLevelElement.enclosingElement3 is! LibraryElement &&
+      topLevelElement.enclosingElement3 is! CompilationUnitElement &&
+      topLevelElement.enclosingElement3 != null) {
+    topLevelElement = topLevelElement.enclosingElement3!;
+  }
+  var topLevelElementName = topLevelElement.name;
+  if (topLevelElementName == null) {
+    // Any member of an unnamed extension is not public, and has no
+    // canonical library.
+    return null;
+  }
+
+  final candidateLibraries = thisAndExported.where((l) {
+    if (!l.isPublic) return false;
+    if (l.package.documentedWhere == DocumentLocation.missing) return false;
+    if (modelElement is Library) return true;
+    var lookup = l.element.exportNamespace.definedNames[topLevelElementName];
+    return topLevelElement ==
+        (lookup is PropertyAccessorElement ? lookup.variable2 : lookup);
+  }).toList(growable: true);
+
+  if (candidateLibraries.isEmpty) {
+    return null;
+  }
+  if (candidateLibraries.length == 1) {
+    return candidateLibraries.single;
+  }
+
+  var remoteLibraries = candidateLibraries
+      .where((l) => l.package.documentedWhere == DocumentLocation.remote);
+  if (remoteLibraries.length == 1) {
+    // If one or more local libraries export code from a remotely documented
+    // library (and we're linking to remote libraries), then just use the remote
+    // library.
+    return remoteLibraries.single;
+  }
+
+  var topLevelModelElement =
+      ModelElement.forElement(topLevelElement, modelElement.packageGraph);
+
+  return _Canonicalization(topLevelModelElement)
+      .canonicalLibraryCandidate(candidateLibraries);
+}
 
 /// Canonicalization support in Dartdoc.
 ///
 /// This provides heuristic scoring to determine which library a human likely
 /// considers this element to be primarily 'from', and therefore, canonical.
 /// Still warn if the heuristic isn't very confident.
-final class Canonicalization {
+final class _Canonicalization {
   final ModelElement _element;
 
-  Canonicalization(this._element);
+  _Canonicalization(this._element);
 
   /// Calculates a candidate for the canonical library of [_element], among [libraries].
-  Library calculateCanonicalCandidate(Iterable<Library> libraries) {
+  Library canonicalLibraryCandidate(Iterable<Library> libraries) {
     var locationPieces = _element.element.location
         .toString()
         .split(_locationSplitter)
