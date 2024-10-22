@@ -4,8 +4,8 @@
 
 import 'dart:io';
 
-import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/tool_configuration.dart';
 import 'package:dartdoc/src/tool_definition.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:path/path.dart' as path;
