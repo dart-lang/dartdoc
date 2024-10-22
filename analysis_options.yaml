@@ -30,7 +30,6 @@ linter:
     - no_literal_bool_comparisons
     - omit_local_variable_types
     - only_throw_errors
-    - package_api_docs
     - prefer_asserts_in_initializer_lists
     - prefer_null_aware_method_calls
     - prefer_single_quotes
