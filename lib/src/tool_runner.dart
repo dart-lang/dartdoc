@@ -5,8 +5,8 @@
 import 'dart:io' show Process, ProcessException;
 
 import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/tool_configuration.dart';
 import 'package:dartdoc/src/tool_definition.dart';
 import 'package:path/path.dart' as path;
 
