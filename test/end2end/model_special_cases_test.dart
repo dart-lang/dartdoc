@@ -10,6 +10,7 @@
 library;
 
 import 'package:async/async.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
@@ -413,14 +414,21 @@ void main() {
           .singleWhere((f) => f.name == 'hashCode');
       var objectModelElement =
           sdkAsPackageGraph.specialClasses[SpecialClass.object];
-      // If this fails, EventTarget might have been changed to no longer
-      // inherit from Interceptor.  If that's true, adjust test case to
-      // another class that does.
-      expect(hashCode.inheritance.any((c) => c.name == 'Interceptor'), isTrue);
-      // If EventTarget really does start implementing hashCode, this will
-      // fail.
-      expect(hashCode.href,
-          equals('${htmlBasePlaceholder}dart-core/Object/hashCode.html'));
+      expect(
+        eventTarget.superChain,
+        contains(isA<ParameterizedElementType>()
+            .having((t) => t.name, 'name', 'Interceptor')),
+        reason: 'EventTarget appears to no longer subtype Interceptor, which '
+            'makes the premise of this test invalid. To keep the test case '
+            'valid, we need to use a class that subclasses Interceptor.',
+      );
+      expect(
+        hashCode.href,
+        equals('${htmlBasePlaceholder}dart-core/Object/hashCode.html'),
+        reason:
+            "EventTarget appears to have an explicit override of 'hashCode', "
+            'which makes this test case invalid.',
+      );
       expect(hashCode.canonicalEnclosingContainer, equals(objectModelElement));
       expect(
           eventTarget.publicSuperChainReversed

@@ -6938,19 +6938,6 @@ class _Renderer_Inheritable extends RendererBase<Inheritable> {
                         parent: r);
                   },
                 ),
-                'inheritance': Property(
-                  getValue: (CT_ c) => c.inheritance,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(
-                          c, remainingNames, 'List<InheritingContainer>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.inheritance.map((e) => _render_InheritingContainer(
-                        e, ast, r.template, sink,
-                        parent: r));
-                  },
-                ),
                 'isCovariant': Property(
                   getValue: (CT_ c) => c.isCovariant,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -16216,7 +16203,6 @@ const _invisibleGetters = {
     'attributes',
     'canonicalLibrary',
     'canonicalModelElement',
-    'inheritance',
     'isCovariant',
     'isInherited',
     'isOverride',
