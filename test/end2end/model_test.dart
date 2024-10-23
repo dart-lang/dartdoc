@@ -1068,39 +1068,6 @@ void main() async {
     });
   });
 
-  group('MultiplyInheritedExecutableElement handling', () {
-    late final Class BaseThingy, BaseThingy2, ImplementingThingy2;
-    late final Method aImplementingThingyMethod;
-    late final Field aImplementingThingyField;
-    late final Field aImplementingThingy;
-    late final Accessor aImplementingThingyAccessor;
-
-    setUpAll(() {
-      BaseThingy = fakeLibrary.classes.named('BaseThingy');
-      BaseThingy2 = fakeLibrary.classes.named('BaseThingy2');
-      ImplementingThingy2 = fakeLibrary.classes.named('ImplementingThingy2');
-
-      aImplementingThingy =
-          ImplementingThingy2.instanceFields.named('aImplementingThingy');
-      aImplementingThingyMethod = ImplementingThingy2.instanceMethods
-          .named('aImplementingThingyMethod');
-      aImplementingThingyField =
-          ImplementingThingy2.instanceFields.named('aImplementingThingyField');
-      aImplementingThingyAccessor = aImplementingThingyField.getter!;
-    });
-
-    test('Verify behavior of imperfect resolver', () {
-      expect(aImplementingThingy.element.enclosingElement3,
-          equals(BaseThingy2.element));
-      expect(aImplementingThingyMethod.element.enclosingElement3,
-          equals(BaseThingy.element));
-      expect(aImplementingThingyField.element.enclosingElement3,
-          equals(BaseThingy.element));
-      expect(aImplementingThingyAccessor.element.enclosingElement3,
-          equals(BaseThingy.element));
-    });
-  });
-
   group('Docs as HTML', () {
     late final Class Apple, B, superAwesomeClass, foo2;
     late final TopLevelVariable incorrectDocReferenceFromEx;

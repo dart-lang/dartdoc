@@ -83,24 +83,6 @@ export 'src/reexport_this.dart';
 /// Does not render with emoji 3ffe:2a00:100:7031::1
 const int hasMarkdownInDoc = 1;
 
-abstract class ImplementingThingy implements BaseThingy {}
-
-abstract class BaseThingy {
-  // ignore: public_member_api_docs
-  ImplementingThingy get aImplementingThingy;
-  ImplementingThingy? aImplementingThingyField;
-  void aImplementingThingyMethod(ImplementingThingy parameter);
-}
-
-abstract class ImplementingThingy2 implements BaseThingy2, ImplementingThingy {}
-
-/// Test for MultiplyInheritedExecutableElement handling.
-abstract class BaseThingy2 implements BaseThingy {
-  /// BaseThingy2's doc for aImplementingThingy.
-  @override
-  ImplementingThingy2 get aImplementingThingy;
-}
-
 /// This function has a link to a renamed library class member.
 ///
 /// Link to library: [renamedLib]
