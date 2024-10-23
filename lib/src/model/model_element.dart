@@ -197,7 +197,6 @@ abstract class ModelElement
     _cacheNewModelElement(e, newModelElement, library,
         enclosingContainer: enclosingContainer);
 
-    assert(newModelElement.element is! MultiplyInheritedExecutableElement);
     return newModelElement;
   }
 
@@ -255,7 +254,6 @@ abstract class ModelElement
     _cacheNewModelElement(e, newModelElement, library,
         enclosingContainer: enclosingContainer);
 
-    assert(newModelElement.element is! MultiplyInheritedExecutableElement);
     return newModelElement;
   }
 
@@ -288,8 +286,6 @@ abstract class ModelElement
     Member? originalMember,
   }) {
     return switch (e) {
-      MultiplyInheritedExecutableElement() => e.resolveMultiplyInheritedElement(
-          library, packageGraph, enclosingContainer as Class),
       LibraryElement() => packageGraph.findButDoNotCreateLibraryFor(e)!,
       PrefixElement() => Prefix(e, library, packageGraph),
       EnumElement() => Enum(e, library, packageGraph),
@@ -349,8 +345,7 @@ abstract class ModelElement
   }) {
     // Accessors can be part of a [Container], or a part of a [Library].
     if (e.enclosingElement3 is ExtensionElement ||
-        e.enclosingElement3 is InterfaceElement ||
-        e is MultiplyInheritedExecutableElement) {
+        e.enclosingElement3 is InterfaceElement) {
       if (enclosingContainer == null || enclosingContainer is Extension) {
         return ContainerAccessor(e, library, packageGraph, enclosingContainer);
       }
@@ -795,28 +790,4 @@ abstract class ModelElement
   }
 
   String get linkedObjectType => _packageGraph.dartCoreObject;
-}
-
-extension on MultiplyInheritedExecutableElement {
-  /// Resolves this very rare case incorrectly by picking the closest element in
-  /// the inheritance and interface chains from the analyzer.
-  // TODO(jcollins-g): Implement resolution per ECMA-408 4th edition, page 39
-  // #22.
-  ModelElement resolveMultiplyInheritedElement(
-      Library library, PackageGraph packageGraph, Class enclosingClass) {
-    var inheritables = inheritedElements
-        .map((e) => ModelElement.forElement(e, packageGraph) as Inheritable);
-    late Inheritable foundInheritable;
-    var lowIndex = enclosingClass.inheritanceChain.length;
-    for (var inheritable in inheritables) {
-      var index = enclosingClass.inheritanceChain
-          .indexOf(inheritable.enclosingElement as InheritingContainer);
-      if (index < lowIndex) {
-        foundInheritable = inheritable;
-        lowIndex = index;
-      }
-    }
-    return ModelElement.for_(foundInheritable.element, library, packageGraph,
-        enclosingContainer: enclosingClass);
-  }
 }

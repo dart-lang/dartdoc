@@ -604,7 +604,7 @@ abstract class InheritingContainer extends Container {
     var getter = containerAccessorFrom(getterElement);
     var setter = containerAccessorFrom(setterElement);
     // Rebind [getterElement], [setterElement] as [ModelElement.from] can
-    // resolve [MultiplyInheritedExecutableElement]s or resolve [Member]s.
+    // resolve [Member]s.
     getterElement = getter?.element;
     setterElement = setter?.element;
     assert(getter != null || setter != null);
