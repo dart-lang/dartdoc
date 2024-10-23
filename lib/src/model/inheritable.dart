@@ -58,7 +58,7 @@ mixin Inheritable on ContainerMember {
       Container? previous;
       Container? previousNonSkippable;
       Container? found;
-      for (var c in inheritance.reversed) {
+      for (var c in _inheritance.reversed) {
         // Filter out mixins.
         if (c.containsElement(searchElement)) {
           if ((packageGraph.inheritThrough.contains(previous) &&
@@ -96,7 +96,11 @@ mixin Inheritable on ContainerMember {
     return super.computeCanonicalEnclosingContainer();
   }
 
-  List<InheritingContainer> get inheritance {
+  /// A roughly ordered list of this element's enclosing container's inheritance
+  /// chain.
+  ///
+  /// See [InheritingContainer.inheritanceChain] for details.
+  List<InheritingContainer> get _inheritance {
     var inheritance = [
       ...(enclosingElement as InheritingContainer).inheritanceChain,
     ];
@@ -120,7 +124,6 @@ mixin Inheritable on ContainerMember {
     if (inheritance.last != object) {
       inheritance.add(object);
     }
-    assert(inheritance.where((e) => e == object).length == 1);
     return inheritance;
   }
 

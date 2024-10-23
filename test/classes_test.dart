@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/special_elements.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -180,6 +181,22 @@ class C<T> implements A<T>, _B<T> {}
     var c = library.classes.named('C');
     expect(c.publicInterfaces, hasLength(1));
     expect(c.publicInterfaces.first.modelElement, library.classes.named('A'));
+  }
+
+  void test_inheritanceOfObjectInstanceMethod() async {
+    // This code is written such that `Inheritable._inheritance` for
+    // `A.toString()` includes two copies of Object; one from walking up B's
+    // chain, and then the second from walking up C's chain.
+    var library = await bootPackageWithLibrary('''
+class A implements B, C {}
+class B implements C {}
+class C implements D {}
+class D implements Object {}
+''');
+
+    var object = library.packageGraph.specialClasses[SpecialClass.object]!;
+    var toString = library.classes.named('A').instanceMethods.named('toString');
+    expect(toString.canonicalEnclosingContainer, object);
   }
 
   // TODO(srawlins): Test everything else about classes.
