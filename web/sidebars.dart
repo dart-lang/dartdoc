@@ -76,7 +76,7 @@ void _loadSidebar(
   }
 
   window.fetch('$baseHref$sidebarPath'.toJS).toDart.then((fetchResponse) async {
-    if (fetchResponse.status != 200) {
+    if (fetchResponse.status != HttpStatus.ok) {
       final errorAnchor = HTMLAnchorElement()
         ..href = 'https://dart.dev/tools/dart-doc#troubleshoot'
         ..text = 'Failed to load sidebar. '
@@ -96,14 +96,11 @@ void _loadSidebar(
 /// Recurses down a DOM tree to adjust the links in a newly loaded sidebar
 /// if "base href" is not being used.
 void _updateLinks(String baseHref, Node node) {
-  // TODO(parlough): Once SDK constraint is >= 3.4, use isA extension.
-  if (node.nodeName.toLowerCase() == 'a') {
-    final element = node as HTMLAnchorElement;
-    if (element.getAttribute('href') case final hrefString?) {
-      final href = Uri.parse(hrefString);
-      if (!href.isAbsolute) {
-        element.href = '$baseHref$hrefString';
-      }
+  if (node.isA<HTMLAnchorElement>()) {
+    final hrefString = (node as HTMLAnchorElement).href;
+    final href = Uri.tryParse(hrefString);
+    if (href != null && !href.isAbsolute) {
+      node.href = '$baseHref$hrefString';
     }
   }
 
