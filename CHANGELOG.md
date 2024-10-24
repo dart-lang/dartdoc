@@ -1,3 +1,7 @@
+## 8.3.1-wip
+
+* Require Dart 3.5 or later.
+
 ## 8.3.0
 
 * The URL for library pages has moved "<em>library-name</em>-library.html" to

@@ -40,7 +40,7 @@ void init() {
       .fetch('${_htmlBase}index.json'.toJS)
       .toDart
       .then((fetchResponse) async {
-    if (fetchResponse.status != 200) {
+    if (fetchResponse.status != HttpStatus.ok) {
       disableSearch();
       return;
     }
