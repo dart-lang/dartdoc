@@ -186,7 +186,8 @@ Future<void> buildWeb({bool debug = false}) async {
     throw StateError('Compiled CSS was empty.');
   }
 
-  var compileSig = await _calcDartFilesSig(Directory('web'));
+  var compileSig =
+      await _calcFilesSig(Directory('web'), extensions: {'.dart', '.scss'});
   File(path.join('web', 'sig.txt')).writeAsStringSync('$compileSig\n');
 }
 
@@ -198,14 +199,14 @@ void _delete(FileSystemEntity entity) {
   }
 }
 
-/// Yields all of the trimmed lines of all of the `.dart` files in [dir].
-Stream<String> _dartFileLines(Directory dir) {
+/// Yields all of the trimmed lines of all of the files in [dir] with
+/// one of the specified [extensions].
+Stream<String> _fileLines(Directory dir, {required Set<String> extensions}) {
   var files = dir
       .listSync(recursive: true)
       .whereType<File>()
-      .where((file) => file.path.endsWith('.dart'))
-      .toList()
-    ..sort((a, b) => compareAsciiLowerCase(a.path, b.path));
+      .where((file) => extensions.contains(path.extension(file.path)))
+      .sorted((a, b) => compareAsciiLowerCase(a.path, b.path));
 
   return Stream.fromIterable([
     for (var file in files)
@@ -833,7 +834,8 @@ Rebuild them with "dart tool/task.dart build" and check the results in.
   }
 
   // Verify that the web frontend has been compiled.
-  final currentCodeSig = await _calcDartFilesSig(Directory('web'));
+  final currentCodeSig =
+      await _calcFilesSig(Directory('web'), extensions: {'.dart', '.scss'});
   final lastCompileSig =
       File(path.join('web', 'sig.txt')).readAsStringSync().trim();
   if (currentCodeSig != lastCompileSig) {
@@ -994,8 +996,11 @@ int _findCount(String str, String match) {
   return count;
 }
 
-Future<String> _calcDartFilesSig(Directory dir) async {
-  final digest = await _dartFileLines(dir)
+Future<String> _calcFilesSig(
+  Directory dir, {
+  required Set<String> extensions,
+}) async {
+  final digest = await _fileLines(dir, extensions: extensions)
       .transform(utf8.encoder)
       .transform(crypto.md5)
       .single;
