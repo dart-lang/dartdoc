@@ -12,6 +12,7 @@ import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
+import 'package:sass/sass.dart' as sass;
 import 'package:yaml/yaml.dart' as yaml;
 import 'package:yaml/yaml.dart';
 
@@ -177,7 +178,16 @@ Future<void> buildWeb({bool debug = false}) async {
   ]);
   _delete(File('lib/resources/docs.dart.js.deps'));
 
-  var compileSig = await _calcDartFilesSig(Directory('web'));
+  final compileResult = sass.compileToResult('web/styles/styles.scss',
+      style: debug ? sass.OutputStyle.expanded : sass.OutputStyle.compressed);
+  if (compileResult.css.isNotEmpty) {
+    File('lib/resources/styles.css').writeAsStringSync(compileResult.css);
+  } else {
+    throw StateError('Compiled CSS was empty.');
+  }
+
+  var compileSig =
+      await _calcFilesSig(Directory('web'), extensions: {'.dart', '.scss'});
   File(path.join('web', 'sig.txt')).writeAsStringSync('$compileSig\n');
 }
 
@@ -189,14 +199,14 @@ void _delete(FileSystemEntity entity) {
   }
 }
 
-/// Yields all of the trimmed lines of all of the `.dart` files in [dir].
-Stream<String> _dartFileLines(Directory dir) {
+/// Yields all of the trimmed lines of all of the files in [dir] with
+/// one of the specified [extensions].
+Stream<String> _fileLines(Directory dir, {required Set<String> extensions}) {
   var files = dir
       .listSync(recursive: true)
       .whereType<File>()
-      .where((file) => file.path.endsWith('.dart'))
-      .toList()
-    ..sort((a, b) => compareAsciiLowerCase(a.path, b.path));
+      .where((file) => extensions.contains(path.extension(file.path)))
+      .sorted((a, b) => compareAsciiLowerCase(a.path, b.path));
 
   return Stream.fromIterable([
     for (var file in files)
@@ -824,7 +834,8 @@ Rebuild them with "dart tool/task.dart build" and check the results in.
   }
 
   // Verify that the web frontend has been compiled.
-  final currentCodeSig = await _calcDartFilesSig(Directory('web'));
+  final currentCodeSig =
+      await _calcFilesSig(Directory('web'), extensions: {'.dart', '.scss'});
   final lastCompileSig =
       File(path.join('web', 'sig.txt')).readAsStringSync().trim();
   if (currentCodeSig != lastCompileSig) {
@@ -985,8 +996,11 @@ int _findCount(String str, String match) {
   return count;
 }
 
-Future<String> _calcDartFilesSig(Directory dir) async {
-  final digest = await _dartFileLines(dir)
+Future<String> _calcFilesSig(
+  Directory dir, {
+  required Set<String> extensions,
+}) async {
+  final digest = await _fileLines(dir, extensions: extensions)
       .transform(utf8.encoder)
       .transform(crypto.md5)
       .single;
