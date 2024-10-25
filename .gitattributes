@@ -1,6 +1,8 @@
 *.dart text eol=lf
 *.yaml text eol=lf
 
+lib/resources/styles.css linguist-generated=true
+
 # Don't collapse in github code reviews by default.
 lib/src/version.dart linguist-generated=false
 lib/src/html/resources.g.dart linguist-generated=false
@@ -10,6 +12,7 @@ lib/src/html/resources.g.dart linguist-generated=false
 # these files with `dart run tool/task.dart build`.
 lib/resources/docs.dart.js merge=theirs
 lib/resources/docs.dart.js.map merge=theirs
+lib/resources/styles.css merge=theirs
 lib/src/generator/templates.aot_renderers_for_html.dart merge=theirs
 lib/src/generator/templates.aot_renderers_for_md.dart merge=theirs
 lib/src/generator/templates.runtime_renderers.dart merge=theirs
