@@ -178,7 +178,8 @@ Future<void> buildWeb({bool debug = false}) async {
   ]);
   _delete(File('lib/resources/docs.dart.js.deps'));
 
-  final compileResult = sass.compileToResult('web/styles/styles.scss');
+  final compileResult = sass.compileToResult('web/styles/styles.scss',
+      style: debug ? sass.OutputStyle.expanded : sass.OutputStyle.compressed);
   if (compileResult.css.isNotEmpty) {
     File('lib/resources/styles.css').writeAsStringSync(compileResult.css);
   } else {
