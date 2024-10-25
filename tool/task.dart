@@ -12,6 +12,7 @@ import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
+import 'package:sass/sass.dart' as sass;
 import 'package:yaml/yaml.dart' as yaml;
 import 'package:yaml/yaml.dart';
 
@@ -176,6 +177,13 @@ Future<void> buildWeb({bool debug = false}) async {
     debug ? '-O0' : '-O4',
   ]);
   _delete(File('lib/resources/docs.dart.js.deps'));
+
+  final compileResult = sass.compileToResult('web/styles/styles.scss');
+  if (compileResult.css.isNotEmpty) {
+    File('lib/resources/styles.css').writeAsStringSync(compileResult.css);
+  } else {
+    throw StateError('Compiled CSS was empty.');
+  }
 
   var compileSig = await _calcDartFilesSig(Directory('web'));
   File(path.join('web', 'sig.txt')).writeAsStringSync('$compileSig\n');
