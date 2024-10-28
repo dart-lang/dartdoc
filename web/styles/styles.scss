@@ -225,6 +225,7 @@ main {
   margin-top: 5px;
   margin-right: 20px;
 }
+
 /* end for layout */
 
 body {
@@ -265,48 +266,43 @@ nav .container {
 
 header {
   background-color: var(--main-header-color);
-  box-shadow: 0 3px 5px rgba(0,0,0,0.1);
-}
-
-.pre {
-    border: 1px solid #ddd;
-    font-size: 14px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
 }
 
 .hljs-string, .hljs-doctag {
-    color: var(--main-string-color);
+  color: var(--main-string-color);
 }
 
 .hljs-number, .hljs-literal, .hljs-variable, .hljs-template-variable, .hljs-tag .hljs-attr {
-    color: var(--main-var-color);
+  color: var(--main-var-color);
 }
 
 .hljs-comment, .hljs-quote {
-    color: var(--main-comment-color);
-    font-style: italic;
+  color: var(--main-comment-color);
+  font-style: italic;
 }
 
 .hljs-title, .hljs-section, .hljs-selector-id {
-    color: var(--main-section-color);
-    font-weight: bold;
+  color: var(--main-section-color);
+  font-weight: bold;
 }
 
 .hljs-tag, .hljs-name, .hljs-attribute {
-    color: var(--main-tag-color);
-    font-weight: normal;
+  color: var(--main-tag-color);
+  font-weight: normal;
 }
 
 .hljs-keyword, .hljs-selector-tag, .hljs-subst {
-    color: var(--main-keyword-color);
-    font-weight: bold;
+  color: var(--main-keyword-color);
+  font-weight: bold;
 }
 
 .hljs {
-    display: block;
-    overflow-x: auto;
-    padding: 0.5em;
-    color: var(--main-text-color);
-    background: var(--main-code-bg);
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  color: var(--main-text-color);
+  background: var(--main-code-bg);
 }
 
 a {
@@ -367,18 +363,6 @@ a:hover {
   color: #13B9FD;
 }
 
-pre.prettyprint {
-  font-family: 'Roboto Mono', Menlo, monospace;
-  color: black;
-  border-radius: 0;
-  font-size: 15px;
-  word-wrap: normal;
-  line-height: 1.4;
-  border: 0;
-  margin: 16px 0 16px 0;
-  padding: 8px;
-}
-
 pre code {
   white-space: pre;
   word-wrap: initial;
@@ -400,7 +384,7 @@ code {
   color: inherit;
   padding: 0.2em 0.4em;
   font-size: 85%;
-  background-color: rgba(27,31,35,0.05);
+  background-color: rgba(27, 31, 35, 0.05);
   border-radius: 3px;
 }
 
@@ -529,18 +513,6 @@ dl dt.callable .name {
 
 .signature a {
   color: var(--main-hyperlinks-color);
-}
-
-.optional {
-  font-style: italic;
-}
-
-.undocumented {
-  font-style: italic;
-}
-
-.is-const {
-  font-style: italic;
 }
 
 .deprecated {
@@ -787,7 +759,7 @@ td {
   }
 }
 
-.breadcrumbs .gt-separated .dark .hidden-xs li+li:before {
+.breadcrumbs .gt-separated .dark .hidden-xs li + li:before {
   color: var(--main-h-text);
 }
 
@@ -826,10 +798,6 @@ ol.breadcrumbs li a {
 
 .comma-separated li:last-child:after {
   content: "";
-}
-
-.end-with-period li:last-child:after {
-  content: ".";
 }
 
 .container > section:first-child {
@@ -919,7 +887,7 @@ button {
 }
 
 /* left-nav disappears, and can transition in from the left */
-@media screen and (max-width:840px) {
+@media screen and (max-width: 840px) {
   #sidenav-left-toggle {
     display: inline;
     width: 24px;
@@ -946,9 +914,7 @@ button {
   .sidebar-offcanvas-left {
     left: -100%;
     position: fixed;
-    -webkit-transition:all .25s ease-out;
-    -o-transition:all .25s ease-out;
-    transition:all .25s ease-out;
+    transition: all .25s ease-out;
     z-index: 2000;
     top: 0;
     width: 280px; /* works all the way down to an iphone 4 */
@@ -987,8 +953,8 @@ button {
 /* the right nav disappears out of view when the window shrinks */
 @media screen and (max-width: 992px) {
   .sidebar-offcanvas-right {
-     display: none;
-   }
+    display: none;
+  }
 }
 
 #overlay-under-drawer {
@@ -1046,9 +1012,7 @@ button {
   margin: 0;
   background-color: var(--main-bg-color);
   border: 1px solid var(--main-header-color);
-  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-     -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-          box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
 }
 
 
@@ -1063,7 +1027,6 @@ button {
   outline: 0;
   background-size: 20px;
   filter: var(--main-number-filter);
-    -webkit-filter: var(--main-number-filter);
 }
 
 .search-summary {
@@ -1076,7 +1039,6 @@ a.tt-container {
 }
 
 .enter-search-message {
-  position: -webkit-sticky;
   position: sticky;
   top: 0;
   background-color: #AAA;
@@ -1201,14 +1163,14 @@ a.tt-container {
 }
 
 @media screen and (max-width: 840px) {
- .typeahead {
-   padding: 17px 17px 17px 33px;
-   width: 240px;
-   height: 17px;
-   border: 1px solid #f5f5f5;
-   background-position: 3%;
-   margin: 10px 10px 10px 9px;
- }
+  .typeahead {
+    padding: 17px 17px 17px 33px;
+    width: 240px;
+    height: 17px;
+    border: 1px solid #f5f5f5;
+    background-position: 3%;
+    margin: 10px 10px 10px 9px;
+  }
 
   header {
     padding-left: 0;
@@ -1233,7 +1195,7 @@ a.tt-container {
 .search-body {
   border: 1px solid #7f7f7f;
   max-width: 400px;
-  box-shadow: 3px 3px 5px rgba(0,0,0,0.1);
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Note that the generated HTML for pub packages may have `section` tags
@@ -1267,7 +1229,7 @@ li.inherited a {
   }
 
   a[href]:after {
-   content: "" !important;
+    content: "" !important;
   }
 }
 
@@ -1279,7 +1241,7 @@ li.inherited a {
   padding: 1.25rem;
 }
 
-.markdown-alert>:last-child {
+.markdown-alert > :last-child {
   margin-bottom: 0;
 }
 
