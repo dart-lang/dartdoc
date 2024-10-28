@@ -1,0 +1,38 @@
+// Copyright (c) 2024, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+.btn-group {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.source-link {
+  padding: 18px 4px;
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+@media (max-width: 840px) {
+  .source-link {
+    padding: 7px 2px;
+    font-size: 10px;
+  }
+}
+
+#external-links {
+  float: right;
+}
+
+@media (max-width: 840px) {
+  .hidden-xs {
+    display: none !important;
+  }
+}
+
+@media (min-width: 841px) {
+  .hidden-l {
+    display: none !important;
+  }
+}

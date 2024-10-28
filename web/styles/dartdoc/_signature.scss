@@ -1,0 +1,109 @@
+// Copyright (c) 2024, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+.type-parameter {
+  white-space: nowrap;
+}
+
+.multi-line-signature .type-parameter .parameter {
+  margin-left: 0;
+  display: unset;
+}
+
+.parameter-list {
+  display: table-cell;
+  margin-left: 10px;
+  list-style-type: none;
+  padding-inline-start: unset;
+}
+
+.parameter-list.single-line {
+  display: inline;
+  margin-left: 0;
+}
+
+.parameter-list.single-line > li {
+  display: inline;
+}
+
+.parameter-list.single-line > li > .parameter {
+  display: inline;
+  margin-left: 0;
+  text-indent: 0;
+}
+
+.signature {
+  color: var(--main-text-color);
+}
+
+.signature a {
+  color: var(--main-hyperlinks-color);
+}
+
+.deprecated {
+  text-decoration: line-through;
+}
+
+.multi-line-signature {
+  font-size: 17px;
+  color: #727272;
+}
+
+.multi-line-signature .parameter {
+  margin-left: 60px;
+  display: block;
+  text-indent: -36px;
+}
+
+.annotation-list {
+  list-style: none;
+  padding: 0;
+  display: inline;
+}
+
+.comma-separated {
+  list-style: none;
+  padding: 0;
+  display: inline;
+}
+
+.comma-separated li {
+  display: inline;
+}
+
+.comma-separated li:after {
+  content: ", ";
+}
+
+.comma-separated li:last-child:after {
+  content: "";
+}
+
+.container > section:first-child {
+  border: 0;
+}
+
+.constructor-modifier {
+  font-style: italic;
+}
+
+/* Note that the generated HTML for pub packages may have `section` tags
+   transformed into `div` tags, so we have two selectors here. */
+section.multi-line-signature div.parameters,
+div.multi-line-signature div.parameters {
+  margin-left: 24px;
+}
+
+#instance-methods dt.inherited .name,
+#instance-properties dt.inherited .name,
+#operators dt.inherited .name {
+  font-weight: 400;
+  font-style: italic;
+}
+
+#instance-methods dt.inherited .signature,
+#instance-properties dt.inherited .signature,
+#operators dt.inherited .signature {
+  font-weight: 400;
+}

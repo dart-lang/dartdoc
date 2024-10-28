@@ -1,0 +1,134 @@
+// Copyright (c) 2024, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+.light-theme {
+  /*background-color body, listdropdown*/
+  --main-bg-color: #fff;
+  /*header id-tittle*/
+  --main-header-color: #eeeeee;
+  /*package-name*/
+  --main-sidebar-color: #727272;
+  /*section-title and section subtitle, desc markdown(body, dd, h3), header a*/
+  --main-text-color: #111111;
+  /*typehead search-box*/
+  --main-search-bar: #fff;
+  /* scrollbar-thumb */
+  --main-scrollbar-color: #CCC;
+  /* footer */
+  --main-footer-background: #111111;
+  /*header text color*/
+  --main-h-text: black;
+  /* hyperlinks*/
+  --main-hyperlinks-color: #0175C2;
+  /*search background*/
+  --main-search-background: transparent;
+
+  /*code snippets*/
+  --main-code-bg: #f8f8f8;
+  --main-keyword-color: #333;
+  --main-tag-color: #000080;
+  --main-section-color: #900;
+  --main-comment-color: #998;
+  --main-var-color: #008080;
+  --main-string-color: #d14;
+
+  --main-number-filter: invert(0%);
+  --main-icon-color: black;
+
+  /* alerts */
+  --alert-info: #e7f8ff;
+  --alert-tip: #ecfaf7;
+  --alert-important: #e2dbff;
+  --alert-warning: #fcf8e3;
+  --alert-error: #fde9ee;
+}
+
+.dark-theme {
+  /*background-color body, listdropdown*/
+  --main-bg-color: #10161E;
+  /*header id-tittle*/
+  --main-header-color: #1C2834;
+  /*package-name*/
+  --main-sidebar-color: #fff;
+  /*section-title and section subtitle, desc markdown(body, dd, h3), header a*/
+  --main-text-color: #fff;
+  /*typehead search-box*/
+  --main-search-bar: #454545;
+  /* scrollbar-thumb */
+  --main-scrollbar-color: #5f6368;
+  /* footer */
+  --main-footer-background: #27323a;
+  /* hyperlinks*/
+  --main-hyperlinks-color: #00D2FA;
+  /*search background*/
+  --main-search-background: black;
+
+  /*code snippets*/
+  --main-code-bg: #10161E;
+  --main-keyword-color: white;
+  --main-tag-color: #00D2FA;
+  --main-section-color: #FF2D64;
+  --main-comment-color: #909CC3;
+  --main-var-color: #55A09B;
+  --main-string-color: #FF2D64;
+
+  --main-number-filter: invert(100%);
+  --main-icon-color: white;
+
+  /* alerts */
+  --alert-info: #043875;
+  --alert-tip: #065517;
+  --alert-important: #4a00b4;
+  --alert-warning: #7b6909;
+  --alert-error: #7a0c17;
+}
+
+#theme {
+  display: none;
+}
+
+#theme-button {
+  position: absolute;
+  right: 30px;
+  height: 24px;
+}
+
+#theme-button .material-symbols-outlined {
+  color: var(--main-icon-color);
+  user-select: none;
+  cursor: pointer;
+}
+
+#theme-button .material-symbols-outlined:hover {
+  color: var(--main-hyperlinks-color);
+}
+
+li .material-symbols-outlined, dt .material-symbols-outlined {
+  font-size: 1em;
+  vertical-align: text-bottom;
+}
+
+dt .material-symbols-outlined {
+  text-indent: 0;
+}
+
+.light-theme #light-theme-button {
+  display: none;
+}
+
+.dark-theme #dark-theme-button {
+  display: none;
+}
+
+/*
+Only show images that fit their theme using GitHub's syntax, see:
+https://github.blog/changelog/2021-11-24-specify-theme-context-for-images-in-markdown/
+*/
+.dark-theme img[src$="#gh-light-mode-only"] {
+  display: none;
+}
+
+.light-theme img[src$="#gh-dark-mode-only"] {
+  display: none;
+}

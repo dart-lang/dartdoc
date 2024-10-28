@@ -1,0 +1,183 @@
+// Copyright (c) 2024, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+.sidebar ol {
+  list-style: none;
+  line-height: 22px;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0 0 15px 0;
+}
+
+.sidebar h5 a,
+.sidebar h5 a:hover {
+  color: var(--main-sidebar-color);
+}
+
+.sidebar h5,
+.sidebar ol li {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 3px 0 3px 3px;
+}
+
+.sidebar h5 {
+  color: var(--main-sidebar-color);
+  font-size: 18px;
+  margin: 0 0 22px 0;
+  padding-top: 0;
+}
+
+.sidebar ol li.section-title {
+  font-size: 18px;
+  font-weight: normal;
+  text-transform: uppercase;
+  padding-top: 25px;
+}
+
+.sidebar ol li.section-subtitle a {
+  color: inherit;
+}
+
+.sidebar ol li.section-subtitle {
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.sidebar ol li.section-subitem {
+  margin-left: 12px;
+}
+
+.sidebar ol li:first-child {
+  padding-top: 3px;
+  margin-top: 0;
+}
+
+button {
+  padding: 0;
+}
+
+#sidenav-left-toggle {
+  display: none;
+  vertical-align: text-bottom;
+  padding: 0;
+  color: var(--main-icon-color);
+  user-select: none;
+  cursor: pointer;
+}
+
+#sidenav-left-toggle:hover {
+  color: var(--main-hyperlinks-color);
+}
+
+/* left-nav disappears, and can transition in from the left */
+@media screen and (max-width: 840px) {
+  #sidenav-left-toggle {
+    display: inline;
+    width: 24px;
+    height: 24px;
+    border: none;
+    margin-right: 24px;
+    margin-left: 24px;
+    font-size: 24px;
+  }
+
+  #overlay-under-drawer.active {
+    opacity: 0.4;
+    height: 100%;
+    z-index: 1999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: black;
+    display: block;
+  }
+
+  .sidebar-offcanvas-left {
+    left: -100%;
+    position: fixed;
+    transition: all .25s ease-out;
+    z-index: 2000;
+    top: 0;
+    width: 280px; /* works all the way down to an iphone 4 */
+    height: 90%;
+    background-color: var(--main-bg-color);
+    overflow-y: scroll; /* TODO: how to hide scroll bars? */
+    padding: 10px;
+    margin: 10px 10px;
+    box-shadow: 5px 5px 5px 5px #444444;
+  }
+
+  ol#sidebar-nav {
+    font-size: 18px;
+    white-space: pre-line;
+  }
+
+  .sidebar-offcanvas-left.active {
+    left: 0; /* this animates our drawer into the page */
+  }
+
+  .self-name {
+    display: inline-block;
+    color: var(--main-hyperlinks-color);
+  }
+}
+
+.sidebar-offcanvas-left h5 {
+  margin-bottom: 10px;
+}
+
+.sidebar-offcanvas-left h5:last-of-type {
+  border: 0;
+  margin-bottom: 25px;
+}
+
+/* the right nav disappears out of view when the window shrinks */
+@media screen and (max-width: 992px) {
+  .sidebar-offcanvas-right {
+    display: none;
+  }
+}
+
+#overlay-under-drawer {
+  display: none;
+}
+
+@media screen and (max-width: 320px) {
+  #sidenav-left-toggle {
+    margin-right: 10px;
+    margin-left: 20px;
+  }
+
+  .self-name {
+    margin-right: 10px;
+  }
+}
+
+.sidebar-offcanvas-left {
+  flex: 0 1 230px;
+  order: 1;
+  overflow-y: scroll;
+  padding: 20px 0 15px 30px;
+  margin: 5px 20px 0 0;
+}
+
+.sidebar-offcanvas-right {
+  flex: 0 1 12em;
+  order: 3;
+  overflow-y: scroll;
+  padding: 20px 15px 15px 15px;
+  margin-top: 5px;
+  margin-right: 20px;
+}
+
+::-webkit-scrollbar-button{ display: none; height: 13px; border-radius: 0; background-color: #AAA; }
+::-webkit-scrollbar-button:hover{ background-color: #AAA; }
+::-webkit-scrollbar-thumb{ background-color: var(--main-scrollbar-color); }
+::-webkit-scrollbar-thumb:hover{ background-color: var(--main-scrollbar-color); }
+::-webkit-scrollbar{ width: 4px; }
+
+.main-content::-webkit-scrollbar{ width: 8px; }
