@@ -12,6 +12,10 @@ pre {
   border: 1px solid #ddd;
   background-color: #eee;
   font-size: 14px;
+
+  @media(max-width: 840px) {
+    margin: 16px 0;
+  }
 }
 
 code {

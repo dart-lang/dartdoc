@@ -49,6 +49,10 @@ h1 {
   font-size: 37px;
   margin-top: 0;
   margin-bottom: 0.67em;
+
+  @media(max-width: 840px) {
+    font-size: 24px;
+  }
 }
 
 h2 {
