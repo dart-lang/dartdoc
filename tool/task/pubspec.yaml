@@ -1,0 +1,21 @@
+name: task
+description: Tools for developing dartdoc.
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  analyzer: ^6.10.0
+  args: ^2.4.1
+  collection: ^1.17.0
+  crypto: ^3.0.3
+  dartdoc:
+    path: ../..
+  mustachio:
+    path: ../mustachio
+  path: ^1.8.3
+  sass: ^1.80.4
+  yaml: ^3.1.2

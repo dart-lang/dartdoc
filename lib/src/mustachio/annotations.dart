@@ -71,7 +71,6 @@ class Context<T> {
 /// The specification of a renderer, as derived from a @Renderer annotation.
 ///
 /// This is only meant to be used by dartdoc's builders.
-@internal
 class RendererSpec {
   /// The name of the render function.
   final String name;

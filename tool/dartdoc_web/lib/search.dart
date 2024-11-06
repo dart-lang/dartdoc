@@ -5,6 +5,7 @@
 import 'dart:convert';
 import 'dart:js_interop';
 
+// ignore: implementation_imports
 import 'package:dartdoc/src/search.dart';
 import 'package:web/web.dart';
 

@@ -8,13 +8,11 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
 import 'package:collection/collection.dart';
+import 'package:mustachio/mustachio.dart' as mustachio;
 import 'package:path/path.dart' as path;
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
-import '../../tool/mustachio/builder.dart';
 import '../src/test_descriptor_utils.dart';
-
-export '../../tool/mustachio/builder.dart';
 
 /// The build package Asset for a copy of the Renderer annotation for tests.
 ///
@@ -76,7 +74,7 @@ $sourceLibraryContent
     ]),
   ]).create();
   await d.dir('foo_package', [...additionalAssets()]).create();
-  await build(path.join(d.sandbox, 'foo_package', 'lib/foo.dart'),
+  await mustachio.build(path.join(d.sandbox, 'foo_package', 'lib/foo.dart'),
       root: path.join(d.sandbox, 'foo_package'));
 }
 
@@ -86,7 +84,7 @@ Future<LibraryElement> resolveGeneratedLibrary(String libraryPath) async {
     // TODO(jcollins-g): should we pass excluded directories here instead of
     // handling it ourselves?
     resourceProvider: PhysicalResourceProvider.INSTANCE,
-    sdkPath: sdkPath,
+    sdkPath: mustachio.sdkPath,
   );
   var analysisContext = contextCollection.contextFor(d.sandbox);
   final libraryResult =

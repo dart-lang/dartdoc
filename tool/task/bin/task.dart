@@ -11,15 +11,15 @@ import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:mustachio/mustachio.dart' as mustachio;
 import 'package:path/path.dart' as path;
 import 'package:sass/sass.dart' as sass;
+import 'package:task/flutter_repo.dart';
+import 'package:task/io_utils.dart' as io_utils;
+import 'package:task/subprocess_launcher.dart';
+import 'package:task/warnings_collection.dart';
 import 'package:yaml/yaml.dart' as yaml;
 import 'package:yaml/yaml.dart';
-
-import 'src/flutter_repo.dart';
-import 'src/io_utils.dart' as io_utils;
-import 'src/subprocess_launcher.dart';
-import 'src/warnings_collection.dart';
 
 void main(List<String> args) async {
   var parser = ArgParser()
@@ -123,7 +123,7 @@ Future<void> analyzeTestPackages() async {
 Future<void> _buildHelp() async {
   print('''
 Usage:
-dart tool/task.dart build [renderers|dartdoc-options|web]
+dart run task build [renderers|dartdoc-options|web]
 $buildUsage
 ''');
 }
@@ -154,8 +154,7 @@ Future<void> buildAll() async {
   await buildDartdocOptions();
 }
 
-Future<void> buildRenderers() async => await SubprocessLauncher('build')
-    .runStreamedDartCommand([path.join('tool', 'mustachio', 'builder.dart')]);
+Future<void> buildRenderers() async => await mustachio.generateForDartdoc();
 
 Future<void> buildDartdocOptions() async {
   var version = _getPackageVersion();
@@ -168,28 +167,31 @@ Future<void> buildDartdocOptions() async {
 }
 
 Future<void> buildWeb({bool debug = false}) async {
+  var webDirectory = path.join('tool', 'dartdoc_web');
+
   await SubprocessLauncher('build').runStreamedDartCommand([
     'compile',
     'js',
     '--output=lib/resources/docs.dart.js',
-    'web/docs.dart',
+    path.join(webDirectory, 'web', 'docs.dart'),
     if (debug) '--enable-asserts',
     debug ? '-O0' : '-O4',
   ]);
   _delete(File('lib/resources/docs.dart.js.deps'));
 
-  final compileResult = sass.compileToResult('web/styles/styles.scss',
+  final compileResult = sass.compileToResult(
+      path.join(webDirectory, 'lib', 'styles', 'styles.scss'),
       style: debug ? sass.OutputStyle.expanded : sass.OutputStyle.compressed);
   if (compileResult.css.isNotEmpty) {
-    File('lib/resources/styles.css')
+    File(path.join('lib', 'resources', 'styles.css'))
         .writeAsStringSync('${compileResult.css}\n');
   } else {
     throw StateError('Compiled CSS was empty.');
   }
 
-  var compileSig =
-      await _calcFilesSig(Directory('web'), extensions: {'.dart', '.scss'});
-  File(path.join('web', 'sig.txt')).writeAsStringSync('$compileSig\n');
+  var compileSig = await _calcFilesSig(Directory(path.join(webDirectory)),
+      extensions: {'.dart', '.scss'});
+  File(path.join(webDirectory, 'sig.txt')).writeAsStringSync('$compileSig\n');
 }
 
 /// Delete the given file entity reference.
@@ -227,7 +229,7 @@ Future<void> runBuildbot() async {
 
 Future<void> runClean() async {
   // This involves deleting things, so be careful.
-  if (!File(path.join('tool', 'task.dart')).existsSync()) {
+  if (!File(path.join('tool', 'task', 'pubspec.yaml')).existsSync()) {
     throw FileSystemException('Wrong CWD, run from root of dartdoc package');
   }
   const pubDataFileNames = {'.dart_tool', '.packages', 'pubspec.lock'};
@@ -400,7 +402,7 @@ final Directory flutterDir =
 Future<void> _docHelp() async {
   print('''
 Usage:
-dart tool/task.dart doc [flutter|package|sdk|testing-package]
+dart run task doc [flutter|package|sdk|testing-package]
 $docUsage
 ''');
 }
@@ -641,10 +643,10 @@ Future<void> runHelp(ArgResults commandResults) async {
     // TODO(srawlins): Add more help for more individual commands.
     print('''
 Usage:
-    dart tool/task.dart [analyze|build|buildbot|clean|compare|doc|help|serve|test|tryp-publish|validate] options...
+    dart run task [analyze|build|buildbot|clean|compare|doc|help|serve|test|tryp-publish|validate] options...
 
 Help usage:
-    dart tool/task.dart help [doc|serve]
+    dart run task help [doc|serve]
 ''');
     return;
   }
@@ -696,7 +698,7 @@ Future<void> serveFlutterDocs() async {
 Future<void> _serveHelp() async {
   print('''
 Usage:
-dart tool/task.dart serve [flutter|package|sdk|testing-package]
+dart run task serve [flutter|package|sdk|testing-package]
 $docUsage
 ''');
 }
@@ -830,7 +832,7 @@ Future<void> validateBuild() async {
     throw StateError('''
 The following generated files needed to be rebuilt:
   ${differentFiles.map((f) => path.join('lib', f)).join("\n  ")}
-Rebuild them with "dart tool/task.dart build" and check the results in.
+Rebuild them with "dart run task build" and check the results in.
 ''');
   }
 
@@ -844,7 +846,7 @@ Rebuild them with "dart tool/task.dart build" and check the results in.
     print('cached sig   : $lastCompileSig');
     throw StateError(
         'The web frontend (web/docs.dart) needs to be recompiled; rebuild it '
-        'with "dart tool/task.dart build web".');
+        'with "dart run task build web".');
   }
 
   // Reset some files for `try-publish` step. This check looks for changes in
@@ -923,7 +925,6 @@ Future<void> validateFormat() async {
     'lib',
     'test',
     'tool',
-    'web',
   ]);
   if (processResult.exitCode != 0) {
     throw StateError('''

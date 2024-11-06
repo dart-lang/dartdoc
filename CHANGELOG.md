@@ -89,8 +89,6 @@
 * Combine the two implementations of "library canonicalization." This should be
   a no-op. (#3781)
 * Simplify `Library.allModelElements`, but should be a no-op. (#3793)
-* Support the `--stats` flag for the 'doc sdk' task
-  (`dart tools/task.dart doc sdk --stats`). (#3791)
 * Make `CommentReferenceParser.codeRef` private. (#3771)
 * Make `PackageGraph.allLibraries` private. (#3792)
 * Remove the unnecessary Privacy mixin. (#3794)
