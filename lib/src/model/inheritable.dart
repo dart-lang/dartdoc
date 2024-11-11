@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/model/attribute.dart';
+import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 
@@ -58,22 +59,40 @@ mixin Inheritable on ContainerMember {
       var searchElement = element.declaration;
       // TODO(jcollins-g): generate warning if an inherited element's definition
       // is in an intermediate non-canonical class in the inheritance chain?
-      Container? previous;
-      Container? previousNonSkippable;
       Container? found;
-      for (var c in _inheritance.reversed) {
-        // Filter out mixins.
-        if (c.containsElement(searchElement)) {
-          if ((packageGraph.inheritThrough.contains(previous) &&
-                  c != definingEnclosingContainer) ||
-              (packageGraph.inheritThrough.contains(c) &&
-                  c == definingEnclosingContainer)) {
-            return previousNonSkippable!
-                .memberByExample(this)
-                .canonicalEnclosingContainer;
+      var reverseInheritance = _inheritance.reversed.toList();
+      for (var i = 0; i < reverseInheritance.length; i++) {
+        var container = reverseInheritance[i];
+        if (container.containsElement(searchElement)) {
+          var previousIsHiddenAndNotDefining = i > 0 &&
+              _isHiddenInterface(reverseInheritance[i - 1]) &&
+              container != definingEnclosingContainer;
+          var thisIsHiddenAndDefining = _isHiddenInterface(container) &&
+              container == definingEnclosingContainer;
+          // If the previous container in the search is one of the "hidden"
+          // interfaces, and it's not this member's defining container, OR if
+          // this container in the search is one of the "hidden" interfaces,
+          // and it is also this member's defining container, then we can just
+          // immediately return the canonical enclosing container of the
+          // overridden member in the previous, non-hidden container in the
+          // inheritance.
+          if (previousIsHiddenAndNotDefining || thisIsHiddenAndDefining) {
+            var previousVisible = reverseInheritance
+                .take(i)
+                .lastWhere((e) => !_isHiddenInterface(e));
+            var membersInPreviousVisible = previousVisible.allModelElements
+                .where((e) => e.name == name)
+                .whereType<Inheritable>()
+                .whereNotType<Field>();
+            assert(
+                membersInPreviousVisible.length == 1,
+                'found multiple members named "$name" in '
+                '"${previousVisible.name}": '
+                '${membersInPreviousVisible.toList()}');
+            return membersInPreviousVisible.first.canonicalEnclosingContainer;
           }
-          var canonicalContainer =
-              packageGraph.findCanonicalModelElementFor(c) as Container?;
+          var canonicalContainer = packageGraph
+              .findCanonicalModelElementFor(container) as Container?;
           // TODO(jcollins-g): invert this lookup so traversal is recursive
           // starting from the ModelElement.
           if (canonicalContainer != null) {
@@ -82,10 +101,6 @@ mixin Inheritable on ContainerMember {
             found = canonicalContainer;
             break;
           }
-        }
-        previous = c;
-        if (!packageGraph.inheritThrough.contains(c)) {
-          previousNonSkippable = c;
         }
       }
       if (found != null) {
@@ -98,6 +113,8 @@ mixin Inheritable on ContainerMember {
     }
     return super.computeCanonicalEnclosingContainer();
   }
+
+  bool _isHiddenInterface(Container? c) => packageGraph.isHiddenInterface(c);
 
   /// A roughly ordered list of this element's enclosing container's inheritance
   /// chain.

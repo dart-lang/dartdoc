@@ -223,14 +223,13 @@ extension on Scope {
 /// A set of utility methods for helping build
 /// [CommentReferable.referenceChildren] out of collections of other
 /// [CommentReferable]s.
-extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
+extension CommentReferableEntryGenerators<T extends CommentReferable>
+    on Iterable<T> {
   /// Creates reference entries for this Iterable.
   ///
   /// If there is a conflict with [referable], the included [MapEntry] uses
   /// [referable]'s [CommentReferable.referenceName] as a prefix.
-  Map<String, CommentReferable> explicitOnCollisionWith(
-          CommentReferable referable) =>
-      {
+  Map<String, T> explicitOnCollisionWith(CommentReferable referable) => {
         for (var r in this)
           if (r.referenceName == referable.referenceName)
             '${referable.referenceName}.${r.referenceName}': r
@@ -239,13 +238,13 @@ extension CommentReferableEntryGenerators on Iterable<CommentReferable> {
       };
 
   /// A mapping from each [CommentReferable]'s name to itself.
-  Map<String, CommentReferable> get asMapByName => {
+  Map<String, T> get asMapByName => {
         for (var r in this) r.referenceName: r,
       };
 
   /// Returns all values not of this type.
-  List<CommentReferable> whereNotType<T>() => [
+  List<T> whereNotType<U>() => [
         for (var referable in this)
-          if (referable is! T) referable,
+          if (referable is! U) referable,
       ];
 }
