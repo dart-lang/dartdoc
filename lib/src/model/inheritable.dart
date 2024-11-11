@@ -43,6 +43,9 @@ mixin Inheritable on ContainerMember {
       canonicalEnclosingContainer?.canonicalLibrary;
 
   @override
+  // TODO(srawlins): Do something about this overridden field. Maybe split out
+  // the super implementation.
+  // ignore: overridden_fields
   late final ModelElement? canonicalModelElement = canonicalEnclosingContainer
       ?.allCanonicalModelElements
       .firstWhereOrNull((m) =>
