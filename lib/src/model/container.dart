@@ -156,33 +156,6 @@ abstract class Container extends ModelElement
   late final Set<Element> _allElements =
       allModelElements.map((e) => e.element).toSet();
 
-  late final Map<String, List<ModelElement>> _membersByName = () {
-    var membersByName = <String, List<ModelElement>>{};
-    for (var element in allModelElements) {
-      membersByName.putIfAbsent(element.name, () => []).add(element);
-    }
-    return membersByName;
-  }();
-
-  /// Given a [ModelElement] that is a member of some other class, returns
-  /// the member of this class that has the same name and runtime type.
-  ///
-  /// This enables object substitution for canonicalization, such as Interceptor
-  /// for Object.
-  T memberByExample<T extends ModelElement>(T example) {
-    // [T] is insufficiently specific to disambiguate between different
-    // subtypes of [Inheritable] or other mixins/implementations of
-    // [ModelElement] via [Iterable.whereType].
-    var possibleMembers = _membersByName[example.name]!
-        .where((e) => e.runtimeType == example.runtimeType);
-    if (example is Accessor) {
-      possibleMembers = possibleMembers
-          .where((e) => example.isGetter == (e as Accessor).isGetter);
-    }
-    assert(possibleMembers.length == 1);
-    return possibleMembers.first as T;
-  }
-
   bool get hasPublicStaticFields => staticFields.any((e) => e.isPublic);
 
   List<Field> get publicStaticFieldsSorted =>

@@ -16364,7 +16364,6 @@ const _invisibleGetters = {
     'hasFooterVersion',
     'hashCode',
     'implementers',
-    'inheritThrough',
     'inheritanceManager',
     'libraries',
     'libraryCount',
