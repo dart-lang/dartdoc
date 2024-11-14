@@ -706,23 +706,6 @@ class PackageGraph with CommentReferable, Nameable {
           ?.linkedName ??
       'Object';
 
-  /// The set of [Class]es which should _not_ be considered the canonical
-  /// enclosing container of any container member.
-  ///
-  /// Add classes here if they are similar to Interceptor in that they are to be
-  /// ignored even when they are the implementers of [Inheritable]s, and the
-  /// class these inherit from should instead claim implementation.
-  late final Set<Class> _inheritThrough = {
-    if (specialClasses[SpecialClass.interceptor] case var interceptor?)
-      interceptor,
-  };
-
-  /// Whether [c] is a "hidden" interface.
-  ///
-  /// A hidden interface should never be considered the canonical enclosing
-  /// container of a container member.
-  bool isHiddenInterface(Container? c) => _inheritThrough.contains(c);
-
   /// The set of [Class] objects that are similar to 'pragma' in that we should
   /// never count them as documentable annotations.
   late final Set<Class> _invisibleAnnotations = {

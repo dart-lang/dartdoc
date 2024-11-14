@@ -19,11 +19,7 @@ import 'package:dartdoc/src/model/model.dart';
 enum SpecialClass {
   object('Object', 'dart.core', 'dart:core'),
 
-  interceptor('Interceptor', '_interceptors', 'dart:_interceptors'),
-
-  pragma('pragma', 'dart.core', 'dart:core'),
-
-  enum_('Enum', 'dart.core', 'dart:core');
+  pragma('pragma', 'dart.core', 'dart:core');
 
   /// The package name in which these special [ModelElement]s can be found.
   static const String _packageName = 'Dart';
@@ -43,7 +39,7 @@ enum SpecialClass {
   /// Elements which must exist in the package graph when calling
   /// [SpecialClasses.new].
   static List<SpecialClass> get _requiredSpecialClasses =>
-      [SpecialClass.enum_, SpecialClass.object];
+      [SpecialClass.object];
 
   /// Returns the path of the Dart Library where this [ModelElement] is
   /// declared, or `null` if its URI does not denote a library in the specified
