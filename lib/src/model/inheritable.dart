@@ -114,7 +114,19 @@ mixin Inheritable on ContainerMember {
     return super.computeCanonicalEnclosingContainer();
   }
 
-  bool _isHiddenInterface(Container? c) => packageGraph.isHiddenInterface(c);
+  /// Whether [c] is a "hidden" interface.
+  ///
+  /// A hidden interface should never be considered the canonical enclosing
+  /// container of a container member.
+  ///
+  /// Add classes here if they are similar to the Dart SDK's 'Interceptor' class
+  /// in that they are to be ignored even when they are the implementers of
+  /// [Inheritable]s, and the class these inherit from should instead claim
+  /// implementation.
+  bool _isHiddenInterface(Container? c) =>
+      c != null &&
+      c.element.name == 'Interceptor' &&
+      c.element.library?.name == '_interceptors';
 
   /// A roughly ordered list of this element's enclosing container's inheritance
   /// chain.
