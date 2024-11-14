@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/special_elements.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -194,9 +193,8 @@ class C implements D {}
 class D implements Object {}
 ''');
 
-    var object = library.packageGraph.specialClasses[SpecialClass.object]!;
     var toString = library.classes.named('A').instanceMethods.named('toString');
-    expect(toString.canonicalEnclosingContainer, object);
+    expect(toString.canonicalEnclosingContainer!.isDartCoreObject, isTrue);
   }
 
   // TODO(srawlins): Test everything else about classes.

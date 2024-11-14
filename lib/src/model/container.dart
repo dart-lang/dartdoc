@@ -49,6 +49,10 @@ abstract class Container extends ModelElement
   /// Whether this is a mixin.
   bool get isMixin => element is MixinElement;
 
+  /// Whether this container represents the Object class from 'dart:core'.
+  bool get isDartCoreObject =>
+      element.name == 'Object' && element.library?.name == 'dart.core';
+
   /// The model elements of all of the members of this container, including
   /// declared and inherited ones.
   Iterable<ModelElement> get allModelElements => [

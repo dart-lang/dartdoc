@@ -7,7 +7,6 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/special_elements.dart';
 
 /// Mixin for subclasses of [ModelElement] representing elements that can be
 /// inherited from one class to another.
@@ -136,10 +135,9 @@ mixin Inheritable on ContainerMember {
     var inheritance = [
       ...(enclosingElement as InheritingContainer).inheritanceChain,
     ];
-    var object = packageGraph.specialClasses[SpecialClass.object]!;
 
     assert(
-        definingEnclosingContainer == object ||
+        definingEnclosingContainer.isDartCoreObject ||
             inheritance.contains(definingEnclosingContainer), () {
       var inheritanceDescriptions = inheritance
           .map((e) =>
@@ -153,8 +151,8 @@ mixin Inheritable on ContainerMember {
     }());
     // Unless the code explicitly extends dart:core's Object, we won't get
     // an entry here.  So add it.
-    if (inheritance.last != object) {
-      inheritance.add(object);
+    if (!inheritance.last.isDartCoreObject) {
+      inheritance.add(packageGraph.objectClass);
     }
     return inheritance;
   }

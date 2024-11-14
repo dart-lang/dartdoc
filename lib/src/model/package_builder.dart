@@ -29,7 +29,6 @@ import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
 import 'package:dartdoc/src/runtime_stats.dart';
-import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show Context;
 
@@ -479,13 +478,7 @@ class PubPackageBuilder implements PackageBuilder {
   /// Adds all libraries with documentable elements to
   /// [uninitializedPackageGraph].
   Future<void> _getLibraries(PackageGraph uninitializedPackageGraph) async {
-    var embedderSdk = _embedderSdk;
-    var findSpecialsSdk = switch (embedderSdk) {
-      EmbedderSdk(:var urlMappings) when urlMappings.isNotEmpty => embedderSdk,
-      _ => _sdk,
-    };
     var files = await _getFilesToDocument();
-    var specialFiles = specialLibraryFiles(findSpecialsSdk);
 
     logInfo('Discovering libraries...');
     var foundLibraries = <LibraryElement>{};
@@ -495,12 +488,7 @@ class PubPackageBuilder implements PackageBuilder {
       files,
     );
     _checkForMissingIncludedFiles(foundLibraries);
-    await _discoverLibraries(
-      uninitializedPackageGraph.addSpecialLibraryToGraph,
-      foundLibraries,
-      specialFiles.difference(files),
-      addingSpecials: true,
-    );
+    uninitializedPackageGraph.allLibrariesAdded = true;
   }
 
   /// Throws an exception if any configured-to-be-included files were not found
