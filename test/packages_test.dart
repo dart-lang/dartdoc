@@ -10,7 +10,6 @@ import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/special_elements.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -415,19 +414,6 @@ dartdoc:
 
         var sdkPackage = packageGraph.defaultPackage;
         expect(sdkPackage.documentation, startsWith('Welcome'));
-      });
-
-      test('Pragma is hidden in docs', () async {
-        var packageGraph = await utils.bootBasicPackage(
-            sdkFolder.path, packageMetaProvider, packageConfigProvider,
-            additionalArguments: [
-              '--input',
-              packageMetaProvider.defaultSdkDir.path,
-            ]);
-
-        var pragmaModelElement =
-            packageGraph.specialClasses[SpecialClass.pragma]!;
-        expect(pragmaModelElement.name, equals('pragma'));
       });
     });
 

@@ -2885,6 +2885,13 @@ class _Renderer_Container extends RendererBase<Container> {
                         _render_Operator(e, ast, r.template, sink, parent: r));
                   },
                 ),
+                'isDartCoreObject': Property(
+                  getValue: (CT_ c) => c.isDartCoreObject,
+                  renderVariable: (CT_ c, Property<CT_> self,
+                          List<String> remainingNames) =>
+                      self.renderSimpleVariable(c, remainingNames, 'bool'),
+                  getBool: (CT_ c) => c.isDartCoreObject,
+                ),
                 'isEnum': Property(
                   getValue: (CT_ c) => c.isEnum,
                   renderVariable: (CT_ c, Property<CT_> self,
@@ -16371,6 +16378,7 @@ const _invisibleGetters = {
     'localPackages',
     'localPublicLibraries',
     'name',
+    'objectClass',
     'packageGraph',
     'packageMap',
     'packageMeta',
@@ -16383,8 +16391,7 @@ const _invisibleGetters = {
     'referenceParents',
     'resourceProvider',
     'runtimeType',
-    'sdkLibrarySources',
-    'specialClasses'
+    'sdkLibrarySources'
   },
   'PackageMeta': {
     'dir',
