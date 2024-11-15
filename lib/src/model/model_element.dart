@@ -788,6 +788,9 @@ abstract class ModelElement
 }
 
 extension on ElementAnnotation {
+  /// Whether this annotation should be displayed in documentation.
+  ///
+  /// At the moment, `pragma` is the only invisible annotation.
   bool get isVisibleAnnotation {
     if (element == null) return false;
 
