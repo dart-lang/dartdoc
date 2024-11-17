@@ -26,7 +26,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
-import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tool_definition.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -118,29 +117,6 @@ class PackageGraph with CommentReferable, Nameable {
   bool _shouldIncludeLibrary(LibraryElement libraryElement) =>
       config.include.isEmpty || config.include.contains(libraryElement.name);
 
-  /// Adds [resolvedLibrary] as a special library to the package graph, which
-  /// adds the library to [_allLibraries], but does not add it to any [Package]'s
-  /// list of libraries.
-  ///
-  /// Call during initialization to add a library possibly containing
-  /// special/non-documented elements to this [PackageGraph].  Must be called
-  /// after any normal libraries.
-  void addSpecialLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
-    allLibrariesAdded = true;
-    assert(!_localDocumentationBuilt);
-    final libraryElement = resolvedLibrary.element.library;
-    _allLibraries.putIfAbsent(
-      libraryElement.source.fullName,
-      () => Library.fromLibraryResult(
-        resolvedLibrary,
-        this,
-        Package.fromPackageMeta(
-            packageMetaProvider.fromElement(libraryElement, config.sdkDir)!,
-            packageGraph),
-      ),
-    );
-  }
-
   /// Call after all libraries are added.
   Future<void> initializePackageGraph() async {
     assert(!_localDocumentationBuilt);
@@ -170,9 +146,6 @@ class PackageGraph with CommentReferable, Nameable {
     }
     allImplementersAdded = true;
     allExtensionsAdded = true;
-
-    // We should have found all special classes by now.
-    specialClasses.assertSpecials();
   }
 
   /// Generate a list of futures for any docs that actually require precaching.
@@ -230,8 +203,8 @@ class PackageGraph with CommentReferable, Nameable {
   // more than once for them.
   final Map<Element, ModelNode> _modelNodes = {};
 
-  /// The collection of "special" classes for which we need some special access.
-  final specialClasses = SpecialClasses();
+  /// The Object class declared in the Dart SDK's 'dart:core' library.
+  late InheritingContainer objectClass;
 
   /// Populate's [_modelNodes] with elements in [resolvedLibrary].
   ///
@@ -706,32 +679,9 @@ class PackageGraph with CommentReferable, Nameable {
           ?.linkedName ??
       'Object';
 
-  /// The set of [Class]es which should _not_ be presented as implementers.
-  ///
-  /// Add classes here if they are similar to Interceptor in that they are to be
-  /// ignored even when they are the implementers of [Inheritable]s, and the
-  /// class these inherit from should instead claim implementation.
-  late final Set<Class> inheritThrough = () {
-    var interceptorSpecialClass = specialClasses[SpecialClass.interceptor];
-    if (interceptorSpecialClass == null) {
-      return const <Class>{};
-    }
-
-    return {interceptorSpecialClass};
-  }();
-
-  /// The set of [Class] objects that are similar to 'pragma' in that we should
-  /// never count them as documentable annotations.
-  late final Set<Class> _invisibleAnnotations = () {
-    var pragmaSpecialClass = specialClasses[SpecialClass.pragma];
-    if (pragmaSpecialClass == null) {
-      return const <Class>{};
-    }
-    return {pragmaSpecialClass};
-  }();
-
   bool isAnnotationVisible(Class class_) =>
-      !_invisibleAnnotations.contains(class_);
+      class_.element.name == 'pragma' &&
+      class_.element.library.name == 'dart.core';
 
   @override
   String toString() {
