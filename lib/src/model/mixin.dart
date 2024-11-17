@@ -9,7 +9,6 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
-import 'package:dartdoc/src/special_elements.dart';
 import 'package:meta/meta.dart';
 
 class Mixin extends InheritingContainer {
@@ -20,8 +19,7 @@ class Mixin extends InheritingContainer {
     ...element.superclassConstraints
         .map((InterfaceType i) =>
             getTypeFor(i, library) as ParameterizedElementType)
-        .where((t) =>
-            t.modelElement != packageGraph.specialClasses[SpecialClass.object])
+        .where((t) => t.modelElement != packageGraph.objectClass)
   ];
 
   @override

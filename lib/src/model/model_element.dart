@@ -14,7 +14,6 @@ import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
-import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
@@ -27,7 +26,6 @@ import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/source_linker.dart';
-import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/type_utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
@@ -385,10 +383,7 @@ abstract class ModelElement
   /// invalid code from analyzer's perspective, some are present in `sky_engine`
   /// (`@Native`) so we don't want to crash here.
   late final List<Annotation> annotations = element.metadata
-      .whereNot((m) =>
-          m.element == null ||
-          packageGraph.specialClasses[SpecialClass.pragma]!.element.constructors
-              .contains(m.element))
+      .where((m) => m.isVisibleAnnotation)
       .map((m) => Annotation(m, library, packageGraph))
       .toList(growable: false);
 
@@ -790,4 +785,20 @@ abstract class ModelElement
   }
 
   String get linkedObjectType => _packageGraph.dartCoreObject;
+}
+
+extension on ElementAnnotation {
+  /// Whether this annotation should be displayed in documentation.
+  ///
+  /// At the moment, `pragma` is the only invisible annotation.
+  bool get isVisibleAnnotation {
+    if (element == null) return false;
+
+    if (element case ConstructorElement(:var enclosingElement3)) {
+      return !(enclosingElement3.name == 'pragma' &&
+          enclosingElement3.library.name == 'dart.core');
+    }
+
+    return true;
+  }
 }

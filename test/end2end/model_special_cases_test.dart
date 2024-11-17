@@ -16,7 +16,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/special_elements.dart';
 import 'package:html/parser.dart' as html;
 import 'package:test/test.dart';
 
@@ -412,8 +411,6 @@ void main() {
           htmlLibrary.classes.singleWhere((c) => c.name == 'EventTarget');
       var hashCode = eventTarget.instanceFields.wherePublic
           .singleWhere((f) => f.name == 'hashCode');
-      var objectModelElement =
-          sdkAsPackageGraph.specialClasses[SpecialClass.object];
       expect(
         eventTarget.superChain,
         contains(isA<ParameterizedElementType>()
@@ -429,7 +426,7 @@ void main() {
             "EventTarget appears to have an explicit override of 'hashCode', "
             'which makes this test case invalid.',
       );
-      expect(hashCode.canonicalEnclosingContainer, equals(objectModelElement));
+      expect(hashCode.canonicalEnclosingContainer!.isDartCoreObject, isTrue);
       expect(
           eventTarget.publicSuperChainReversed
               .any((et) => et.name == 'Interceptor'),
