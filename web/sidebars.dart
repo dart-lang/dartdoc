@@ -97,10 +97,14 @@ void _loadSidebar(
 /// if "base href" is not being used.
 void _updateLinks(String baseHref, Node node) {
   if (node.isA<HTMLAnchorElement>()) {
-    final hrefString = (node as HTMLAnchorElement).href;
-    final href = Uri.tryParse(hrefString);
+    final hrefValue =
+        (node as HTMLAnchorElement).attributes.getNamedItem('href')?.value;
+    if (hrefValue == null) {
+      return;
+    }
+    final href = Uri.tryParse(hrefValue);
     if (href != null && !href.isAbsolute) {
-      node.href = '$baseHref$hrefString';
+      node.href = '$baseHref$hrefValue';
     }
   }
 
