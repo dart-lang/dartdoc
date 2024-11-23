@@ -1,0 +1,26 @@
+// Copyright (c) 2024, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+/* The badge under a declaration for things like "const", "read-only", etc. and for the badges inline like sealed or interface */
+/* See https://github.com/dart-lang/dartdoc/blob/main/lib/src/model/feature.dart */
+.feature {
+  display: inline-block;
+  background: var(--main-bg-color);
+  border: 1px solid var(--main-hyperlinks-color);
+  border-radius: 20px;
+  color: var(--main-hyperlinks-color);
+
+  font-size: 12px;
+  padding: 1px 6px;
+  margin: 0 8px 0 0;
+}
+
+a.feature:hover {
+  border-color: #13B9FD;
+}
+
+h1 .feature {
+  vertical-align: middle;
+  margin: 0 -2px 0 0;
+}

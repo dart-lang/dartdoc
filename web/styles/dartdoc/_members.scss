@@ -1,0 +1,97 @@
+// Copyright (c) 2024, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+.markdown.desc {
+  margin-bottom: 1em;
+  max-width: 700px;
+}
+
+.markdown h1 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.markdown h2 {
+  font-size: 20px;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.markdown h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: var(--main-text-color);
+}
+
+.markdown h4 {
+  font-size: 16px;
+  margin-bottom: 0;
+}
+
+.markdown li p {
+  margin: 0;
+}
+
+/* Note that the generated HTML for pub packages may have `section` tags
+   transformed into `div` tags, so we have two selectors here. */
+section#setter, div#setter {
+  border-top: 1px solid #ddd;
+  padding-top: 36px;
+}
+
+li.inherited a {
+  opacity: 0.65;
+  font-style: italic;
+}
+
+/* Enum values do not have their own pages; their full docs are presented on the
+ * enum class's page. */
+dt.constant + dd p {
+  margin-bottom: 1em;
+}
+
+/* indents wrapped lines */
+/* Note that the generated HTML for pub packages may have `section` tags
+   transformed into `div` tags, so we have two selectors here. */
+section.summary dt, div.summary dt {
+  margin-left: 24px;
+  text-indent: -24px;
+}
+
+.dl-horizontal dd {
+  margin-left: initial;
+}
+
+dl.dl-horizontal dt {
+  font-style: normal;
+  text-align: left;
+  color: #727272;
+  margin-right: 20px;
+  width: initial;
+}
+
+dt .name {
+  font-weight: 500;
+}
+
+dl dt.callable .name {
+  float: none;
+  width: auto;
+}
+
+/* Do not display "provided by X extension" text on extension pages. */
+.main-content.extension-page .from-extension {
+  display: none;
+}
+
+sup.muted {
+  color: var(--main-sidebar-color);
+  font-size: 0.6em;
+}
+
+.from-extension > span {
+  background-color: var(--alert-warning);
+  font-style: italic;
+  padding: 2px;
+}

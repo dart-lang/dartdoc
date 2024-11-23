@@ -1,0 +1,136 @@
+// Copyright (c) 2024, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+.main-content {
+  flex: 1;
+  order: 2;
+  overflow-y: scroll;
+  padding: 10px 20px 0 20px;
+}
+
+a {
+  text-decoration: none;
+}
+
+section {
+  /* Note that the generated HTML for pub packages may have `section` tags
+     transformed into `div` tags. */
+  margin-bottom: 36px;
+}
+
+dl {
+  margin: 0;
+}
+
+header {
+  background-color: var(--main-header-color);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: Roboto, sans-serif;
+  font-weight: 400;
+  margin-top: 1.5em;
+  color: var(--main-text-color);
+}
+
+h1.title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+h1 {
+  font-size: 37px;
+  margin-top: 0;
+  margin-bottom: 0.67em;
+
+  @media(max-width: 840px) {
+    font-size: 24px;
+  }
+}
+
+h2 {
+  font-size: 28px;
+}
+
+h5 {
+  font-size: 16px;
+}
+
+p {
+  margin-bottom: 1em;
+  margin-top: 0;
+}
+
+a {
+  color: var(--main-hyperlinks-color);
+}
+
+a:hover {
+  color: #13B9FD;
+}
+
+.fixed {
+  white-space: pre;
+}
+
+header a,
+header p,
+header li {
+  color: #0175C2;
+}
+
+header a:hover {
+  color: #0175C2;
+}
+
+header h1 .kind {
+  color: #555;
+}
+
+header h1 {
+  font-weight: 400;
+  margin-bottom: 16px;
+}
+
+dt {
+  font-weight: normal;
+}
+
+dd {
+  color: var(--main-text-color);
+  margin-bottom: 1em;
+  margin-left: 0;
+}
+
+dd.callable, dd.constant, dd.property {
+  margin-bottom: 24px;
+}
+
+dd p {
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0;
+}
+
+table {
+  margin-bottom: 1em;
+}
+
+table,
+th,
+td {
+  border: 1px solid lightgrey;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 8px;
+}

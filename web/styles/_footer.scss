@@ -1,0 +1,32 @@
+// Copyright (c) 2024, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+footer {
+  flex: 0 0 16px;
+  text-align: center;
+  padding: 16px 20px;
+}
+
+footer {
+  color: #fff;
+  background-color: var(--main-footer-background);
+  width: 100%;
+}
+
+footer p {
+  margin: 0;
+}
+
+footer .no-break {
+  white-space: nowrap;
+}
+
+footer .container {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+footer a, footer a:hover {
+  color: #fff;
+}
