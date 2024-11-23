@@ -11,8 +11,8 @@ final RegExp _categoryRegExp =
 /// Mixin parsing the `@category` directive for ModelElements.
 mixin Categorization on DocumentationComment {
   @override
-  String buildDocumentationAddition(String rawDocs) =>
-      _stripAndSetDartdocCategories(super.buildDocumentationAddition(rawDocs));
+  String buildDocumentationAddition(String docs) =>
+      _stripAndSetDartdocCategories(super.buildDocumentationAddition(docs));
 
   /// Parse `{@category ...}` and related information in API comments, stripping
   /// out that information from the given comments and returning the stripped
