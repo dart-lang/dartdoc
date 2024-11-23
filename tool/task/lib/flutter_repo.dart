@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:io';
 
+// ignore: implementation_imports
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:path/path.dart' as path;
 

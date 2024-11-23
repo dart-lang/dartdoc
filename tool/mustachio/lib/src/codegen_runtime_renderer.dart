@@ -10,7 +10,9 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:dart_style/dart_style.dart';
+// ignore: implementation_imports
 import 'package:dartdoc/src/mustachio/annotations.dart';
+// ignore: implementation_imports
 import 'package:dartdoc/src/type_utils.dart';
 import 'package:path/path.dart' as path;
 

@@ -1,0 +1,13 @@
+name: dartdoc_web
+description: Client side web code for dartdoc.
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  dartdoc:
+    path: ../..
+  web: ^1.1.0

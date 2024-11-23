@@ -1,0 +1,19 @@
+name: mustachio
+description: >-
+  A code generation-based Mustache render system designed with
+  dartdoc's needs in mind.
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  analyzer: ^6.10.0
+  collection: ^1.17.0
+  dart_style: ^2.3.7
+  dartdoc:
+    path: ../..
+  meta: ^1.10.0
+  path: ^1.8.3

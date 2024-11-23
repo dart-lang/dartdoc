@@ -1,18 +1,24 @@
+// Copyright (c) 2020, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+// ignore: implementation_imports
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
+// ignore: implementation_imports
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:path/path.dart' as path;
 
-import 'codegen_aot_compiler.dart';
-import 'codegen_runtime_renderer.dart';
+import 'src/codegen_aot_compiler.dart';
+import 'src/codegen_runtime_renderer.dart';
 
-void main() async {
+Future<void> generateForDartdoc() async {
   await build(path.join('lib', 'src', 'generator', 'templates.dart'));
   await build(
     path.join('test', 'mustachio', 'foo.dart'),
@@ -28,7 +34,7 @@ Future<void> build(
   root ??= Directory.current.path;
   var contextCollection = AnalysisContextCollectionImpl(
     includedPaths: [root],
-    // TODO(jcollins-g): should we pass excluded directories here instead of
+    // TODO(srawlins): should we pass excluded directories here instead of
     // handling it ourselves?
     resourceProvider: PhysicalResourceProvider.INSTANCE,
     sdkPath: sdkPath,

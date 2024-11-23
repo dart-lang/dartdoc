@@ -14,17 +14,17 @@ if [ "$DARTDOC_BOT" = "sdk-docs" ]; then
   # silence stdout but echo stderr
   echo ""
   echo "Building and validating SDK docs..."
-  dart run tool/task.dart validate sdk-docs
+  dart run task validate sdk-docs
   echo "SDK docs process finished"
 elif [ "$DARTDOC_BOT" = "flutter" ]; then
   echo "Running flutter dartdoc bot"
-  dart run tool/task.dart doc flutter
+  dart run task doc flutter
 elif [ "$DARTDOC_BOT" = "packages" ]; then
   echo "Running packages dartdoc bot"
-  dart run tool/task.dart doc package --name=access --version=">=3.0.0"
+  dart run task doc package --name=access --version=">=3.0.0"
   # Negative test for flutter_plugin_tools, make sure right error message is displayed.
-  dart run tool/task.dart doc package --name=flutter_plugin_tools --version=">=0.0.14+1" 2>&1 | grep "warning: package:flutter_plugin_tools has no documentable libraries"
+  dart run task doc package --name=flutter_plugin_tools --version=">=0.0.14+1" 2>&1 | grep "warning: package:flutter_plugin_tools has no documentable libraries"
 else
   echo "Running main dartdoc bot"
-  dart run tool/task.dart buildbot
+  dart run task buildbot
 fi

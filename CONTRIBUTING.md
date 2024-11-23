@@ -25,13 +25,13 @@ start by opening an issue. Thanks!
    to the [changelog][] under the current `-wip` version.
 2. Please include a test for your change. `dartdoc` has both
    `package:test`-style unit tests as well as integration tests.
-   To run the tests, use `dart run tool/task.dart test`.
-3. For major changes, run both `dart run tool/task.dart compare sdk-warnings`
-   and `dart run tool/task.dart compare flutter-warnings`, and
+   To run the tests, use `dart run task test`.
+3. For major changes, run both `dart run task compare sdk-warnings`
+   and `dart run task compare flutter-warnings`, and
    include the summary results in your pull request.
 4. Be sure to format your Dart code using `dart format`,
    otherwise our CI will complain.
-5. Use `dart run tool/task.dart buildbot` before creating a pull request
+5. Use `dart run task buildbot` before creating a pull request
    to quickly check for common problems.
    Follow any instructions it outputs, then run again.
 6. Post your change via a pull request for review and integration!
@@ -43,21 +43,21 @@ check for behavior changes or try out your change on arbitrary packages.
 
 ```bash
 # Serve the latest version of the given package locally on port 9000.
-dart run tool/task.dart serve package --name=intl
+dart run task serve package --name=intl
 
 # Build the SDK docs with the head version and compare its warning
 # output and (rough) performance to the main version.
-dart run tool/task.dart compare sdk-warnings
+dart run task compare sdk-warnings
 
 # Serve the flutter docs built with the head version on port 8001.
-dart run tool/task.dart serve flutter
+dart run task serve flutter
 
 # Serve the test package (testing/test_package) on port 8002
-dart run tool/task.dart serve testing-package
+dart run task serve testing-package
 ```
 
 There are more commands added all the time,
-check out `tool/task.dart` to find each command or
+check out `tool/task/bin/task.dart` to find each command or
 learn how they are implemented.
 
 ## License

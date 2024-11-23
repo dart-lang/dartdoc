@@ -1,10 +1,16 @@
 name: dartdoc
 version: 8.3.1-wip
-description: A non-interactive HTML documentation generator for Dart source code.
+description: >-
+  A non-interactive HTML documentation generator for Dart source code.
 repository: https://github.com/dart-lang/dartdoc
 
 environment:
   sdk: ^3.5.0
+
+workspace:
+  - tool/mustachio
+  - tool/task
+  - tool/dartdoc_web
 
 dependencies:
   analyzer: ^6.10.0
@@ -24,15 +30,14 @@ dependencies:
 
 dev_dependencies:
   async: ^2.11.0
-  dart_style: ^2.3.7
   lints: ^5.0.0
   matcher: ^0.12.15
-  sass: ^1.80.4
+  mustachio:
+    path: tool/mustachio
   test: ^1.24.2
   test_descriptor: ^2.0.1
   test_process: ^2.0.3
   test_reflective_loader: ^0.2.2
-  web: ^1.1.0
 
 executables:
   dartdoc: null
