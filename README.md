@@ -288,6 +288,24 @@ dartdoc is currently documenting.  This can lead to inconsistent behavior betwee
 packages, especially if different command lines are used for dartdoc.  It is recommended to use collision-resistant
 naming for any macros by including the package name and/or library it is defined in within the name.
 
+### Documentation imports (`/// @docImport`)
+
+Libraries that are only referenced in documentation comments (`[Future]`) can be imported with a
+`/// @docImport '<uri>'` comment on the `library` element, like:
+
+```dart
+/// @docImport 'dart:async';
+/// @docImport 'package:flutter/element.dart' show Element;
+/// @docImport '../path/to/somwhere.dart';
+/// @docImport 'dart:html' as 'html';
+library;
+
+/// We can now reference [Future] from dart:async, [Element] from Flutter's element library,
+/// and [html.Element] from dart:html, even if none of these libraries are actually imported
+/// by this library.
+class Foo {}
+```
+
 ### Tools
 
 Dartdoc allows you to filter parts of the documentation through an external tool
