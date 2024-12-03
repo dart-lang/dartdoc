@@ -219,7 +219,7 @@ class Library extends ModelElement
     // The file name for a library is 'index.html', so we just link to the
     // directory name. This keeps the URL looking short, _without_ the
     // 'index.html' in the URL.
-    return '${package.baseHref}$dirName';
+    return '${package.baseHref}$dirName/';
   }
 
   /// The previous value of [filePath].

@@ -32,7 +32,7 @@ int x = 0;
     var x = library.properties.named('x');
     expect(
       x.documentationAsHtml,
-      '<p>Text <a href="$dartAsyncUrlPrefix">async</a>.</p>',
+      '<p>Text <a href="$dartAsyncUrlPrefix/">async</a>.</p>',
     );
   }
 
