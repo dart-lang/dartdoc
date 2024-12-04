@@ -174,7 +174,7 @@ A doc comment.
     var dartAsyncLib = sdkPackage.libraries.named('dart:async');
     expect(dartAsyncLib.name, 'dart:async');
     expect(dartAsyncLib.dirName, 'dart-async');
-    expect(dartAsyncLib.href, '${htmlBasePlaceholder}dart-async');
+    expect(dartAsyncLib.href, '${htmlBasePlaceholder}dart-async/');
   });
 }
 
@@ -191,7 +191,7 @@ class LibrariesTest extends DartdocTestBase {
 
     expect(library.name, 'libraries');
     expect(library.qualifiedName, 'libraries');
-    expect(library.href, '${placeholder}libraries');
+    expect(library.href, '${placeholder}libraries/');
   }
 
   void test_library_containsClassWithSameNameAsDartSdk() async {
@@ -212,7 +212,7 @@ class LibrariesTest extends DartdocTestBase {
 
     expect(library.name, 'lib1');
     expect(library.qualifiedName, 'lib1');
-    expect(library.href, '${placeholder}lib1');
+    expect(library.href, '${placeholder}lib1/');
     expect(library.redirectingPath, 'lib1/lib1-library.html');
   }
 
@@ -230,7 +230,7 @@ export 'src/library.dart';
     );
     expect(library.qualifiedName, 'libraries');
     expect(library.name, 'libraries');
-    expect(library.href, '${placeholder}public');
+    expect(library.href, '${placeholder}public/');
   }
 }
 
@@ -278,7 +278,7 @@ version: 0.0.1
 
     expect(library.name, 'lib2');
     expect(library.qualifiedName, 'lib2');
-    expect(library.href, '${placeholder}package-two_lib2');
+    expect(library.href, '${placeholder}package-two_lib2/');
     expect(
       library.redirectingPath,
       'package-two_lib2/package-two_lib2-library.html',
@@ -292,7 +292,7 @@ version: 0.0.1
 
     expect(library.name, 'lib2');
     expect(library.qualifiedName, 'lib2');
-    expect(library.href, '${placeholder}package-two_lib2');
+    expect(library.href, '${placeholder}package-two_lib2/');
     expect(
       library.redirectingPath,
       'package-two_lib2/package-two_lib2-library.html',
@@ -306,7 +306,7 @@ version: 0.0.1
 
     expect(library.name, 'lib2');
     expect(library.qualifiedName, 'lib2');
-    expect(library.href, '${placeholder}lib2');
+    expect(library.href, '${placeholder}lib2/');
     expect(library.redirectingPath, 'lib2/lib2-library.html');
   }
 }

@@ -84,7 +84,7 @@ class C {}
       equals({
         'name': 'index_json',
         'kind': Kind.library.index,
-        'href': '%%__HTMLBASE_dartdoc_internal__%%index_json',
+        'href': '%%__HTMLBASE_dartdoc_internal__%%index_json/',
       }),
     );
   }

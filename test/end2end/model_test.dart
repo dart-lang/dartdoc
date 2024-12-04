@@ -1194,17 +1194,25 @@ void main() async {
         expect(
           aFunctionUsingRenamedLib.documentationAsHtml,
           contains(
-              'Link to library: <a href="${htmlBasePlaceholder}mylibpub">renamedLib</a>'),
+            'Link to library: '
+            '<a href="${htmlBasePlaceholder}mylibpub/">renamedLib</a>',
+          ),
         );
         expect(
           aFunctionUsingRenamedLib.documentationAsHtml,
           contains(
-              'Link to constructor (implied, no new): <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper()</a>'),
+            'Link to constructor (implied, no new): '
+            '<a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper/YetAnotherHelper.html">'
+            'renamedLib.YetAnotherHelper()</a>',
+          ),
         );
         expect(
           aFunctionUsingRenamedLib.documentationAsHtml,
           contains(
-              'Link to class: <a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper-class.html">renamedLib.YetAnotherHelper</a>'),
+            'Link to class: '
+            '<a href="${htmlBasePlaceholder}mylibpub/YetAnotherHelper-class.html">'
+            'renamedLib.YetAnotherHelper</a>',
+          ),
         );
         expect(
           aFunctionUsingRenamedLib.documentationAsHtml,
