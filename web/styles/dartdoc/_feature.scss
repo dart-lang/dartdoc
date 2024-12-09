@@ -14,13 +14,13 @@
   font-size: 12px;
   padding: 1px 6px;
   margin: 0 8px 0 0;
+
+  h1 & {
+    vertical-align: middle;
+    margin: 0 -2px 0 0;
+  }
 }
 
 a.feature:hover {
   border-color: #13B9FD;
-}
-
-h1 .feature {
-  vertical-align: middle;
-  margin: 0 -2px 0 0;
 }
