@@ -50,6 +50,11 @@ h1 {
   margin-top: 0;
   margin-bottom: 0.67em;
 
+  &.title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   @media(max-width: 840px) {
     font-size: 24px;
   }
@@ -70,33 +75,18 @@ p {
 
 a {
   color: var(--main-hyperlinks-color);
+
+  &:hover {
+    color: #13B9FD;
+  }
 }
 
-a:hover {
-  color: #13B9FD;
+button {
+  padding: 0;
 }
 
 .fixed {
   white-space: pre;
-}
-
-header a,
-header p,
-header li {
-  color: #0175C2;
-}
-
-header a:hover {
-  color: #0175C2;
-}
-
-header h1 .kind {
-  color: #555;
-}
-
-header h1 {
-  font-weight: 400;
-  margin-bottom: 16px;
 }
 
 dt {
@@ -107,16 +97,16 @@ dd {
   color: var(--main-text-color);
   margin-bottom: 1em;
   margin-left: 0;
-}
 
-dd.callable, dd.constant, dd.property {
-  margin-bottom: 24px;
-}
+  &.callable, &.constant, &.property {
+    margin-bottom: 24px;
+  }
 
-dd p {
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 0;
+  p {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0;
+  }
 }
 
 table {

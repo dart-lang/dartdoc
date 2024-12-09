@@ -2,60 +2,58 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-.sidebar ol {
-  list-style: none;
-  line-height: 22px;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding: 0 0 15px 0;
-}
+.sidebar {
+  ol {
+    list-style: none;
+    line-height: 22px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0 0 15px 0;
 
-.sidebar h5 a,
-.sidebar h5 a:hover {
-  color: var(--main-sidebar-color);
-}
+    li {
+      &.section-title {
+        font-size: 18px;
+        font-weight: normal;
+        text-transform: uppercase;
+        padding-top: 25px;
+      }
 
-.sidebar h5,
-.sidebar ol li {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  padding: 3px 0 3px 3px;
-}
+      &.section-subtitle {
+        font-weight: 400;
+        text-transform: uppercase;
 
-.sidebar h5 {
-  color: var(--main-sidebar-color);
-  font-size: 18px;
-  margin: 0 0 22px 0;
-  padding-top: 0;
-}
+        a {
+          color: inherit;
+        }
+      }
 
-.sidebar ol li.section-title {
-  font-size: 18px;
-  font-weight: normal;
-  text-transform: uppercase;
-  padding-top: 25px;
-}
+      &.section-subitem {
+        margin-left: 12px;
+      }
 
-.sidebar ol li.section-subtitle a {
-  color: inherit;
-}
+      &:first-child {
+        padding-top: 3px;
+        margin-top: 0;
+      }
+    }
+  }
 
-.sidebar ol li.section-subtitle {
-  font-weight: 400;
-  text-transform: uppercase;
-}
+  h5, ol li {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 3px 0 3px 3px;
+  }
 
-.sidebar ol li.section-subitem {
-  margin-left: 12px;
-}
+  h5 {
+    color: var(--main-sidebar-color);
+    font-size: 18px;
+    margin: 0 0 22px 0;
+    padding-top: 0;
 
-.sidebar ol li:first-child {
-  padding-top: 3px;
-  margin-top: 0;
-}
-
-button {
-  padding: 0;
+    a, a:hover {
+      color: var(--main-sidebar-color);
+    }
+  }
 }
 
 #sidenav-left-toggle {
@@ -65,10 +63,10 @@ button {
   color: var(--main-icon-color);
   user-select: none;
   cursor: pointer;
-}
 
-#sidenav-left-toggle:hover {
-  color: var(--main-hyperlinks-color);
+  &:hover {
+    color: var(--main-hyperlinks-color);
+  }
 }
 
 /* left-nav disappears, and can transition in from the left */
@@ -126,18 +124,33 @@ button {
   }
 }
 
-.sidebar-offcanvas-left h5 {
-  margin-bottom: 10px;
+.sidebar-offcanvas-left {
+  flex: 0 1 230px;
+  order: 1;
+  overflow-y: scroll;
+  padding: 20px 0 15px 30px;
+  margin: 5px 20px 0 0;
+
+  h5 {
+    margin-bottom: 10px;
+
+    &:last-of-type {
+      border: 0;
+      margin-bottom: 25px;
+    }
+  }
 }
 
-.sidebar-offcanvas-left h5:last-of-type {
-  border: 0;
-  margin-bottom: 25px;
-}
+.sidebar-offcanvas-right {
+  flex: 0 1 12em;
+  order: 3;
+  overflow-y: scroll;
+  padding: 20px 15px 15px 15px;
+  margin-top: 5px;
+  margin-right: 20px;
 
-/* the right nav disappears out of view when the window shrinks */
-@media screen and (max-width: 992px) {
-  .sidebar-offcanvas-right {
+  /* the right nav disappears out of view when the window shrinks */
+  @media screen and (max-width: 992px) {
     display: none;
   }
 }
@@ -155,23 +168,6 @@ button {
   .self-name {
     margin-right: 10px;
   }
-}
-
-.sidebar-offcanvas-left {
-  flex: 0 1 230px;
-  order: 1;
-  overflow-y: scroll;
-  padding: 20px 0 15px 30px;
-  margin: 5px 20px 0 0;
-}
-
-.sidebar-offcanvas-right {
-  flex: 0 1 12em;
-  order: 3;
-  overflow-y: scroll;
-  padding: 20px 15px 15px 15px;
-  margin-top: 5px;
-  margin-right: 20px;
 }
 
 ::-webkit-scrollbar-button{ display: none; height: 13px; border-radius: 0; background-color: #AAA; }

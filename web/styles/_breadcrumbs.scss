@@ -6,29 +6,31 @@
   list-style: none;
   padding: 0;
   margin: 0;
-}
 
-.gt-separated li {
-  display: inline-block;
-}
+  &.dark {
+    li:before {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path fill='%23727272' d='M6.7,4L5.7,4.9L8.8,8l-3.1,3.1L6.7,12l4-4L6.7,4z'/></svg>");
+    }
+  }
 
-.gt-separated li:before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path fill='%23DDDDDD' d='M6.7,4L5.7,4.9L8.8,8l-3.1,3.1L6.7,12l4-4L6.7,4z'/></svg>");
-  background-position: center;
-  content: "\00a0";
-  margin: 0 6px 0 4px;
-  padding: 0 3px 0 0;
-}
+  li {
+    display: inline-block;
 
-.gt-separated.dark li:before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path fill='%23727272' d='M6.7,4L5.7,4.9L8.8,8l-3.1,3.1L6.7,12l4-4L6.7,4z'/></svg>");
-}
+    &:before {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path fill='%23DDDDDD' d='M6.7,4L5.7,4.9L8.8,8l-3.1,3.1L6.7,12l4-4L6.7,4z'/></svg>");
+      background-position: center;
+      content: "\00a0";
+      margin: 0 6px 0 4px;
+      padding: 0 3px 0 0;
+    }
 
-.gt-separated li:first-child:before {
-  background-image: none;
-  content: "";
-  margin: 0;
-  padding: 0;
+    &:first-child:before {
+      background-image: none;
+      content: "";
+      margin: 0;
+      padding: 0;
+    }
+  }
 }
 
 .breadcrumbs {
@@ -36,34 +38,32 @@
   margin: 8px 0 8px 0;
   white-space: nowrap;
   line-height: 1;
-}
 
-@media screen and (min-width: 840px) {
-  nav ol.breadcrumbs {
-    float: left;
+  .gt-separated .dark .hidden-xs li + li:before {
+    color: var(--main-h-text);
   }
-}
 
-@media screen and (max-width: 840px) {
-  .breadcrumbs {
+  li a {
+    color: var(--main-hyperlinks-color);
+  }
+
+  @at-root nav ol.breadcrumbs {
+    @media screen and (min-width: 840px) {
+      float: left;
+    }
+  }
+
+  @media screen and (max-width: 840px) {
     margin: 0 0 24px 0;
     overflow-x: hidden;
   }
-}
 
-.breadcrumbs .gt-separated .dark .hidden-xs li + li:before {
-  color: var(--main-h-text);
-}
+  .self-crumb {
+    color: var(--main-h-text);
+  }
 
-ol.breadcrumbs li a {
-  color: var(--main-hyperlinks-color);
-}
-
-.self-crumb {
-  color: var(--main-h-text);
-}
-
-.self-name {
-  color: #555;
-  display: none;
+  .self-name {
+    color: #555;
+    display: none;
+  }
 }
