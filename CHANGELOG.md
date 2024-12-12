@@ -1,6 +1,11 @@
-## 8.3.1-wip
+## 8.3.1
 
 * Require Dart 3.5 or later.
+* Append the href of each library with a slash. (#3940)
+* Compress generated css by configuring sass output style. (#3919)
+* Generate included css using sass. (#3917)
+* Correct links to remote, canonical libraries (#3912)
+* Use web 1.1. (#3915)
 
 ## 8.3.0
 
