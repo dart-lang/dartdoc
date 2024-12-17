@@ -43,7 +43,7 @@ class ContainerModifier implements Comparable<ContainerModifier> {
 }
 
 extension BuildLanguageFeatureSet on Iterable<ContainerModifier> {
-  /// Transforms [ContainerModifiers] into a series of [LanguageFeature] objects
+  /// Transforms [ContainerModifier]s into a series of [LanguageFeature] objects
   /// suitable for rendering as chips.   Assumes iterable is sorted.
   Iterable<LanguageFeature> get asLanguageFeatureSet =>
       where((m) => !m.hideIfPresent.any(contains))

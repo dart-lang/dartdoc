@@ -2,6 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+/// @docImport 'package:dartdoc/src/model/package_graph.dart';
+library;
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -835,8 +838,8 @@ mixin DocumentationComment
 
   /// Replace `<dartdoc-html>[digest]</dartdoc-html>` in API comments with
   /// the contents of the HTML fragment earlier defined by the
-  /// &#123;@inject-html&#125; directive. The [digest] is a SHA1 of the contents
-  /// of the HTML fragment, automatically generated upon parsing the
+  /// &#123;@inject-html&#125; directive. The `[digest]` is a SHA1 of the
+  /// contents of the HTML fragment, automatically generated upon parsing the
   /// &#123;@inject-html&#125; directive.
   ///
   /// This markup is generated and inserted by [_stripHtmlAndAddToIndex] when it

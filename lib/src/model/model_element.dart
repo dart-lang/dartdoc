@@ -255,7 +255,7 @@ abstract class ModelElement
     return newModelElement;
   }
 
-  /// Caches a newly-created [ModelElement] from [ModelElement._from] or
+  /// Caches a newly-created [ModelElement] from [ModelElement.for_] or
   /// [ModelElement.forPropertyInducingElement].
   static void _cacheNewModelElement(
       Element e, ModelElement newModelElement, Library library,
