@@ -23,7 +23,7 @@ class Documentation {
   /// A guard against re-computing [_asHtml].
   bool _hasHtmlBeenRendered = false;
 
-  /// A guard against re-computing [_asHOneLiner].
+  /// A guard against re-computing [_asOneLiner].
   bool _hasOneLinerBeenRendered = false;
 
   String get asHtml {

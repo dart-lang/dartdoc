@@ -194,7 +194,7 @@ class _OptionValueWithContext<T> {
   /// If non-null, the basename of the configuration file the value came from.
   String? definingFile;
 
-  /// A [pathLib.Context] variable initialized with 'canonicalDirectoryPath'.
+  /// A [p.Context] variable initialized with 'canonicalDirectoryPath'.
   p.Context pathContext;
 
   /// Build a _OptionValueWithContext.
@@ -795,8 +795,8 @@ mixin _DartdocFileOption<T> implements DartdocOption<T> {
     return __valueAtFromFiles[key];
   }
 
-  /// Searches all dartdoc_options files through parent directories, starting at
-  /// [dir], for the option and returns one once found.
+  /// Searches all dartdoc options files through parent directories, starting at
+  /// [folder], for the option and returns one once found.
   _OptionValueWithContext<T>? _valueAtFromFilesFirstFound(Folder folder) {
     _OptionValueWithContext<T>? value;
     for (var dir in folder.withAncestors) {
@@ -975,8 +975,8 @@ mixin _DartdocArgOption<T> implements DartdocOption<T> {
         'missing path: "$missingPath"');
   }
 
-  /// Generates an _OptionValueWithContext using the value of the argument from
-  /// the [argParser] and the working directory from [_directoryCurrent].
+  /// Generates an [_OptionValueWithContext] using the value of the argument
+  /// from the [_argResults] and the working directory from [_directoryCurrent].
   ///
   /// Throws [UnsupportedError] if [T] is not a supported type.
   _OptionValueWithContext<T>? _valueAtFromArgsWithContext() {
