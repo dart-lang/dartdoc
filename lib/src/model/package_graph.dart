@@ -874,6 +874,12 @@ class PackageGraph with CommentReferable, Nameable {
         continue;
       }
       var completedLibraries = <Library>{};
+
+      for (var library in package.allLibraries) {
+        // Be sure to make `Object` available by computing ModelElements for
+        // all of the classes.
+        library.classes;
+      }
       for (var library in package.allLibraries) {
         progressBarTick();
         if (completedLibraries.contains(library)) {
