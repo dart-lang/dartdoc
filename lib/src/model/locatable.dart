@@ -16,7 +16,7 @@ mixin Locatable {
   /// class doesn't have docs for this element.
   List<Locatable> get documentationFrom;
 
-  /// True if documentationFrom contains only one item, [this].
+  /// Whether [documentationFrom] contains only one item, `this`.
   bool get documentationIsLocal =>
       documentationFrom.length == 1 && identical(documentationFrom.first, this);
 

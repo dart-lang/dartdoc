@@ -9,12 +9,10 @@ import 'dart:io';
 
 final String _sep = Platform.pathSeparator;
 
-/// Copy the given entity to the destination directory.
-///
-/// Note that the [context] parameter is deprecated.
-void copy(FileSystemEntity entity, Directory destDir) {
-  print('copying ${entity.path} to ${destDir.path}');
-  return _copyImpl(entity, destDir);
+/// Copies the given [entity] to the [destinationDir].
+void copy(FileSystemEntity entity, Directory destinationDir) {
+  print('copying ${entity.path} to ${destinationDir.path}');
+  return _copyImpl(entity, destinationDir);
 }
 
 void _copyImpl(FileSystemEntity? entity, Directory destDir) {

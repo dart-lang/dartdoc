@@ -11,9 +11,8 @@ import 'package:meta/meta.dart';
 
 /// Specifies information for generating both a runtime-interpreted Mustache
 /// renderer and a pre-compiled Mustache renderer for a [context] object, using
-/// a Mustache template located at [standardHtmlTemplate] and at
-/// [standardMdTemplate], for an HTML template, and for a Markdown template,
-/// respectively.
+/// a Mustache template located at [standardHtmlTemplate], for an HTML template,
+/// and for a Markdown template, respectively.
 // Update `test/builder_test_base.dart` when updating this.
 class Renderer {
   /// The name of the render function to generate.
@@ -40,8 +39,8 @@ class Renderer {
   /// render [context] objects.
   ///
   /// [standardTemplateBasename] is used as a basename in an
-  /// Asset URL, in both [standardHtmlTemplate] and [standardMdTemplate],
-  /// in order to render with the out-of-the-box Mustache templates.
+  /// Asset URL, in both [standardHtmlTemplate], in order to render with the
+  /// out-of-the-box Mustache templates.
   const Renderer(
     this.name,
     this.context,

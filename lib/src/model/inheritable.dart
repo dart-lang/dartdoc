@@ -14,10 +14,9 @@ import 'package:dartdoc/src/model/model.dart';
 /// We can search the inheritance chain between this instance and
 /// [definingEnclosingContainer] in [Inheritable.canonicalEnclosingContainer],
 /// for the canonical [Class] closest to where this member was defined.  We
-/// can then know that when we find [Inheritable.modelElement] inside that
-/// [Class]'s namespace, that's the one we should treat as canonical and
-/// implementors of this class can use that knowledge to determine
-/// canonicalization.
+/// can then know that when we find [Inheritable.element] inside that [Class]'s
+/// namespace, that's the one we should treat as canonical and implementors of
+/// this class can use that knowledge to determine canonicalization.
 ///
 /// We pick the class closest to the [definingEnclosingContainer] so that all
 /// children of that class inheriting the same member will point to the same
