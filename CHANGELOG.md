@@ -1,3 +1,7 @@
+## 8.3.2
+
+* Fix a LateInitializationError by not depending on PackageGraph.objectClass.
+
 ## 8.3.1
 
 * Require Dart 3.5 or later.
