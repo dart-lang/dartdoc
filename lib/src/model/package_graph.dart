@@ -204,6 +204,7 @@ class PackageGraph with CommentReferable, Nameable {
   final Map<Element, ModelNode> _modelNodes = {};
 
   /// The Object class declared in the Dart SDK's 'dart:core' library.
+  // TODO(srawlins): I think nothing depends on this any longer; remove.
   late InheritingContainer objectClass;
 
   /// Populate's [_modelNodes] with elements in [resolvedLibrary].
