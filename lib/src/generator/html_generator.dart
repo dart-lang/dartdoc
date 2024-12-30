@@ -16,7 +16,7 @@ import 'package:meta/meta.dart';
 
 /// Creates a [Generator] with an [HtmlGeneratorBackend] backend.
 ///
-/// [forceRuntimeTemplates] should only be given [true] during tests.
+/// [forceRuntimeTemplates] should only be given `true` during tests.
 Future<Generator> initHtmlGenerator(
   DartdocGeneratorOptionContext context, {
   required FileWriter writer,

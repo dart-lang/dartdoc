@@ -115,7 +115,7 @@ abstract class Templates {
   /// Creates a [Templates] instance either from the default set of templates,
   /// or a custom set if the 'templatesDir' Dartdoc option is used.
   ///
-  /// [forceRuntimeTemplates] should only be given [true] during tests.
+  /// [forceRuntimeTemplates] should only be given `true` during tests.
   static Future<Templates> fromContext(DartdocGeneratorOptionContext context,
       {bool forceRuntimeTemplates = false}) async {
     var templatesDir = context.templatesDir;

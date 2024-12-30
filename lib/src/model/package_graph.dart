@@ -707,10 +707,6 @@ class PackageGraph with CommentReferable, Nameable {
   /// If we know the element is related to a particular class, pass a
   /// [preferredClass] to disambiguate.
   ///
-  /// This doesn't know anything about [PackageGraph.inheritThrough] and
-  /// probably shouldn't, so using it with [Inheritable]s without special casing
-  /// is not advised.
-  ///
   /// This can return `null` in a few ways: if [modelElement] is `null`, or if
   /// it has no canonical library, or if a possible canonical model element has
   /// a `false` value for `isCanonical`.

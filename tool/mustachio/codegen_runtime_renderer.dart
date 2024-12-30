@@ -2,6 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+/// @docImport 'package:dartdoc/src/mustachio/renderer_base.dart';
+library;
+
 import 'dart:collection';
 
 import 'package:analyzer/dart/element/element.dart';
@@ -268,7 +271,7 @@ import '${path.basename(_sourceUri.path)}';
     }
   }
 
-  /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
+  /// Adds [element] to the [_typesToProcess] queue, if it is not already there.
   void _addTypeToProcess(
     InterfaceElement element, {
     required bool isFullRenderer,

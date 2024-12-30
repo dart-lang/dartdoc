@@ -101,7 +101,7 @@ Future<LibraryElement> resolveGeneratedLibrary(String libraryPath) async {
 }
 
 extension LibraryExtensions on LibraryElement {
-  /// Returns the top-level function in [this] library, named [name], or `null`
+  /// Returns the top-level function in `this` library, named [name], or `null`
   /// if no function is found.
   FunctionElement? getTopLevelFunction(String name) => topLevelElements
       .whereType<FunctionElement>()
