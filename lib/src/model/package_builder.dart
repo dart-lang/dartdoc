@@ -226,11 +226,9 @@ class PubPackageBuilder implements PackageBuilder {
   /// [addingSpecials] indicates that only [SpecialClass]es are being resolved
   /// in this round.
   Future<void> _discoverLibraries(
-    void Function(DartDocResolvedLibrary) addLibrary,
-    Set<LibraryElement> processedLibraries,
-    Set<String> files, {
-    bool addingSpecials = false,
-  }) async {
+      void Function(DartDocResolvedLibrary) addLibrary,
+      Set<LibraryElement> processedLibraries,
+      Set<String> files) async {
     files = {...files};
     // Discover Dart libraries in a loop. In each iteration of the loop, we take
     // a set of files (starting with the ones passed into the function), resolve
@@ -251,17 +249,15 @@ class PubPackageBuilder implements PackageBuilder {
     // find all documentable files in that package, for the universal reference
     // scope. This variable tracks which packages we've seen so far.
     var knownPackages = <PackageMeta>{};
-    if (!addingSpecials) {
-      progressBarStart(files.length);
-    }
+    progressBarStart(files.length);
+
     // The set of files that are discovered while iterating in the below
     // do-while loop, which are then added to `files`, as they are found.
     var newFiles = <String>{};
     do {
       filesInLastPass = filesInCurrentPass;
-      if (!addingSpecials) {
-        progressBarUpdateTickCount(files.length);
-      }
+      progressBarUpdateTickCount(files.length);
+
       // Be careful here, not to accidentally stack up multiple
       // [DartDocResolvedLibrary]s, as those eat our heap.
       var libraryFiles = files.difference(_knownParts);
@@ -271,9 +267,8 @@ class PubPackageBuilder implements PackageBuilder {
           continue;
         }
         processedFiles.add(file);
-        if (!addingSpecials) {
-          progressBarTick();
-        }
+        progressBarTick();
+
         var resolvedLibrary = await _resolveLibrary(file);
         if (resolvedLibrary == null) {
           // `file` did not resolve to a _library_; could be a part, an
@@ -292,41 +287,35 @@ class PubPackageBuilder implements PackageBuilder {
         processedLibraries.add(resolvedLibrary.element);
       }
       files.addAll(newFiles);
-      if (!addingSpecials) {
-        var externals = _includedExternalsFrom(newFiles);
-        if (externals.isNotEmpty) {
-          includeExternalsWasSpecified = true;
-        }
-        files.addAll(externals);
+      var externals = _includedExternalsFrom(newFiles);
+      if (externals.isNotEmpty) {
+        includeExternalsWasSpecified = true;
       }
+      files.addAll(externals);
 
       var packages = _packageMetasForFiles(files.difference(_knownParts));
       filesInCurrentPass = {...files.difference(_knownParts)};
 
-      if (!addingSpecials) {
-        // To get canonicalization correct for non-locally documented packages
-        // (so we can generate the right hyperlinks), it's vital that we add all
-        // libraries in dependent packages. So if the analyzer discovers some
-        // files in a package we haven't seen yet, add files for that package.
-        for (var meta in packages.difference(knownPackages)) {
-          if (meta.isSdk) {
-            if (!_skipUnreachableSdkLibraries) {
-              files.addAll(_sdkFilesToDocument);
-            }
-          } else {
-            files.addAll(await _findFilesToDocumentInPackage(
-              meta.dir.path,
-              includeDependencies: false,
-              filterExcludes: false,
-            ).toList());
+      // To get canonicalization correct for non-locally documented packages
+      // (so we can generate the right hyperlinks), it's vital that we add all
+      // libraries in dependent packages. So if the analyzer discovers some
+      // files in a package we haven't seen yet, add files for that package.
+      for (var meta in packages.difference(knownPackages)) {
+        if (meta.isSdk) {
+          if (!_skipUnreachableSdkLibraries) {
+            files.addAll(_sdkFilesToDocument);
           }
+        } else {
+          files.addAll(await _findFilesToDocumentInPackage(
+            meta.dir.path,
+            includeDependencies: false,
+            filterExcludes: false,
+          ).toList());
         }
-        knownPackages.addAll(packages);
       }
+      knownPackages.addAll(packages);
     } while (!filesInLastPass.containsAll(filesInCurrentPass));
-    if (!addingSpecials) {
-      progressBarComplete();
-    }
+    progressBarComplete();
   }
 
   /// Returns all top level library files in the 'lib/' directory of the given
