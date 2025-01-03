@@ -355,7 +355,16 @@ bool get classModifiersAllowed =>
         .allows(platformVersion);
 
 extension ModelElementIterableExtension<T extends ModelElement> on Iterable<T> {
-  T named(String name) => singleWhere((e) => e.name == name);
+  T named(String name) {
+    var elements = where((e) => e.name == name).toList();
+    if (elements.isEmpty) {
+      throw StateError("No $T elements named '$name'");
+    }
+    if (elements.length > 1) {
+      throw StateError("Too many $T elements named '$name': $elements");
+    }
+    return elements.single;
+  }
 
   T displayNamed(String displayName) =>
       singleWhere((e) => e.displayName == displayName);

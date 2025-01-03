@@ -117,9 +117,9 @@ class EnumField extends Field {
       return canonicalModelElement?.href;
     }
     assert(canonicalEnclosingContainer == enclosingElement);
-    // TODO(jcollins-g): EnumField should not depend on enclosingElement, but
-    // we sort of have to while we are half-converted to [FileStructure].
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.fileName}';
+    assert(canonicalLibrary != null);
+    return '${package.baseHref}${canonicalLibrary!.dirName}/'
+        '${enclosingElement.fileName}';
   }
 
   @override
