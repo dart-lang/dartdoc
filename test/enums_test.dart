@@ -8,6 +8,7 @@ import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
 import 'dartdoc_test_base.dart';
+import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart';
 
 void main() {
@@ -631,6 +632,23 @@ enum E {
 
   void test_value_linksToItsAnchor() async {
     var library = await bootPackageWithLibrary('enum E { one, two, three }');
+    var oneValue =
+        library.enums.named('E').publicEnumValues.named('one') as EnumField;
+    expect(oneValue.linkedName, '<a href="$linkPrefix/E.html#one">one</a>');
+    expect(oneValue.constantValue, equals(oneValue.renderedName));
+  }
+
+  void test_value_linksToItsAnchor_inExportedLib() async {
+    var library = (await bootPackageFromFiles([
+      d.file('lib/src/library.dart', '''
+enum E { one, two three }
+'''),
+      d.file('lib/enums.dart', '''
+export 'src/library.dart';
+'''),
+    ]))
+        .libraries
+        .named(libraryName);
     var oneValue =
         library.enums.named('E').publicEnumValues.named('one') as EnumField;
     expect(oneValue.linkedName, '<a href="$linkPrefix/E.html#one">one</a>');
