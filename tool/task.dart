@@ -937,7 +937,7 @@ Not all files are formatted:
 Future<void> validateSdkDocs() async {
   await docSdk();
   const expectedLibCount = 0;
-  const expectedSubLibCount = 13;
+  const expectedSubLibCount = 20;
   const expectedTotalCount = 20;
   var indexHtml = File(path.join(_sdkDocsDir.path, 'index.html'));
   if (!indexHtml.existsSync()) {
@@ -953,8 +953,9 @@ Future<void> validateSdkDocs() async {
   }
   print("Found $foundLibCount 'dart:' entries in 'index.html'");
 
-  var foundSubLibCount =
-      _findCount(indexContents, '<li class="section-subitem"><a href="dart-');
+  var libLinkPattern =
+      RegExp('<li class="section-subitem"><a [^>]*href="dart-');
+  var foundSubLibCount = _findCount(indexContents, libLinkPattern);
   if (expectedSubLibCount != foundSubLibCount) {
     throw StateError("Expected $expectedSubLibCount 'dart:' entries in "
         "'index.html' to be in categories, but found $foundSubLibCount");
@@ -987,12 +988,12 @@ final Directory _sdkDocsDir =
     Directory.systemTemp.createTempSync('sdkdocs').absolute;
 
 /// Returns the number of (perhaps overlapping) occurrences of [str] in [match].
-int _findCount(String str, String match) {
+int _findCount(String str, Pattern match) {
   var count = 0;
   var index = str.indexOf(match);
   while (index != -1) {
     count++;
-    index = str.indexOf(match, index + match.length);
+    index = str.indexOf(match, index + 1);
   }
   return count;
 }
