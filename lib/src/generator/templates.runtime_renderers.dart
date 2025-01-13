@@ -7,6 +7,9 @@
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
 // ignore_for_file: unused_import
 // ignore_for_file: use_super_parameters
+
+// ignore_for_file: analyzer_use_new_elements
+
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
