@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// ignore_for_file: analyzer_use_new_elements
+
 /// @docImport 'package:dartdoc/src/mustachio/renderer_base.dart';
 library;
 
@@ -88,6 +90,9 @@ class RuntimeRenderersBuilder {
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
 // ignore_for_file: unused_import
 // ignore_for_file: use_super_parameters
+
+// ignore_for_file: analyzer_use_new_elements
+
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';

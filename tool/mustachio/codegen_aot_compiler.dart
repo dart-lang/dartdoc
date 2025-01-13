@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// ignore_for_file: analyzer_use_new_elements
+
 import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
@@ -82,6 +84,8 @@ Future<String> compileTemplatesToRenderers(
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
+
+// ignore_for_file: analyzer_use_new_elements
 
 import 'dart:convert';
 

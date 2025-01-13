@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// ignore_for_file: analyzer_use_new_elements
+
 /// dartdoc's dartdoc_options.yaml configuration file follows similar loading
 /// semantics to that of analysis_options.yaml,
 /// [documented here](https://dart.dev/guides/language/analysis-options).
