@@ -10,6 +10,7 @@
 library;
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -208,6 +209,8 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
 /// An [ElementType] whose underlying type was referred to by a type alias.
 mixin Aliased implements ElementType {
   Element get typeAliasElement => type.alias!.element;
+
+  Element2 get typeAliasElement2 => type.alias!.element2;
 
   @override
   String get name => typeAliasElement.name!;

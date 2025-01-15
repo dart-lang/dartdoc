@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:test/test.dart';
@@ -256,7 +254,7 @@ R<int> f(int a, String b) {
 
     expect(
         fFunc.modelType.returnType,
-        isA<AliasedUndefinedElementType>().having((e) => e.typeAliasElement,
-            'typeAliasElement', equals(rTypedef.element)));
+        isA<AliasedUndefinedElementType>().having((e) => e.typeAliasElement2,
+            'typeAliasElement', equals(rTypedef.element2)));
   }
 }
