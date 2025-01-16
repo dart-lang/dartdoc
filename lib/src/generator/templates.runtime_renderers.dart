@@ -20231,13 +20231,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -24813,6 +24813,34 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                   );
                 },
               ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'TypeAliasElement2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['TypeAliasElement2']!,
+                  );
+                },
+              ),
               'enclosingElement': Property(
                 getValue: (CT_ c) => c.enclosingElement,
                 renderVariable: (
@@ -26306,6 +26334,15 @@ const _invisibleGetters = {
     'enclosingElement3',
     'hashCode',
     'isAugmentation',
+    'name',
+    'runtimeType',
+  },
+  'TypeAliasElement2': {
+    'aliasedElement2',
+    'aliasedType',
+    'enclosingElement2',
+    'firstFragment',
+    'hashCode',
     'name',
     'runtimeType',
   },
