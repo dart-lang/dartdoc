@@ -14,6 +14,8 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/type_utils.dart';
@@ -129,7 +131,7 @@ import '${path.basename(_sourceUri.path)}';
   /// Adds type specified in [spec] to the [_typesToProcess] queue, as well as
   /// all supertypes, and the types of all valid getters, recursively.
   void _addTypesForRendererSpec(RendererSpec spec) {
-    var element = spec.contextElement;
+    var element = spec.contextElement.asElement as InterfaceElement;
     var rendererInfo = _RendererInfo(element,
         public: _rendererClassesArePublic, publicApiFunctionName: spec.name);
     _typesToProcess.add(rendererInfo);

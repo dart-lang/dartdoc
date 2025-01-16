@@ -11,12 +11,15 @@ import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/context/builder.dart' show EmbedderYamlLocator;
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/element/element.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/sdk/sdk.dart'
     show EmbedderSdk, FolderBasedDartSdk;
@@ -520,6 +523,7 @@ class PubPackageBuilder implements PackageBuilder {
 /// the library.
 class DartDocResolvedLibrary {
   final LibraryElement element;
+  LibraryElement2 get element2 => element as LibraryElementImpl;
   final List<CompilationUnit> units;
 
   DartDocResolvedLibrary(ResolvedLibraryResult result)

@@ -2,11 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'dart:io' show Platform;
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 // ignore: implementation_imports
@@ -51,13 +49,13 @@ final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
 /// Sets the supported way of constructing [PackageMeta] objects.
 ///
 /// These objects can be constructed from a filename, a directory
-/// or a [LibraryElement]. We allow different dartdoc implementations to
+/// or a [LibraryElement2]. We allow different dartdoc implementations to
 /// provide their own [PackageMeta] types.
 ///
 /// By using a different provider, these implementations can control how
 /// [PackageMeta] objects are built.
 class PackageMetaProvider {
-  final PackageMeta? Function(LibraryElement, String, ResourceProvider)
+  final PackageMeta? Function(LibraryElement2, String, ResourceProvider)
       _fromElement;
   final PackageMeta? Function(String, ResourceProvider) _fromFilename;
   final PackageMeta? Function(Folder, ResourceProvider) _fromDir;
@@ -77,7 +75,7 @@ class PackageMetaProvider {
     this.defaultSdk,
   });
 
-  PackageMeta? fromElement(LibraryElement library, String s) =>
+  PackageMeta? fromElement(LibraryElement2 library, String s) =>
       _fromElement(library, s, resourceProvider);
   PackageMeta? fromFilename(String s) => _fromFilename(s, resourceProvider);
   PackageMeta? fromDir(Folder dir) => _fromDir(dir, resourceProvider);
@@ -185,7 +183,7 @@ abstract class PubPackageMeta extends PackageMeta {
   }
 
   /// Use this instead of [fromDir] where possible.
-  static PackageMeta? fromElement(LibraryElement libraryElement, String sdkDir,
+  static PackageMeta? fromElement(LibraryElement2 libraryElement, String sdkDir,
       ResourceProvider resourceProvider) {
     if (libraryElement.isInSdk) {
       return PubPackageMeta.fromDir(
@@ -194,7 +192,7 @@ abstract class PubPackageMeta extends PackageMeta {
     return PubPackageMeta.fromDir(
         resourceProvider
             .getFile(resourceProvider.pathContext
-                .canonicalize(libraryElement.source.fullName))
+                .canonicalize(libraryElement.firstFragment.source.fullName))
             .parent,
         resourceProvider);
   }
