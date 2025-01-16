@@ -13199,6 +13199,34 @@ class _Renderer_Library extends RendererBase<Library> {
                   );
                 },
               ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'LibraryElement2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['LibraryElement2']!,
+                  );
+                },
+              ),
               'enclosingElement': Property(
                 getValue: (CT_ c) => c.enclosingElement,
                 renderVariable: (
@@ -14084,7 +14112,7 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
   }
 }
 
-String renderLibrary(LibraryTemplateData context, Template template) {
+String renderLibraryRedirect(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14330,7 +14358,7 @@ class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData> {
   }
 }
 
-String renderLibraryRedirect(LibraryTemplateData context, Template template) {
+String renderLibrary(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -26051,6 +26079,36 @@ const _invisibleGetters = {
     'runtimeType',
     'topLevelElements',
     'units',
+  },
+  'LibraryElement2': {
+    'classes',
+    'entryPoint2',
+    'enums',
+    'exportNamespace',
+    'exportedLibraries2',
+    'extensionTypes',
+    'extensions',
+    'featureSet',
+    'firstFragment',
+    'fragments',
+    'functions',
+    'getters',
+    'hashCode',
+    'identifier',
+    'isDartAsync',
+    'isDartCore',
+    'isInSdk',
+    'languageVersion',
+    'library2',
+    'loadLibraryFunction2',
+    'mixins',
+    'publicNamespace',
+    'runtimeType',
+    'setters',
+    'topLevelVariables',
+    'typeAliases',
+    'typeProvider',
+    'typeSystem',
   },
   'List': {'hashCode', 'length', 'reversed', 'runtimeType'},
   'Locatable': {

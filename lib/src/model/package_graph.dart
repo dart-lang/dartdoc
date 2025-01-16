@@ -94,11 +94,11 @@ class PackageGraph with CommentReferable, Nameable {
   /// span packages.
   void addLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
     assert(!allLibrariesAdded);
-    var libraryElement = resolvedLibrary.element;
+    var libraryElement2 = resolvedLibrary.element2;
     var packageMeta =
-        packageMetaProvider.fromElement(libraryElement, config.sdkDir);
+        packageMetaProvider.fromElement(libraryElement2, config.sdkDir);
     if (packageMeta == null) {
-      var libraryPath = libraryElement.librarySource.fullName;
+      var libraryPath = libraryElement2.firstFragment.source.fullName;
       var dartOrFlutter = config.flutterRoot == null ? 'dart' : 'flutter';
       throw DartdocFailure(
           "Unknown package for library: '$libraryPath'.  Consider "
@@ -109,10 +109,10 @@ class PackageGraph with CommentReferable, Nameable {
     }
     var package = Package.fromPackageMeta(packageMeta, this);
     var library = Library.fromLibraryResult(resolvedLibrary, this, package);
-    if (_shouldIncludeLibrary(libraryElement)) {
+    if (_shouldIncludeLibrary(resolvedLibrary.element)) {
       package.libraries.add(library);
     }
-    _allLibraries[libraryElement.source.fullName] = library;
+    _allLibraries[libraryElement2.firstFragment.source.fullName] = library;
   }
 
   /// Whether [libraryElement] should be included in the libraries-to-document.
