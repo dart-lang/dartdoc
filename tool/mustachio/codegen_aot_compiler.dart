@@ -214,8 +214,8 @@ Future<String> _redirectingMethod(
     _AotCompiler compiler, _AotCompiler lubCompiler) async {
   var buffer = StringBuffer()..write('String ${compiler._rendererName}');
 
-  buffer.writeTypeParameters(
-      compiler._usedContextStack.expand((c) => c.type.element3.typeParameters2));
+  buffer.writeTypeParameters(compiler._usedContextStack
+      .expand((c) => c.type.element3.typeParameters2));
   buffer.write('(');
 
   for (var context in compiler._usedContextStack) {

@@ -2,11 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'dart:io' show Platform;
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:glob/glob.dart';
@@ -54,9 +52,9 @@ Iterable<T> filterHasCanonical<T extends ModelElement>(
   return maybeHasCanonicalItems.where((me) => me.canonicalModelElement != null);
 }
 
-extension ElementExtension on Element {
+extension ElementExtension on Element2 {
   bool get hasPrivateName {
-    final name = this.name;
+    final name = name3;
     if (name == null) return false;
 
     if (name.startsWith('_')) {
@@ -67,8 +65,8 @@ extension ElementExtension on Element {
 
     // GenericFunctionTypeElements have the name we care about in the enclosing
     // element.
-    if (self is GenericFunctionTypeElement) {
-      var enclosingElementName = self.enclosingElement3?.name;
+    if (self is GenericFunctionTypeElement2) {
+      var enclosingElementName = self.enclosingElement2?.name3;
       if (enclosingElementName != null &&
           enclosingElementName.startsWith('_')) {
         return true;

@@ -69,7 +69,7 @@ mixin Nameable {
         enclosingContainer: enclosingContainer,
       );
 
-      /// Returns the [ModelElement] for [element], instantiating it if needed.
+  /// Returns the [ModelElement] for [element], instantiating it if needed.
   ///
   /// A convenience method for [ModelElement.for_], see its documentation.
   ModelElement getModelFor2(
@@ -91,7 +91,7 @@ mixin Nameable {
   ModelElement getModelForElement(Element element) =>
       ModelElement.forElement(element, packageGraph);
 
-      /// Returns the [ModelElement] for [element], instantiating it if needed.
+  /// Returns the [ModelElement] for [element], instantiating it if needed.
   ///
   /// A convenience method for [ModelElement.forElement], see its
   /// documentation.

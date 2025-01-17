@@ -32,7 +32,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
   @override
   bool get isPublic {
     if (!super.isPublic) return false;
-    if (element.hasPrivateName) return false;
+    if (element2.hasPrivateName) return false;
     var class_ = element.enclosingElement3;
     // Enums cannot be explicitly constructed or extended.
     if (class_ is EnumElement) return false;

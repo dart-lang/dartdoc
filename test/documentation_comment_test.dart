@@ -28,7 +28,7 @@ class DocumentationCommentTest extends DartdocTestBase {
   late ModelElement libraryModel;
 
   void expectNoWarnings() {
-    expect(packageGraph.packageWarningCounter.countedWarnings2, isEmpty);
+    expect(packageGraph.packageWarningCounter.countedWarnings, isEmpty);
     expect(packageGraph.packageWarningCounter.hasWarnings, isFalse);
   }
 
@@ -861,7 +861,7 @@ class _HasWarning extends Matcher {
       Map<Object?, Object?> matchState, bool verbose) {
     if (actual is ModelElement) {
       var warnings = actual
-          .packageGraph.packageWarningCounter.countedWarnings2[actual.element2];
+          .packageGraph.packageWarningCounter.countedWarnings[actual.element2];
       if (warnings == null) {
         return mismatchDescription.add('has no warnings');
       }

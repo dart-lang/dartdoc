@@ -1688,6 +1688,34 @@ class _Renderer_Category extends RendererBase<Category> {
                   );
                 },
               ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'Element2',
+                        ),
+
+                isNullValue: (CT_ c) => c.element2 == null,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['Element2']!,
+                  );
+                },
+              ),
               'enclosingName': Property(
                 getValue: (CT_ c) => c.enclosingName,
                 renderVariable: (
@@ -19199,6 +19227,34 @@ class _Renderer_Package extends RendererBase<Package> {
                   );
                 },
               ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'Element2',
+                        ),
+
+                isNullValue: (CT_ c) => c.element2 == null,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['Element2']!,
+                  );
+                },
+              ),
               'enclosingName': Property(
                 getValue: (CT_ c) => c.enclosingName,
                 renderVariable: (
@@ -25591,6 +25647,34 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
                     sink,
                     parent: r,
                     getters: _invisibleGetters['Element']!,
+                  );
+                },
+              ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'Element2',
+                        ),
+
+                isNullValue: (CT_ c) => c.element2 == null,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['Element2']!,
                   );
                 },
               ),

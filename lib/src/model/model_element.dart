@@ -312,7 +312,8 @@ abstract class ModelElement
       TypeAliasElement(aliasedType: FunctionType()) =>
         FunctionTypedef(e, library, packageGraph),
       TypeAliasElement()
-          when e.aliasedType.documentableElement2.asElement is InterfaceElement =>
+          when e.aliasedType.documentableElement2.asElement
+              is InterfaceElement =>
         ClassTypedef(e, library, packageGraph),
       TypeAliasElement() => GeneralizedTypedef(e, library, packageGraph),
       MethodElement(isOperator: true) when enclosingContainer == null =>
@@ -438,7 +439,7 @@ abstract class ModelElement
       }
     }
 
-    return !element.hasPrivateName && !hasNodoc;
+    return !element2.hasPrivateName && !hasNodoc;
   }();
 
   @override
@@ -508,7 +509,7 @@ abstract class ModelElement
   /// A public, documented library which exports this [ModelElement], ideally in
   /// [library]'s package.
   late final Library? canonicalLibrary = () {
-    if (element.hasPrivateName) {
+    if (element2.hasPrivateName) {
       // Privately named elements can never have a canonical library.
       return null;
     }
@@ -558,6 +559,7 @@ abstract class ModelElement
   @override
   Element get element;
 
+  @override
   Element2 get element2 => element.asElement2!;
 
   @override

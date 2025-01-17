@@ -30,7 +30,7 @@ class Library extends ModelElement
   final LibraryElement element;
 
   @override
-   LibraryElement2 get element2 => element.asElement2;
+  LibraryElement2 get element2 => element.asElement2;
 
   /// The set of [Element]s declared directly in this library.
   final Set<Element> _localElements;
@@ -315,8 +315,8 @@ class Library extends ModelElement
   String get packageName => packageMeta?.name ?? '';
 
   /// The real packageMeta, as opposed to the package we are documenting with.
-  late final PackageMeta? packageMeta =
-      packageGraph.packageMetaProvider.fromElement(element.asElement2, config.sdkDir);
+  late final PackageMeta? packageMeta = packageGraph.packageMetaProvider
+      .fromElement(element.asElement2, config.sdkDir);
 
   late final List<Class> classesAndExceptions = [
     ..._localElementsOfType<ClassElement, Class>(),

@@ -1182,7 +1182,7 @@ void main() async {
             contains(
                 '<a href="%%__HTMLBASE_dartdoc_internal__%%reexport_two/BaseReexported/action.html">ExtendedBaseReexported.action</a></p>'));
         var doAwesomeStuffWarnings = packageGraph.packageWarningCounter
-                .countedWarnings[doAwesomeStuff.element] ??
+                .countedWarnings[doAwesomeStuff.element2] ??
             {};
         expect(
             doAwesomeStuffWarnings,
