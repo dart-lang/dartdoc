@@ -19,7 +19,7 @@ abstract class Typedef extends ModelElement
   @override
   final TypeAliasElement element;
 
-  TypeAliasElement2 get element2 => element.asElement2 as TypeAliasElement2;
+  TypeAliasElement2 get element2 => element.asElement2;
 
   Typedef(this.element, super.library, super.packageGraph);
 
