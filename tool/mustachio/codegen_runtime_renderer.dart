@@ -131,7 +131,7 @@ import '${path.basename(_sourceUri.path)}';
   /// Adds type specified in [spec] to the [_typesToProcess] queue, as well as
   /// all supertypes, and the types of all valid getters, recursively.
   void _addTypesForRendererSpec(RendererSpec spec) {
-    var element = spec.contextElement.asElement as InterfaceElement;
+    var element = spec.contextElement.asElement;
     var rendererInfo = _RendererInfo(element,
         public: _rendererClassesArePublic, publicApiFunctionName: spec.name);
     _typesToProcess.add(rendererInfo);

@@ -1,6 +1,7 @@
 ## 8.3.3-wip
 
 * Require Dart 3.6 or later.
+* Require analyzer 7.2.0 APIs.
 
 ## 8.3.2
 
