@@ -14112,7 +14112,7 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
   }
 }
 
-String renderLibraryRedirect(LibraryTemplateData context, Template template) {
+String renderLibrary(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14358,7 +14358,7 @@ class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData> {
   }
 }
 
-String renderLibrary(LibraryTemplateData context, Template template) {
+String renderLibraryRedirect(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -16628,6 +16628,34 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                     sink,
                     parent: r,
                     getters: _invisibleGetters['Element']!,
+                  );
+                },
+              ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'Element2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['Element2']!,
                   );
                 },
               ),
@@ -25824,6 +25852,26 @@ const _invisibleGetters = {
     'session',
     'sinceSdkVersion',
     'source',
+  },
+  'Element2': {
+    'baseElement',
+    'children2',
+    'displayName',
+    'enclosingElement2',
+    'firstFragment',
+    'fragments',
+    'hashCode',
+    'id',
+    'isPrivate',
+    'isPublic',
+    'isSynthetic',
+    'kind',
+    'library2',
+    'lookupName',
+    'name3',
+    'nonSynthetic2',
+    'runtimeType',
+    'session',
   },
   'EnumElement': {
     'augmentation',

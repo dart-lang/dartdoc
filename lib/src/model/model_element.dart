@@ -11,11 +11,14 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart' show FunctionType;
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
@@ -107,6 +110,15 @@ abstract class ModelElement
           getter: getter, setter: setter);
     }
     return ModelElement.for_(e, library, p);
+  }
+
+  /// Returns a [ModelElement] for an [Element2], which can be a
+  /// property-inducing element or not.
+  ///
+  /// This constructor is used when the caller does not know the element's
+  /// library, or whether it is property-inducing.
+  factory ModelElement.forElement2(Element2 e, PackageGraph p) {
+    return ModelElement.forElement(e.asElement!, p);
   }
 
   /// Returns a [ModelElement] for a property-inducing element.
@@ -432,7 +444,7 @@ abstract class ModelElement
   @override
   late final DartdocOptionContext config =
       DartdocOptionContext.fromContextElement(
-          packageGraph.config, library.element, packageGraph.resourceProvider);
+          packageGraph.config, library.element2, packageGraph.resourceProvider);
 
   bool get hasAttributes => attributes.isNotEmpty;
 
@@ -545,6 +557,8 @@ abstract class ModelElement
 
   @override
   Element get element;
+
+  Element2 get element2 => element.asElement2!;
 
   @override
   String get location {

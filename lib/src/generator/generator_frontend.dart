@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';
 import 'package:dartdoc/src/generator/templates.dart';
@@ -151,7 +149,7 @@ class GeneratorFrontEnd implements Generator {
       for (var lib in package.libraries.whereDocumented) {
         if (!multiplePackages) {
           logInfo('Generating docs for library ${lib.breadcrumbName} from '
-              '${lib.element.source.uri}...');
+              '${lib.element2.firstFragment.source.uri}...');
         }
         if (!lib.isAnonymous && !lib.hasDocumentation) {
           packageGraph.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);

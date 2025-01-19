@@ -28,6 +28,7 @@ class Library extends ModelElement
   @override
   final LibraryElement element;
 
+  @override
    LibraryElement2 get element2 => element as LibraryElementImpl;
 
   /// The set of [Element]s declared directly in this library.
