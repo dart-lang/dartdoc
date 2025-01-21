@@ -6,6 +6,7 @@
 
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
@@ -100,6 +101,26 @@ Future<LibraryElement> resolveGeneratedLibrary(String libraryPath) async {
   }
 
   return libraryResult.element;
+}
+
+Future<LibraryElement2> resolveGeneratedLibrary2(String libraryPath) async {
+  var contextCollection = AnalysisContextCollectionImpl(
+    includedPaths: [d.sandbox],
+    // TODO(jcollins-g): should we pass excluded directories here instead of
+    // handling it ourselves?
+    resourceProvider: PhysicalResourceProvider.INSTANCE,
+    sdkPath: sdkPath,
+  );
+  var analysisContext = contextCollection.contextFor(d.sandbox);
+  final libraryResult =
+      await analysisContext.currentSession.getResolvedLibrary(libraryPath);
+  if (libraryResult is! ResolvedLibraryResult) {
+    throw StateError(
+        'Expected library result to be ResolvedLibraryResult, but is '
+        '${libraryResult.runtimeType}');
+  }
+
+  return libraryResult.element2;
 }
 
 extension LibraryExtensions on LibraryElement {

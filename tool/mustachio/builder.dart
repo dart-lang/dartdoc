@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/results.dart';
@@ -48,12 +46,13 @@ Future<void> build(
         '${libraryResult.runtimeType}');
   }
 
-  var library = libraryResult.element;
+  var library = libraryResult.element2;
   var typeProvider = library.typeProvider;
   var typeSystem = library.typeSystem;
   var rendererSpecs = <RendererSpec>{};
-  for (var renderer in library.metadata
-      .where((e) => e.element!.enclosingElement3!.name == 'Renderer')) {
+  for (var renderer in library.metadata2
+      .annotations
+      .where((e) => e.element2!.enclosingElement2!.name3 == 'Renderer')) {
     rendererSpecs.add(_buildRendererSpec(renderer));
   }
 

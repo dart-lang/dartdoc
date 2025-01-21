@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 /// dartdoc's dartdoc_options.yaml configuration file follows similar loading
 /// semantics to that of analysis_options.yaml,
 /// [documented here](https://dart.dev/guides/language/analysis-options).
@@ -16,7 +14,7 @@ library;
 
 import 'dart:io' show exitCode, stderr, stdout;
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/src/dartdoc.dart' show dartdocVersion, programName;
@@ -1130,18 +1128,18 @@ class DartdocOptionContext extends DartdocOptionContextBase
   /// Build a DartdocOptionContext from an analyzer element (using its source
   /// location).
   factory DartdocOptionContext.fromElement(DartdocOptionSet optionSet,
-      LibraryElement libraryElement, ResourceProvider resourceProvider) {
+      LibraryElement2 libraryElement, ResourceProvider resourceProvider) {
     return DartdocOptionContext(
         optionSet,
-        resourceProvider.getFile(libraryElement.source.fullName),
+        resourceProvider.getFile(libraryElement.firstFragment.source.fullName),
         resourceProvider);
   }
 
   /// Build a DartdocOptionContext from an existing [DartdocOptionContext] and a
-  /// new analyzer [Element].
+  /// new analyzer [Element2].
   factory DartdocOptionContext.fromContextElement(
       DartdocOptionContext optionContext,
-      LibraryElement libraryElement,
+      LibraryElement2 libraryElement,
       ResourceProvider resourceProvider) {
     return DartdocOptionContext.fromElement(
         optionContext.optionSet, libraryElement, resourceProvider);
