@@ -11,6 +11,7 @@ import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/element.dart';
+// ignore: implementation_imports
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -315,7 +316,7 @@ class Library extends ModelElement
 
   /// The real packageMeta, as opposed to the package we are documenting with.
   late final PackageMeta? packageMeta =
-      packageGraph.packageMetaProvider.fromElement(element2, config.sdkDir);
+      packageGraph.packageMetaProvider.fromElement(element as LibraryElementImpl, config.sdkDir);
 
   late final List<Class> classesAndExceptions = [
     ..._localElementsOfType<ClassElement, Class>(),
