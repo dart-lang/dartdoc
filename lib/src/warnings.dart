@@ -8,7 +8,10 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/file_system.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -497,6 +500,13 @@ class PackageWarningCounter {
   /// warning type, and message.
   UnmodifiableMapView<Element?, Map<PackageWarning, Set<String>>>
       get countedWarnings => UnmodifiableMapView(_countedWarnings);
+
+  /// An unmodifiable map view of all counted warnings related by their element,
+  /// warning type, and message.
+  UnmodifiableMapView<Element2?, Map<PackageWarning, Set<String>>>
+      get countedWarnings2 => UnmodifiableMapView(_countedWarnings.map((key,
+              value) =>
+          MapEntry(key?.asElement2, value)));
 
   PackageWarningCounter(this.packageGraph);
 

@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -30,7 +28,7 @@ class DocumentationCommentTest extends DartdocTestBase {
   late ModelElement libraryModel;
 
   void expectNoWarnings() {
-    expect(packageGraph.packageWarningCounter.countedWarnings, isEmpty);
+    expect(packageGraph.packageWarningCounter.countedWarnings2, isEmpty);
     expect(packageGraph.packageWarningCounter.hasWarnings, isFalse);
   }
 
@@ -863,7 +861,7 @@ class _HasWarning extends Matcher {
       Map<Object?, Object?> matchState, bool verbose) {
     if (actual is ModelElement) {
       var warnings = actual
-          .packageGraph.packageWarningCounter.countedWarnings[actual.element];
+          .packageGraph.packageWarningCounter.countedWarnings2[actual.element2];
       if (warnings == null) {
         return mismatchDescription.add('has no warnings');
       }
