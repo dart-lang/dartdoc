@@ -506,7 +506,7 @@ class PackageWarningCounter {
   UnmodifiableMapView<Element2?, Map<PackageWarning, Set<String>>>
       get countedWarnings2 => UnmodifiableMapView(_countedWarnings.map((key,
               value) =>
-          MapEntry(key != null ? (key.asElement2 as Element2) : null, value)));
+          MapEntry(key?.asElement2, value)));
 
   PackageWarningCounter(this.packageGraph);
 
