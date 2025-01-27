@@ -2,15 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
-import 'package:collection/collection.dart';
 import 'package:path/path.dart' as path;
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
@@ -83,26 +79,6 @@ $sourceLibraryContent
       root: path.join(d.sandbox, 'foo_package'));
 }
 
-Future<LibraryElement> resolveGeneratedLibrary(String libraryPath) async {
-  var contextCollection = AnalysisContextCollectionImpl(
-    includedPaths: [d.sandbox],
-    // TODO(jcollins-g): should we pass excluded directories here instead of
-    // handling it ourselves?
-    resourceProvider: PhysicalResourceProvider.INSTANCE,
-    sdkPath: sdkPath,
-  );
-  var analysisContext = contextCollection.contextFor(d.sandbox);
-  final libraryResult =
-      await analysisContext.currentSession.getResolvedLibrary(libraryPath);
-  if (libraryResult is! ResolvedLibraryResult) {
-    throw StateError(
-        'Expected library result to be ResolvedLibraryResult, but is '
-        '${libraryResult.runtimeType}');
-  }
-
-  return libraryResult.element;
-}
-
 Future<LibraryElement2> resolveGeneratedLibrary2(String libraryPath) async {
   var contextCollection = AnalysisContextCollectionImpl(
     includedPaths: [d.sandbox],
@@ -121,12 +97,4 @@ Future<LibraryElement2> resolveGeneratedLibrary2(String libraryPath) async {
   }
 
   return libraryResult.element2;
-}
-
-extension LibraryExtensions on LibraryElement {
-  /// Returns the top-level function in `this` library, named [name], or `null`
-  /// if no function is found.
-  FunctionElement? getTopLevelFunction(String name) => topLevelElements
-      .whereType<FunctionElement>()
-      .firstWhereOrNull((element) => element.name == name);
 }
