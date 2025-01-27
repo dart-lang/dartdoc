@@ -915,12 +915,12 @@ void main() async {
         for (final l in <LibraryElement2>{
           ...importLists
               .expand((imports) => imports)
-              .map((import) => import.uri)
+              .map((import) => import.importedLibrary2?.uri)
               .whereType<DirectiveUriWithLibrary>()
               .map((uri) => uri.library2),
           ...exportLists
               .expand((exports) => exports)
-              .map((export) => export.uri)
+              .map((export) => export.exportedLibrary2?.uri)
               .whereType<DirectiveUriWithLibrary>()
               .map((uri) => uri.library2)
         })
