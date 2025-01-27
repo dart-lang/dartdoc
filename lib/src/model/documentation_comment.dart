@@ -8,6 +8,9 @@
 library;
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/documentable.dart';
@@ -44,6 +47,10 @@ mixin DocumentationComment
     implements Documentable, Warnable, Locatable, SourceCode {
   @override
   Element get element;
+
+  Element2 get element2 => element.asElement2!;
+
+  
 
   List<DocumentationComment>? _documentationFrom;
 

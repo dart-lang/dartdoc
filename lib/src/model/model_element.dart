@@ -558,6 +558,7 @@ abstract class ModelElement
   @override
   Element get element;
 
+  @override
   Element2 get element2 => element.asElement2!;
 
   @override

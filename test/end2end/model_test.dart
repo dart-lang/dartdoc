@@ -4,9 +4,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-// ignore_for_file: analyzer_use_new_elements
-
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:async/async.dart';
@@ -181,9 +179,9 @@ void main() async {
         'Verify annotations and their type arguments render on type parameters '
         'for typedefs',
         skip: 'dart-lang/sdk#46064', () {
-      expect((F.aliasedType as FunctionType).typeFormals.first.metadata,
+      expect((F.aliasedType as FunctionType).typeParameters.first.metadata2,
           isNotEmpty);
-      expect((F.aliasedType as FunctionType).parameters.first.metadata,
+      expect((F.aliasedType as FunctionType).formalParameters.first.metadata2,
           isNotEmpty);
       // TODO(jcollins-g): add rendering verification once we have data from
       // analyzer.
@@ -234,7 +232,7 @@ void main() async {
     void expectTypedefs(Typedef t, String modelTypeToString,
         Iterable<String> genericParameters) {
       expect(t.modelType.toString(), equals(modelTypeToString));
-      expect(t.element.typeParameters.map((p) => p.toString()),
+      expect(t.element2.typeParameters2.map((p) => p.toString()),
           orderedEquals(genericParameters));
     }
 
@@ -909,18 +907,24 @@ void main() async {
     });
 
     test('can import other libraries with unusual URIs', () {
+      final importLists = fakeLibrary.element2.fragments
+          .map((fragment) => fragment.libraryImports2);
+      final exportLists = fakeLibrary.element2.fragments
+          .map((fragment) => fragment.libraryExports2);
       final fakeLibraryImportedExported = <Library>{
-        for (final l in <LibraryElement>{
-          ...fakeLibrary.element.definingCompilationUnit.libraryImports
+        for (final l in <LibraryElement2>{
+          ...importLists
+              .expand((imports) => imports)
               .map((import) => import.uri)
               .whereType<DirectiveUriWithLibrary>()
-              .map((uri) => uri.library),
-          ...fakeLibrary.element.definingCompilationUnit.libraryExports
-              .map((import) => import.uri)
+              .map((uri) => uri.library2),
+          ...exportLists
+              .expand((exports) => exports)
+              .map((export) => export.uri)
               .whereType<DirectiveUriWithLibrary>()
-              .map((uri) => uri.library)
+              .map((uri) => uri.library2)
         })
-          packageGraph.getModelForElement(l) as Library
+          packageGraph.getModelForElement2(l) as Library
       };
       expect(fakeLibraryImportedExported.any((l) => l.name == 'import_unusual'),
           isTrue);
@@ -1182,7 +1186,7 @@ void main() async {
             contains(
                 '<a href="%%__HTMLBASE_dartdoc_internal__%%reexport_two/BaseReexported/action.html">ExtendedBaseReexported.action</a></p>'));
         var doAwesomeStuffWarnings = packageGraph.packageWarningCounter
-                .countedWarnings[doAwesomeStuff.element] ??
+                .countedWarnings2[doAwesomeStuff.element2] ??
             {};
         expect(
             doAwesomeStuffWarnings,
@@ -1682,7 +1686,7 @@ void main() async {
           fakeLibrary.classes.wherePublic.named('MIEEMixinWithOverride');
       var problematicOperator =
           MIEEMixinWithOverride.inheritedOperators.named('operator []=');
-      expect(problematicOperator.element.enclosingElement3.name,
+      expect(problematicOperator.element2.enclosingElement2?.name3,
           equals('_MIEEPrivateOverride'));
       expect(problematicOperator.canonicalModelElement!.enclosingElement!.name,
           equals('MIEEMixinWithOverride'));
@@ -3572,7 +3576,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('inheritance of docs from SDK works for getter/setter combos', () {
       expect(
           ExtraSpecialListLength
-              .getter!.documentationFrom.first.element.library!.name,
+              .getter!.documentationFrom.first.element2.library2!.name3,
           equals('dart.core'));
       expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
     });

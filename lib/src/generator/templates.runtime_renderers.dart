@@ -6396,6 +6396,34 @@ class _Renderer_DocumentationComment
                   );
                 },
               ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'Element2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['Element2']!,
+                  );
+                },
+              ),
               'elementDocumentation': Property(
                 getValue: (CT_ c) => c.elementDocumentation,
                 renderVariable:
@@ -25793,6 +25821,7 @@ const _invisibleGetters = {
     'documentationFrom',
     'documentationLocal',
     'element',
+    'element2',
     'elementDocumentation',
     'hasDocumentationComment',
     'hasNodoc',
