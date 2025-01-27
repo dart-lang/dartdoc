@@ -26267,6 +26267,7 @@ const _invisibleGetters = {
     'libraries',
     'libraryCount',
     'libraryExports',
+    'libraryExports2',
     'localPackages',
     'localPublicLibraries',
     'name',

@@ -2,30 +2,30 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
+
+const int _separatorChar = 0x3B;
 
 /// Searches [PackageGraph.libraryExports] for a public, documented library
 /// which exports this [ModelElement], ideally in its library's package.
 Library? canonicalLibraryCandidate(ModelElement modelElement) {
   var thisAndExported =
-      modelElement.packageGraph.libraryExports[modelElement.library.element];
+      modelElement.packageGraph.libraryExports[modelElement.library.element2];
   if (thisAndExported == null) {
     return null;
   }
 
-  // Since we're looking for a library, find the [Element] immediately
-  // contained by a [CompilationUnitElement] in the tree.
-  var topLevelElement = modelElement.element;
-  while (topLevelElement.enclosingElement3 is! LibraryElement &&
-      topLevelElement.enclosingElement3 is! CompilationUnitElement &&
-      topLevelElement.enclosingElement3 != null) {
-    topLevelElement = topLevelElement.enclosingElement3!;
+  // Since we're looking for a library, go up in the tree until we find it.
+  var topLevelElement = modelElement.element2;
+  while (topLevelElement.enclosingElement2 is! LibraryElement2 &&
+      topLevelElement.enclosingElement2 != null) {
+    topLevelElement = topLevelElement.enclosingElement2!;
   }
-  var topLevelElementName = topLevelElement.name;
+  var topLevelElementName = topLevelElement.name3;
   if (topLevelElementName == null) {
     // Any member of an unnamed extension is not public, and has no
     // canonical library.
@@ -36,9 +36,9 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
     if (!l.isPublic) return false;
     if (l.package.documentedWhere == DocumentLocation.missing) return false;
     if (modelElement is Library) return true;
-    var lookup = l.element.exportNamespace.definedNames[topLevelElementName];
+    var lookup = l.element2.exportNamespace.definedNames2[topLevelElementName];
     return topLevelElement ==
-        (lookup is PropertyAccessorElement ? lookup.variable2 : lookup);
+        (lookup is PropertyAccessorElement2 ? lookup.variable3 : lookup);
   }).toList(growable: true);
 
   if (candidateLibraries.isEmpty) {
@@ -58,7 +58,7 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
   }
 
   var topLevelModelElement =
-      ModelElement.forElement(topLevelElement, modelElement.packageGraph);
+      ModelElement.forElement2(topLevelElement, modelElement.packageGraph);
 
   return _Canonicalization(topLevelModelElement)
       .canonicalLibraryCandidate(candidateLibraries);
@@ -74,10 +74,57 @@ final class _Canonicalization {
 
   _Canonicalization(this._element);
 
+  /// Append an encoded form of the given [component] to the given [buffer].
+  void _encode(StringBuffer buffer, String component) {
+    var length = component.length;
+    for (var i = 0; i < length; i++) {
+      var currentChar = component.codeUnitAt(i);
+      if (currentChar == _separatorChar) {
+        buffer.writeCharCode(_separatorChar);
+      }
+      buffer.writeCharCode(currentChar);
+    }
+  }
+
+  // Copied from package analyzer ElementLocationImpl.fromElement.
+  String _getElementLocation(Element2 element) {
+    var components = <String>[];
+    Element2? ancestor = element;
+    while (ancestor != null) {
+      if (ancestor is! ElementImpl2) {
+        if (ancestor is LibraryElementImpl) {
+          components.insert(0, ancestor.identifier);
+        } else if (ancestor is AugmentableElement) {
+          components.insert(0, ancestor.identifier);
+        } else {
+          throw Exception('${ancestor.runtimeType} is not an ElementImpl2');
+        }
+        ancestor = ancestor.enclosingElement2;
+      } else {
+        components.insert(0, ancestor.identifier);
+        if (ancestor is LocalFunctionElementImpl) {
+          ancestor = (ancestor.wrappedElement.enclosingElement2
+                  as ExecutableElementImpl)
+              .element;
+        } else {
+          ancestor = ancestor.enclosingElement2;
+        }
+      }
+    }
+    var buffer = StringBuffer();
+    var length = components.length;
+    for (var i = 0; i < length; i++) {
+      if (i > 0) {
+        buffer.writeCharCode(_separatorChar);
+      }
+      _encode(buffer, components[i]);
+    }
+    return buffer.toString();
+  }
+
   /// Calculates a candidate for the canonical library of [_element], among [libraries].
   Library canonicalLibraryCandidate(Iterable<Library> libraries) {
-    var locationPieces = _element.element.location
-        .toString()
+    var locationPieces = _getElementLocation(_element.element2)
         .split(_locationSplitter)
         .where((s) => s.isNotEmpty)
         .toSet();
