@@ -86,8 +86,9 @@ final class _Canonicalization {
     }
   }
 
+  // Copied from package analyzer ElementLocationImpl.fromElement.
   String _getElementLocation(Element2 element) {
-   var components = <String>[];
+    var components = <String>[];
     Element2? ancestor = element;
     while (ancestor != null) {
       if (ancestor is! ElementImpl2) {
@@ -110,7 +111,7 @@ final class _Canonicalization {
         }
       }
     }
-     var buffer = StringBuffer();
+    var buffer = StringBuffer();
     var length = components.length;
     for (var i = 0; i < length; i++) {
       if (i > 0) {
@@ -267,5 +268,3 @@ enum _Reason {
 
   const _Reason(this.text);
 }
-
-
