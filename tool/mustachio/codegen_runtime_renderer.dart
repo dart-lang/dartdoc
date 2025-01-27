@@ -10,6 +10,7 @@ library;
 import 'dart:collection';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
@@ -30,7 +31,7 @@ String buildRuntimeRenderers(Set<RendererSpec> specs, Uri sourceUri,
   var visibleElements = specs
       .map((spec) => spec.visibleTypes)
       .reduce((value, element) => value.union(element))
-      .map((type) => type.documentableElement2.asElement!)
+      .map((type) => type.documentableElement2!)
       .toSet();
   var raw = RuntimeRenderersBuilder(
           sourceUri, typeProvider, typeSystem, visibleElements,
@@ -63,7 +64,7 @@ class RuntimeRenderersBuilder {
   final TypeProvider _typeProvider;
   final TypeSystem _typeSystem;
 
-  final Set<Element> _allVisibleElements;
+  final Set<Element2> _allVisibleElements;
 
   /// Whether renderer classes are public. This should only be true for testing.
   final bool _rendererClassesArePublic;
@@ -326,7 +327,7 @@ import '${path.basename(_sourceUri.path)}';
   /// Returns whether [element] or any of its supertypes are "visible" to
   /// Mustache.
   bool _isVisibleToMustache(InterfaceElement element) {
-    if (_allVisibleElements.contains(element)) {
+    if (_allVisibleElements.contains(element.asElement2)) {
       return true;
     }
     var supertype = element.supertype;

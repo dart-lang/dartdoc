@@ -82,7 +82,7 @@ void main() {
           await buildDartdoc(['--allow-tools'], testPackageToolError, tempDir);
       var results = await dartdoc.generateDocsBase();
       var p = results.packageGraph;
-      var unresolvedToolErrors = p.packageWarningCounter.countedWarnings2.values
+      var unresolvedToolErrors = p.packageWarningCounter.countedWarnings.values
           .map((e) => e[PackageWarning.toolError] ?? {})
           .expand((element) => element);
 

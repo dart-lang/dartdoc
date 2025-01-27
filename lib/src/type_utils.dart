@@ -6,7 +6,6 @@ import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
 
 extension DartTypeExtension on DartType {
-
   /// The static element associataed with this type, where documentable, and
   /// `null` otherwise.
   ///

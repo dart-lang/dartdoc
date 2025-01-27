@@ -5,6 +5,7 @@
 // ignore_for_file: analyzer_use_new_elements
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -81,6 +82,9 @@ class Category
 
   @override
   Element? get element => null;
+
+  @override
+  Element2? get element2 => null;
 
   @override
   String get name => _categoryDefinition.displayName;

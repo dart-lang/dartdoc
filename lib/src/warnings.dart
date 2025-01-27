@@ -10,8 +10,6 @@ import 'dart:math' as math;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/file_system.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -101,6 +99,8 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
 /// with an analyzer [element].
 mixin Warnable implements CommentReferable, Documentable, Locatable {
   Element? get element;
+
+  Element2? get element2;
 
   void warn(
     PackageWarning kind, {
@@ -481,7 +481,7 @@ class PackageWarningOptions {
 }
 
 class PackageWarningCounter {
-  final Map<Element?, Map<PackageWarning, Set<String>>> _countedWarnings = {};
+  final Map<Element2?, Map<PackageWarning, Set<String>>> _countedWarnings = {};
   final _items = <Jsonable>[];
   final _displayedWarningCounts = <PackageWarning, int>{};
   final PackageGraph packageGraph;
@@ -498,15 +498,8 @@ class PackageWarningCounter {
 
   /// An unmodifiable map view of all counted warnings related by their element,
   /// warning type, and message.
-  UnmodifiableMapView<Element?, Map<PackageWarning, Set<String>>>
-      get countedWarnings => UnmodifiableMapView(_countedWarnings);
-
-  /// An unmodifiable map view of all counted warnings related by their element,
-  /// warning type, and message.
   UnmodifiableMapView<Element2?, Map<PackageWarning, Set<String>>>
-      get countedWarnings2 => UnmodifiableMapView(_countedWarnings.map((key,
-              value) =>
-          MapEntry(key?.asElement2, value)));
+      get countedWarnings => UnmodifiableMapView(_countedWarnings);
 
   PackageWarningCounter(this.packageGraph);
 
@@ -558,7 +551,7 @@ class PackageWarningCounter {
     if (element == null) {
       return false;
     }
-    final warning = _countedWarnings[element.element];
+    final warning = _countedWarnings[element.element2];
     if (warning != null) {
       final messages = warning[kind];
       return messages != null &&
@@ -587,7 +580,7 @@ class PackageWarningCounter {
     }
     var elementName = element == null ? '<global>' : element.fullyQualifiedName;
     _countedWarnings
-        .putIfAbsent(element?.element, () => {})
+        .putIfAbsent(element?.element2, () => {})
         .putIfAbsent(kind, () => {})
         .add(message);
     _writeWarning(
