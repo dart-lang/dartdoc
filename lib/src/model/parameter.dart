@@ -2,11 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart' show ParameterMember;
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -14,24 +15,28 @@ import 'package:dartdoc/src/model/model.dart';
 
 class Parameter extends ModelElement with HasNoPage {
   @override
-  final ParameterElement element;
+  // ignore: analyzer_use_new_elements
+  ParameterElement get element => element2.asElement;
 
-  Parameter(this.element, super.library, super.packageGraph,
+  @override
+  final FormalParameterElement element2;
+
+  Parameter(this.element2, super.library, super.packageGraph,
       {ParameterMember? super.originalMember});
 
-  String? get defaultValue => hasDefaultValue ? element.defaultValueCode : null;
+  String? get defaultValue => hasDefaultValue ? element2.defaultValueCode : null;
 
   @override
   ModelElement? get enclosingElement {
-    final enclosingElement = element.enclosingElement3;
+    final enclosingElement = element2.enclosingElement2;
     return enclosingElement == null
         ? null
-        : getModelFor(enclosingElement, library);
+        : getModelFor2(enclosingElement, library);
   }
 
   bool get hasDefaultValue {
-    return element.defaultValueCode != null &&
-        element.defaultValueCode!.isNotEmpty;
+    return element2.defaultValueCode != null &&
+        element2.defaultValueCode!.isNotEmpty;
   }
 
   @override
@@ -39,42 +44,45 @@ class Parameter extends ModelElement with HasNoPage {
 
   @override
   String get htmlId {
-    final enclosingElement = element.enclosingElement3;
+    final enclosingElement = element2.enclosingElement2;
     if (enclosingElement == null) {
       return 'param-$name';
     }
-    var enclosingName = enclosingElement.name;
-    if (enclosingElement is GenericFunctionTypeElement) {
+    var enclosingName = enclosingElement.lookupName;
+    if (enclosingName == 'new') {
+      enclosingName = '';
+    }
+    if (enclosingElement is GenericFunctionTypeElement2) {
       // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates
       // name. Also, allowing null here is allowed as a workaround for
       // dart-lang/sdk#32005.
-      for (Element e = enclosingElement;
-          e.enclosingElement3 != null;
-          e = e.enclosingElement3!) {
-        enclosingName = e.name;
+      for (Element2 e = enclosingElement;
+          e.enclosingElement2 != null;
+          e = e.enclosingElement2!) {
+        enclosingName = e.name3;
         if (enclosingName != null && enclosingName.isNotEmpty) break;
       }
-    }
+    } 
     return '$enclosingName-param-$name';
   }
 
   @override
-  int get hashCode => element.hashCode;
+  int get hashCode => element2.hashCode;
 
   @override
   bool operator ==(Object other) =>
-      other is Parameter && (element.type == other.element.type);
+      other is Parameter && (element2.type == other.element2.type);
 
-  bool get isCovariant => element.isCovariant;
+  bool get isCovariant => element2.isCovariant;
 
-  bool get isRequiredPositional => element.isRequiredPositional;
+  bool get isRequiredPositional => element2.isRequiredPositional;
 
-  bool get isNamed => element.isNamed;
+  bool get isNamed => element2.isNamed;
 
-  bool get isOptionalPositional => element.isOptionalPositional;
+  bool get isOptionalPositional => element2.isOptionalPositional;
 
   /// Only true if this is a required named parameter.
-  bool get isRequiredNamed => element.isRequiredNamed;
+  bool get isRequiredNamed => element2.isRequiredNamed;
 
   @override
   Kind get kind => Kind.parameter;
@@ -102,5 +110,5 @@ class Parameter extends ModelElement with HasNoPage {
       super.originalMember as ParameterMember?;
 
   late final ElementType modelType =
-      getTypeFor((originalMember ?? element).type, library);
+      getTypeFor((originalMember ?? element2).type, library);
 }

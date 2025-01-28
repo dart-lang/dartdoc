@@ -20472,6 +20472,34 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                   );
                 },
               ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'FormalParameterElement',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['FormalParameterElement']!,
+                  );
+                },
+              ),
               'enclosingElement': Property(
                 getValue: (CT_ c) => c.enclosingElement,
                 renderVariable: (
@@ -26105,6 +26133,28 @@ const _invisibleGetters = {
     'runtimeType',
   },
   'File': {'hashCode', 'lengthSync', 'modificationStamp', 'runtimeType'},
+  'FormalParameterElement': {
+    'baseElement',
+    'defaultValueCode',
+    'firstFragment',
+    'formalParameters',
+    'fragments',
+    'hasDefaultValue',
+    'hashCode',
+    'isCovariant',
+    'isInitializingFormal',
+    'isNamed',
+    'isOptional',
+    'isOptionalNamed',
+    'isOptionalPositional',
+    'isPositional',
+    'isRequired',
+    'isRequiredNamed',
+    'isRequiredPositional',
+    'isSuperFormal',
+    'runtimeType',
+    'typeParameters2',
+  },
   'FunctionElement': {
     'augmentation',
     'augmentationTarget',

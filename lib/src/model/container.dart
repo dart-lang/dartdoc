@@ -4,6 +4,7 @@
 // ignore_for_file: analyzer_use_new_elements
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -158,8 +159,15 @@ abstract class Container extends ModelElement
   /// See [Inheritable.canonicalEnclosingContainer].
   bool containsElement(Element? element) => _allElements.contains(element);
 
+  /// This container might be canonical for elements it does not contain.
+  /// See [Inheritable.canonicalEnclosingContainer].
+  bool containsElement2(Element2? element) => _allElements2.contains(element);
+
   late final Set<Element> _allElements =
       allModelElements.map((e) => e.element).toSet();
+
+  late final Set<Element2> _allElements2 =
+      allModelElements.map((e) => e.element2).toSet();
 
   bool get hasPublicStaticFields => staticFields.any((e) => e.isPublic);
 
