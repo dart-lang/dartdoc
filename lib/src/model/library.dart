@@ -2,10 +2,16 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// ignore_for_file: analyzer_use_new_elements
+
 import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/source/line_info.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
+// ignore: implementation_imports
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -22,6 +28,9 @@ class Library extends ModelElement
     with Categorization, TopLevelContainer, CanonicalFor {
   @override
   final LibraryElement element;
+
+  @override
+  LibraryElement2 get element2 => element.asElement2;
 
   /// The set of [Element]s declared directly in this library.
   final Set<Element> _localElements;
@@ -306,8 +315,8 @@ class Library extends ModelElement
   String get packageName => packageMeta?.name ?? '';
 
   /// The real packageMeta, as opposed to the package we are documenting with.
-  late final PackageMeta? packageMeta =
-      packageGraph.packageMetaProvider.fromElement(element, config.sdkDir);
+  late final PackageMeta? packageMeta = packageGraph.packageMetaProvider
+      .fromElement(element.asElement2, config.sdkDir);
 
   late final List<Class> classesAndExceptions = [
     ..._localElementsOfType<ClassElement, Class>(),

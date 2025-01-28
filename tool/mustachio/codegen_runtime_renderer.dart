@@ -2,13 +2,21 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// ignore_for_file: analyzer_use_new_elements
+
+/// @docImport 'package:dartdoc/src/mustachio/renderer_base.dart';
+library;
+
 import 'dart:collection';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/type_utils.dart';
@@ -23,7 +31,7 @@ String buildRuntimeRenderers(Set<RendererSpec> specs, Uri sourceUri,
   var visibleElements = specs
       .map((spec) => spec.visibleTypes)
       .reduce((value, element) => value.union(element))
-      .map((type) => type.documentableElement!)
+      .map((type) => type.documentableElement2!)
       .toSet();
   var raw = RuntimeRenderersBuilder(
           sourceUri, typeProvider, typeSystem, visibleElements,
@@ -56,7 +64,7 @@ class RuntimeRenderersBuilder {
   final TypeProvider _typeProvider;
   final TypeSystem _typeSystem;
 
-  final Set<Element> _allVisibleElements;
+  final Set<Element2> _allVisibleElements;
 
   /// Whether renderer classes are public. This should only be true for testing.
   final bool _rendererClassesArePublic;
@@ -85,6 +93,9 @@ class RuntimeRenderersBuilder {
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
 // ignore_for_file: unused_import
 // ignore_for_file: use_super_parameters
+
+// ignore_for_file: analyzer_use_new_elements
+
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
@@ -121,7 +132,7 @@ import '${path.basename(_sourceUri.path)}';
   /// Adds type specified in [spec] to the [_typesToProcess] queue, as well as
   /// all supertypes, and the types of all valid getters, recursively.
   void _addTypesForRendererSpec(RendererSpec spec) {
-    var element = spec.contextElement;
+    var element = spec.contextElement.asElement;
     var rendererInfo = _RendererInfo(element,
         public: _rendererClassesArePublic, publicApiFunctionName: spec.name);
     _typesToProcess.add(rendererInfo);
@@ -268,7 +279,7 @@ import '${path.basename(_sourceUri.path)}';
     }
   }
 
-  /// Adds [type] to the [_typesToProcess] queue, if it is not already there.
+  /// Adds [element] to the [_typesToProcess] queue, if it is not already there.
   void _addTypeToProcess(
     InterfaceElement element, {
     required bool isFullRenderer,
@@ -316,7 +327,7 @@ import '${path.basename(_sourceUri.path)}';
   /// Returns whether [element] or any of its supertypes are "visible" to
   /// Mustache.
   bool _isVisibleToMustache(InterfaceElement element) {
-    if (_allVisibleElements.contains(element)) {
+    if (_allVisibleElements.contains(element.asElement2)) {
       return true;
     }
     var supertype = element.supertype;
@@ -529,7 +540,7 @@ renderVariable:
         // TODO(srawlins): Find a solution for this. We can track all of the
         // concrete types substituted for `E` for example.
         if (innerType is! TypeParameterType) {
-          var innerTypeElement = innerType.documentableElement;
+          var innerTypeElement = innerType.documentableElement2.asElement;
           var renderFunctionName = _typeToRenderFunctionName[innerTypeElement];
           String renderCall;
           if (renderFunctionName == null) {

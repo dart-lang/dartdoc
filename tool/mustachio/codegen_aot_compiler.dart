@@ -4,7 +4,7 @@
 
 import 'dart:io';
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
@@ -82,6 +82,8 @@ Future<String> compileTemplatesToRenderers(
 // non-bool, non-Iterable field is non-null.
 // ignore_for_file: unused_local_variable
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
+
+// ignore_for_file: analyzer_use_new_elements
 
 import 'dart:convert';
 
@@ -212,23 +214,23 @@ Future<String> _redirectingMethod(
     _AotCompiler compiler, _AotCompiler lubCompiler) async {
   var buffer = StringBuffer()..write('String ${compiler._rendererName}');
 
-  buffer.writeTypeParameters(
-      compiler._usedContextStack.expand((c) => c.type.element.typeParameters));
+  buffer.writeTypeParameters(compiler._usedContextStack
+      .expand((c) => c.type.element3.typeParameters2));
   buffer.write('(');
 
   for (var context in compiler._usedContextStack) {
-    var contextElement = context.type.element;
+    var contextElement = context.type.element3;
     buffer.write(contextElement.displayName);
-    if (contextElement.typeParameters.isNotEmpty) {
+    if (contextElement.typeParameters2.isNotEmpty) {
       buffer.write('<');
     }
-    for (var tp in contextElement.typeParameters) {
-      buffer.write(tp.name);
-      if (tp != contextElement.typeParameters.last) {
+    for (var tp in contextElement.typeParameters2) {
+      buffer.write(tp.name3);
+      if (tp != contextElement.typeParameters2.last) {
         buffer.write(', ');
       }
     }
-    if (contextElement.typeParameters.isNotEmpty) {
+    if (contextElement.typeParameters2.isNotEmpty) {
       buffer.write('>');
     }
     buffer.write(' ${context.name}');
@@ -368,7 +370,7 @@ class _AotCompiler {
     // this should be perfectly possible.
 
     var referenceElements = buffer.writeTypeParameters(
-      _usedContexts.expand((c) => c.type.element.typeParameters),
+      _usedContexts.expand((c) => c.type.element3.typeParameters2),
     );
     for (var element in referenceElements) {
       referenceUris.add(_elementUri(element));
@@ -376,19 +378,19 @@ class _AotCompiler {
     buffer.write('(');
 
     for (var context in _usedContexts) {
-      var contextElement = context.type.element;
+      var contextElement = context.type.element3;
       referenceUris.add(_elementUri(contextElement));
       buffer.write(contextElement.displayName);
-      if (contextElement.typeParameters.isNotEmpty) {
+      if (contextElement.typeParameters2.isNotEmpty) {
         buffer.write('<');
       }
-      for (var tp in contextElement.typeParameters) {
-        buffer.write(tp.name);
-        if (tp != contextElement.typeParameters.last) {
+      for (var tp in contextElement.typeParameters2) {
+        buffer.write(tp.name3);
+        if (tp != contextElement.typeParameters2.last) {
           buffer.write(', ');
         }
       }
-      if (contextElement.typeParameters.isNotEmpty) {
+      if (contextElement.typeParameters2.isNotEmpty) {
         buffer.write('>');
       }
       buffer.write(' ${context.name}');
@@ -406,9 +408,9 @@ class _AotCompiler {
   }
 
   /// Returns the URI of [element] for use in generated import directives.
-  String _elementUri(Element element) {
-    var libraryElement = element.library!;
-    var libraryUri = libraryElement.source.uri;
+  String _elementUri(Element2 element) {
+    var libraryElement = element.library2!;
+    var libraryUri = libraryElement.firstFragment.source.uri;
     if (libraryUri.scheme == 'file') {
       return path.relative(libraryUri.path,
           from: path.absolute(path.dirname(_buildData._sourcePath)));
@@ -577,8 +579,8 @@ class _BlockCompiler {
       // for [Iterable], and then use [DartType.asInstanceOf] to ultimately
       // determine that the inner type of the loop is, for example,
       // `Future<int>`.
-      var iterableElement = typeProvider.iterableElement;
-      var iterableType = variableLookup.type.asInstanceOf(iterableElement)!;
+      var iterableElement = typeProvider.iterableElement2;
+      var iterableType = variableLookup.type.asInstanceOf2(iterableElement)!;
       var innerContextType = iterableType.typeArguments.first as InterfaceType;
       var innerContext = _VariableLookup(innerContextType, newContextName);
       _contextStack.push(innerContext);
@@ -634,9 +636,9 @@ class _BlockCompiler {
     var primaryName = key[0];
 
     late _VariableLookup context;
-    PropertyAccessorElement? getter;
+    GetterElement? getter;
     for (var c in _contextStack) {
-      getter = c.type.lookUpGetter2(primaryName, contextType.element.library);
+      getter = c.type.lookUpGetter3(primaryName, contextType.element3.library2);
       if (getter != null) {
         context = c;
         _usedContextTypes.add(c);
@@ -661,7 +663,7 @@ class _BlockCompiler {
         : '${context.name}.$primaryName';
     var remainingNames = [...key.skip(1)];
     for (var secondaryKey in remainingNames) {
-      getter = type.lookUpGetter2(secondaryKey, type.element.library);
+      getter = type.lookUpGetter3(secondaryKey, type.element3.library2);
       if (getter == null) {
         throw MustachioResolutionException(node.keySpan.message(
             "Failed to resolve '$secondaryKey' on ${context.type} while "
@@ -919,9 +921,9 @@ extension<T> on List<T> {
 }
 
 extension on StringBuffer {
-  Set<Element> writeTypeParameters(
-      Iterable<TypeParameterElement> typeParameters) {
-    var referencedElements = <Element>{};
+  Set<Element2> writeTypeParameters(
+      Iterable<TypeParameterElement2> typeParameters) {
+    var referencedElements = <Element2>{};
     var hasTypeParameters = false;
     for (var typeParameter in typeParameters) {
       if (!hasTypeParameters) {
@@ -933,11 +935,11 @@ extension on StringBuffer {
 
       var bound = typeParameter.bound;
       if (bound == null) {
-        write(typeParameter.name);
+        write(typeParameter.name3);
       } else {
-        var boundElement = bound.documentableElement!;
+        var boundElement = bound.documentableElement2!;
         referencedElements.add(boundElement);
-        write('${typeParameter.name} extends ${boundElement.name!}');
+        write('${typeParameter.name3} extends ${boundElement.name3!}');
       }
     }
     if (hasTypeParameters) {

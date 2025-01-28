@@ -14,7 +14,7 @@ library;
 
 import 'dart:io' show exitCode, stderr, stdout;
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/src/dartdoc.dart' show dartdocVersion, programName;
@@ -194,7 +194,7 @@ class _OptionValueWithContext<T> {
   /// If non-null, the basename of the configuration file the value came from.
   String? definingFile;
 
-  /// A [pathLib.Context] variable initialized with 'canonicalDirectoryPath'.
+  /// A [p.Context] variable initialized with 'canonicalDirectoryPath'.
   p.Context pathContext;
 
   /// Build a _OptionValueWithContext.
@@ -795,8 +795,8 @@ mixin _DartdocFileOption<T> implements DartdocOption<T> {
     return __valueAtFromFiles[key];
   }
 
-  /// Searches all dartdoc_options files through parent directories, starting at
-  /// [dir], for the option and returns one once found.
+  /// Searches all dartdoc options files through parent directories, starting at
+  /// [folder], for the option and returns one once found.
   _OptionValueWithContext<T>? _valueAtFromFilesFirstFound(Folder folder) {
     _OptionValueWithContext<T>? value;
     for (var dir in folder.withAncestors) {
@@ -975,8 +975,8 @@ mixin _DartdocArgOption<T> implements DartdocOption<T> {
         'missing path: "$missingPath"');
   }
 
-  /// Generates an _OptionValueWithContext using the value of the argument from
-  /// the [argParser] and the working directory from [_directoryCurrent].
+  /// Generates an [_OptionValueWithContext] using the value of the argument
+  /// from the [_argResults] and the working directory from [_directoryCurrent].
   ///
   /// Throws [UnsupportedError] if [T] is not a supported type.
   _OptionValueWithContext<T>? _valueAtFromArgsWithContext() {
@@ -1128,18 +1128,18 @@ class DartdocOptionContext extends DartdocOptionContextBase
   /// Build a DartdocOptionContext from an analyzer element (using its source
   /// location).
   factory DartdocOptionContext.fromElement(DartdocOptionSet optionSet,
-      LibraryElement libraryElement, ResourceProvider resourceProvider) {
+      LibraryElement2 libraryElement, ResourceProvider resourceProvider) {
     return DartdocOptionContext(
         optionSet,
-        resourceProvider.getFile(libraryElement.source.fullName),
+        resourceProvider.getFile(libraryElement.firstFragment.source.fullName),
         resourceProvider);
   }
 
   /// Build a DartdocOptionContext from an existing [DartdocOptionContext] and a
-  /// new analyzer [Element].
+  /// new analyzer [Element2].
   factory DartdocOptionContext.fromContextElement(
       DartdocOptionContext optionContext,
-      LibraryElement libraryElement,
+      LibraryElement2 libraryElement,
       ResourceProvider resourceProvider) {
     return DartdocOptionContext.fromElement(
         optionContext.optionSet, libraryElement, resourceProvider);

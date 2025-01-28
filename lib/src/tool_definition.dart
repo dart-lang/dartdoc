@@ -2,6 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+/// @docImport 'package:dartdoc/src/tool_configuration.dart';
+library;
+
 import 'dart:async';
 
 import 'package:analyzer/file_system/file_system.dart';
@@ -188,8 +191,8 @@ class _Snapshot {
 
   bool _needsSnapshot = true;
 
-  /// Will return true precisely once, unless [snapshotFile] was already a
-  /// snapshot.  In that case, will always return false.
+  /// Returns `true` precisely once, unless [_snapshotFile] was already a
+  /// snapshot.  In that case, will always return `false`.
   bool get needsSnapshot {
     if (_needsSnapshot) {
       _needsSnapshot = false;

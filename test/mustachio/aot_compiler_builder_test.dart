@@ -36,7 +36,7 @@ import 'annotations.dart';
       ],
     );
     var renderersLibrary =
-        await resolveGeneratedLibrary(aotRenderersForHtmlPath);
+        await resolveGeneratedLibrary2(aotRenderersForHtmlPath);
 
     expect(renderersLibrary.getTopLevelFunction('renderFoo'), isNotNull);
     expect(renderersLibrary.getTopLevelFunction('renderBar'), isNotNull);
@@ -105,11 +105,11 @@ class Bar {}
 class Baz {}
 ''');
     var renderersLibrary =
-        await resolveGeneratedLibrary(aotRenderersForHtmlPath);
+        await resolveGeneratedLibrary2(aotRenderersForHtmlPath);
 
     var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo')!;
-    expect(fooRenderFunction.typeParameters, hasLength(1));
-    var fBound = fooRenderFunction.typeParameters.single.bound!;
+    expect(fooRenderFunction.typeParameters2, hasLength(1));
+    var fBound = fooRenderFunction.typeParameters2.single.bound!;
     expect(fBound.getDisplayString(), equals('num'));
   });
 

@@ -862,7 +862,7 @@ Rebuild them with "dart tool/task.dart build" and check the results in.
 bool get _analyzerInUseIsTarget {
   // TODO(srawlins): Add validation that this number falls within the
   // constraints of the analyzer package which are set in `pubspec.yaml`.
-  const analyzerTarget = '6.8.0';
+  const analyzerTarget = '7.2.0';
 
   var lockfilePath = path.join(Directory.current.path, 'pubspec.lock');
   var lockfile = loadYaml(File(lockfilePath).readAsStringSync()) as YamlMap;
@@ -937,8 +937,8 @@ Not all files are formatted:
 Future<void> validateSdkDocs() async {
   await docSdk();
   const expectedLibCount = 0;
-  const expectedSubLibCounts = {19, 20, 21};
-  const expectedTotalCounts = {19, 20, 21};
+  const expectedSubLibCount = 20;
+  const expectedTotalCount = 20;
   var indexHtml = File(path.join(_sdkDocsDir.path, 'index.html'));
   if (!indexHtml.existsSync()) {
     throw StateError("No 'index.html' found for the SDK docs");
@@ -953,10 +953,11 @@ Future<void> validateSdkDocs() async {
   }
   print("Found $foundLibCount 'dart:' entries in 'index.html'");
 
-  var foundSubLibCount =
-      _findCount(indexContents, '<li class="section-subitem"><a href="dart-');
-  if (!expectedSubLibCounts.contains(foundSubLibCount)) {
-    throw StateError("Expected $expectedSubLibCounts 'dart:' entries in "
+  var libLinkPattern =
+      RegExp('<li class="section-subitem"><a [^>]*href="dart-');
+  var foundSubLibCount = _findCount(indexContents, libLinkPattern);
+  if (expectedSubLibCount != foundSubLibCount) {
+    throw StateError("Expected $expectedSubLibCount 'dart:' entries in "
         "'index.html' to be in categories, but found $foundSubLibCount");
   }
   print('$foundSubLibCount index.html dart: entries in categories found');
@@ -965,11 +966,11 @@ Future<void> validateSdkDocs() async {
   var libraries =
       _sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-'));
   var libraryCount = libraries.length;
-  if (!expectedTotalCounts.contains(libraryCount)) {
+  if (expectedTotalCount != libraryCount) {
     var libraryNames =
         libraries.map((l) => "'${path.basename(l.path)}'").join(', ');
     throw StateError('Unexpected docs generated for SDK libraries; expected '
-        '$expectedTotalCounts directories, but $libraryCount directories were '
+        '$expectedTotalCount directories, but $libraryCount directories were '
         'generated: $libraryNames');
   }
   print("Found $libraryCount 'dart:' libraries");
@@ -987,12 +988,12 @@ final Directory _sdkDocsDir =
     Directory.systemTemp.createTempSync('sdkdocs').absolute;
 
 /// Returns the number of (perhaps overlapping) occurrences of [str] in [match].
-int _findCount(String str, String match) {
+int _findCount(String str, Pattern match) {
   var count = 0;
   var index = str.indexOf(match);
   while (index != -1) {
     count++;
-    index = str.indexOf(match, index + match.length);
+    index = str.indexOf(match, index + 1);
   }
   return count;
 }

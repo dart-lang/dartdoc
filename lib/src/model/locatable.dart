@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// ignore_for_file: analyzer_use_new_elements
+
 import 'package:analyzer/dart/element/element.dart' show Element;
 import 'package:dartdoc/src/model/model.dart';
 
@@ -16,7 +18,7 @@ mixin Locatable {
   /// class doesn't have docs for this element.
   List<Locatable> get documentationFrom;
 
-  /// True if documentationFrom contains only one item, [this].
+  /// Whether [documentationFrom] contains only one item, `this`.
   bool get documentationIsLocal =>
       documentationFrom.length == 1 && identical(documentationFrom.first, this);
 

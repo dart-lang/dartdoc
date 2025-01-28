@@ -8,22 +8,153 @@ import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
 import 'dartdoc_test_base.dart';
+import 'src/test_descriptor_utils.dart' as d;
 import 'src/utils.dart';
 
 void main() {
   defineReflectiveSuite(() {
     defineReflectiveTests(EnumTest);
-    defineReflectiveTests(EnhancedEnumTest);
   });
 }
 
 @reflectiveTest
-class EnhancedEnumTest extends DartdocTestBase {
+class EnumTest extends DartdocTestBase {
   @override
   String get libraryName => 'enums';
 
-  @override
-  String get sdkConstraint => '>=2.17.0 <3.0.0';
+  void test_annotatedValue() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  @deprecated
+  one,
+  two, three
+}
+
+''');
+    var one = library.enums.named('E').publicEnumValues.named('one');
+    expect(one.hasAnnotations, true);
+    expect(one.annotations, hasLength(1));
+    expect(one.isDeprecated, true);
+  }
+
+  void test_canBeReferenced_whenFoundAsParameterType() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  one, two
+}
+
+class C {
+  /// [E] can be referenced.
+  void m(E p) {}
+}
+''');
+    var m = library.classes.named('C').instanceMethods.named('m');
+
+    expect(m.hasDocumentationComment, true);
+    expect(
+      m.documentationAsHtml,
+      '<p><a href="$linkPrefix/E.html">E</a> can be referenced.</p>',
+    );
+  }
+
+  void test_canBeReferenced_whenFoundAsReturnType() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  one, two
+}
+
+class C {
+  /// [E] can be referenced.
+  E m() => E.one;
+}
+''');
+    var m = library.classes.named('C').instanceMethods.named('m');
+
+    expect(m.hasDocumentationComment, true);
+    expect(
+      m.documentationAsHtml,
+      '<p><a href="$linkPrefix/E.html">E</a> can be referenced.</p>',
+    );
+  }
+
+  void test_canBeReferenced_whenFoundAsReturnType_typeArgument() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  one, two
+}
+
+class C {
+  /// [E] can be referenced.
+  Future<E> m() async => E.one;
+}
+''');
+    var m = library.classes.named('C').instanceMethods.named('m');
+
+    expect(m.hasDocumentationComment, true);
+    expect(
+      m.documentationAsHtml,
+      '<p><a href="$linkPrefix/E.html">E</a> can be referenced.</p>',
+    );
+  }
+
+  void test_constantValue_explicitConstructorCall() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  one.named(1),
+  two.named(2);
+
+  final int x;
+
+  const E.named(this.x);
+}
+''');
+    var eOneValue = library.enums.named('E').publicEnumValues.named('one');
+    expect(eOneValue.constantValueTruncated, 'const E.named(1)');
+
+    var eTwoValue = library.enums.named('E').publicEnumValues.named('two');
+    expect(eTwoValue.constantValueTruncated, 'const E.named(2)');
+  }
+
+  void test_constantValue_explicitConstructorCall_zeroConstructorArgs() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  one.named1(),
+  two.named2();
+
+  final int x;
+
+  const E.named1() : x = 1;
+  const E.named2() : x = 2;
+}
+''');
+    var eOneValue = library.enums.named('E').publicEnumValues.named('one');
+    expect(eOneValue.constantValueTruncated, 'const E.named1()');
+
+    var eTwoValue = library.enums.named('E').publicEnumValues.named('two');
+    expect(eTwoValue.constantValueTruncated, 'const E.named2()');
+  }
+
+  void test_constantValue_implicitConstructorCall() async {
+    var library = await bootPackageWithLibrary('''
+enum E { one, two }
+''');
+
+    var oneValue = library.enums.named('E').publicEnumValues.named('one');
+    expect(
+      oneValue.constantValueTruncated,
+      // TODO(srawlins): This should link back to the E enum. Something like
+      // `'const <a href="$linkPrefix/E/E.html">E</a>(0)'`.
+      'const E(0)',
+    );
+
+    var twoValue = library.enums.named('E').publicEnumValues.named('two');
+    expect(
+      twoValue.constantValueTruncated,
+      // TODO(srawlins): This should link back to the E enum. Something like
+      // `'const <a href="$linkPrefix/E/E.html">E</a>(1)'`.
+      'const E(1)',
+    );
+  }
 
   void test_constructorsAreDocumented() async {
     // TODO(srawlins): As all supported Dart is >=2.15.0, this test can just
@@ -46,6 +177,74 @@ enum E {
     expect(namedConstructor.fullyQualifiedName, 'enums.E.named');
     expect(namedConstructor.nameWithGenerics, 'E.named');
     expect(namedConstructor.documentationComment, '/// A named constructor.');
+  }
+
+  void test_enclosingElement() async {
+    var library = await bootPackageWithLibrary('enum E { one, two, three }');
+    var eEnum = library.enums.named('E');
+
+    expect(eEnum.enclosingElement.name, 'enums');
+  }
+
+  void test_fullyQualifiedName() async {
+    var library = await bootPackageWithLibrary('enum E { one, two, three }');
+    var eEnum = library.enums.named('E');
+
+    expect(eEnum.fullyQualifiedName, equals('enums.E'));
+  }
+
+  void test_hasAnnotations() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  const C();
+}
+
+@C()
+enum E { one, two, three }
+''');
+    var eEnum = library.enums.named('E');
+
+    expect(eEnum.hasAnnotations, true);
+    expect(eEnum.annotations, hasLength(1));
+    expect(eEnum.annotations.single.linkedName,
+        '<a href="$linkPrefix/C-class.html">C</a>');
+  }
+
+  void test_hasDocComment() async {
+    var library = await bootPackageWithLibrary('''
+/// Doc comment for [E].
+enum E { one, two, three }
+''');
+    var eEnum = library.enums.named('E');
+
+    expect(eEnum.hasDocumentationComment, true);
+    expect(eEnum.documentationComment, '/// Doc comment for [E].');
+  }
+
+  void test_index_canBeReferenced() async {
+    var library = await bootPackageWithLibrary('''
+enum E { one, two, three }
+
+/// Reference to [E.index].
+class C {}
+''');
+    var cClass = library.classes.named('C');
+    expect(
+      cClass.documentationAsHtml,
+      '<p>Reference to '
+      '<a href="https://api.dart.dev/stable/3.2.0/dart-core/Enum/index.html">E.index</a>.</p>',
+    );
+  }
+
+  void test_index_isLinked() async {
+    var library = await bootPackageWithLibrary('enum E { one, two, three }');
+    var eEnum = library.enums.named('E');
+
+    expect(eEnum.instanceFields.map((f) => f.name), contains('index'));
+    expect(
+      eEnum.instanceFields.named('index').linkedName,
+      '<a href="https://api.dart.dev/stable/3.2.0/dart-core/Enum/index.html">index</a>',
+    );
   }
 
   void test_instanceFieldsAreDocumented() async {
@@ -180,6 +379,13 @@ enum E<T> implements C<T> { one, two, three; }
     );
   }
 
+  void test_linkedName() async {
+    var library = await bootPackageWithLibrary('enum E { one, two, three }');
+    var eEnum = library.enums.named('E');
+
+    expect(eEnum.linkedName, equals('<a href="$linkPrefix/E.html">E</a>'));
+  }
+
   void test_methodsAreDocumented() async {
     // TODO(srawlins): As all supported Dart is >=2.15.0, this test can just
     // be a "method" test rather than an "enum" test.
@@ -263,6 +469,18 @@ enum E {
       '<a href="$linkPrefix/E/operator_less.html">operator <</a>',
     );
     expect(lessThan.documentationComment, '/// Less than.');
+  }
+
+  void test_publicEnums() async {
+    var library = await bootPackageWithLibrary('enum E { one, two, three }');
+    expect(library.enums.wherePublic, isNotEmpty);
+  }
+
+  void test_publicEnumValues() async {
+    var library = await bootPackageWithLibrary('enum E { one, two, three }');
+    var eEnum = library.enums.named('E');
+
+    expect(eEnum.publicEnumValues, hasLength(3));
   }
 
   void test_staticFieldsAreDocumented() async {
@@ -376,173 +594,6 @@ class C {}
     );
   }
 
-  void test_constantValue_implicitConstructorCall() async {
-    var library = await bootPackageWithLibrary('''
-enum E { one, two }
-''');
-
-    var oneValue = library.enums.named('E').publicEnumValues.named('one');
-    expect(
-      oneValue.constantValueTruncated,
-      // TODO(srawlins): This should link back to the E enum. Something like
-      // `'const <a href="$linkPrefix/E/E.html">E</a>(0)'`.
-      'const E(0)',
-    );
-
-    var twoValue = library.enums.named('E').publicEnumValues.named('two');
-    expect(
-      twoValue.constantValueTruncated,
-      // TODO(srawlins): This should link back to the E enum. Something like
-      // `'const <a href="$linkPrefix/E/E.html">E</a>(1)'`.
-      'const E(1)',
-    );
-  }
-
-  void test_constantValue_explicitConstructorCall() async {
-    var library = await bootPackageWithLibrary('''
-enum E {
-  one.named(1),
-  two.named(2);
-
-  final int x;
-
-  const E.named(this.x);
-}
-''');
-    var eOneValue = library.enums.named('E').publicEnumValues.named('one');
-    expect(eOneValue.constantValueTruncated, 'const E.named(1)');
-
-    var eTwoValue = library.enums.named('E').publicEnumValues.named('two');
-    expect(eTwoValue.constantValueTruncated, 'const E.named(2)');
-  }
-
-  void test_constantValue_explicitConstructorCall_zeroConstructorArgs() async {
-    var library = await bootPackageWithLibrary('''
-enum E {
-  one.named1(),
-  two.named2();
-
-  final int x;
-
-  const E.named1() : x = 1;
-  const E.named2() : x = 2;
-}
-''');
-    var eOneValue = library.enums.named('E').publicEnumValues.named('one');
-    expect(eOneValue.constantValueTruncated, 'const E.named1()');
-
-    var eTwoValue = library.enums.named('E').publicEnumValues.named('two');
-    expect(eTwoValue.constantValueTruncated, 'const E.named2()');
-  }
-}
-
-@reflectiveTest
-class EnumTest extends DartdocTestBase {
-  @override
-  String get libraryName => 'enums';
-
-  void test_annotatedValue() async {
-    var library = await bootPackageWithLibrary('''
-enum E {
-  @deprecated
-  one,
-  two, three
-}
-
-''');
-    var one = library.enums.named('E').publicEnumValues.named('one');
-    expect(one.hasAnnotations, true);
-    expect(one.annotations, hasLength(1));
-    expect(one.isDeprecated, true);
-  }
-
-  void test_enclosingElement() async {
-    var library = await bootPackageWithLibrary('enum E { one, two, three }');
-    var eEnum = library.enums.named('E');
-
-    expect(eEnum.enclosingElement.name, 'enums');
-  }
-
-  void test_fullyQualifiedName() async {
-    var library = await bootPackageWithLibrary('enum E { one, two, three }');
-    var eEnum = library.enums.named('E');
-
-    expect(eEnum.fullyQualifiedName, equals('enums.E'));
-  }
-
-  void test_hasAnnotations() async {
-    var library = await bootPackageWithLibrary('''
-class C {
-  const C();
-}
-
-@C()
-enum E { one, two, three }
-''');
-    var eEnum = library.enums.named('E');
-
-    expect(eEnum.hasAnnotations, true);
-    expect(eEnum.annotations, hasLength(1));
-    expect(eEnum.annotations.single.linkedName,
-        '<a href="$linkPrefix/C-class.html">C</a>');
-  }
-
-  void test_hasDocComment() async {
-    var library = await bootPackageWithLibrary('''
-/// Doc comment for [E].
-enum E { one, two, three }
-''');
-    var eEnum = library.enums.named('E');
-
-    expect(eEnum.hasDocumentationComment, true);
-    expect(eEnum.documentationComment, '/// Doc comment for [E].');
-  }
-
-  void test_index_canBeReferenced() async {
-    var library = await bootPackageWithLibrary('''
-enum E { one, two, three }
-
-/// Reference to [E.index].
-class C {}
-''');
-    var cClass = library.classes.named('C');
-    expect(
-      cClass.documentationAsHtml,
-      '<p>Reference to '
-      '<a href="https://api.dart.dev/stable/3.2.0/dart-core/Enum/index.html">E.index</a>.</p>',
-    );
-  }
-
-  void test_index_isLinked() async {
-    var library = await bootPackageWithLibrary('enum E { one, two, three }');
-    var eEnum = library.enums.named('E');
-
-    expect(eEnum.instanceFields.map((f) => f.name), contains('index'));
-    expect(
-      eEnum.instanceFields.named('index').linkedName,
-      '<a href="https://api.dart.dev/stable/3.2.0/dart-core/Enum/index.html">index</a>',
-    );
-  }
-
-  void test_linkedName() async {
-    var library = await bootPackageWithLibrary('enum E { one, two, three }');
-    var eEnum = library.enums.named('E');
-
-    expect(eEnum.linkedName, equals('<a href="$linkPrefix/E.html">E</a>'));
-  }
-
-  void test_publicEnums() async {
-    var library = await bootPackageWithLibrary('enum E { one, two, three }');
-    expect(library.enums.wherePublic, isNotEmpty);
-  }
-
-  void test_publicEnumValues() async {
-    var library = await bootPackageWithLibrary('enum E { one, two, three }');
-    var eEnum = library.enums.named('E');
-
-    expect(eEnum.publicEnumValues, hasLength(3));
-  }
-
   void test_toString() async {
     var library = await bootPackageWithLibrary('enum E { one, two, three }');
     var eEnum = library.enums.named('E');
@@ -587,6 +638,23 @@ enum E {
     expect(oneValue.constantValue, equals(oneValue.renderedName));
   }
 
+  void test_value_linksToItsAnchor_inExportedLib() async {
+    var library = (await bootPackageFromFiles([
+      d.file('lib/src/library.dart', '''
+enum E { one, two three }
+'''),
+      d.file('lib/enums.dart', '''
+export 'src/library.dart';
+'''),
+    ]))
+        .libraries
+        .named(libraryName);
+    var oneValue =
+        library.enums.named('E').publicEnumValues.named('one') as EnumField;
+    expect(oneValue.linkedName, '<a href="$linkPrefix/E.html#one">one</a>');
+    expect(oneValue.constantValue, equals(oneValue.renderedName));
+  }
+
   void test_values_haveIndices() async {
     var library = await bootPackageWithLibrary('enum E { one, two, three }');
     var oneValue =
@@ -621,66 +689,6 @@ class C {}
       cClass.documentationAsHtml,
       '<p>Reference to '
       '<a href="$linkPrefix/E/values-constant.html">E.values</a>.</p>',
-    );
-  }
-
-  void test_canBeReferenced_whenFoundAsReturnType() async {
-    var library = await bootPackageWithLibrary('''
-enum E {
-  one, two
-}
-
-class C {
-  /// [E] can be referenced.
-  E m() => E.one;
-}
-''');
-    var m = library.classes.named('C').instanceMethods.named('m');
-
-    expect(m.hasDocumentationComment, true);
-    expect(
-      m.documentationAsHtml,
-      '<p><a href="$linkPrefix/E.html">E</a> can be referenced.</p>',
-    );
-  }
-
-  void test_canBeReferenced_whenFoundAsReturnType_typeArgument() async {
-    var library = await bootPackageWithLibrary('''
-enum E {
-  one, two
-}
-
-class C {
-  /// [E] can be referenced.
-  Future<E> m() async => E.one;
-}
-''');
-    var m = library.classes.named('C').instanceMethods.named('m');
-
-    expect(m.hasDocumentationComment, true);
-    expect(
-      m.documentationAsHtml,
-      '<p><a href="$linkPrefix/E.html">E</a> can be referenced.</p>',
-    );
-  }
-
-  void test_canBeReferenced_whenFoundAsParameterType() async {
-    var library = await bootPackageWithLibrary('''
-enum E {
-  one, two
-}
-
-class C {
-  /// [E] can be referenced.
-  void m(E p) {}
-}
-''');
-    var m = library.classes.named('C').instanceMethods.named('m');
-
-    expect(m.hasDocumentationComment, true);
-    expect(
-      m.documentationAsHtml,
-      '<p><a href="$linkPrefix/E.html">E</a> can be referenced.</p>',
     );
   }
 }

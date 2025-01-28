@@ -7,7 +7,8 @@
 library;
 
 import 'dart:io';
-import 'package:analyzer/dart/element/element.dart';
+
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
@@ -15,7 +16,7 @@ import 'builder_test_base.dart';
 
 void main() {
   group('builds a renderer class', () {
-    late final LibraryElement renderersLibrary;
+    late final LibraryElement2 renderersLibrary;
     late final String generatedContent;
 
     // Builders are fairly expensive (about 4 seconds per `testBuilder` call),
@@ -39,7 +40,7 @@ abstract class Foo extends FooBase with Mix<int> {
 class Bar {}
 class Baz {}
 ''');
-      renderersLibrary = await resolveGeneratedLibrary(runtimeRenderersPath);
+      renderersLibrary = await resolveGeneratedLibrary2(runtimeRenderersPath);
       generatedContent = await File(runtimeRenderersPath).readAsString();
     });
 
@@ -60,23 +61,23 @@ class Baz {}
     test('for a class which is extended by a rendered class', () {
       // No render function is necessary.
       expect(renderersLibrary.getTopLevelFunction('_render_FooBase'), isNull);
-      expect(renderersLibrary.getClass('_Renderer_FooBase'), isNotNull);
+      expect(renderersLibrary.getClass2('_Renderer_FooBase'), isNotNull);
     });
 
     test('for a class which is mixed into a rendered class', () {
       // No render function is necessary.
       expect(renderersLibrary.getTopLevelFunction('_render_Mix'), isNull);
-      expect(renderersLibrary.getClass('_Renderer_Mix'), isNotNull);
+      expect(renderersLibrary.getClass2('_Renderer_Mix'), isNotNull);
     });
 
     test('for a type found in a getter', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Bar'), isNotNull);
-      expect(renderersLibrary.getClass('_Renderer_Bar'), isNotNull);
+      expect(renderersLibrary.getClass2('_Renderer_Bar'), isNotNull);
     });
 
     test('for a generic, bounded type found in a getter', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Baz'), isNotNull);
-      expect(renderersLibrary.getClass('_Renderer_Baz'), isNotNull);
+      expect(renderersLibrary.getClass2('_Renderer_Baz'), isNotNull);
     });
 
     test('with a property map', () {
@@ -98,30 +99,47 @@ class Baz {}
 
     test('with a property map with a bool property', () {
       expect(generatedContent, contains('''
-                'b1': Property(
-                  getValue: (CT_ c) => c.b1,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'bool'),
-                  getBool: (CT_ c) => c.b1,
-                ),
+              'b1': Property(
+                getValue: (CT_ c) => c.b1,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'bool'),
+
+                getBool: (CT_ c) => c.b1,
+              ),
 '''));
     });
 
     test('with a property map with an Iterable property', () {
       expect(generatedContent, contains('''
-                'l1': Property(
-                  getValue: (CT_ c) => c.l1,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'List<int>'),
-                  renderIterable: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    return c.l1.map((e) => renderSimple(
-                        e, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['int']!));
-                  },
-                ),
+              'l1': Property(
+                getValue: (CT_ c) => c.l1,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'List<int>',
+                        ),
+
+                renderIterable: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  return c.l1.map(
+                    (e) => renderSimple(
+                      e,
+                      ast,
+                      r.template,
+                      sink,
+                      parent: r,
+                      getters: _invisibleGetters['int']!,
+                    ),
+                  );
+                },
+              ),
 '''));
     });
 
@@ -129,18 +147,30 @@ class Baz {}
         'with a property map with a non-bool, non-Iterable, non-nullable property',
         () {
       expect(generatedContent, contains('''
-                's1': Property(
-                  getValue: (CT_ c) => c.s1,
-                  renderVariable: (CT_ c, Property<CT_> self,
-                          List<String> remainingNames) =>
-                      self.renderSimpleVariable(c, remainingNames, 'String'),
-                  isNullValue: (CT_ c) => false,
-                  renderValue: (CT_ c, RendererBase<CT_> r,
-                      List<MustachioNode> ast, StringSink sink) {
-                    renderSimple(c.s1, ast, r.template, sink,
-                        parent: r, getters: _invisibleGetters['String']!);
-                  },
-                ),
+              's1': Property(
+                getValue: (CT_ c) => c.s1,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(c, remainingNames, 'String'),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.s1,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['String']!,
+                  );
+                },
+              ),
 '''));
     });
   });
@@ -158,12 +188,12 @@ class Baz {}
 library foo;
 import 'annotations.dart';
 ''');
-    var renderersLibrary = await resolveGeneratedLibrary(runtimeRenderersPath);
+    var renderersLibrary = await resolveGeneratedLibrary2(runtimeRenderersPath);
 
     expect(renderersLibrary.getTopLevelFunction('renderFoo'), isNotNull);
     expect(renderersLibrary.getTopLevelFunction('renderBar'), isNotNull);
-    expect(renderersLibrary.getClass('_Renderer_Foo'), isNotNull);
-    expect(renderersLibrary.getClass('_Renderer_Bar'), isNotNull);
+    expect(renderersLibrary.getClass2('_Renderer_Foo'), isNotNull);
+    expect(renderersLibrary.getClass2('_Renderer_Bar'), isNotNull);
   });
 
   group('builds a renderer class for a generic type', () {
@@ -196,9 +226,15 @@ import 'annotations.dart';
 
     test('with a corresponding render function', () async {
       expect(
-          generatedContent,
-          contains('void _render_Foo<T>(\n'
-              '    Foo<T> context, List<MustachioNode> ast, Template template, StringSink sink,\n'));
+        generatedContent,
+        contains('''
+void _render_Foo<T>(
+  Foo<T> context,
+  List<MustachioNode> ast,
+  Template template,
+  StringSink sink, {
+'''),
+      );
     });
 
     test('with a generic supertype type argument', () async {
@@ -210,14 +246,14 @@ import 'annotations.dart';
         'with a property map which references the superclass with a type '
         'variable', () {
       expect(generatedContent,
-          contains('..._Renderer_FooBase.propertyMap<T, CT_>(),'));
+          contains('..._Renderer_FooBase.propertyMap<T, CT_>()'));
     });
 
     test(
         'with a property map which references the superclass with an interface '
         'type', () {
       expect(generatedContent,
-          contains('..._Renderer_BarBase.propertyMap<int, CT_>(),'));
+          contains('..._Renderer_BarBase.propertyMap<int, CT_>()'));
     });
   });
 
@@ -229,21 +265,21 @@ class Foo<T extends num> {
 class Bar {}
 class Baz {}
 ''');
-    var renderersLibrary = await resolveGeneratedLibrary(runtimeRenderersPath);
+    var renderersLibrary = await resolveGeneratedLibrary2(runtimeRenderersPath);
 
     var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo')!;
-    expect(fooRenderFunction.typeParameters, hasLength(1));
-    var fBound = fooRenderFunction.typeParameters.single.bound!;
+    expect(fooRenderFunction.typeParameters2, hasLength(1));
+    var fBound = fooRenderFunction.typeParameters2.single.bound!;
     expect(fBound.getDisplayString(), equals('num'));
 
-    var fooRendererClass = renderersLibrary.getClass('_Renderer_Foo')!;
-    expect(fooRendererClass.typeParameters, hasLength(1));
-    var cBound = fooRenderFunction.typeParameters.single.bound!;
+    var fooRendererClass = renderersLibrary.getClass2('_Renderer_Foo')!;
+    expect(fooRendererClass.typeParameters2, hasLength(1));
+    var cBound = fooRenderFunction.typeParameters2.single.bound!;
     expect(cBound.getDisplayString(), equals('num'));
   });
 
   group('does not generate a renderer', () {
-    late final LibraryElement renderersLibrary;
+    late final LibraryElement2 renderersLibrary;
 
     setUpAll(() async {
       await testMustachioBuilder('''
@@ -261,32 +297,32 @@ class Private {}
 class Setter {}
 class Method {}
 ''');
-      renderersLibrary = await resolveGeneratedLibrary(runtimeRenderersPath);
+      renderersLibrary = await resolveGeneratedLibrary2(runtimeRenderersPath);
     });
 
     test('found in a static getter', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Static'), isNull);
-      expect(renderersLibrary.getClass('_Renderer_Static'), isNull);
+      expect(renderersLibrary.getClass2('_Renderer_Static'), isNull);
     });
 
     test('found in a private getter', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Private'), isNull);
-      expect(renderersLibrary.getClass('_Renderer_Private'), isNull);
+      expect(renderersLibrary.getClass2('_Renderer_Private'), isNull);
     });
 
     test('found in a setter', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Setter'), isNull);
-      expect(renderersLibrary.getClass('_Renderer_Setter'), isNull);
+      expect(renderersLibrary.getClass2('_Renderer_Setter'), isNull);
     });
 
     test('found in a method', () {
       expect(renderersLibrary.getTopLevelFunction('_render_Method'), isNull);
-      expect(renderersLibrary.getClass('_Renderer_Method'), isNull);
+      expect(renderersLibrary.getClass2('_Renderer_Method'), isNull);
     });
 
     test('for types not @visibleToMustache', () {
       expect(renderersLibrary.getTopLevelFunction('_render_String'), isNull);
-      expect(renderersLibrary.getClass('_Renderer_String'), isNull);
+      expect(renderersLibrary.getClass2('_Renderer_String'), isNull);
     });
   });
 }

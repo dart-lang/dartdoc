@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// ignore_for_file: analyzer_use_new_elements
+
 /// The models used to represent Dart code.
 library;
 
@@ -9,11 +11,14 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart' show FunctionType;
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
@@ -105,6 +110,15 @@ abstract class ModelElement
           getter: getter, setter: setter);
     }
     return ModelElement.for_(e, library, p);
+  }
+
+  /// Returns a [ModelElement] for an [Element2], which can be a
+  /// property-inducing element or not.
+  ///
+  /// This constructor is used when the caller does not know the element's
+  /// library, or whether it is property-inducing.
+  factory ModelElement.forElement2(Element2 e, PackageGraph p) {
+    return ModelElement.forElement(e.asElement!, p);
   }
 
   /// Returns a [ModelElement] for a property-inducing element.
@@ -255,7 +269,7 @@ abstract class ModelElement
     return newModelElement;
   }
 
-  /// Caches a newly-created [ModelElement] from [ModelElement._from] or
+  /// Caches a newly-created [ModelElement] from [ModelElement.for_] or
   /// [ModelElement.forPropertyInducingElement].
   static void _cacheNewModelElement(
       Element e, ModelElement newModelElement, Library library,
@@ -298,7 +312,8 @@ abstract class ModelElement
       TypeAliasElement(aliasedType: FunctionType()) =>
         FunctionTypedef(e, library, packageGraph),
       TypeAliasElement()
-          when e.aliasedType.documentableElement is InterfaceElement =>
+          when e.aliasedType.documentableElement2.asElement
+              is InterfaceElement =>
         ClassTypedef(e, library, packageGraph),
       TypeAliasElement() => GeneralizedTypedef(e, library, packageGraph),
       MethodElement(isOperator: true) when enclosingContainer == null =>
@@ -424,13 +439,13 @@ abstract class ModelElement
       }
     }
 
-    return !element.hasPrivateName && !hasNodoc;
+    return !element2.hasPrivateName && !hasNodoc;
   }();
 
   @override
   late final DartdocOptionContext config =
       DartdocOptionContext.fromContextElement(
-          packageGraph.config, library.element, packageGraph.resourceProvider);
+          packageGraph.config, library.element2, packageGraph.resourceProvider);
 
   bool get hasAttributes => attributes.isNotEmpty;
 
@@ -494,7 +509,7 @@ abstract class ModelElement
   /// A public, documented library which exports this [ModelElement], ideally in
   /// [library]'s package.
   late final Library? canonicalLibrary = () {
-    if (element.hasPrivateName) {
+    if (element2.hasPrivateName) {
       // Privately named elements can never have a canonical library.
       return null;
     }
@@ -543,6 +558,9 @@ abstract class ModelElement
 
   @override
   Element get element;
+
+  @override
+  Element2 get element2 => element.asElement2!;
 
   @override
   String get location {

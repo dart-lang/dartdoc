@@ -2,10 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// ignore_for_file: analyzer_use_new_elements
+
 import 'dart:collection';
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/source/source.dart';
 // ignore: implementation_imports
@@ -92,11 +95,11 @@ class PackageGraph with CommentReferable, Nameable {
   /// span packages.
   void addLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
     assert(!allLibrariesAdded);
-    var libraryElement = resolvedLibrary.element;
+    var libraryElement2 = resolvedLibrary.element2;
     var packageMeta =
-        packageMetaProvider.fromElement(libraryElement, config.sdkDir);
+        packageMetaProvider.fromElement(libraryElement2, config.sdkDir);
     if (packageMeta == null) {
-      var libraryPath = libraryElement.librarySource.fullName;
+      var libraryPath = libraryElement2.firstFragment.source.fullName;
       var dartOrFlutter = config.flutterRoot == null ? 'dart' : 'flutter';
       throw DartdocFailure(
           "Unknown package for library: '$libraryPath'.  Consider "
@@ -107,10 +110,10 @@ class PackageGraph with CommentReferable, Nameable {
     }
     var package = Package.fromPackageMeta(packageMeta, this);
     var library = Library.fromLibraryResult(resolvedLibrary, this, package);
-    if (_shouldIncludeLibrary(libraryElement)) {
+    if (_shouldIncludeLibrary(resolvedLibrary.element)) {
       package.libraries.add(library);
     }
-    _allLibraries[libraryElement.source.fullName] = library;
+    _allLibraries[libraryElement2.firstFragment.source.fullName] = library;
   }
 
   /// Whether [libraryElement] should be included in the libraries-to-document.
@@ -508,7 +511,7 @@ class PackageGraph with CommentReferable, Nameable {
       packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
   /// A mapping from a [LibraryElement] to all of the [Library]s that export it.
-  Map<LibraryElement, Set<Library>> _libraryExports = {};
+  Map<LibraryElement2, Set<Library>> _libraryExports = {};
 
   /// Marks [publicLibrary] as a library that exports [libraryElement] and all
   /// libraries that [libraryElement] transitively exports.
@@ -516,8 +519,8 @@ class PackageGraph with CommentReferable, Nameable {
   /// [alreadyTagged] is used internall to prevent visiting in cycles.
   void _tagExportsFor(
     final Library publicLibrary,
-    final LibraryElement libraryElement, {
-    Set<(Library, LibraryElement)>? alreadyTagged,
+    final LibraryElement2 libraryElement, {
+    Set<(Library, LibraryElement2)>? alreadyTagged,
   }) {
     alreadyTagged ??= {};
     var key = (publicLibrary, libraryElement);
@@ -527,14 +530,15 @@ class PackageGraph with CommentReferable, Nameable {
     alreadyTagged.add(key);
     // Mark that `publicLibrary` exports `libraryElement`.
     _libraryExports.putIfAbsent(libraryElement, () => {}).add(publicLibrary);
-    for (var exportedElement
-        in libraryElement.definingCompilationUnit.libraryExports) {
-      var exportedLibrary = exportedElement.exportedLibrary;
-      if (exportedLibrary != null) {
-        // Follow the exports down; as `publicLibrary` exports `libraryElement`,
-        // it also exports each `exportedLibrary`.
-        _tagExportsFor(publicLibrary, exportedLibrary,
-            alreadyTagged: alreadyTagged);
+    for (var fragment in libraryElement.fragments) {
+      for (var exportedElement in fragment.libraryExports2) {
+        var exportedLibrary = exportedElement.exportedLibrary2;
+        if (exportedLibrary != null) {
+          // Follow the exports down; as `publicLibrary` exports `libraryElement`,
+          // it also exports each `exportedLibrary`.
+          _tagExportsFor(publicLibrary, exportedLibrary,
+              alreadyTagged: alreadyTagged);
+        }
       }
     }
   }
@@ -543,7 +547,7 @@ class PackageGraph with CommentReferable, Nameable {
 
   /// A mapping from a [LibraryElement] to all of the [Library]s that export it,
   /// which is created if it is not yet populated.
-  Map<LibraryElement, Set<Library>> get libraryExports {
+  Map<LibraryElement2, Set<Library>> get libraryExports {
     // The map must be reset if we're still in the middle of adding libraries
     // (though this shouldn't happen).
     if (_allLibraries.keys.length != _previousSizeOfAllLibraries) {
@@ -554,7 +558,26 @@ class PackageGraph with CommentReferable, Nameable {
       _previousSizeOfAllLibraries = _allLibraries.keys.length;
       _libraryExports = {};
       for (var library in publicLibraries) {
-        _tagExportsFor(library, library.element);
+        _tagExportsFor(library, library.element2);
+      }
+    }
+    return _libraryExports;
+  }
+
+  /// A mapping from a [LibraryElement] to all of the [Library]s that export it,
+  /// which is created if it is not yet populated.
+  Map<LibraryElement2, Set<Library>> get libraryExports2 {
+    // The map must be reset if we're still in the middle of adding libraries
+    // (though this shouldn't happen).
+    if (_allLibraries.keys.length != _previousSizeOfAllLibraries) {
+      assert(
+        _previousSizeOfAllLibraries == 0,
+        'Re-entered `libraryExports` while building all libraries',
+      );
+      _previousSizeOfAllLibraries = _allLibraries.keys.length;
+      _libraryExports = {};
+      for (var library in publicLibraries) {
+        _tagExportsFor(library, library.element2);
       }
     }
     return _libraryExports;
@@ -705,10 +728,6 @@ class PackageGraph with CommentReferable, Nameable {
   ///
   /// If we know the element is related to a particular class, pass a
   /// [preferredClass] to disambiguate.
-  ///
-  /// This doesn't know anything about [PackageGraph.inheritThrough] and
-  /// probably shouldn't, so using it with [Inheritable]s without special casing
-  /// is not advised.
   ///
   /// This can return `null` in a few ways: if [modelElement] is `null`, or if
   /// it has no canonical library, or if a possible canonical model element has

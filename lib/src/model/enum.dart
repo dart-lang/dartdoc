@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// ignore_for_file: analyzer_use_new_elements
+
 import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -117,9 +119,9 @@ class EnumField extends Field {
       return canonicalModelElement?.href;
     }
     assert(canonicalEnclosingContainer == enclosingElement);
-    // TODO(jcollins-g): EnumField should not depend on enclosingElement, but
-    // we sort of have to while we are half-converted to [FileStructure].
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.fileName}';
+    assert(canonicalLibrary != null);
+    return '${package.baseHref}${canonicalLibrary!.dirName}/'
+        '${enclosingElement.fileName}';
   }
 
   @override

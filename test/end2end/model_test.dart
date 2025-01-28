@@ -4,6 +4,8 @@
 
 // ignore_for_file: non_constant_identifier_names
 
+// ignore_for_file: analyzer_use_new_elements
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
@@ -1180,7 +1182,7 @@ void main() async {
             contains(
                 '<a href="%%__HTMLBASE_dartdoc_internal__%%reexport_two/BaseReexported/action.html">ExtendedBaseReexported.action</a></p>'));
         var doAwesomeStuffWarnings = packageGraph.packageWarningCounter
-                .countedWarnings[doAwesomeStuff.element] ??
+                .countedWarnings[doAwesomeStuff.element2] ??
             {};
         expect(
             doAwesomeStuffWarnings,
