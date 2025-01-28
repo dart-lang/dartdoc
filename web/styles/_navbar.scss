@@ -2,22 +2,22 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-nav.navbar {
-  background-color: inherit;
-  min-height: 50px;
-  border: 0;
-}
+nav {
+  &.navbar {
+    background-color: inherit;
+    min-height: 50px;
+    border: 0;
 
-nav.navbar .row {
-  padding-top: 8px;
-}
+    .row {
+      padding-top: 8px;
+    }
+  }
 
-nav .container {
-  white-space: nowrap;
-}
+  .container {
+    white-space: nowrap;
 
-@media(max-width: 840px) {
-  nav .container {
-    width: 100%
+    @media(max-width: 840px) {
+      width: 100%;
+    }
   }
 }

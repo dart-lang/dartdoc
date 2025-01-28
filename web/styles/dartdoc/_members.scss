@@ -2,42 +2,46 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-.markdown.desc {
-  margin-bottom: 1em;
-  max-width: 700px;
-}
+.markdown {
+  &.desc {
+    margin-bottom: 1em;
+    max-width: 700px;
+  }
 
-.markdown h1 {
-  font-size: 24px;
-  margin-bottom: 8px;
-}
+  h1 {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
 
-.markdown h2 {
-  font-size: 20px;
-  margin-top: 24px;
-  margin-bottom: 8px;
-}
+  h2 {
+    font-size: 20px;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
 
-.markdown h3 {
-  font-size: 18px;
-  margin-bottom: 8px;
-  color: var(--main-text-color);
-}
+  h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: var(--main-text-color);
+  }
 
-.markdown h4 {
-  font-size: 16px;
-  margin-bottom: 0;
-}
+  h4 {
+    font-size: 16px;
+    margin-bottom: 0;
+  }
 
-.markdown li p {
-  margin: 0;
+  li p {
+    margin: 0;
+  }
 }
 
 /* Note that the generated HTML for pub packages may have `section` tags
    transformed into `div` tags, so we have two selectors here. */
-section#setter, div#setter {
-  border-top: 1px solid #ddd;
-  padding-top: 36px;
+section, div {
+  &#setter {
+    border-top: 1px solid #ddd;
+    padding-top: 36px;
+  }
 }
 
 li.inherited a {
