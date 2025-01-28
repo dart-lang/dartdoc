@@ -6400,11 +6400,15 @@ class _Renderer_DocumentationComment
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Element'),
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'Element2',
+                        ),
 
                 isNullValue: (CT_ c) => false,
 
@@ -6415,12 +6419,12 @@ class _Renderer_DocumentationComment
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['Element']!,
+                    getters: _invisibleGetters['Element2']!,
                   );
                 },
               ),
@@ -14140,7 +14144,7 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
   }
 }
 
-String renderLibrary(LibraryTemplateData context, Template template) {
+String renderLibraryRedirect(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14386,7 +14390,7 @@ class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData> {
   }
 }
 
-String renderLibraryRedirect(LibraryTemplateData context, Template template) {
+String renderLibrary(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14986,6 +14990,34 @@ class _Renderer_Method extends RendererBase<Method> {
                     sink,
                     parent: r,
                     getters: _invisibleGetters['MethodElement']!,
+                  );
+                },
+              ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'MethodElement2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['MethodElement2']!,
                   );
                 },
               ),
@@ -19986,7 +20018,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -20343,13 +20375,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -25876,7 +25908,7 @@ const _invisibleGetters = {
     'documentationComment',
     'documentationFrom',
     'documentationLocal',
-    'element',
+    'element2',
     'elementDocumentation',
     'hasDocumentationComment',
     'hasNodoc',
@@ -26317,6 +26349,14 @@ const _invisibleGetters = {
     'augmentationTarget',
     'declaration',
     'hashCode',
+    'runtimeType',
+  },
+  'MethodElement2': {
+    'baseElement',
+    'firstFragment',
+    'fragments',
+    'hashCode',
+    'isOperator',
     'runtimeType',
   },
   'MixinElement': {

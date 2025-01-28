@@ -317,22 +317,22 @@ abstract class ModelElement
         ClassTypedef(e, library, packageGraph),
       TypeAliasElement() => GeneralizedTypedef(e, library, packageGraph),
       MethodElement(isOperator: true) when enclosingContainer == null =>
-        Operator(e, library, packageGraph),
+        Operator(e.asElement2, library, packageGraph),
       MethodElement(isOperator: true)
           when e.enclosingElement3 is ExtensionElement =>
         Operator.providedByExtension(
-            e, enclosingContainer, library, packageGraph),
+            e.asElement2, enclosingContainer, library, packageGraph),
       MethodElement(isOperator: true) => Operator.inherited(
-          e, enclosingContainer, library, packageGraph,
+          e.asElement2, enclosingContainer, library, packageGraph,
           originalMember: originalMember),
       MethodElement(isOperator: false) when enclosingContainer == null =>
-        Method(e, library, packageGraph),
+        Method(e.asElement2, library, packageGraph),
       MethodElement(isOperator: false)
           when e.enclosingElement3 is ExtensionElement =>
         Method.providedByExtension(
-            e, enclosingContainer, library, packageGraph),
+            e.asElement2, enclosingContainer, library, packageGraph),
       MethodElement(isOperator: false) => Method.inherited(
-          e, enclosingContainer, library, packageGraph,
+          e.asElement2, enclosingContainer, library, packageGraph,
           originalMember: originalMember as ExecutableMember?),
       ParameterElement() => Parameter(e, library, packageGraph,
           originalMember: originalMember as ParameterMember?),

@@ -2,12 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 /// @docImport 'package:dartdoc/src/model/package_graph.dart';
 library;
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/documentable.dart';
@@ -43,7 +41,7 @@ final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 mixin DocumentationComment
     implements Documentable, Warnable, Locatable, SourceCode {
   @override
-  Element get element;
+  Element2 get element2;
 
   List<DocumentationComment>? _documentationFrom;
 
@@ -57,7 +55,7 @@ mixin DocumentationComment
         if (!hasDocumentationComment && self.overriddenElement != null) {
           return self.overriddenElement!.documentationFrom;
         } else if (self.isInherited) {
-          return packageGraph.getModelForElement(element).documentationFrom;
+          return packageGraph.getModelForElement2(element2).documentationFrom;
         } else {
           return [this];
         }
@@ -72,11 +70,15 @@ mixin DocumentationComment
 
   /// The rawest form of the documentation comment, including comment delimiters
   /// like `///`, `//`, `/*`, `*/`.
-  String get documentationComment => element.documentationComment ?? '';
+  String get documentationComment => (element2 is Annotatable)
+      ? (element2 as Annotatable).documentationComment ?? ''
+      : '';
 
   /// Whether `this` has a synthetic/inherited or local documentation comment,
   /// and false otherwise.
-  bool get hasDocumentationComment => element.documentationComment != null;
+  bool get hasDocumentationComment =>
+      element2 is Annotatable &&
+      (element2 as Annotatable).documentationComment != null;
 
   /// Whether the raw documentation comment is considered to be 'nodoc', an
   /// attribute indicating that any documentation should not be included in
@@ -88,7 +90,8 @@ mixin DocumentationComment
   /// * the element has no documentation comment,
   /// * the documentation comment contains the `@nodoc` dartdoc directive.
   late final bool hasNodoc = () {
-    if (packageGraph.configSetsNodocFor(element.source!.fullName)) {
+    if (packageGraph
+        .configSetsNodocFor(element2.library2!.firstFragment.source.fullName)) {
       return true;
     }
     if (!hasDocumentationComment) {
