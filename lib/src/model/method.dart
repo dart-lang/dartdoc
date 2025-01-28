@@ -36,8 +36,8 @@ class Method extends ModelElement
     _calcTypeParameters();
   }
 
-  Method.inherited(
-      this.element2, this._enclosingContainer, super.library, super.packageGraph,
+  Method.inherited(this.element2, this._enclosingContainer, super.library,
+      super.packageGraph,
       {ExecutableMember? super.originalMember})
       : _isInherited = true {
     _calcTypeParameters();
@@ -133,7 +133,7 @@ class Method extends ModelElement
     }
     var parent = element2.enclosingElement2 as InterfaceElement2;
     for (var t in parent.allSupertypes) {
-      Element2? e = t.getMethod2(element2.name3 ??  '');
+      Element2? e = t.getMethod2(element2.name3 ?? '');
       if (e != null) {
         assert(
           e.enclosingElement2 is InterfaceElement2,

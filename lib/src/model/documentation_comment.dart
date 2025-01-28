@@ -40,7 +40,6 @@ final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 /// entrypoints.
 mixin DocumentationComment
     implements Documentable, Warnable, Locatable, SourceCode {
- 
   @override
   Element2 get element2;
 
@@ -91,7 +90,8 @@ mixin DocumentationComment
   /// * the element has no documentation comment,
   /// * the documentation comment contains the `@nodoc` dartdoc directive.
   late final bool hasNodoc = () {
-    if (packageGraph.configSetsNodocFor(element2.library2!.firstFragment.source.fullName)) {
+    if (packageGraph
+        .configSetsNodocFor(element2.library2!.firstFragment.source.fullName)) {
       return true;
     }
     if (!hasDocumentationComment) {
