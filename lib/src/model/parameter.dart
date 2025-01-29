@@ -24,7 +24,8 @@ class Parameter extends ModelElement with HasNoPage {
   Parameter(this.element2, super.library, super.packageGraph,
       {ParameterMember? super.originalMember});
 
-  String? get defaultValue => hasDefaultValue ? element2.defaultValueCode : null;
+  String? get defaultValue =>
+      hasDefaultValue ? element2.defaultValueCode : null;
 
   @override
   ModelElement? get enclosingElement {
@@ -59,10 +60,10 @@ class Parameter extends ModelElement with HasNoPage {
       for (Element2 e = enclosingElement;
           e.enclosingElement2 != null;
           e = e.enclosingElement2!) {
-        enclosingName = e.name3;
+        enclosingName = e.lookupName;
         if (enclosingName != null && enclosingName.isNotEmpty) break;
       }
-    } 
+    }
     return '$enclosingName-param-$name';
   }
 

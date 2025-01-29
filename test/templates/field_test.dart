@@ -154,9 +154,9 @@ class C {
     var f1Lines = readLines(['lib', 'C', 'f1.html']);
     f1Lines.expectMainContentContainsAllInOrder(
       [
-        // matches('<section class="multi-line-signature">'),
-        // matches('set'),
-        // matches('<span class="name ">f1</span>'),
+        matches('<section class="multi-line-signature">'),
+        matches('set'),
+        matches('<span class="name ">f1</span>'),
         matches(r'<span class="signature">\('
             '<wbr><span class="parameter" id="f1=-param-value">'
             '<span class="type-annotation">int</span> '
