@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -17,16 +15,17 @@ import 'package:dartdoc/src/model/model.dart';
 abstract class Typedef extends ModelElement
     with TypeParameters, Categorization {
   @override
-  final TypeAliasElement element;
+   // ignore: analyzer_use_new_elements
+   TypeAliasElement get element => element2.asElement;
 
   @override
-  TypeAliasElement2 get element2 => element.asElement2;
+  final TypeAliasElement2 element2;
 
-  Typedef(this.element, super.library, super.packageGraph);
+  Typedef(this.element2, super.library, super.packageGraph);
 
-  DartType get aliasedType => element.aliasedType;
+  DartType get aliasedType => element2.aliasedType;
 
-  late final ElementType modelType = getTypeFor(element.aliasedType, library);
+  late final ElementType modelType = getTypeFor(element2.aliasedType, library);
 
   @override
   Library get enclosingElement => library;
@@ -69,8 +68,8 @@ abstract class Typedef extends ModelElement
   Kind get kind => Kind.typedef;
 
   @override
-  List<TypeParameter> get typeParameters => element.typeParameters
-      .map((f) => getModelFor(f, library) as TypeParameter)
+  List<TypeParameter> get typeParameters => element2.typeParameters2
+      .map((f) => getModelFor2(f, library) as TypeParameter)
       .toList(growable: false);
 
   @override
@@ -134,10 +133,10 @@ class FunctionTypedef extends Typedef {
   FunctionTypedef(super.element, super.library, super.packageGraph) {
     assert(
         isCallable,
-        'Expected callable but: ${element.runtimeType} is FunctionTypedElement '
-        '|| (${element.runtimeType} is TypeAliasElement && '
-        '${element.aliasedType.runtimeType} is FunctionType) is not true for '
-        '"${element.name}" in "${element.library}"');
+        'Expected callable but: ${element2.runtimeType} is FunctionTypedElement '
+        '|| (${element2.runtimeType} is TypeAliasElement && '
+        '${element2.aliasedType.runtimeType} is FunctionType) is not true for '
+        '"${element2.name3}" in "${element2.library2}"');
   }
 
   @override

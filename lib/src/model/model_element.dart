@@ -252,7 +252,7 @@ abstract class ModelElement
     }
     if (e.kind == ElementKind.NEVER) {
       return packageGraph.allConstructedModelElements[key] =
-          NeverType(e, packageGraph);
+          NeverType(e.asElement2!, packageGraph);
     }
 
     var newModelElement = ModelElement._constructFromElementDeclaration(
@@ -299,7 +299,7 @@ abstract class ModelElement
   }) {
     return switch (e) {
       LibraryElement() => packageGraph.findButDoNotCreateLibraryFor(e)!,
-      PrefixElement() => Prefix(e, library, packageGraph),
+      PrefixElement() => Prefix(e.asElement2, library, packageGraph),
       EnumElement() => Enum(e, library, packageGraph),
       MixinElement() => Mixin(e, library, packageGraph),
       ClassElement() => Class(e, library, packageGraph),
@@ -310,12 +310,13 @@ abstract class ModelElement
       GenericFunctionTypeElement() =>
         ModelFunctionTypedef(e, library, packageGraph),
       TypeAliasElement(aliasedType: FunctionType()) =>
-        FunctionTypedef(e, library, packageGraph),
+        FunctionTypedef(e.asElement2, library, packageGraph),
       TypeAliasElement()
           when e.aliasedType.documentableElement2.asElement
               is InterfaceElement =>
-        ClassTypedef(e, library, packageGraph),
-      TypeAliasElement() => GeneralizedTypedef(e, library, packageGraph),
+        ClassTypedef(e.asElement2, library, packageGraph),
+      TypeAliasElement() =>
+        GeneralizedTypedef(e.asElement2, library, packageGraph),
       MethodElement(isOperator: true) when enclosingContainer == null =>
         Operator(e.asElement2, library, packageGraph),
       MethodElement(isOperator: true)
@@ -334,7 +335,7 @@ abstract class ModelElement
       MethodElement(isOperator: false) => Method.inherited(
           e.asElement2, enclosingContainer, library, packageGraph,
           originalMember: originalMember as ExecutableMember?),
-      ParameterElement() => Parameter(e, library, packageGraph,
+      ParameterElement() => Parameter(e.asElement2, library, packageGraph,
           originalMember: originalMember as ParameterMember?),
       PropertyAccessorElement() => _constructFromPropertyAccessor(
           e,
