@@ -7,9 +7,12 @@
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -22,6 +25,9 @@ import 'package:dartdoc/src/warnings.dart';
 class Accessor extends ModelElement {
   @override
   final PropertyAccessorElement element;
+
+  @override
+  PropertyAccessorElement2 get element2 => element.asElement2;
 
   /// The combo ([Field] or [TopLevelVariable]) containing this accessor.
   ///

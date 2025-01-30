@@ -7,6 +7,9 @@
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -15,6 +18,9 @@ class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable {
   @override
   final FieldElement element;
+
+  @override
+  FieldElement2 get element2 => element.asElement2;
 
   @override
   final ContainerAccessor? getter;
@@ -37,6 +43,22 @@ class Field extends ModelElement
   )   : isInherited = false,
         enclosingElement =
             ModelElement.for_(element.enclosingElement3, library, packageGraph)
+                as Container,
+        assert(getter != null || setter != null) {
+    getter?.enclosingCombo = this;
+    setter?.enclosingCombo = this;
+  }
+
+  Field.element2(
+    Element2 element2,
+    super.library,
+    super.packageGraph,
+    this.getter,
+    this.setter,
+  )   : element = element2.asElement as FieldElement,
+        isInherited = false,
+        enclosingElement =
+            ModelElement.for2_(element2.enclosingElement2!, library, packageGraph)
                 as Container,
         assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;

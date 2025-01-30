@@ -5,6 +5,9 @@
 // ignore_for_file: analyzer_use_new_elements
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -14,6 +17,10 @@ import 'package:meta/meta.dart';
 class ExtensionType extends InheritingContainer with Constructable {
   @override
   final ExtensionTypeElement element;
+
+  @override
+  ExtensionTypeElement2 get element2 =>
+      element.asElement2 as ExtensionTypeElement2;
 
   late final ElementType representationType =
       getTypeFor(element.representation.type, library);

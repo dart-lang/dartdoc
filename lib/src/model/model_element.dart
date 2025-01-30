@@ -170,7 +170,7 @@ abstract class ModelElement
           }
           var index = constantIndex.toIntValue()!;
           newModelElement =
-              EnumField.forConstant(index, e, library, packageGraph, getter);
+              EnumField.forConstant(index, e.asElement2, library, packageGraph, getter);
         } else if (e.enclosingElement3 is ExtensionElement) {
           newModelElement = Field(e, library, packageGraph,
               getter as ContainerAccessor?, setter as ContainerAccessor?);
@@ -269,6 +269,13 @@ abstract class ModelElement
     return newModelElement;
   }
 
+  factory ModelElement.for2_(
+      Element2 e, Library library, PackageGraph packageGraph,
+      {Container? enclosingContainer}) {
+        return ModelElement.for_(e.asElement!, library, packageGraph,
+            enclosingContainer: enclosingContainer);
+      }
+
   /// Caches a newly-created [ModelElement] from [ModelElement.for_] or
   /// [ModelElement.forPropertyInducingElement].
   static void _cacheNewModelElement(
@@ -300,10 +307,10 @@ abstract class ModelElement
     return switch (e) {
       LibraryElement() => packageGraph.findButDoNotCreateLibraryFor(e)!,
       PrefixElement() => Prefix(e.asElement2, library, packageGraph),
-      EnumElement() => Enum(e, library, packageGraph),
-      MixinElement() => Mixin(e, library, packageGraph),
+      EnumElement() => Enum(e.asElement2, library, packageGraph),
+      MixinElement() => Mixin(e.asElement2, library, packageGraph),
       ClassElement() => Class(e, library, packageGraph),
-      ExtensionElement() => Extension(e, library, packageGraph),
+      ExtensionElement() => Extension(e.asElement2, library, packageGraph),
       ExtensionTypeElement() => ExtensionType(e, library, packageGraph),
       FunctionElement() => ModelFunction(e, library, packageGraph),
       ConstructorElement() => Constructor(e, library, packageGraph),

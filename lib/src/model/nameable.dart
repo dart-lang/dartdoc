@@ -121,6 +121,29 @@ mixin Nameable {
         enclosingContainer: enclosingContainer,
       );
 
+      /// Returns the [ModelElement] for [element], instantiating it if needed.
+  ///
+  /// A convenience method for [ModelElement.forPropertyInducingElement], see
+  /// its documentation.
+  // TODO(srawlins): Most callers seem to determine `getter` and `setter`
+  // immediately before calling this method, and I imagine could instead just
+  // call `getModelFor`.
+  ModelElement getModelForPropertyInducingElement2(
+    PropertyInducingElement2 element,
+    Library library, {
+    required Accessor? getter,
+    required Accessor? setter,
+    Container? enclosingContainer,
+  }) =>
+      ModelElement.forPropertyInducingElement(
+        element.asElement as PropertyInducingElement,
+        library,
+        packageGraph,
+        getter: getter,
+        setter: setter,
+        enclosingContainer: enclosingContainer,
+      );
+
   /// Returns the [ElementType] for [type], instantiating it if needed.
   ElementType getTypeFor(DartType type, Library library) =>
       ElementType.for_(type, library, packageGraph);

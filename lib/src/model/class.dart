@@ -5,6 +5,9 @@
 // ignore_for_file: analyzer_use_new_elements
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -18,6 +21,9 @@ import 'package:dartdoc/src/model/model.dart';
 class Class extends InheritingContainer with Constructable, MixedInTypes {
   @override
   final ClassElement element;
+
+  @override
+  ClassElement2 get element2 => element.asElement2;
 
   @override
   late final List<ModelElement> allModelElements = [
