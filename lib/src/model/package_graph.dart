@@ -20,6 +20,8 @@ import 'package:analyzer/src/dart/element/inheritance_manager3.dart'
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk, SdkLibrary;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/timestamped_data.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
@@ -228,7 +230,7 @@ class PackageGraph with CommentReferable, Nameable {
             resolvedLibrary.element,
             () => ModelNode(
                   directive,
-                  resolvedLibrary.element,
+                  resolvedLibrary.element2,
                   _analysisContext,
                   commentData: commentData,
                 ));
@@ -275,12 +277,12 @@ class PackageGraph with CommentReferable, Nameable {
     var commentData = declaration.documentationComment?.data;
 
     void addModelNode(Declaration declaration) {
-      var element = declaration.declaredElement;
+      var element = declaration.declaredFragment?.element;
       if (element == null) {
         throw StateError("Expected '$declaration' to declare an element");
       }
       _modelNodes.putIfAbsent(
-        element,
+        element.asElement!,
         () => ModelNode(
           declaration,
           element,
@@ -1055,18 +1057,18 @@ extension on Comment {
     for (var reference in references) {
       var commentReferable = reference.expression;
       String name;
-      Element? staticElement;
+      Element2? staticElement;
       if (commentReferable case PropertyAccessImpl(:var propertyName)) {
         var target = commentReferable.target;
         if (target is! PrefixedIdentifierImpl) continue;
         name = '${target.name}.${propertyName.name}';
-        staticElement = propertyName.staticElement;
+        staticElement = propertyName.element;
       } else if (commentReferable case PrefixedIdentifier(:var identifier)) {
         name = commentReferable.name;
-        staticElement = identifier.staticElement;
+        staticElement = identifier.element;
       } else if (commentReferable case SimpleIdentifier()) {
         name = commentReferable.name;
-        staticElement = commentReferable.staticElement;
+        staticElement = commentReferable.element;
       } else {
         continue;
       }

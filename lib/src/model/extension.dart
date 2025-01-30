@@ -5,8 +5,11 @@
 // ignore_for_file: analyzer_use_new_elements
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -18,12 +21,15 @@ import 'package:meta/meta.dart';
 /// setters, operators).
 class Extension extends Container {
   @override
-  final ExtensionElement element;
+  ExtensionElement get element => element2.asElement;
+
+  @override
+  final ExtensionElement2 element2;
 
   late final ElementType extendedElement =
-      getTypeFor(element.extendedType, library);
+      getTypeFor(element2.extendedType, library);
 
-  Extension(this.element, super.library, super.packageGraph);
+  Extension(this.element2, super.library, super.packageGraph);
 
   /// Whether this extension applies to every static type.
   bool get alwaysApplies {
@@ -37,7 +43,7 @@ class Extension extends Container {
   /// Whether this extension could apply to [container].
   ///
   /// This makes some assumptions in its calculations. For example, all
-  /// [InheritingContainer]s represent [InterfaceElement]s, so no care is taken
+  /// [InheritingContainer]s represent [InterfaceElement2]s, so no care is taken
   /// to consider function types or record types.
   bool couldApplyTo(InheritingContainer container) {
     var extendedType = extendedElement.type;
@@ -47,18 +53,18 @@ class Extension extends Container {
     if (extendedType is DynamicType || extendedType is VoidType) {
       return true;
     }
-    extendedType = library.element.typeSystem.promoteToNonNull(extendedType);
+    extendedType = library.element2.typeSystem.promoteToNonNull(extendedType);
     var otherType = container.modelType.type;
     if (otherType is InterfaceType) {
-      otherType = library.element.typeSystem.instantiateInterfaceToBounds(
-        element: otherType.element,
+      otherType = library.element2.typeSystem.instantiateInterfaceToBounds(
+        element: otherType.element3.asElement,
         nullabilitySuffix: NullabilitySuffix.none,
       );
 
       for (var superType in [otherType, ...otherType.allSupertypes]) {
-        var isSameBaseType = superType.element == extendedType.element;
+        var isSameBaseType = superType.element3 == extendedType.element3;
         if (isSameBaseType &&
-            library.element.typeSystem.isSubtypeOf(extendedType, superType)) {
+            library.element2.typeSystem.isSubtypeOf(extendedType, superType)) {
           return true;
         }
       }
@@ -78,8 +84,8 @@ class Extension extends Container {
       instanceFields.wherePublic.toList(growable: false)..sort(byName);
 
   @override
-  late final List<Method> declaredMethods = element.methods
-      .map((e) => getModelFor(e, library, enclosingContainer: this) as Method)
+  late final List<Method> declaredMethods = element2.methods2
+      .map((e) => getModelFor2(e, library, enclosingContainer: this) as Method)
       .toList(growable: false);
 
   @override
@@ -97,30 +103,30 @@ class Extension extends Container {
   ]..sort();
 
   @override
-  String get name => element.name == null ? '' : super.name;
+  String get name => element2.name3 == null ? '' : super.name;
 
   @override
-  late final List<Field> declaredFields = element.fields.map((field) {
+  late final List<Field> declaredFields = element2.fields2.map((field) {
     ContainerAccessor? getter, setter;
-    final fieldGetter = field.getter;
+    final fieldGetter = field.getter2;
     if (fieldGetter != null) {
-      getter = ModelElement.for_(fieldGetter, library, packageGraph,
+      getter = ModelElement.for2_(fieldGetter, library, packageGraph,
           enclosingContainer: this) as ContainerAccessor;
     }
-    final fieldSetter = field.setter;
+    final fieldSetter = field.setter2;
     if (fieldSetter != null) {
-      setter = ModelElement.for_(fieldSetter, library, packageGraph,
+      setter = ModelElement.for2_(fieldSetter, library, packageGraph,
           enclosingContainer: this) as ContainerAccessor;
     }
-    return getModelForPropertyInducingElement(field, library,
+    return getModelForPropertyInducingElement(field.asElement, library,
         getter: getter, setter: setter, enclosingContainer: this) as Field;
   }).toList(growable: false);
 
   @override
-  late final List<TypeParameter> typeParameters = element.typeParameters
-      .map((typeParameter) => getModelFor(
+  late final List<TypeParameter> typeParameters = element2.typeParameters2
+      .map((typeParameter) => getModelFor2(
           typeParameter,
-          getModelForElement(typeParameter.enclosingElement3!.library!)
+          getModelForElement2(typeParameter.enclosingElement2!.library2!)
               as Library) as TypeParameter)
       .toList(growable: false);
 

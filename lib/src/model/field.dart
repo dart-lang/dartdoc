@@ -7,6 +7,9 @@
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -15,6 +18,9 @@ class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable {
   @override
   final FieldElement element;
+
+  @override
+  FieldElement2 get element2 => element.asElement2;
 
   @override
   final ContainerAccessor? getter;

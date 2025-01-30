@@ -6,6 +6,9 @@
 
 import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
@@ -14,6 +17,9 @@ import 'package:meta/meta.dart';
 class Enum extends InheritingContainer with Constructable, MixedInTypes {
   @override
   final EnumElement element;
+
+  @override
+  EnumElement2 get element2 => element.asElement2;
 
   Enum(this.element, super.library, super.packageGraph);
 

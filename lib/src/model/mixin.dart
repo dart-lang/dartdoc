@@ -2,10 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -15,10 +16,14 @@ import 'package:meta/meta.dart';
 
 class Mixin extends InheritingContainer {
   @override
-  final MixinElement element;
+  // ignore: analyzer_use_new_elements
+  MixinElement get element => element2.asElement;
+
+  @override
+  final MixinElement2 element2;
 
   late final List<ParameterizedElementType> superclassConstraints = [
-    ...element.superclassConstraints.where((e) => !e.isDartCoreObject).map(
+    ...element2.superclassConstraints.where((e) => !e.isDartCoreObject).map(
         (InterfaceType i) => getTypeFor(i, library) as ParameterizedElementType)
   ];
 
@@ -42,7 +47,7 @@ class Mixin extends InheritingContainer {
     ...interfaceElements.expandInheritanceChain,
   ];
 
-  Mixin(this.element, super.library, super.packageGraph);
+  Mixin(this.element2, super.library, super.packageGraph);
 
   @override
   @visibleForOverriding
@@ -58,7 +63,7 @@ class Mixin extends InheritingContainer {
   bool get isAbstract => false;
 
   @override
-  bool get isBase => element.isBase;
+  bool get isBase => element2.isBase;
 
   @override
   bool get isFinal => false;

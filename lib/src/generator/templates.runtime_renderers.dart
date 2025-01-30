@@ -249,6 +249,34 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                   );
                 },
               ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'PropertyAccessorElement2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['PropertyAccessorElement2']!,
+                  );
+                },
+              ),
               'enclosingCombo': Property(
                 getValue: (CT_ c) => c.enclosingCombo,
                 renderVariable: (
@@ -2641,6 +2669,34 @@ class _Renderer_Class extends RendererBase<Class> {
                     sink,
                     parent: r,
                     getters: _invisibleGetters['ClassElement']!,
+                  );
+                },
+              ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'ClassElement2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['ClassElement2']!,
                   );
                 },
               ),
@@ -7051,6 +7107,34 @@ class _Renderer_Enum extends RendererBase<Enum> {
                   );
                 },
               ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'EnumElement2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['EnumElement2']!,
+                  );
+                },
+              ),
               'fileName': Property(
                 getValue: (CT_ c) => c.fileName,
                 renderVariable: (
@@ -7597,6 +7681,34 @@ class _Renderer_Extension extends RendererBase<Extension> {
                     sink,
                     parent: r,
                     getters: _invisibleGetters['ExtensionElement']!,
+                  );
+                },
+              ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'ExtensionElement2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['ExtensionElement2']!,
                   );
                 },
               ),
@@ -8327,6 +8439,34 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                     sink,
                     parent: r,
                     getters: _invisibleGetters['ExtensionTypeElement']!,
+                  );
+                },
+              ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'ExtensionTypeElement2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['ExtensionTypeElement2']!,
                   );
                 },
               ),
@@ -9435,6 +9575,34 @@ class _Renderer_Field extends RendererBase<Field> {
                     sink,
                     parent: r,
                     getters: _invisibleGetters['FieldElement']!,
+                  );
+                },
+              ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'FieldElement2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['FieldElement2']!,
                   );
                 },
               ),
@@ -14144,7 +14312,7 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
   }
 }
 
-String renderLibraryRedirect(LibraryTemplateData context, Template template) {
+String renderLibrary(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14390,7 +14558,7 @@ class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData> {
   }
 }
 
-String renderLibrary(LibraryTemplateData context, Template template) {
+String renderLibraryRedirect(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -15883,6 +16051,34 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                     sink,
                     parent: r,
                     getters: _invisibleGetters['MixinElement']!,
+                  );
+                },
+              ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'MixinElement2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['MixinElement2']!,
                   );
                 },
               ),
@@ -20018,7 +20214,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -20375,13 +20571,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -25795,6 +25991,26 @@ const _invisibleGetters = {
     'isValidMixin',
     'runtimeType',
   },
+  'ClassElement2': {
+    'firstFragment',
+    'fragments',
+    'hasNonFinalField',
+    'hashCode',
+    'isAbstract',
+    'isBase',
+    'isConstructable',
+    'isDartCoreEnum',
+    'isDartCoreObject',
+    'isExhaustive',
+    'isFinal',
+    'isInterface',
+    'isMacro',
+    'isMixinApplication',
+    'isMixinClass',
+    'isSealed',
+    'isValidMixin',
+    'runtimeType',
+  },
   'CommentReferable': {
     'definingCommentReferable',
     'href',
@@ -26024,6 +26240,13 @@ const _invisibleGetters = {
     'hashCode',
     'runtimeType',
   },
+  'EnumElement2': {
+    'constants2',
+    'firstFragment',
+    'fragments',
+    'hashCode',
+    'runtimeType',
+  },
   'ExecutableMember': {
     'augmentationSubstitution',
     'children',
@@ -26109,6 +26332,13 @@ const _invisibleGetters = {
     'hashCode',
     'runtimeType',
   },
+  'ExtensionElement2': {
+    'extendedType',
+    'firstFragment',
+    'fragments',
+    'hashCode',
+    'runtimeType',
+  },
   'ExtensionTypeElement': {
     'augmentation',
     'augmentationTarget',
@@ -26116,6 +26346,15 @@ const _invisibleGetters = {
     'hashCode',
     'primaryConstructor',
     'representation',
+    'runtimeType',
+    'typeErasure',
+  },
+  'ExtensionTypeElement2': {
+    'firstFragment',
+    'fragments',
+    'hashCode',
+    'primaryConstructor2',
+    'representation2',
     'runtimeType',
     'typeErasure',
   },
@@ -26130,6 +26369,19 @@ const _invisibleGetters = {
     'isExternal',
     'isPromotable',
     'isStatic',
+    'runtimeType',
+  },
+  'FieldElement2': {
+    'baseElement',
+    'enclosingElement2',
+    'firstFragment',
+    'fragments',
+    'hashCode',
+    'isAbstract',
+    'isCovariant',
+    'isEnumConstant',
+    'isExternal',
+    'isPromotable',
     'runtimeType',
   },
   'File': {'hashCode', 'lengthSync', 'modificationStamp', 'runtimeType'},
@@ -26418,6 +26670,14 @@ const _invisibleGetters = {
     'runtimeType',
     'superclassConstraints',
   },
+  'MixinElement2': {
+    'firstFragment',
+    'fragments',
+    'hashCode',
+    'isBase',
+    'runtimeType',
+    'superclassConstraints',
+  },
   'ModelNode': {'commentData', 'hashCode', 'runtimeType', 'sourceCode'},
   'PackageGraph': {
     'allConstructedModelElements',
@@ -26595,6 +26855,14 @@ const _invisibleGetters = {
     'isSetter',
     'runtimeType',
     'variable2',
+  },
+  'PropertyAccessorElement2': {
+    'baseElement',
+    'firstFragment',
+    'fragments',
+    'hashCode',
+    'runtimeType',
+    'variable3',
   },
   'Scope': {'hashCode', 'runtimeType'},
   'TemplateOptions': {
