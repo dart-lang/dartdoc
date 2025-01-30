@@ -65,7 +65,7 @@ class ModelNode {
   late final String sourceCode = () {
     if (_isSynthetic) return '';
 
-    var path = _element.library2?.firstFragment.source.fullName;
+    var path = _element.firstFragment.libraryFragment?.source.fullName;
     if (path == null) return '';
 
     var fileResult = _analysisContext.currentSession.getFile(path);
