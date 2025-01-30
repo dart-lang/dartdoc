@@ -49,6 +49,22 @@ class Field extends ModelElement
     setter?.enclosingCombo = this;
   }
 
+  Field.element2(
+    Element2 element2,
+    super.library,
+    super.packageGraph,
+    this.getter,
+    this.setter,
+  )   : element = element2.asElement as FieldElement,
+        isInherited = false,
+        enclosingElement =
+            ModelElement.for2_(element2.enclosingElement2!, library, packageGraph)
+                as Container,
+        assert(getter != null || setter != null) {
+    getter?.enclosingCombo = this;
+    setter?.enclosingCombo = this;
+  }
+
   Field.providedByExtension(
     this.element,
     this.enclosingElement,

@@ -170,7 +170,7 @@ abstract class ModelElement
           }
           var index = constantIndex.toIntValue()!;
           newModelElement =
-              EnumField.forConstant(index, e, library, packageGraph, getter);
+              EnumField.forConstant(index, e.asElement2, library, packageGraph, getter);
         } else if (e.enclosingElement3 is ExtensionElement) {
           newModelElement = Field(e, library, packageGraph,
               getter as ContainerAccessor?, setter as ContainerAccessor?);
@@ -307,7 +307,7 @@ abstract class ModelElement
     return switch (e) {
       LibraryElement() => packageGraph.findButDoNotCreateLibraryFor(e)!,
       PrefixElement() => Prefix(e.asElement2, library, packageGraph),
-      EnumElement() => Enum(e, library, packageGraph),
+      EnumElement() => Enum(e.asElement2, library, packageGraph),
       MixinElement() => Mixin(e.asElement2, library, packageGraph),
       ClassElement() => Class(e, library, packageGraph),
       ExtensionElement() => Extension(e.asElement2, library, packageGraph),
