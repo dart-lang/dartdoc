@@ -2,9 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -12,13 +13,17 @@ import 'package:dartdoc/src/model/model.dart';
 
 class Dynamic extends ModelElement with HasNoPage {
   @override
-  final Element element;
+   // ignore: analyzer_use_new_elements
+   Element get element => element2.asElement!;
 
-  Dynamic(this.element, PackageGraph packageGraph)
+   @override
+   final Element2 element2;
+
+  Dynamic(this.element2, PackageGraph packageGraph)
       : super(Library.sentinel, packageGraph);
 
   UndefinedElementType get modelType =>
-      throw UnimplementedError('(${element.runtimeType}) $element');
+      throw UnimplementedError('(${element2.runtimeType}) $element2');
 
   /// `dynamic` is not a real object, and so we can't document it, so there
   /// can be nothing canonical for it.

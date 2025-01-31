@@ -248,7 +248,7 @@ abstract class ModelElement
 
     if (e.kind == ElementKind.DYNAMIC) {
       return packageGraph.allConstructedModelElements[key] =
-          Dynamic(e, packageGraph);
+          Dynamic(e.asElement2!, packageGraph);
     }
     if (e.kind == ElementKind.NEVER) {
       return packageGraph.allConstructedModelElements[key] =
@@ -312,10 +312,10 @@ abstract class ModelElement
       ClassElement() => Class(e, library, packageGraph),
       ExtensionElement() => Extension(e.asElement2, library, packageGraph),
       ExtensionTypeElement() => ExtensionType(e, library, packageGraph),
-      FunctionElement() => ModelFunction(e, library, packageGraph),
+      FunctionElement() => ModelFunction(e.asElement2 as TopLevelFunctionElement, library, packageGraph),
       ConstructorElement() => Constructor(e, library, packageGraph),
       GenericFunctionTypeElement() =>
-        ModelFunctionTypedef(e, library, packageGraph),
+        ModelFunctionTypedef(e.asElement2 as FunctionTypedElement2, library, packageGraph),
       TypeAliasElement(aliasedType: FunctionType()) =>
         FunctionTypedef(e.asElement2, library, packageGraph),
       TypeAliasElement()

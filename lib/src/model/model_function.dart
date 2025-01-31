@@ -2,50 +2,55 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-/// A [ModelElement] for a [FunctionElement] that isn't part of a type definition.
+/// A [ModelElement] for a [TopLevelFunctionElement] that isn't part of a type definition.
 class ModelFunction extends ModelFunctionTyped with Categorization {
   ModelFunction(
-      FunctionElement super.element, super.library, super.packageGraph);
+      TopLevelFunctionElement super.element2, super.library, super.packageGraph);
 
-  bool get isStatic => element.isStatic;
-
-  @override
-  String get name => element.name;
+  bool get isStatic => element2.isStatic;
 
   @override
-  FunctionElement get element => super.element as FunctionElement;
+  String get name => element2.name3 ?? '';
 
-  bool get isAsynchronous => element.isAsynchronous;
+  @override
+  TopLevelFunctionElement get element2 => super.element2 as TopLevelFunctionElement;
+
+  bool get isAsynchronous => element2.firstFragment.isAsynchronous;
 }
 
-/// A [ModelElement] for a [FunctionTypedElement] that is part of an
+/// A [ModelElement] for a [FunctionTypedElement2] that is part of an
 /// explicit typedef.
 class ModelFunctionTypedef extends ModelFunctionTyped {
-  ModelFunctionTypedef(super.element, super.library, super.packageGraph);
+  ModelFunctionTypedef(super.element2, super.library, super.packageGraph);
 
   @override
-  String get name => element.enclosingElement3!.name!;
+  String get name => element2.enclosingElement2!.name3!;
 }
 
 class ModelFunctionTyped extends ModelElement with TypeParameters {
   @override
-  final FunctionTypedElement element;
+   // ignore: analyzer_use_new_elements
+   FunctionTypedElement get element => element2.asElement as FunctionTypedElement;
+
+  @override
+  final FunctionTypedElement2 element2;
 
   @override
   late final List<TypeParameter> typeParameters = [
-    for (var p in element.typeParameters)
-      getModelFor(p, library) as TypeParameter,
+    for (var p in element2.typeParameters2)
+      getModelFor2(p, library) as TypeParameter,
   ];
 
-  ModelFunctionTyped(this.element, super.library, super.packageGraph);
+  ModelFunctionTyped(this.element2, super.library, super.packageGraph);
 
   @override
   Library get enclosingElement => library;
@@ -83,7 +88,7 @@ class ModelFunctionTyped extends ModelElement with TypeParameters {
   @override
   Iterable<CommentReferable> get referenceParents => [library];
 
-  late final Callable modelType = getTypeFor(element.type, library) as Callable;
+  late final Callable modelType = getTypeFor(element2.type, library) as Callable;
 
   // For use in templates.
   bool get isProvidedByExtension => false;
