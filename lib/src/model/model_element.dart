@@ -94,7 +94,7 @@ abstract class ModelElement
       // conflicting element and move on.
       e = e.conflictingElements.first;
     }
-    var library = p.findButDoNotCreateLibraryFor(e) ?? Library.sentinel;
+    var library = p.findButDoNotCreateLibraryFor(e.asElement2!) ?? Library.sentinel;
 
     if (e is PropertyInducingElement) {
       var elementGetter = e.getter;
@@ -142,7 +142,7 @@ abstract class ModelElement
 
     // Return the cached ModelElement if it exists.
     var cachedModelElement = packageGraph.allConstructedModelElements[
-        ConstructedModelElementsKey(e, enclosingContainer)];
+        ConstructedModelElementsKey(e.asElement2!, enclosingContainer)];
     if (cachedModelElement != null) {
       return cachedModelElement;
     }
@@ -240,7 +240,7 @@ abstract class ModelElement
     }
 
     // Return the cached ModelElement if it exists.
-    var key = ConstructedModelElementsKey(e, enclosingContainer);
+    var key = ConstructedModelElementsKey(e.asElement2!, enclosingContainer);
     var cachedModelElement = packageGraph.allConstructedModelElements[key];
     if (cachedModelElement != null) {
       return cachedModelElement;
@@ -285,13 +285,14 @@ abstract class ModelElement
     //                   is fixed?
     assert(enclosingContainer == null || enclosingContainer.library == library,
         '$enclosingContainer.library != $library');
+    var element = e.asElement2!;
     if (library != Library.sentinel && newModelElement is! Parameter) {
       runtimeStats.incrementAccumulator('modelElementCacheInsertion');
-      var key = ConstructedModelElementsKey(e, enclosingContainer);
+      var key = ConstructedModelElementsKey(element, enclosingContainer);
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
         library.packageGraph.allInheritableElements
-            .putIfAbsent(InheritableElementsKey(e, library), () => {})
+            .putIfAbsent(InheritableElementsKey(element, library), () => {})
             .add(newModelElement);
       }
     }
@@ -305,7 +306,7 @@ abstract class ModelElement
     Member? originalMember,
   }) {
     return switch (e) {
-      LibraryElement() => packageGraph.findButDoNotCreateLibraryFor(e)!,
+      LibraryElement() => packageGraph.findButDoNotCreateLibraryFor(e.asElement2)!,
       PrefixElement() => Prefix(e.asElement2, library, packageGraph),
       EnumElement() => Enum(e.asElement2, library, packageGraph),
       MixinElement() => Mixin(e.asElement2, library, packageGraph),
@@ -399,7 +400,7 @@ abstract class ModelElement
   Iterable<Category?> get displayedCategories => const [];
 
   @override
-  ModelNode? get modelNode => packageGraph.getModelNodeFor(element);
+  ModelNode? get modelNode => packageGraph.getModelNodeFor(element.asElement2!);
 
   /// This element's [Annotation]s.
   ///
