@@ -1377,6 +1377,13 @@ class _Renderer_Category extends RendererBase<Category> {
               ..._Renderer_MarkdownFileDocumentation.propertyMap<CT_>(),
               ..._Renderer_LibraryContainer.propertyMap<CT_>(),
               ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
+              ..._Renderer_Nameable.propertyMap<CT_>(),
+              ..._Renderer_Warnable.propertyMap<CT_>(),
+              ..._Renderer_CommentReferable.propertyMap<CT_>(),
+              ..._Renderer_Locatable.propertyMap<CT_>(),
+              ..._Renderer_MarkdownFileDocumentation.propertyMap<CT_>(),
+              ..._Renderer_LibraryContainer.propertyMap<CT_>(),
+              ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -3364,6 +3371,8 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
               ..._Renderer_ModelElement.propertyMap<CT_>(),
               ..._Renderer_ContainerMember.propertyMap<CT_>(),
               ..._Renderer_TypeParameters.propertyMap<CT_>(),
+              ..._Renderer_ContainerMember.propertyMap<CT_>(),
+              ..._Renderer_TypeParameters.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -4324,6 +4333,8 @@ class _Renderer_Container extends RendererBase<Container> {
             CT_,
             () => {
               ..._Renderer_ModelElement.propertyMap<CT_>(),
+              ..._Renderer_Categorization.propertyMap<CT_>(),
+              ..._Renderer_TypeParameters.propertyMap<CT_>(),
               ..._Renderer_Categorization.propertyMap<CT_>(),
               ..._Renderer_TypeParameters.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
@@ -5934,6 +5945,7 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
             CT_,
             () => {
               ..._Renderer_Object.propertyMap<CT_>(),
+              ..._Renderer_Nameable.propertyMap<CT_>(),
               ..._Renderer_Nameable.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
@@ -8366,6 +8378,7 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
             () => {
               ..._Renderer_InheritingContainer.propertyMap<CT_>(),
               ..._Renderer_Constructable.propertyMap<CT_>(),
+              ..._Renderer_Constructable.propertyMap<CT_>(),
               'allModelElements': Property(
                 getValue: (CT_ c) => c.allModelElements,
                 renderVariable:
@@ -9405,6 +9418,9 @@ class _Renderer_Field extends RendererBase<Field> {
             CT_,
             () => {
               ..._Renderer_ModelElement.propertyMap<CT_>(),
+              ..._Renderer_GetterSetterCombo.propertyMap<CT_>(),
+              ..._Renderer_ContainerMember.propertyMap<CT_>(),
+              ..._Renderer_Inheritable.propertyMap<CT_>(),
               ..._Renderer_GetterSetterCombo.propertyMap<CT_>(),
               ..._Renderer_ContainerMember.propertyMap<CT_>(),
               ..._Renderer_Inheritable.propertyMap<CT_>(),
@@ -13035,6 +13051,9 @@ class _Renderer_Library extends RendererBase<Library> {
               ..._Renderer_Categorization.propertyMap<CT_>(),
               ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
               ..._Renderer_CanonicalFor.propertyMap<CT_>(),
+              ..._Renderer_Categorization.propertyMap<CT_>(),
+              ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
+              ..._Renderer_CanonicalFor.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -15001,6 +15020,9 @@ class _Renderer_Method extends RendererBase<Method> {
               ..._Renderer_ContainerMember.propertyMap<CT_>(),
               ..._Renderer_Inheritable.propertyMap<CT_>(),
               ..._Renderer_TypeParameters.propertyMap<CT_>(),
+              ..._Renderer_ContainerMember.propertyMap<CT_>(),
+              ..._Renderer_Inheritable.propertyMap<CT_>(),
+              ..._Renderer_TypeParameters.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -16518,6 +16540,13 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
               ..._Renderer_SourceCode.propertyMap<CT_>(),
               ..._Renderer_FeatureSet.propertyMap<CT_>(),
               ..._Renderer_DocumentationComment.propertyMap<CT_>(),
+              ..._Renderer_CommentReferable.propertyMap<CT_>(),
+              ..._Renderer_Warnable.propertyMap<CT_>(),
+              ..._Renderer_Locatable.propertyMap<CT_>(),
+              ..._Renderer_Nameable.propertyMap<CT_>(),
+              ..._Renderer_SourceCode.propertyMap<CT_>(),
+              ..._Renderer_FeatureSet.propertyMap<CT_>(),
+              ..._Renderer_DocumentationComment.propertyMap<CT_>(),
               'annotations': Property(
                 getValue: (CT_ c) => c.annotations,
                 renderVariable:
@@ -17944,6 +17973,7 @@ class _Renderer_ModelFunction extends RendererBase<ModelFunction> {
             () => {
               ..._Renderer_ModelFunctionTyped.propertyMap<CT_>(),
               ..._Renderer_Categorization.propertyMap<CT_>(),
+              ..._Renderer_Categorization.propertyMap<CT_>(),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -18060,6 +18090,7 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
             CT_,
             () => {
               ..._Renderer_ModelElement.propertyMap<CT_>(),
+              ..._Renderer_TypeParameters.propertyMap<CT_>(),
               ..._Renderer_TypeParameters.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
@@ -23896,6 +23927,8 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
               ..._Renderer_ModelElement.propertyMap<CT_>(),
               ..._Renderer_GetterSetterCombo.propertyMap<CT_>(),
               ..._Renderer_Categorization.propertyMap<CT_>(),
+              ..._Renderer_GetterSetterCombo.propertyMap<CT_>(),
+              ..._Renderer_Categorization.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -25014,6 +25047,8 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
             CT_,
             () => {
               ..._Renderer_ModelElement.propertyMap<CT_>(),
+              ..._Renderer_TypeParameters.propertyMap<CT_>(),
+              ..._Renderer_Categorization.propertyMap<CT_>(),
               ..._Renderer_TypeParameters.propertyMap<CT_>(),
               ..._Renderer_Categorization.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
