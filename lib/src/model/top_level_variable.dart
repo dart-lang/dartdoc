@@ -2,9 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -14,15 +15,21 @@ import 'package:dartdoc/src/model/model.dart';
 class TopLevelVariable extends ModelElement
     with GetterSetterCombo, Categorization {
   @override
-  final TopLevelVariableElement element;
+  // ignore: analyzer_use_new_elements
+  TopLevelVariableElement get element =>
+      // ignore: analyzer_use_new_elements
+      (element2.firstFragment as TopLevelVariableElementImpl).declaration;
+
+  @override
+  final TopLevelVariableElement2 element2;
 
   @override
   final Accessor? getter;
   @override
   final Accessor? setter;
 
-  TopLevelVariable(this.element, super.library, super.packageGraph, this.getter,
-      this.setter) {
+  TopLevelVariable(this.element2, super.library, super.packageGraph,
+      this.getter, this.setter) {
     getter?.enclosingCombo = this;
     setter?.enclosingCombo = this;
   }
@@ -59,18 +66,18 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  bool get isConst => element.isConst;
+  bool get isConst => element2.isConst;
 
   @override
   bool get isFinal {
     /// isFinal returns true for the variable even if it has an explicit getter
     /// (which means we should not document it as "final").
     if (hasExplicitGetter) return false;
-    return element.isFinal;
+    return element2.isFinal;
   }
 
   @override
-  bool get isLate => isFinal && element.isLate;
+  bool get isLate => isFinal && element2.isLate;
 
   // For use in templates.
   bool get isProvidedByExtension => false;

@@ -151,7 +151,7 @@ abstract class ModelElement
     if (e is TopLevelVariableElement) {
       assert(getter != null || setter != null);
       newModelElement =
-          TopLevelVariable(e, library, packageGraph, getter, setter);
+          TopLevelVariable(e.asElement2, library, packageGraph, getter, setter);
     } else if (e is FieldElement) {
       if (enclosingContainer is Extension) {
         newModelElement = Field(e, library, packageGraph,
