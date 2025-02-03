@@ -311,6 +311,9 @@ class PackageGraph with CommentReferable, Nameable {
 
   ModelNode? getModelNodeFor(Element element) => _modelNodes[element];
 
+  ModelNode? getModelNodeFor2(Element2 element2) =>
+      _modelNodes[element2.asElement];
+
   /// It is safe to cache values derived from the [_implementers] table if this
   /// is true.
   bool allImplementersAdded = false;

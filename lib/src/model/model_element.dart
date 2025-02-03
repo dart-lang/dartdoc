@@ -370,15 +370,15 @@ abstract class ModelElement
     if (e.enclosingElement3 is ExtensionElement ||
         e.enclosingElement3 is InterfaceElement) {
       if (enclosingContainer == null || enclosingContainer is Extension) {
-        return ContainerAccessor(e, library, packageGraph, enclosingContainer);
+        return ContainerAccessor(e.asElement2, library, packageGraph, enclosingContainer);
       }
 
       return ContainerAccessor.inherited(
-          e, library, packageGraph, enclosingContainer,
+          e.asElement2, library, packageGraph, enclosingContainer,
           originalMember: originalMember as ExecutableMember?);
     }
 
-    return Accessor(e, library, packageGraph);
+    return Accessor(e.asElement2, library, packageGraph);
   }
 
   /// The model element enclosing this one.

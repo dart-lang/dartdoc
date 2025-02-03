@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
@@ -24,10 +22,11 @@ import 'package:dartdoc/src/warnings.dart';
 /// Getters and setters.
 class Accessor extends ModelElement {
   @override
-  final PropertyAccessorElement element;
+  // ignore: analyzer_use_new_elements
+  PropertyAccessorElement get element => element2.asElement;
 
   @override
-  PropertyAccessorElement2 get element2 => element.asElement2;
+  final PropertyAccessorElement2 element2;
 
   /// The combo ([Field] or [TopLevelVariable]) containing this accessor.
   ///
@@ -37,11 +36,11 @@ class Accessor extends ModelElement {
   // initialized by code inside this library.
   late final GetterSetterCombo enclosingCombo;
 
-  Accessor(this.element, super.library, super.packageGraph,
+  Accessor(this.element2, super.library, super.packageGraph,
       {ExecutableMember? super.originalMember});
 
   @override
-  CharacterLocation? get characterLocation => element.isSynthetic
+  CharacterLocation? get characterLocation => element2.isSynthetic
       ? enclosingCombo.characterLocation
       : super.characterLocation;
 
@@ -50,19 +49,19 @@ class Accessor extends ModelElement {
       super.originalMember as ExecutableMember?;
 
   late final Callable modelType =
-      getTypeFor((originalMember ?? element).type, library) as Callable;
+      getTypeFor((originalMember ?? element2).type, library) as Callable;
 
-  bool get isSynthetic => element.isSynthetic;
+  bool get isSynthetic => element2.isSynthetic;
 
   /// The [enclosingCombo] where this element was defined.
   late final GetterSetterCombo definingCombo =
-      getModelForElement(element.variable2!) as GetterSetterCombo;
+      getModelForElement2(element2.variable3!) as GetterSetterCombo;
 
   String get _sourceCode {
     if (!isSynthetic) {
       return super.sourceCode;
     }
-    var modelNode = packageGraph.getModelNodeFor(definingCombo.element);
+    var modelNode = packageGraph.getModelNodeFor2(definingCombo.element2);
     return modelNode == null
         ? ''
         : const HtmlEscape().convert(modelNode.sourceCode);
@@ -108,7 +107,7 @@ class Accessor extends ModelElement {
   @override
   bool get hasDocumentationComment => isSynthetic
       ? _hasSyntheticDocumentationComment
-      : element.documentationComment != null;
+      : element2.documentationComment != null;
 
   @override
   void warn(
@@ -124,10 +123,10 @@ class Accessor extends ModelElement {
   }
 
   @override
-  ModelElement get enclosingElement => switch (element.enclosingElement3) {
-        CompilationUnitElement enclosingCompilationUnit =>
-          getModelForElement(enclosingCompilationUnit.library),
-        _ => getModelFor(element.enclosingElement3, library)
+  ModelElement get enclosingElement => switch (element2.enclosingElement2) {
+        LibraryFragment enclosingCompilationUnit =>
+          getModelForElement2(enclosingCompilationUnit.element),
+        _ => getModelFor2(element2.enclosingElement2!, library)
       };
 
   @override
@@ -154,9 +153,9 @@ class Accessor extends ModelElement {
   @override
   String? get href => enclosingCombo.href;
 
-  bool get isGetter => element.isGetter;
+  bool get isGetter => element2 is GetterElement;
 
-  bool get isSetter => element.isSetter;
+  bool get isSetter => element2 is SetterElement;
 
   @override
   Kind get kind => Kind.accessor;
@@ -214,24 +213,28 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   @override
   ContainerAccessor? get overriddenElement {
     assert(packageGraph.allLibrariesAdded);
-    final parent = element.enclosingElement3;
-    if (parent is! InterfaceElement) {
+    final parent = element2.enclosingElement2;
+    if (parent is! InterfaceElement2) {
       return null;
     }
     for (final supertype in parent.allSupertypes) {
       var accessor = isGetter
-          ? supertype.getGetter(element.name)?.declaration
-          : supertype.getSetter(element.name)?.declaration;
+          ? supertype.getters
+              .firstWhereOrNull((e) => e.lookupName == element2.lookupName)
+              ?.baseElement
+          : supertype.setters
+              .firstWhereOrNull((e) => e.lookupName == element2.lookupName)
+              ?.baseElement;
       if (accessor == null) {
         continue;
       }
       final parentContainer =
-          getModelForElement(supertype.element) as InheritingContainer;
+          getModelForElement2(supertype.element3) as InheritingContainer;
       final possibleFields =
           parentContainer.declaredFields.where((f) => !f.isStatic);
-      final fieldName = accessor.name.replaceFirst('=', '');
+      final fieldName = accessor.lookupName?.replaceFirst('=', '');
       final foundField =
-          possibleFields.firstWhereOrNull((f) => f.element.name == fieldName);
+          possibleFields.firstWhereOrNull((f) => f.element2.name3 == fieldName);
       if (foundField == null) {
         continue;
       }
