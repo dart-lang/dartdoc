@@ -169,8 +169,8 @@ abstract class ModelElement
                 'Enum $e (${e.runtimeType}) does not have a constant value.');
           }
           var index = constantIndex.toIntValue()!;
-          newModelElement =
-              EnumField.forConstant(index, e.asElement2, library, packageGraph, getter);
+          newModelElement = EnumField.forConstant(
+              index, e.asElement2, library, packageGraph, getter);
         } else if (e.enclosingElement3 is ExtensionElement) {
           newModelElement = Field(e, library, packageGraph,
               getter as ContainerAccessor?, setter as ContainerAccessor?);
@@ -272,9 +272,9 @@ abstract class ModelElement
   factory ModelElement.for2_(
       Element2 e, Library library, PackageGraph packageGraph,
       {Container? enclosingContainer}) {
-        return ModelElement.for_(e.asElement!, library, packageGraph,
-            enclosingContainer: enclosingContainer);
-      }
+    return ModelElement.for_(e.asElement!, library, packageGraph,
+        enclosingContainer: enclosingContainer);
+  }
 
   /// Caches a newly-created [ModelElement] from [ModelElement.for_] or
   /// [ModelElement.forPropertyInducingElement].
@@ -309,13 +309,14 @@ abstract class ModelElement
       PrefixElement() => Prefix(e.asElement2, library, packageGraph),
       EnumElement() => Enum(e.asElement2, library, packageGraph),
       MixinElement() => Mixin(e.asElement2, library, packageGraph),
-      ClassElement() => Class(e, library, packageGraph),
+      ClassElement() => Class(e.asElement2, library, packageGraph),
       ExtensionElement() => Extension(e.asElement2, library, packageGraph),
       ExtensionTypeElement() => ExtensionType(e, library, packageGraph),
-      FunctionElement() => ModelFunction(e.asElement2 as TopLevelFunctionElement, library, packageGraph),
+      FunctionElement() => ModelFunction(
+          e.asElement2 as TopLevelFunctionElement, library, packageGraph),
       ConstructorElement() => Constructor(e, library, packageGraph),
-      GenericFunctionTypeElement() =>
-        ModelFunctionTypedef(e.asElement2 as FunctionTypedElement2, library, packageGraph),
+      GenericFunctionTypeElement() => ModelFunctionTypedef(
+          e.asElement2 as FunctionTypedElement2, library, packageGraph),
       TypeAliasElement(aliasedType: FunctionType()) =>
         FunctionTypedef(e.asElement2, library, packageGraph),
       TypeAliasElement()
