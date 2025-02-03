@@ -83,8 +83,6 @@ Future<String> compileTemplatesToRenderers(
 // ignore_for_file: unused_local_variable
 // ignore_for_file: non_constant_identifier_names, unnecessary_string_escapes
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'dart:convert';
 
 $buffer
