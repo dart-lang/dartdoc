@@ -20353,7 +20353,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -20716,7 +20716,7 @@ String renderSearchPage(PackageTemplateData context, Template template) {
   return buffer.toString();
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -24609,6 +24609,34 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter> {
                   );
                 },
               ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'TypeParameterElement2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['TypeParameterElement2']!,
+                  );
+                },
+              ),
               'enclosingElement': Property(
                 getValue: (CT_ c) => c.enclosingElement,
                 renderVariable: (
@@ -27049,6 +27077,14 @@ const _invisibleGetters = {
     'displayName',
     'hashCode',
     'name',
+    'runtimeType',
+  },
+  'TypeParameterElement2': {
+    'baseElement',
+    'bound',
+    'firstFragment',
+    'fragments',
+    'hashCode',
     'runtimeType',
   },
   'int': {

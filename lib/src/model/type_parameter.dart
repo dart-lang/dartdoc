@@ -2,9 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -12,13 +13,18 @@ import 'package:dartdoc/src/model/model.dart';
 
 class TypeParameter extends ModelElement with HasNoPage {
   @override
-  final TypeParameterElement element;
+  // ignore: analyzer_use_new_elements
+  TypeParameterElement get element =>
+      (element2 as TypeParameterElementImpl2).firstFragment;
 
-  TypeParameter(this.element, super.library, super.packageGraph);
+  @override
+  final TypeParameterElement2 element2;
+
+  TypeParameter(this.element2, super.library, super.packageGraph);
 
   @override
   ModelElement get enclosingElement =>
-      getModelFor(element.enclosingElement3!, library);
+      getModelFor2(element2.enclosingElement2!, library);
 
   /// [TypeParameter]s don't have documentation pages, and don't link to the
   /// element on which they are declared.
@@ -31,7 +37,7 @@ class TypeParameter extends ModelElement with HasNoPage {
   Kind get kind => Kind.typeParameter;
 
   ElementType? get boundType {
-    var bound = element.bound;
+    var bound = element2.bound;
     return bound == null ? null : getTypeFor(bound, library);
   }
 
@@ -39,19 +45,14 @@ class TypeParameter extends ModelElement with HasNoPage {
   bool get hasParameters => false;
 
   @override
-  String get name => element.bound != null
-      ? '${element.name} extends ${boundType!.nameWithGenerics}'
-      : element.name;
-
-  String? _linkedName;
+  String get name => element2.bound != null
+      ? '${element2.name3} extends ${boundType!.nameWithGenerics}'
+      : element2.name3!;
 
   @override
-  String get linkedName {
-    _linkedName ??= element.bound != null
-        ? '${element.name} extends ${boundType!.linkedName}'
-        : element.name;
-    return _linkedName!;
-  }
+  String get linkedName => element2.bound != null
+      ? '${element2.name3} extends ${boundType!.linkedName}'
+      : element2.name3!;
 
   @override
   late final Map<String, CommentReferable> referenceChildren = () {
@@ -64,7 +65,7 @@ class TypeParameter extends ModelElement with HasNoPage {
   Iterable<CommentReferable> get referenceParents => [enclosingElement];
 
   @override
-  String get referenceName => element.name;
+  String get referenceName => element2.name3!;
 }
 
 /// A mixin for [ModelElement]s which have type parameters.

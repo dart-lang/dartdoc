@@ -352,7 +352,8 @@ abstract class ModelElement
           enclosingContainer: enclosingContainer,
           originalMember: originalMember,
         ),
-      TypeParameterElement() => TypeParameter(e, library, packageGraph),
+      TypeParameterElement() =>
+        TypeParameter(e.asElement2, library, packageGraph),
       _ => throw UnimplementedError('Unknown type ${e.runtimeType}'),
     };
   }
