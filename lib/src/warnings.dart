@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'dart:io';
 import 'dart:math' as math;
 
@@ -98,6 +96,7 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
 /// Something that package warnings can be reported on. Optionally associated
 /// with an analyzer [element].
 mixin Warnable implements CommentReferable, Documentable, Locatable {
+  // ignore: analyzer_use_new_elements
   Element? get element;
 
   Element2? get element2;
