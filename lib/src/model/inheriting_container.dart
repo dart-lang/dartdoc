@@ -119,10 +119,11 @@ abstract class InheritingContainer extends Container {
   }
 
   List<Operator> get inheritedOperators {
-    var operatorNames = declaredOperators.map((o) => o.element2.name3).toSet();
+    var operatorNames =
+        declaredOperators.map((o) => o.element2.lookupName).toSet();
     var inheritedOperatorElements = _inheritedElements
         .whereType<MethodElement2>()
-        .where((e) => e.isOperator && !operatorNames.contains(e.name3))
+        .where((e) => e.isOperator && !operatorNames.contains(e.lookupName))
         .toSet();
 
     return [
