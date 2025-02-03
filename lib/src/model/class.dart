@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 // ignore: implementation_imports
@@ -20,10 +18,11 @@ import 'package:dartdoc/src/model/model.dart';
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends InheritingContainer with Constructable, MixedInTypes {
   @override
-  final ClassElement element;
+  // ignore: analyzer_use_new_elements
+  ClassElement get element => element2.asElement;
 
   @override
-  ClassElement2 get element2 => element.asElement2;
+  final ClassElement2 element2;
 
   @override
   late final List<ModelElement> allModelElements = [
@@ -51,10 +50,10 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
     ...interfaceElements.expandInheritanceChain,
   ];
 
-  Class(this.element, Library library, PackageGraph packageGraph)
+  Class(this.element2, Library library, PackageGraph packageGraph)
       : super(library, packageGraph) {
-    if (element.name == 'Object' &&
-        library.element.name == 'dart.core' &&
+    if (element2.name3 == 'Object' &&
+        library.element2.name3 == 'dart.core' &&
         package.name == 'Dart') {
       packageGraph.objectClass = this;
     }
@@ -64,32 +63,31 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   String get fileName => '$name-class.html';
 
   @override
-  bool get isAbstract => element.isAbstract;
+  bool get isAbstract => element2.isAbstract;
 
   @override
-  bool get isBase => element.isBase && !element.isSealed;
+  bool get isBase => element2.isBase && !element2.isSealed;
 
   bool get isErrorOrException {
-    bool isError(InterfaceElement element) =>
-        element.library.isDartCore &&
-        (element.name == 'Exception' || element.name == 'Error');
+    bool isError(InterfaceElement2 e) =>
+        e.library2.isDartCore && (e.name3 == 'Exception' || e.name3 == 'Error');
 
-    final element = this.element;
-    if (isError(element)) return true;
-    return element.allSupertypes.map((t) => t.element).any(isError);
+    if (isError(element2)) return true;
+    return element2.allSupertypes.map((t) => t.element3).any(isError);
   }
 
   @override
-  bool get isFinal => element.isFinal && !element.isSealed;
+  bool get isFinal => element2.isFinal && !element2.isSealed;
 
   @override
-  bool get isImplementableInterface => element.isInterface && !element.isSealed;
+  bool get isImplementableInterface =>
+      element2.isInterface && !element2.isSealed;
 
   @override
-  bool get isMixinClass => element.isMixinClass;
+  bool get isMixinClass => element2.isMixinClass;
 
   @override
-  bool get isSealed => element.isSealed;
+  bool get isSealed => element2.isSealed;
 
   @override
   Kind get kind => Kind.class_;

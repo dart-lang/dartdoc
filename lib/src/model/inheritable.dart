@@ -61,7 +61,7 @@ mixin Inheritable on ContainerMember {
       var reverseInheritance = _inheritance.reversed.toList();
       for (var i = 0; i < reverseInheritance.length; i++) {
         var container = reverseInheritance[i];
-        if (container.containsElement2(searchElement)) {
+        if (container.containsElement(searchElement)) {
           var previousIsHiddenAndNotDefining = i > 0 &&
               _isHiddenInterface(reverseInheritance[i - 1]) &&
               container != definingEnclosingContainer;
@@ -95,7 +95,7 @@ mixin Inheritable on ContainerMember {
           // starting from the ModelElement.
           if (canonicalContainer != null) {
             assert(canonicalContainer.isCanonical);
-            assert(canonicalContainer.containsElement2(searchElement));
+            assert(canonicalContainer.containsElement(searchElement));
             found = canonicalContainer;
             break;
           }
