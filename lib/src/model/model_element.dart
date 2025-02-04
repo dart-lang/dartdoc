@@ -314,7 +314,7 @@ abstract class ModelElement
       ExtensionTypeElement() => ExtensionType(e, library, packageGraph),
       FunctionElement() => ModelFunction(
           e.asElement2 as TopLevelFunctionElement, library, packageGraph),
-      ConstructorElement() => Constructor(e, library, packageGraph),
+      ConstructorElement() => Constructor(e.asElement2, library, packageGraph),
       GenericFunctionTypeElement() => ModelFunctionTypedef(
           e.asElement2 as FunctionTypedElement2, library, packageGraph),
       TypeAliasElement(aliasedType: FunctionType()) =>
@@ -370,7 +370,8 @@ abstract class ModelElement
     if (e.enclosingElement3 is ExtensionElement ||
         e.enclosingElement3 is InterfaceElement) {
       if (enclosingContainer == null || enclosingContainer is Extension) {
-        return ContainerAccessor(e.asElement2, library, packageGraph, enclosingContainer);
+        return ContainerAccessor(
+            e.asElement2, library, packageGraph, enclosingContainer);
       }
 
       return ContainerAccessor.inherited(
@@ -688,7 +689,14 @@ abstract class ModelElement
   @override
   Library get library => _library;
 
+  /// The name of this element, wrapped in an HTML link (an `<a>` tag) if [href]
+  /// is non-`null`.
   late final String linkedName = () {
+    var parts = linkedNameParts;
+    return '${parts.tag}${parts.text}${parts.endTag}';
+  }();
+
+  ({String tag, String text, String endTag}) get linkedNameParts {
     // If `name` is empty, we probably have the wrong Element association or
     // there's an analyzer issue.
     assert(name.isNotEmpty ||
@@ -701,12 +709,16 @@ abstract class ModelElement
       if (isPublicAndPackageDocumented) {
         warn(PackageWarning.noCanonicalFound);
       }
-      return htmlEscape.convert(name);
+      return (tag: '', text: htmlEscape.convert(name), endTag: '');
     }
 
     var cssClass = isDeprecated ? ' class="deprecated"' : '';
-    return '<a$cssClass href="$href">$displayName</a>';
-  }();
+    return (
+      tag: '<a$cssClass href="$href">',
+      text: displayName,
+      endTag: '</a>'
+    );
+  }
 
   ParameterRenderer get _parameterRenderer => const ParameterRendererHtml();
 

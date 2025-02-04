@@ -3505,6 +3505,34 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                   );
                 },
               ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'ConstructorElement2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['ConstructorElement2']!,
+                  );
+                },
+              ),
               'enclosingElement': Property(
                 getValue: (CT_ c) => c.enclosingElement,
                 renderVariable: (
@@ -3541,6 +3569,38 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                     sink,
                     parent: r,
                   );
+                },
+              ),
+              'fileName': Property(
+                getValue: (CT_ c) => c.fileName,
+                renderVariable: (
+                  CT_ c,
+                  Property<CT_> self,
+                  List<String> remainingNames,
+                ) {
+                  if (remainingNames.isEmpty) {
+                    return self.getValue(c).toString();
+                  }
+                  var name = remainingNames.first;
+                  var nextProperty = _Renderer_String.propertyMap().getValue(
+                    name,
+                  );
+                  return nextProperty.renderVariable(
+                    self.getValue(c) as String,
+                    nextProperty,
+                    [...remainingNames.skip(1)],
+                  );
+                },
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  _render_String(c.fileName, ast, r.template, sink, parent: r);
                 },
               ),
               'fullKind': Property(
@@ -14411,7 +14471,7 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
   }
 }
 
-String renderLibrary(LibraryTemplateData context, Template template) {
+String renderLibraryRedirect(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14657,7 +14717,7 @@ class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData> {
   }
 }
 
-String renderLibraryRedirect(LibraryTemplateData context, Template template) {
+String renderLibrary(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -20710,13 +20770,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -26242,6 +26302,22 @@ const _invisibleGetters = {
     'returnType',
     'runtimeType',
     'superConstructor',
+  },
+  'ConstructorElement2': {
+    'baseElement',
+    'enclosingElement2',
+    'firstFragment',
+    'fragments',
+    'hashCode',
+    'isConst',
+    'isDefaultConstructor',
+    'isFactory',
+    'isGenerative',
+    'name3',
+    'redirectedConstructor2',
+    'returnType',
+    'runtimeType',
+    'superConstructor2',
   },
   'ContainerModifier': {
     'displayName',

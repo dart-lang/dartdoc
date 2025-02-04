@@ -2414,7 +2414,7 @@ void main() async {
         aNonDefaultConstructor = baseForDocComments.constructors
             .named('BaseForDocComments.aNonDefaultConstructor');
         defaultConstructor =
-            baseForDocComments.constructors.named('BaseForDocComments');
+            baseForDocComments.constructors.named('BaseForDocComments.new');
         somethingShadowyParameter =
             defaultConstructor.parameters.named('somethingShadowy');
         initializeMe = baseForDocComments.allFields.named('initializeMe');
@@ -2473,7 +2473,7 @@ void main() async {
         anotherConstructor = FactoryConstructorThings.constructors
             .named('FactoryConstructorThings.anotherConstructor');
         factoryConstructorThingsDefault = FactoryConstructorThings.constructors
-            .named('FactoryConstructorThings');
+            .named('FactoryConstructorThings.new');
 
         aName = anotherName.parameters.named('aName');
         anotherNameParameter = anotherName.parameters.named('anotherName');
@@ -3974,8 +3974,10 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('substrings of the constant values type are not linked (#1535)', () {
-      expect(aName.constantValue,
-          'const <a href="${htmlBasePlaceholder}ex/ExtendedShortName/ExtendedShortName.html">ExtendedShortName</a>(&quot;hello there&quot;)');
+      expect(
+        aName.constantValue,
+        'const <a href="${htmlBasePlaceholder}ex/ExtendedShortName/ExtendedShortName.html">ExtendedShortName</a>(&quot;hello there&quot;)',
+      );
     });
 
     test('constant field values are escaped', () {
@@ -4040,10 +4042,10 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       constCat = exLibrary.classes.named('ConstantCat');
       constructorTester = fakeLibrary.classes.named('ConstructorTester');
       constCatConstructor = constCat.constructors.first;
-      appleDefaultConstructor = apple.constructors.named('Apple');
+      appleDefaultConstructor = apple.constructors.named('Apple.new');
       appleConstructorFromString = apple.constructors.named('Apple.fromString');
       constructorTesterDefault =
-          constructorTester.constructors.named('ConstructorTester');
+          constructorTester.constructors.named('ConstructorTester.new');
       constructorTesterFromSomething = constructorTester.constructors
           .named('ConstructorTester.fromSomething');
       referToADefaultConstructor =
@@ -4095,8 +4097,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has constructor', () {
       expect(appleDefaultConstructor, isNotNull);
-      expect(appleDefaultConstructor.name, equals('Apple'));
-      expect(appleDefaultConstructor.shortName, equals('Apple'));
+      expect(appleDefaultConstructor.name, equals('Apple.new'));
+      expect(appleDefaultConstructor.shortName, equals('new'));
     });
 
     test('title has factory qualifier', () {

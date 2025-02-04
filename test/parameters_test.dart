@@ -251,7 +251,7 @@ class C {
   C(this.p);
 }
 ''');
-    var cConstructor = library.classes.named('C').constructors.named('C');
+    var cConstructor = library.classes.named('C').constructors.named('C.new');
     // There is no link, but also no wrong link or crash.
     expect(cConstructor.documentationAsHtml, '<p>Text <code>p</code>.</p>');
   }
@@ -264,7 +264,7 @@ class C {
   C(this._);
 }
 ''');
-    var cConstructor = library.classes.named('C').constructors.named('C');
+    var cConstructor = library.classes.named('C').constructors.named('C.new');
     // There is no link, but also no wrong link or crash.
     expect(cConstructor.documentationAsHtml, '<p>Text <code>_</code>.</p>');
   }
@@ -279,7 +279,7 @@ class D extends C {
   D(super._) {}
 }
 ''');
-    var dConstructor = library.classes.named('D').constructors.named('D');
+    var dConstructor = library.classes.named('D').constructors.named('D.new');
     // There is no link, but also no wrong link or crash.
     expect(dConstructor.documentationAsHtml, '<p>Text <code>_</code>.</p>');
   }
