@@ -166,9 +166,8 @@ extension type One(int it) {
 
     htmlLines.expectMainContentContainsAllInOrder([
       matches('<h2>Constructors</h2>'),
-      matches('<a href="../lib/One/One.html">One</a>'),
-      matches('<a href="../lib/One/One.named.html">'
-          'One.named</a>'),
+      matches('<a href="../lib/One/One.html">One.new</a>'),
+      matches('<a href="../lib/One/One.named.html">One.named</a>'),
       matches('A named constructor.'),
     ]);
   }

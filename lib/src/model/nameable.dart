@@ -12,6 +12,7 @@ import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/accessor.dart';
+import 'package:dartdoc/src/model/constructor.dart';
 import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
@@ -121,7 +122,7 @@ mixin Nameable {
         enclosingContainer: enclosingContainer,
       );
 
-      /// Returns the [ModelElement] for [element], instantiating it if needed.
+  /// Returns the [ModelElement] for [element], instantiating it if needed.
   ///
   /// A convenience method for [ModelElement.forPropertyInducingElement], see
   /// its documentation.
@@ -153,6 +154,12 @@ mixin Nameable {
 int byName(Nameable a, Nameable b) {
   if (a is Library && b is Library) {
     return compareAsciiLowerCaseNatural(a.displayName, b.displayName);
+  }
+
+  if (a is Constructor && b is Constructor) {
+    var aName = a.name.replaceFirst('.new', '');
+    var bName = b.name.replaceFirst('.new', '');
+    return compareAsciiLowerCaseNatural(aName, bName);
   }
 
   var stringCompare = compareAsciiLowerCaseNatural(a.name, b.name);

@@ -83,7 +83,6 @@ mixin GetterSetterCombo on ModelElement {
   String linkifyConstantValue(String original) {
     if (_constantInitializer is! InstanceCreationExpression) return original;
 
-    var constructorName = _constantInitializer.constructorName.toString();
     var element = _constantInitializer.constructorName.element;
     if (element == null) return original;
 
@@ -93,8 +92,11 @@ mixin GetterSetterCombo on ModelElement {
 
     // TODO(jcollins-g): this logic really should be integrated into
     // `Constructor`, but that's not trivial because of `linkedName`'s usage.
-    if (enclosingElement.name == target.name) {
-      return original.replaceAll(constructorName, target.linkedName);
+    if (target.isUnnamedConstructor) {
+      var parts = target.linkedNameParts;
+      // We don't want the `.new` representation of an unnamed constructor.
+      var linkedName = '${parts.tag}${enclosingElement.name}${parts.endTag}';
+      return original.replaceAll(enclosingElement.name, linkedName);
     }
     return original.replaceAll('${enclosingElement.name}.${target.name}',
         '${enclosingElement.linkedName}.${target.linkedName}');
