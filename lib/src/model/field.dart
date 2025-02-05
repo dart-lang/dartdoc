@@ -42,7 +42,7 @@ class Field extends ModelElement
     this.setter,
   )   : isInherited = false,
         enclosingElement =
-            ModelElement.for_(element.enclosingElement3, library, packageGraph)
+            ModelElement.for_(element.asElement2.enclosingElement2, library, packageGraph)
                 as Container,
         assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
@@ -58,7 +58,7 @@ class Field extends ModelElement
   )   : element = element2.asElement as FieldElement,
         isInherited = false,
         enclosingElement =
-            ModelElement.for2_(element2.enclosingElement2!, library, packageGraph)
+            ModelElement.for_(element2.enclosingElement2!, library, packageGraph)
                 as Container,
         assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
@@ -66,26 +66,28 @@ class Field extends ModelElement
   }
 
   Field.providedByExtension(
-    this.element,
+    Element2 element2,
     this.enclosingElement,
     super.library,
     super.packageGraph,
     this.getter,
     this.setter,
-  )   : isInherited = false,
+  )   : element = element2.asElement as FieldElement,
+        isInherited = false,
         assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
     setter?.enclosingCombo = this;
   }
 
   Field.inherited(
-    this.element,
+    Element2 element2,
     this.enclosingElement,
     super.library,
     super.packageGraph,
     this.getter,
     this.setter,
-  )   : isInherited = true,
+  )   : element = element2.asElement as FieldElement,
+        isInherited = true,
         assert(getter != null || setter != null) {
     // Can't set `isInherited` to true if this is the defining element, because
     // that would mean it isn't inherited.

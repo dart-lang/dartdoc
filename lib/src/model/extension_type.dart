@@ -16,16 +16,15 @@ import 'package:meta/meta.dart';
 
 class ExtensionType extends InheritingContainer with Constructable {
   @override
-  final ExtensionTypeElement element;
+  ExtensionTypeElement get element => element2.asElement;
 
   @override
-  ExtensionTypeElement2 get element2 =>
-      element.asElement2 as ExtensionTypeElement2;
+  final ExtensionTypeElement2  element2;
 
   late final ElementType representationType =
       getTypeFor(element.representation.type, library);
 
-  ExtensionType(this.element, super.library, super.packageGraph);
+  ExtensionType(this.element2, super.library, super.packageGraph);
 
   @override
   Library get enclosingElement => library;

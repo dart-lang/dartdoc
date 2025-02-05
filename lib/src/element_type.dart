@@ -214,7 +214,7 @@ mixin Aliased implements ElementType {
   bool get isTypedef => true;
 
   late final ModelElement aliasElement =
-      ModelElement.forElement2(typeAliasElement2, packageGraph);
+      ModelElement.forElement(typeAliasElement2, packageGraph);
 
   late final List<ElementType> aliasArguments = type.alias!.typeArguments
       .map((f) => getTypeFor(f, library))
@@ -322,7 +322,7 @@ abstract class DefinedElementType extends ElementType {
   @internal
   @override
   CommentReferable get definingCommentReferable =>
-      ModelElement.forElement2(modelElement.element2, packageGraph);
+      ModelElement.forElement(modelElement.element2, packageGraph);
 }
 
 /// Any callable [ElementType] will mix-in this class, whether anonymous or not,

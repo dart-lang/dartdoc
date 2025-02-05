@@ -110,12 +110,12 @@ class Extension extends Container {
     ContainerAccessor? getter, setter;
     final fieldGetter = field.getter2;
     if (fieldGetter != null) {
-      getter = ModelElement.for2_(fieldGetter, library, packageGraph,
+      getter = ModelElement.for_(fieldGetter, library, packageGraph,
           enclosingContainer: this) as ContainerAccessor;
     }
     final fieldSetter = field.setter2;
     if (fieldSetter != null) {
-      setter = ModelElement.for2_(fieldSetter, library, packageGraph,
+      setter = ModelElement.for_(fieldSetter, library, packageGraph,
           enclosingContainer: this) as ContainerAccessor;
     }
     return getModelForPropertyInducingElement(field.asElement, library,
