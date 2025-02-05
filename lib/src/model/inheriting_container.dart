@@ -28,7 +28,7 @@ mixin Constructable implements InheritingContainer {
 
   @override
   late final List<Constructor> publicConstructorsSorted =
-      constructors.wherePublic.toList(growable: false)..sort();
+      constructors.wherePublic.toList(growable: false)..sort(byName);
 
   @override
   @visibleForOverriding

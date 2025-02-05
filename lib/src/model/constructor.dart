@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/source/line_info.dart';
@@ -17,7 +15,8 @@ import 'package:dartdoc/src/model_utils.dart';
 
 class Constructor extends ModelElement with ContainerMember, TypeParameters {
   @override
-   ConstructorElement get element => element2.asElement;
+  // ignore: analyzer_use_new_elements
+  ConstructorElement get element => element2.asElement;
 
   @override
   final ConstructorElement2 element2;
@@ -26,7 +25,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
 
   @override
   CharacterLocation? get characterLocation {
-    if (element.isSynthetic) {
+    if (element2.isSynthetic) {
       // Make warnings for a synthetic constructor refer to somewhere reasonable
       // since a synthetic constructor has no definition independent of the
       // parent class.
@@ -39,11 +38,11 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
   bool get isPublic {
     if (!super.isPublic) return false;
     if (element2.hasPrivateName) return false;
-    var class_ = element.enclosingElement3;
+    var class_ = element2.enclosingElement2;
     // Enums cannot be explicitly constructed or extended.
-    if (class_ is EnumElement) return false;
-    if (class_ is ClassElement) {
-      if (element.isFactory) return true;
+    if (class_ is EnumElement2) return false;
+    if (class_ is ClassElement2) {
+      if (element2.isFactory) return true;
       if (class_.isSealed ||
           (class_.isAbstract && class_.isFinal) ||
           (class_.isAbstract && class_.isInterface)) {
@@ -62,7 +61,12 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
 
   @override
   Container get enclosingElement =>
-      getModelFor(element.enclosingElement3, library) as Container;
+      getModelFor2(element2.enclosingElement2, library) as Container;
+
+  @override
+  String get fileName =>
+      // TODO(srawlins): It would be great to use `new.html` as the file name.
+      isUnnamedConstructor ? '${enclosingElement.name}.html' : '$name.html';
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;
@@ -77,39 +81,32 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
   }
 
   @override
-  String get fullyQualifiedName {
-    if (isUnnamedConstructor) return super.fullyQualifiedName;
-    return '${library.name}.$name';
-  }
+  String get fullyQualifiedName => '${library.name}.$name';
 
   @override
-  bool get isConst => element.isConst;
+  bool get isConst => element2.isConst;
 
-  bool get isUnnamedConstructor => name == enclosingElement.name;
+  bool get isUnnamedConstructor => element2.name3 == 'new';
 
-  bool get isFactory => element.isFactory;
+  bool get isFactory => element2.isFactory;
 
   @override
   Kind get kind => Kind.constructor;
 
-  late final Callable modelType = getTypeFor(element.type, library) as Callable;
+  late final Callable modelType =
+      getTypeFor(element2.type, library) as Callable;
 
   @override
-  String get name {
-    // TODO(jcollins-g): After the old lookup code is retired, rationalize
-    // [name] around the conventions used in referenceChildren and replace
-    // code there and elsewhere with simple references to the name.
-    var constructorName = element.name;
-    if (constructorName.isEmpty) {
-      return enclosingElement.name;
-    }
-    return '${enclosingElement.name}.$constructorName';
-  }
+  String get name =>
+      // TODO(jcollins-g): After the old lookup code is retired, rationalize
+      // [name] around the conventions used in referenceChildren and replace
+      // code there and elsewhere with simple references to the name.
+      '${enclosingElement.name}.${element2.name3}';
 
   @override
   String get nameWithGenerics {
-    var constructorName = element.name;
-    if (constructorName.isEmpty) {
+    var constructorName = element2.name3!;
+    if (constructorName == 'new') {
       return '${enclosingElement.name}$genericParameters';
     }
     return '${enclosingElement.name}$genericParameters.$constructorName';
@@ -117,7 +114,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
 
   String? get shortName {
     if (name.contains('.')) {
-      return name.substring(element.enclosingElement3.name.length + 1);
+      return name.substring(element2.enclosingElement2.name3!.length + 1);
     } else {
       return name;
     }
@@ -126,17 +123,17 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
   @override
   late final Map<String, CommentReferable> referenceChildren = () {
     // Find the element that [parameter] is _really_ referring to.
-    Element? dereferenceParameter(ParameterElement? parameter) =>
+    Element2? dereferenceParameter(FormalParameterElement? parameter) =>
         switch (parameter) {
-          FieldFormalParameterElement() => parameter.field,
-          SuperFormalParameterElement() =>
-            dereferenceParameter(parameter.superConstructorParameter),
+          FieldFormalParameterElement2() => parameter.field2,
+          SuperFormalParameterElement2() =>
+            dereferenceParameter(parameter.superConstructorParameter2),
           _ => parameter
         };
 
     var parameterElements = parameters.map((parameter) {
-      var element = dereferenceParameter(parameter.element);
-      return element == null ? parameter : getModelForElement(element);
+      var element = dereferenceParameter(parameter.element2);
+      return element == null ? parameter : getModelForElement2(element);
     });
     return {
       for (var element in parameterElements) element.referenceName: element,
@@ -146,5 +143,5 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
 
   @override
   String get referenceName =>
-      isUnnamedConstructor ? enclosingElement.name : element.name;
+      isUnnamedConstructor ? enclosingElement.name : element2.name3!;
 }

@@ -228,9 +228,9 @@ abstract class ModelElement
     if (e is ExecutableMember) {
       originalMember = e;
       e = e.baseElement;
-    } else if (e is FieldMember){
+    } else if (e is FieldMember) {
       originalMember = e;
-      e = e.baseElement;  
+      e = e.baseElement;
     }
 
     // Return the cached ModelElement if it exists.
@@ -676,7 +676,14 @@ abstract class ModelElement
   @override
   Library get library => _library;
 
+  /// The name of this element, wrapped in an HTML link (an `<a>` tag) if [href]
+  /// is non-`null`.
   late final String linkedName = () {
+    var parts = linkedNameParts;
+    return '${parts.tag}${parts.text}${parts.endTag}';
+  }();
+
+  ({String tag, String text, String endTag}) get linkedNameParts {
     // If `name` is empty, we probably have the wrong Element association or
     // there's an analyzer issue.
     assert(name.isNotEmpty ||
@@ -689,12 +696,16 @@ abstract class ModelElement
       if (isPublicAndPackageDocumented) {
         warn(PackageWarning.noCanonicalFound);
       }
-      return htmlEscape.convert(name);
+      return (tag: '', text: htmlEscape.convert(name), endTag: '');
     }
 
     var cssClass = isDeprecated ? ' class="deprecated"' : '';
-    return '<a$cssClass href="$href">$displayName</a>';
-  }();
+    return (
+      tag: '<a$cssClass href="$href">',
+      text: displayName,
+      endTag: '</a>'
+    );
+  }
 
   ParameterRenderer get _parameterRenderer => const ParameterRendererHtml();
 
