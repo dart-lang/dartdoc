@@ -61,7 +61,7 @@ class Accessor extends ModelElement {
     if (!isSynthetic) {
       return super.sourceCode;
     }
-    var modelNode = packageGraph.getModelNodeFor2(definingCombo.element2);
+    var modelNode = packageGraph.getModelNodeFor(definingCombo.element2);
     return modelNode == null
         ? ''
         : const HtmlEscape().convert(modelNode.sourceCode);
