@@ -570,7 +570,7 @@ class Foo {}
     expect(outBuffer, isEmpty);
     expect(errBuffer.toString(), matches(RegExp(r'''
   warning: library_1 has no library level documentation comments
-    from library_1: \(.*lib/library_1.dart:1:9\)
+    from library_1: \(.*lib/library_1.dart:1:1\)
 Found 1 warning and 0 errors.
 ''')));
   }
@@ -594,7 +594,7 @@ class Foo {}
     expect(outBuffer, isEmpty);
     expect(errBuffer.toString(), matches(RegExp(r'''
   warning: library_1 has no library level documentation comments
-    from library_1: \(.*lib/library_1.dart:1:9\)
+    from library_1: \(.*lib/library_1.dart:1:1\)
 Found 1 warning and 0 errors.
 ''')));
 
