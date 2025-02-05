@@ -13,8 +13,6 @@ import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart' show FunctionType;
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/dart/element/element.dart';
-// ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, FieldMember, Member, ParameterMember;
 // ignore: implementation_imports
@@ -597,22 +595,24 @@ abstract class ModelElement
   @override
   late final CharacterLocation? characterLocation = () {
     final lineInfo = unitElement.lineInfo;
-    late final element = element2;
-    var nameOffset = element.firstFragment.nameOffset2;
-    if (element is LibraryElementImpl) {
-      nameOffset = element.nameOffset;
-    } else if (element is ConstructorElement2) {
-      nameOffset = (element.firstFragment as ConstructorElementImpl).nameOffset;
-    }
+
+    final nameOffset = element2.firstFragment.nameOffset2;
     assert(nameOffset != null && nameOffset >= 0,
-        'Invalid location data for element: $fullyQualifiedName');
+        'Invalid location data, $nameOffset, for element: $fullyQualifiedName');
     if (nameOffset != null && nameOffset >= 0) {
       return lineInfo.getLocation(nameOffset);
     }
     return null;
   }();
 
-  LibraryFragment get unitElement => element2.library2!.firstFragment;
+  LibraryFragment get unitElement {
+    Fragment? fragment = element2.firstFragment;
+    while (fragment != null) {
+      if (fragment is LibraryFragment) return fragment;
+      fragment = fragment.enclosingFragment;
+    }
+    throw StateError('Unable to find enclosing LibraryFragment for $element2');
+  }
 
   bool get hasAnnotations => annotations.isNotEmpty;
 

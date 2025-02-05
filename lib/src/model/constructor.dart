@@ -6,6 +6,8 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
+import 'package:analyzer/src/dart/element/element.dart';
+// ignore: implementation_imports
 import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -31,7 +33,13 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
       // parent class.
       return enclosingElement.characterLocation;
     }
-    return super.characterLocation;
+    final lineInfo = unitElement.lineInfo;
+    var offset = element2.firstFragment.nameOffset2 ??
+        (element2.firstFragment as ConstructorElementImpl).typeNameOffset;
+    if (offset != null && offset >= 0) {
+      return lineInfo.getLocation(offset);
+    }
+    return null;
   }
 
   @override
