@@ -58,7 +58,7 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
   }
 
   var topLevelModelElement =
-      ModelElement.forElement2(topLevelElement, modelElement.packageGraph);
+      ModelElement.forElement(topLevelElement, modelElement.packageGraph);
 
   return _Canonicalization(topLevelModelElement)
       .canonicalLibraryCandidate(candidateLibraries);

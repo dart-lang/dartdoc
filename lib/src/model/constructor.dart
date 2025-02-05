@@ -5,7 +5,10 @@
 // ignore_for_file: analyzer_use_new_elements
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/source/line_info.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -14,9 +17,12 @@ import 'package:dartdoc/src/model_utils.dart';
 
 class Constructor extends ModelElement with ContainerMember, TypeParameters {
   @override
-  final ConstructorElement element;
+   ConstructorElement get element => element2.asElement;
 
-  Constructor(this.element, super.library, super.packageGraph);
+  @override
+  final ConstructorElement2 element2;
+
+  Constructor(this.element2, super.library, super.packageGraph);
 
   @override
   CharacterLocation? get characterLocation {

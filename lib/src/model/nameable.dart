@@ -63,7 +63,7 @@ mixin Nameable {
     Container? enclosingContainer,
   }) =>
       ModelElement.for_(
-        element,
+        element.asElement2!,
         library,
         packageGraph,
         enclosingContainer: enclosingContainer,
@@ -78,7 +78,7 @@ mixin Nameable {
     Container? enclosingContainer,
   }) =>
       ModelElement.for_(
-        element.asElement!,
+        element,
         library,
         packageGraph,
         enclosingContainer: enclosingContainer,
@@ -89,14 +89,14 @@ mixin Nameable {
   /// A convenience method for [ModelElement.forElement], see its
   /// documentation.
   ModelElement getModelForElement(Element element) =>
-      ModelElement.forElement(element, packageGraph);
+      ModelElement.forElement(element.asElement2!, packageGraph);
 
   /// Returns the [ModelElement] for [element], instantiating it if needed.
   ///
   /// A convenience method for [ModelElement.forElement], see its
   /// documentation.
   ModelElement getModelForElement2(Element2 element) =>
-      ModelElement.forElement(element.asElement!, packageGraph);
+      ModelElement.forElement(element, packageGraph);
 
   /// Returns the [ModelElement] for [element], instantiating it if needed.
   ///
@@ -113,7 +113,7 @@ mixin Nameable {
     Container? enclosingContainer,
   }) =>
       ModelElement.forPropertyInducingElement(
-        element,
+        element.asElement2 as PropertyInducingElement2,
         library,
         packageGraph,
         getter: getter,
@@ -136,7 +136,7 @@ mixin Nameable {
     Container? enclosingContainer,
   }) =>
       ModelElement.forPropertyInducingElement(
-        element.asElement as PropertyInducingElement,
+        element,
         library,
         packageGraph,
         getter: getter,

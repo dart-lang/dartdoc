@@ -120,8 +120,8 @@ class Library extends ModelElement
   }
 
   @override
-  CompilationUnitElement get compilationUnitElement =>
-      element.definingCompilationUnit;
+  LibraryFragment get unitElement =>
+      element2.library2.firstFragment;
 
   @override
 
