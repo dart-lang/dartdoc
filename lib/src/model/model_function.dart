@@ -2,10 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -37,9 +34,6 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
 }
 
 class ModelFunctionTyped extends ModelElement with TypeParameters {
-  @override
-   // ignore: analyzer_use_new_elements
-   FunctionTypedElement get element => element2.asElement as FunctionTypedElement;
 
   @override
   final FunctionTypedElement2 element2;

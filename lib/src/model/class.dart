@@ -2,10 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -18,8 +15,6 @@ import 'package:dartdoc/src/model/model.dart';
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends InheritingContainer with Constructable, MixedInTypes {
   @override
-  // ignore: analyzer_use_new_elements
-  ClassElement get element => element2.asElement;
 
   @override
   final ClassElement2 element2;

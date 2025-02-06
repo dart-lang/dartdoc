@@ -3,12 +3,9 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/source/line_info.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 // ignore: implementation_imports
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -26,10 +23,6 @@ class Library extends ModelElement
     with Categorization, TopLevelContainer, CanonicalFor {
   @override
   final LibraryElement2 element2;
-
-  @override
-  // ignore: analyzer_use_new_elements
-  LibraryElement get element => element2.asElement;
 
   /// The set of [Element2]s declared directly in this library.
   final Set<Element2> _localElements;
@@ -63,24 +56,24 @@ class Library extends ModelElement
       PackageGraph packageGraph, Package package) {
     packageGraph.gatherModelNodes(resolvedLibrary);
 
-    var element = resolvedLibrary.element2;
+    var libraryElement = resolvedLibrary.element2;
 
     var localElements = <Element2>{
-      ...element.firstFragment.getters.map((g) => g.element),
-      ...element.firstFragment.setters.map((s) => s.element),
-      ...element.firstFragment.classes2.map((c) => c.element),
-      ...element.firstFragment.enums2.map((e) => e.element),
-      ...element.firstFragment.extensions2.map((e) => e.element),
-      ...element.firstFragment.extensionTypes2.map((e) => e.element),
-      ...element.firstFragment.functions2.map((f) => f.element),
-      ...element.firstFragment.mixins2.map((m) => m.element),
-      ...element.firstFragment.topLevelVariables2.map((v) => v.element),
-      ...element.firstFragment.typeAliases2.map((a) => a.element),
+      ...libraryElement.firstFragment.getters.map((g) => g.element),
+      ...libraryElement.firstFragment.setters.map((s) => s.element),
+      ...libraryElement.firstFragment.classes2.map((c) => c.element),
+      ...libraryElement.firstFragment.enums2.map((e) => e.element),
+      ...libraryElement.firstFragment.extensions2.map((e) => e.element),
+      ...libraryElement.firstFragment.extensionTypes2.map((e) => e.element),
+      ...libraryElement.firstFragment.functions2.map((f) => f.element),
+      ...libraryElement.firstFragment.mixins2.map((m) => m.element),
+      ...libraryElement.firstFragment.topLevelVariables2.map((v) => v.element),
+      ...libraryElement.firstFragment.typeAliases2.map((a) => a.element),
     };
-    var exportedElements = {...element.exportNamespace.definedNames2.values}
+    var exportedElements = {...libraryElement.exportNamespace.definedNames2.values}
         .difference(localElements);
     var library = Library._(
-      element,
+      libraryElement,
       packageGraph,
       package,
       resolvedLibrary.element2.firstFragment.source.uri.toString(),
@@ -402,18 +395,18 @@ class Library extends ModelElement
     }.map(_topLevelVariableFor);
   }
 
-  TopLevelVariable _topLevelVariableFor(TopLevelVariableElement2 element) {
+  TopLevelVariable _topLevelVariableFor(TopLevelVariableElement2 topLevelVariableElement) {
     Accessor? getter;
-    var elementGetter = element.getter2;
+    var elementGetter = topLevelVariableElement.getter2;
     if (elementGetter != null) {
       getter = packageGraph.getModelFor2(elementGetter, this) as Accessor;
     }
     Accessor? setter;
-    var elementSetter = element.setter2;
+    var elementSetter = topLevelVariableElement.setter2;
     if (elementSetter != null) {
       setter = packageGraph.getModelFor2(elementSetter, this) as Accessor;
     }
-    return getModelForPropertyInducingElement2(element, this,
+    return getModelForPropertyInducingElement2(topLevelVariableElement, this,
         getter: getter, setter: setter) as TopLevelVariable;
   }
 

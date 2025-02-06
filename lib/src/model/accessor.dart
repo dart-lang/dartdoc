@@ -4,13 +4,10 @@
 
 import 'dart:convert';
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -21,9 +18,6 @@ import 'package:dartdoc/src/warnings.dart';
 
 /// Getters and setters.
 class Accessor extends ModelElement {
-  @override
-  // ignore: analyzer_use_new_elements
-  PropertyAccessorElement get element => element2.asElement;
 
   @override
   final PropertyAccessorElement2 element2;

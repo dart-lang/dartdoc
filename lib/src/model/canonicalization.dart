@@ -70,9 +70,9 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
 /// considers this element to be primarily 'from', and therefore, canonical.
 /// Still warn if the heuristic isn't very confident.
 final class _Canonicalization {
-  final ModelElement _element;
+  final ModelElement _modelElement;
 
-  _Canonicalization(this._element);
+  _Canonicalization(this._modelElement);
 
   /// Append an encoded form of the given [component] to the given [buffer].
   void _encode(StringBuffer buffer, String component) {
@@ -122,15 +122,15 @@ final class _Canonicalization {
     return buffer.toString();
   }
 
-  /// Calculates a candidate for the canonical library of [_element], among [libraries].
+  /// Calculates a candidate for the canonical library of [_modelElement], among [libraries].
   Library canonicalLibraryCandidate(Iterable<Library> libraries) {
-    var locationPieces = _getElementLocation(_element.element2)
+    var locationPieces = _getElementLocation(_modelElement.element2)
         .split(_locationSplitter)
         .where((s) => s.isNotEmpty)
         .toSet();
     var scoredCandidates = libraries
         .map((library) => _scoreElementWithLibrary(
-            library, _element.fullyQualifiedName, locationPieces))
+            library, _modelElement.fullyQualifiedName, locationPieces))
         .toList(growable: false)
       ..sort();
 
@@ -141,11 +141,11 @@ final class _Canonicalization {
     var confidence = highestScore - secondHighestScore;
     final canonicalLibrary = librariesByScore.last;
 
-    if (confidence < _element.config.ambiguousReexportScorerMinConfidence) {
+    if (confidence < _modelElement.config.ambiguousReexportScorerMinConfidence) {
       var libraryNames = librariesByScore.map((l) => l.name);
       var message = '$libraryNames -> ${canonicalLibrary.name} '
           '(confidence ${confidence.toStringAsPrecision(4)})';
-      _element.warn(PackageWarning.ambiguousReexport,
+      _modelElement.warn(PackageWarning.ambiguousReexport,
           message: message, extendedDebug: scoredCandidates.map((s) => '$s'));
     }
 

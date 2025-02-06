@@ -2,25 +2,18 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'dart:convert';
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable {
+ 
   @override
-  final FieldElement element;
-
-  @override
-  FieldElement2 get element2 => element.asElement2;
+  final FieldElement2 element2;
 
   @override
   final ContainerAccessor? getter;
@@ -35,30 +28,15 @@ class Field extends ModelElement
   final Container enclosingElement;
 
   Field(
-    this.element,
+    this.element2,
     super.library,
     super.packageGraph,
     this.getter,
     this.setter,
-  )   : isInherited = false,
-        enclosingElement =
-            ModelElement.for_(element.asElement2.enclosingElement2, library, packageGraph)
-                as Container,
-        assert(getter != null || setter != null) {
-    getter?.enclosingCombo = this;
-    setter?.enclosingCombo = this;
-  }
-
-  Field.element2(
-    Element2 element2,
-    super.library,
-    super.packageGraph,
-    this.getter,
-    this.setter,
-  )   : element = element2.asElement as FieldElement,
+  )   :
         isInherited = false,
         enclosingElement =
-            ModelElement.for_(element2.enclosingElement2!, library, packageGraph)
+            ModelElement.for_(element2.enclosingElement2, library, packageGraph)
                 as Container,
         assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
@@ -66,13 +44,13 @@ class Field extends ModelElement
   }
 
   Field.providedByExtension(
-    Element2 element2,
+    this.element2,
     this.enclosingElement,
     super.library,
     super.packageGraph,
     this.getter,
     this.setter,
-  )   : element = element2.asElement as FieldElement,
+  )   :
         isInherited = false,
         assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
@@ -80,13 +58,13 @@ class Field extends ModelElement
   }
 
   Field.inherited(
-    Element2 element2,
+    this.element2,
     this.enclosingElement,
     super.library,
     super.packageGraph,
     this.getter,
     this.setter,
-  )   : element = element2.asElement as FieldElement,
+  )   : 
         isInherited = true,
         assert(getter != null || setter != null) {
     // Can't set `isInherited` to true if this is the defining element, because
@@ -124,12 +102,12 @@ class Field extends ModelElement
   }
 
   @override
-  bool get isConst => element.isConst;
+  bool get isConst => element2.isConst;
 
-  /// Whether the [FieldElement] is covariant, or the first parameter for the
+  /// Whether the [FieldElement2] is covariant, or the first parameter for the
   /// setter is covariant.
   @override
-  bool get isCovariant => setter?.isCovariant == true || element.isCovariant;
+  bool get isCovariant => setter?.isCovariant == true || element2.isCovariant;
 
   /// Whether this field is final.
   ///
@@ -138,22 +116,22 @@ class Field extends ModelElement
   @override
   bool get isFinal {
     if (hasExplicitGetter) return false;
-    return element.isFinal;
+    return element2.isFinal;
   }
 
   @override
-  bool get isLate => isFinal && element.isLate;
+  bool get isLate => isFinal && element2.isLate;
 
-  bool get isStatic => element.isStatic;
+  bool get isStatic => element2.isStatic;
 
   @override
   Kind get kind => isConst ? Kind.constant : Kind.property;
 
   String get fullkind =>
-      element.isAbstract ? 'abstract $kind' : kind.toString();
+      element2.isAbstract ? 'abstract $kind' : kind.toString();
 
   bool get isProvidedByExtension =>
-      element.enclosingElement3 is ExtensionElement;
+      element2.enclosingElement2 is ExtensionElement2;
 
   /// The [enclosingElement], which is expected to be an [Extension].
   Extension get enclosingExtension => enclosingElement as Extension;

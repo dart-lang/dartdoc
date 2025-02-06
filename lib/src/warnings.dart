@@ -5,7 +5,6 @@
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:collection/collection.dart';
@@ -96,8 +95,6 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
 /// Something that package warnings can be reported on. Optionally associated
 /// with an analyzer [element].
 mixin Warnable implements CommentReferable, Documentable, Locatable {
-  // ignore: analyzer_use_new_elements
-  Element? get element;
 
   Element2? get element2;
 
@@ -543,14 +540,14 @@ class PackageWarningCounter {
   /// If this package has had any warnings counted.
   bool get hasWarnings => _countedWarnings.isNotEmpty;
 
-  /// Whether we've already warned for this combination of [element], [kind],
+  /// Whether we've already warned for this combination of [e], [kind],
   /// and [messageFragment].
   bool hasWarning(
-      Warnable? element, PackageWarning kind, String messageFragment) {
-    if (element == null) {
+      Warnable? e, PackageWarning kind, String messageFragment) {
+    if (e == null) {
       return false;
     }
-    final warning = _countedWarnings[element.element2];
+    final warning = _countedWarnings[e.element2];
     if (warning != null) {
       final messages = warning[kind];
       return messages != null &&
@@ -561,13 +558,14 @@ class PackageWarningCounter {
 
   /// Adds the warning to the counter, and writes out the fullMessage string
   /// if configured to do so.
-  void addWarning(Warnable? element, PackageWarning kind, String message,
+  void addWarning(Warnable? e
+  , PackageWarning kind, String message,
       String fullMessage) {
-    assert(!hasWarning(element, kind, message));
+    assert(!hasWarning(e, kind, message));
     // TODO(jcollins-g): Make addWarning not accept nulls for element.
     PackageWarningOptionContext config =
-        element?.config ?? packageGraph.defaultPackage.config;
-    var isLocal = element?.package.isLocal ?? true;
+        e?.config ?? packageGraph.defaultPackage.config;
+    var isLocal = e?.package.isLocal ?? true;
     var warningMode = !isLocal && !config.allowNonLocalWarnings
         ? PackageWarningMode.ignore
         : config.packageWarningOptions.getMode(kind);
@@ -577,9 +575,9 @@ class PackageWarningCounter {
     } else if (warningMode == PackageWarningMode.error) {
       _errorCount += 1;
     }
-    var elementName = element == null ? '<global>' : element.fullyQualifiedName;
+    var elementName = e == null ? '<global>' : e.fullyQualifiedName;
     _countedWarnings
-        .putIfAbsent(element?.element2, () => {})
+        .putIfAbsent(e?.element2, () => {})
         .putIfAbsent(kind, () => {})
         .add(message);
     _writeWarning(

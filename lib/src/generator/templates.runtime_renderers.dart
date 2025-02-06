@@ -221,34 +221,6 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'PropertyAccessorElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['PropertyAccessorElement']!,
-                  );
-                },
-              ),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -1699,30 +1671,6 @@ class _Renderer_Category extends RendererBase<Category> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Element'),
-
-                isNullValue: (CT_ c) => c.element == null,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['Element']!,
-                  );
-                },
-              ),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -2651,34 +2599,6 @@ class _Renderer_Class extends RendererBase<Class> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'ClassElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['ClassElement']!,
-                  );
-                },
-              ),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -3474,34 +3394,6 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                     sink,
                     parent: r,
                     getters: _invisibleGetters['CharacterLocation']!,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'ConstructorElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['ConstructorElement']!,
                   );
                 },
               ),
@@ -4673,30 +4565,6 @@ class _Renderer_Container extends RendererBase<Container> {
                   return c.declaredOperators.map(
                     (e) =>
                         _render_Operator(e, ast, r.template, sink, parent: r),
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Element'),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['Element']!,
                   );
                 },
               ),
@@ -7203,34 +7071,6 @@ class _Renderer_Enum extends RendererBase<Enum> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'EnumElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['EnumElement']!,
-                  );
-                },
-              ),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -7777,34 +7617,6 @@ class _Renderer_Extension extends RendererBase<Extension> {
                 ) {
                   return c.declaredMethods.map(
                     (e) => _render_Method(e, ast, r.template, sink, parent: r),
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'ExtensionElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['ExtensionElement']!,
                   );
                 },
               ),
@@ -8536,34 +8348,6 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                 ) {
                   return c.declaredFields.map(
                     (e) => _render_Field(e, ast, r.template, sink, parent: r),
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'ExtensionTypeElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['ExtensionTypeElement']!,
                   );
                 },
               ),
@@ -9675,34 +9459,6 @@ class _Renderer_Field extends RendererBase<Field> {
                     r.template,
                     sink,
                     parent: r,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'FieldElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['FieldElement']!,
                   );
                 },
               ),
@@ -11986,34 +11742,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'InterfaceElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['InterfaceElement']!,
-                  );
-                },
-              ),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -13499,34 +13227,6 @@ class _Renderer_Library extends RendererBase<Library> {
                     r.template,
                     sink,
                     parent: r,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'LibraryElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['LibraryElement']!,
                   );
                 },
               ),
@@ -15295,34 +14995,6 @@ class _Renderer_Method extends RendererBase<Method> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'MethodElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['MethodElement']!,
-                  );
-                },
-              ),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -16188,34 +15860,6 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
             CT_,
             () => {
               ..._Renderer_InheritingContainer.propertyMap<CT_>(),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'MixinElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['MixinElement']!,
-                  );
-                },
-              ),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -17001,30 +16645,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                     r.template,
                     sink,
                     parent: r,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Element'),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['Element']!,
                   );
                 },
               ),
@@ -18305,34 +17925,6 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
                     r.template,
                     sink,
                     parent: r,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'FunctionTypedElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['FunctionTypedElement']!,
                   );
                 },
               ),
@@ -19630,30 +19222,6 @@ class _Renderer_Package extends RendererBase<Package> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Element'),
-
-                isNullValue: (CT_ c) => c.element == null,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['Element']!,
-                  );
-                },
-              ),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -20836,34 +20404,6 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                     r.template,
                     sink,
                     parent: r,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'ParameterElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['ParameterElement']!,
                   );
                 },
               ),
@@ -24211,34 +23751,6 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'TopLevelVariableElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['TopLevelVariableElement']!,
-                  );
-                },
-              ),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -24666,34 +24178,6 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter> {
                     r.template,
                     sink,
                     parent: r,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'TypeParameterElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['TypeParameterElement']!,
                   );
                 },
               ),
@@ -25385,34 +24869,6 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                     r.template,
                     sink,
                     parent: r,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'TypeAliasElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['TypeAliasElement']!,
                   );
                 },
               ),
@@ -26117,30 +25573,6 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
       _propertyMapCache.putIfAbsent(
             CT_,
             () => {
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Element'),
-
-                isNullValue: (CT_ c) => c.element == null,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['Element']!,
-                  );
-                },
-              ),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -26206,26 +25638,6 @@ const _invisibleGetters = {
     'lineNumber',
     'runtimeType',
   },
-  'ClassElement': {
-    'augmentation',
-    'augmentationTarget',
-    'augmented',
-    'hasNonFinalField',
-    'hashCode',
-    'isAbstract',
-    'isBase',
-    'isConstructable',
-    'isDartCoreEnum',
-    'isDartCoreObject',
-    'isExhaustive',
-    'isFinal',
-    'isInterface',
-    'isMixinApplication',
-    'isMixinClass',
-    'isSealed',
-    'isValidMixin',
-    'runtimeType',
-  },
   'ClassElement2': {
     'firstFragment',
     'fragments',
@@ -26261,25 +25673,6 @@ const _invisibleGetters = {
     'extraReferenceChildren',
     'hasPublicConstructors',
     'publicConstructorsSorted',
-  },
-  'ConstructorElement': {
-    'augmentation',
-    'augmentationTarget',
-    'declaration',
-    'displayName',
-    'enclosingElement3',
-    'hashCode',
-    'isConst',
-    'isDefaultConstructor',
-    'isFactory',
-    'isGenerative',
-    'name',
-    'nameEnd',
-    'periodOffset',
-    'redirectedConstructor',
-    'returnType',
-    'runtimeType',
-    'superConstructor',
   },
   'ConstructorElement2': {
     'baseElement',
@@ -26390,58 +25783,6 @@ const _invisibleGetters = {
     'qualifiedName',
     'sourceFileName',
   },
-  'Element': {
-    'children',
-    'context',
-    'declaration',
-    'displayName',
-    'documentationComment',
-    'enclosingElement3',
-    'hasAlwaysThrows',
-    'hasDeprecated',
-    'hasDoNotStore',
-    'hasDoNotSubmit',
-    'hasFactory',
-    'hasImmutable',
-    'hasInternal',
-    'hasIsTest',
-    'hasIsTestGroup',
-    'hasJS',
-    'hasLiteral',
-    'hasMustBeConst',
-    'hasMustBeOverridden',
-    'hasMustCallSuper',
-    'hasNonVirtual',
-    'hasOptionalTypeArgs',
-    'hasOverride',
-    'hasProtected',
-    'hasRedeclare',
-    'hasReopen',
-    'hasRequired',
-    'hasSealed',
-    'hasUseResult',
-    'hasVisibleForOverriding',
-    'hasVisibleForTemplate',
-    'hasVisibleForTesting',
-    'hasVisibleOutsideTemplate',
-    'hashCode',
-    'id',
-    'isPrivate',
-    'isPublic',
-    'isSynthetic',
-    'kind',
-    'library',
-    'location',
-    'metadata',
-    'name',
-    'nameLength',
-    'nameOffset',
-    'nonSynthetic',
-    'runtimeType',
-    'session',
-    'sinceSdkVersion',
-    'source',
-  },
   'Element2': {
     'baseElement',
     'children2',
@@ -26461,13 +25802,6 @@ const _invisibleGetters = {
     'nonSynthetic2',
     'runtimeType',
     'session',
-  },
-  'EnumElement': {
-    'augmentation',
-    'augmentationTarget',
-    'augmented',
-    'hashCode',
-    'runtimeType',
   },
   'EnumElement2': {
     'constants2',
@@ -26553,30 +25887,12 @@ const _invisibleGetters = {
     'typeParameters',
     'typeParameters2',
   },
-  'ExtensionElement': {
-    'augmentation',
-    'augmentationTarget',
-    'augmented',
-    'extendedType',
-    'hashCode',
-    'runtimeType',
-  },
   'ExtensionElement2': {
     'extendedType',
     'firstFragment',
     'fragments',
     'hashCode',
     'runtimeType',
-  },
-  'ExtensionTypeElement': {
-    'augmentation',
-    'augmentationTarget',
-    'augmented',
-    'hashCode',
-    'primaryConstructor',
-    'representation',
-    'runtimeType',
-    'typeErasure',
   },
   'ExtensionTypeElement2': {
     'firstFragment',
@@ -26586,19 +25902,6 @@ const _invisibleGetters = {
     'representation2',
     'runtimeType',
     'typeErasure',
-  },
-  'FieldElement': {
-    'augmentation',
-    'augmentationTarget',
-    'declaration',
-    'hashCode',
-    'isAbstract',
-    'isCovariant',
-    'isEnumConstant',
-    'isExternal',
-    'isPromotable',
-    'isStatic',
-    'runtimeType',
   },
   'FieldElement2': {
     'baseElement',
@@ -26651,13 +25954,6 @@ const _invisibleGetters = {
     'sortedNamedParameters',
     'typeFormals',
     'typeParameters',
-  },
-  'FunctionTypedElement': {
-    'hashCode',
-    'parameters',
-    'returnType',
-    'runtimeType',
-    'type',
   },
   'FunctionTypedElement2': {
     'firstFragment',
@@ -26719,20 +26015,6 @@ const _invisibleGetters = {
     'overriddenDepth',
     'overriddenElement',
   },
-  'InterfaceElement': {
-    'allSupertypes',
-    'augmentationTarget',
-    'augmented',
-    'constructors',
-    'hashCode',
-    'interfaces',
-    'mixins',
-    'name',
-    'runtimeType',
-    'supertype',
-    'thisType',
-    'unnamedConstructor',
-  },
   'InterfaceElement2': {
     'allSupertypes',
     'constructors2',
@@ -26758,31 +26040,6 @@ const _invisibleGetters = {
     'single',
   },
   'Kind': {'hashCode', 'index', 'runtimeType'},
-  'LibraryElement': {
-    'definingCompilationUnit',
-    'enclosingElement3',
-    'entryPoint',
-    'exportNamespace',
-    'exportedLibraries',
-    'featureSet',
-    'hashCode',
-    'identifier',
-    'importedLibraries',
-    'isDartAsync',
-    'isDartCore',
-    'isInSdk',
-    'languageVersion',
-    'library',
-    'loadLibraryFunction',
-    'name',
-    'publicNamespace',
-    'runtimeType',
-    'session',
-    'topLevelElements',
-    'typeProvider',
-    'typeSystem',
-    'units',
-  },
   'LibraryElement2': {
     'classes',
     'entryPoint2',
@@ -26916,13 +26173,6 @@ const _invisibleGetters = {
     'sinceSdkVersion',
     'substitution',
   },
-  'MethodElement': {
-    'augmentation',
-    'augmentationTarget',
-    'declaration',
-    'hashCode',
-    'runtimeType',
-  },
   'MethodElement2': {
     'baseElement',
     'firstFragment',
@@ -26930,15 +26180,6 @@ const _invisibleGetters = {
     'hashCode',
     'isOperator',
     'runtimeType',
-  },
-  'MixinElement': {
-    'augmentation',
-    'augmentationTarget',
-    'augmented',
-    'hashCode',
-    'isBase',
-    'runtimeType',
-    'superclassConstraints',
   },
   'MixinElement2': {
     'firstFragment',
@@ -27003,29 +26244,6 @@ const _invisibleGetters = {
     'resourceProvider',
     'runtimeType',
     'version',
-  },
-  'ParameterElement': {
-    'declaration',
-    'defaultValueCode',
-    'element',
-    'hasDefaultValue',
-    'hashCode',
-    'isCovariant',
-    'isInitializingFormal',
-    'isNamed',
-    'isOptional',
-    'isOptionalNamed',
-    'isOptionalPositional',
-    'isPositional',
-    'isRequired',
-    'isRequiredNamed',
-    'isRequiredPositional',
-    'isSuperFormal',
-    'name',
-    'parameterKind',
-    'parameters',
-    'runtimeType',
-    'typeParameters',
   },
   'ParameterMember': {
     'augmentationSubstitution',
@@ -27113,19 +26331,6 @@ const _invisibleGetters = {
     'typeShared',
   },
   'ParameterizedType': {'hashCode', 'runtimeType', 'typeArguments'},
-  'PropertyAccessorElement': {
-    'augmentation',
-    'augmentationTarget',
-    'correspondingGetter',
-    'correspondingSetter',
-    'declaration',
-    'enclosingElement3',
-    'hashCode',
-    'isGetter',
-    'isSetter',
-    'runtimeType',
-    'variable2',
-  },
   'PropertyAccessorElement2': {
     'baseElement',
     'firstFragment',
@@ -27154,29 +26359,12 @@ const _invisibleGetters = {
     'isEntryPoint',
     'runtimeType',
   },
-  'TopLevelVariableElement': {
-    'augmentation',
-    'augmentationTarget',
-    'declaration',
-    'hashCode',
-    'isExternal',
-    'runtimeType',
-  },
   'TopLevelVariableElement2': {
     'baseElement',
     'firstFragment',
     'fragments',
     'hashCode',
     'isExternal',
-    'runtimeType',
-  },
-  'TypeAliasElement': {
-    'aliasedElement',
-    'aliasedType',
-    'enclosingElement3',
-    'hashCode',
-    'isAugmentation',
-    'name',
     'runtimeType',
   },
   'TypeAliasElement2': {
@@ -27186,14 +26374,6 @@ const _invisibleGetters = {
     'firstFragment',
     'fragments',
     'hashCode',
-    'runtimeType',
-  },
-  'TypeParameterElement': {
-    'bound',
-    'declaration',
-    'displayName',
-    'hashCode',
-    'name',
     'runtimeType',
   },
   'TypeParameterElement2': {

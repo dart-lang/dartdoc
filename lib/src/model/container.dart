@@ -2,11 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/scope.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
@@ -33,10 +30,6 @@ import 'package:meta/meta.dart';
 abstract class Container extends ModelElement
     with Categorization, TypeParameters {
   Container(super.library, super.packageGraph);
-
-  @override
-  // ignore: analyzer_use_new_elements
-  Element get element => element2.asElement!;
 
   @override
   Element2 get element2;

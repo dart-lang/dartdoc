@@ -2,10 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -14,11 +11,6 @@ import 'package:dartdoc/src/model/model.dart';
 /// Top-level variables. But also picks up getters and setters?
 class TopLevelVariable extends ModelElement
     with GetterSetterCombo, Categorization {
-  @override
-  // ignore: analyzer_use_new_elements
-  TopLevelVariableElement get element =>
-      // ignore: analyzer_use_new_elements
-      (element2.firstFragment as TopLevelVariableElementImpl).declaration;
 
   @override
   final TopLevelVariableElement2 element2;

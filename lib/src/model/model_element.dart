@@ -8,7 +8,6 @@ library;
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart' show FunctionType;
 import 'package:analyzer/source/line_info.dart';
@@ -143,7 +142,7 @@ abstract class ModelElement
           TopLevelVariable(e, library, packageGraph, getter, setter);
     } else if (e is FieldElement2) {
       if (enclosingContainer is Extension) {
-        newModelElement = Field.element2(e, library, packageGraph,
+        newModelElement = Field(e, library, packageGraph,
             getter as ContainerAccessor?, setter as ContainerAccessor?);
       } else if (enclosingContainer == null) {
         if (e.isEnumConstant) {
@@ -161,10 +160,10 @@ abstract class ModelElement
           newModelElement =
               EnumField.forConstant(index, e, library, packageGraph, getter);
         } else if (e.enclosingElement2 is ExtensionElement2) {
-          newModelElement = Field.element2(e, library, packageGraph,
+          newModelElement = Field(e, library, packageGraph,
               getter as ContainerAccessor?, setter as ContainerAccessor?);
         } else {
-          newModelElement = Field.element2(e, library, packageGraph,
+          newModelElement = Field(e, library, packageGraph,
               getter as ContainerAccessor?, setter as ContainerAccessor?);
         }
       } else {
@@ -548,10 +547,6 @@ abstract class ModelElement
       documentationFrom.map((e) => e.documentationLocal).join('<p>'));
 
   @override
-  // ignore: analyzer_use_new_elements
-  Element get element => element2.asElement!;
-
-  @override
   Element2 get element2;
 
   @override
@@ -751,32 +746,32 @@ abstract class ModelElement
   // TODO(srawlins): This really smells like it should just be implemented in
   // the subclasses.
   late final List<Parameter> parameters = () {
-    final element = element2;
+    final e = element2;
     if (!isCallable) {
       throw StateError(
-          '$element (${element.runtimeType}) cannot have parameters');
+          '$e (${e.runtimeType}) cannot have parameters');
     }
 
     final List<FormalParameterElement> params;
-    if (element is TypeAliasElement2) {
-      final aliasedType = element.aliasedType;
+    if (e is TypeAliasElement2) {
+      final aliasedType = e.aliasedType;
       if (aliasedType is FunctionType) {
         params = aliasedType.formalParameters;
       } else {
         return const <Parameter>[];
       }
-    } else if (element is ExecutableElement2) {
+    } else if (e is ExecutableElement2) {
       if (_originalMember != null) {
         assert(_originalMember is ExecutableMember);
         params = (_originalMember as ExecutableMember).formalParameters;
       } else {
-        params = element.formalParameters;
+        params = e.formalParameters;
       }
-    } else if (element is FunctionTypedElement2) {
+    } else if (e is FunctionTypedElement2) {
       if (_originalMember != null) {
         params = (_originalMember as FunctionTypedElement2).formalParameters;
       } else {
-        params = element.formalParameters;
+        params = e.formalParameters;
       }
     } else {
       return const <Parameter>[];
