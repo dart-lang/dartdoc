@@ -4,7 +4,6 @@
 
 // ignore_for_file: analyzer_use_new_elements
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -20,8 +19,6 @@ import 'package:meta/meta.dart';
 /// Static extension on a given type, containing methods (including getters,
 /// setters, operators).
 class Extension extends Container {
-  @override
-  ExtensionElement get element => element2.asElement;
 
   @override
   final ExtensionElement2 element2;

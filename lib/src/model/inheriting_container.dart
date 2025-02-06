@@ -2,11 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -298,9 +295,6 @@ abstract class InheritingContainer extends Container {
       getModelFor2(element2, library) as InheritingContainer;
 
   @override
-
-  // ignore: analyzer_use_new_elements
-  InterfaceElement get element => element2.asElement;
 
   @override
   InterfaceElement2 get element2;

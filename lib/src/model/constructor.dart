@@ -2,13 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/element.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -17,8 +14,6 @@ import 'package:dartdoc/src/model_utils.dart';
 
 class Constructor extends ModelElement with ContainerMember, TypeParameters {
   @override
-  // ignore: analyzer_use_new_elements
-  ConstructorElement get element => element2.asElement;
 
   @override
   final ConstructorElement2 element2;
@@ -140,11 +135,11 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
         };
 
     var parameterElements = parameters.map((parameter) {
-      var element = dereferenceParameter(parameter.element2);
-      return element == null ? parameter : getModelForElement2(element);
+      var e = dereferenceParameter(parameter.element2);
+      return e == null ? parameter : getModelForElement2(e);
     });
     return {
-      for (var element in parameterElements) element.referenceName: element,
+      for (var e in parameterElements) e.referenceName: e,
       for (var tp in typeParameters) tp.referenceName: tp,
     };
   }();

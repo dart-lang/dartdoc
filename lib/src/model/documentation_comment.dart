@@ -720,8 +720,8 @@ mixin DocumentationComment
         firstOfPair.add(results[i]);
       }
     }
-    for (var element in firstOfPair) {
-      final result = element.group(2)!.trim();
+    for (var e in firstOfPair) {
+      final result = e.group(2)!.trim();
       if (result.isEmpty) {
         warn(PackageWarning.missingCodeBlockLanguage,
             message:

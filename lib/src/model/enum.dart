@@ -3,20 +3,14 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:meta/meta.dart';
 
 class Enum extends InheritingContainer with Constructable, MixedInTypes {
-  @override
-  // ignore: analyzer_use_new_elements
-  EnumElement get element => element2.asElement;
-
+ 
   @override
   final EnumElement2 element2;
 
@@ -89,7 +83,7 @@ class EnumField extends Field {
 
   EnumField.forConstant(this.index, FieldElement2 element, Library library,
       PackageGraph packageGraph, Accessor? getter)
-      : super.element2(
+      : super(
             element, library, packageGraph, getter as ContainerAccessor?, null);
 
   @override

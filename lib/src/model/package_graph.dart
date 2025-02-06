@@ -160,27 +160,27 @@ class PackageGraph with CommentReferable, Nameable {
     var allModelElements = _gatherModelElements();
     logInfo('Precaching local docs for ${allModelElements.length} elements...');
     progressBarStart(allModelElements.length);
-    for (var element in allModelElements) {
+    for (var e in allModelElements) {
       progressBarTick();
       // Only precache elements which are canonical, have a canonical element
       // somewhere, or have a canonical enclosing element. Not the same as
       // `allCanonicalModelElements` since we need to run for any [ModelElement]
       // that might not _have_ a canonical [ModelElement], too.
-      if (element.isCanonical ||
-          element.canonicalModelElement == null ||
-          element is Library ||
-          element.enclosingElement!.isCanonical) {
-        for (var d in element.documentationFrom
+      if (e.isCanonical ||
+          e.canonicalModelElement == null ||
+          e is Library ||
+          e.enclosingElement!.isCanonical) {
+        for (var d in e.documentationFrom
             .where((d) => d.hasDocumentationComment)) {
           if (d.needsPrecache && !precachedElements.contains(d)) {
             precachedElements.add(d as ModelElement);
             futures.add(d.precacheLocalDocs());
             // [TopLevelVariable]s get their documentation from getters and
             // setters, so should be precached if either has a template.
-            if (element is TopLevelVariable &&
-                !precachedElements.contains(element)) {
-              precachedElements.add(element);
-              futures.add(element.precacheLocalDocs());
+            if (e is TopLevelVariable &&
+                !precachedElements.contains(e)) {
+              precachedElements.add(e);
+              futures.add(e.precacheLocalDocs());
             }
           }
         }
@@ -733,7 +733,7 @@ class PackageGraph with CommentReferable, Nameable {
       {Container? preferredClass}) {
     assert(allLibrariesAdded);
     if (modelElement == null) return null;
-    var element = modelElement.element2;
+    var e = modelElement.element2;
     if (preferredClass != null) {
       var canonicalClass =
           findCanonicalModelElementFor(preferredClass) as Container?;
@@ -746,32 +746,32 @@ class PackageGraph with CommentReferable, Nameable {
       library = preferredClass.canonicalLibrary;
     }
     // For elements defined in extensions, they are canonical.
-    var enclosingElement = element.enclosingElement2;
+    var enclosingElement = e.enclosingElement2;
     if (enclosingElement is ExtensionElement2) {
       library ??= getModelForElement2(enclosingElement.library2) as Library?;
       // TODO(keertip): Find a better way to exclude members of extensions
       // when libraries are specified using the "--include" flag.
       if (library != null && library.isDocumented) {
-        return getModelFor2(element, library,
+        return getModelFor2(e, library,
             enclosingContainer: preferredClass);
       }
     }
     // TODO(jcollins-g): The data structures should be changed to eliminate
     // guesswork with member elements.
-    var declaration = element.baseElement;
+    var declaration = e.baseElement;
     ModelElement? canonicalModelElement;
-    if (element is ConstructorElement2 ||
-        element is MethodElement2 ||
-        element is FieldElement2 ||
-        element is PropertyAccessorElement2) {
+    if (e is ConstructorElement2 ||
+        e is MethodElement2 ||
+        e is FieldElement2 ||
+        e is PropertyAccessorElement2) {
       var declarationModelElement = getModelForElement2(declaration);
-      element = declarationModelElement.element2;
+      e = declarationModelElement.element2;
       canonicalModelElement = _findCanonicalModelElementForAmbiguous(
           declarationModelElement, library,
           preferredClass: preferredClass as InheritingContainer?);
     } else {
       if (library != null) {
-        if (element case PropertyInducingElement2(:var getter2, :var setter2)) {
+        if (e case PropertyInducingElement2(:var getter2, :var setter2)) {
           var getterElement = getter2 == null
               ? null
               : getModelFor2(getter2, library) as Accessor;
@@ -779,10 +779,10 @@ class PackageGraph with CommentReferable, Nameable {
               ? null
               : getModelFor2(setter2, library) as Accessor;
           canonicalModelElement = getModelForPropertyInducingElement2(
-              element, library,
+              e, library,
               getter: getterElement, setter: setterElement);
         } else {
-          canonicalModelElement = getModelFor2(element, library);
+          canonicalModelElement = getModelFor2(e, library);
         }
       }
       assert(canonicalModelElement is! Inheritable);
@@ -791,7 +791,7 @@ class PackageGraph with CommentReferable, Nameable {
       }
     }
     // Prefer fields and top-level variables.
-    if (element is PropertyAccessorElement2 &&
+    if (e is PropertyAccessorElement2 &&
         canonicalModelElement is Accessor) {
       canonicalModelElement = canonicalModelElement.enclosingCombo;
     }
