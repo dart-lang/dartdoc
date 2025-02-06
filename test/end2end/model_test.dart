@@ -4,6 +4,8 @@
 
 // ignore_for_file: non_constant_identifier_names
 
+ // ignore_for_file: analyzer_use_new_elements
+
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
