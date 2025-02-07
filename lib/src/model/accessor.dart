@@ -120,7 +120,7 @@ class Accessor extends ModelElement {
   ModelElement get enclosingElement => switch (element2.enclosingElement2) {
         LibraryFragment enclosingCompilationUnit =>
           getModelForElement2(enclosingCompilationUnit.element),
-        _ => getModelFor2(element2.enclosingElement2!, library)
+        _ => getModelFor2(element2.enclosingElement2, library)
       };
 
   @override
