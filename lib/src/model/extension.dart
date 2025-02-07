@@ -19,7 +19,6 @@ import 'package:meta/meta.dart';
 /// Static extension on a given type, containing methods (including getters,
 /// setters, operators).
 class Extension extends Container {
-
   @override
   final ExtensionElement2 element2;
 
@@ -82,7 +81,7 @@ class Extension extends Container {
 
   @override
   late final List<Method> declaredMethods = element2.methods2
-      .map((e) => getModelFor2(e, library, enclosingContainer: this) as Method)
+      .map((e) => getModelFor(e, library, enclosingContainer: this) as Method)
       .toList(growable: false);
 
   @override
@@ -115,15 +114,15 @@ class Extension extends Container {
       setter = ModelElement.for_(fieldSetter, library, packageGraph,
           enclosingContainer: this) as ContainerAccessor;
     }
-    return getModelForPropertyInducingElement(field.asElement, library,
+    return getModelForPropertyInducingElement(field, library,
         getter: getter, setter: setter, enclosingContainer: this) as Field;
   }).toList(growable: false);
 
   @override
   late final List<TypeParameter> typeParameters = element2.typeParameters2
-      .map((typeParameter) => getModelFor2(
+      .map((typeParameter) => getModelFor(
           typeParameter,
-          getModelForElement2(typeParameter.enclosingElement2!.library2!)
+          getModelForElement(typeParameter.enclosingElement2!.library2!)
               as Library) as TypeParameter)
       .toList(growable: false);
 

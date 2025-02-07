@@ -49,7 +49,7 @@ class Accessor extends ModelElement {
 
   /// The [enclosingCombo] where this element was defined.
   late final GetterSetterCombo definingCombo =
-      getModelForElement2(element2.variable3!) as GetterSetterCombo;
+      getModelForElement(element2.variable3!) as GetterSetterCombo;
 
   String get _sourceCode {
     if (!isSynthetic) {
@@ -119,8 +119,8 @@ class Accessor extends ModelElement {
   @override
   ModelElement get enclosingElement => switch (element2.enclosingElement2) {
         LibraryFragment enclosingCompilationUnit =>
-          getModelForElement2(enclosingCompilationUnit.element),
-        _ => getModelFor2(element2.enclosingElement2!, library)
+          getModelForElement(enclosingCompilationUnit.element),
+        _ => getModelFor(element2.enclosingElement2!, library)
       };
 
   @override
@@ -223,7 +223,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
         continue;
       }
       final parentContainer =
-          getModelForElement2(supertype.element3) as InheritingContainer;
+          getModelForElement(supertype.element3) as InheritingContainer;
       final possibleFields =
           parentContainer.declaredFields.where((f) => !f.isStatic);
       final fieldName = accessor.lookupName?.replaceFirst('=', '');

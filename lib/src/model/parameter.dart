@@ -26,7 +26,7 @@ class Parameter extends ModelElement with HasNoPage {
     final enclosingElement = element2.enclosingElement2;
     return enclosingElement == null
         ? null
-        : getModelFor2(enclosingElement, library);
+        : getModelFor(enclosingElement, library);
   }
 
   bool get hasDefaultValue {

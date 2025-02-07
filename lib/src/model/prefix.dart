@@ -27,7 +27,7 @@ class Prefix extends ModelElement with HasNoPage {
   // TODO(jcollins-g): consider connecting PrefixElement to the imported library
   // in analyzer?
   late final Library associatedLibrary =
-      getModelForElement2(_getImportedLibraryElement()!) as Library;
+      getModelForElement(_getImportedLibraryElement()!) as Library;
 
   LibraryElement2? _getImportedLibraryElement() {
     final importLists =

@@ -49,7 +49,7 @@ class Method extends ModelElement
 
   void _calcTypeParameters() {
     typeParameters = element2.typeParameters2.map((f) {
-      return getModelFor2(f, library) as TypeParameter;
+      return getModelFor(f, library) as TypeParameter;
     }).toList(growable: false);
   }
 
@@ -68,7 +68,7 @@ class Method extends ModelElement
 
   @override
   Container get enclosingElement => _enclosingContainer ??=
-      getModelFor2(element2.enclosingElement2!, library) as Container;
+      getModelFor(element2.enclosingElement2!, library) as Container;
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;
@@ -134,7 +134,7 @@ class Method extends ModelElement
           'Expected "${e.enclosingElement2?.name3}" to be a InterfaceElement, '
           'but was ${e.enclosingElement2.runtimeType}',
         );
-        return getModelForElement2(e) as Method?;
+        return getModelForElement(e) as Method?;
       }
     }
     return null;

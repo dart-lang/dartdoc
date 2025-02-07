@@ -63,7 +63,7 @@ abstract class Typedef extends ModelElement
 
   @override
   List<TypeParameter> get typeParameters => element2.typeParameters2
-      .map((f) => getModelFor2(f, library) as TypeParameter)
+      .map((f) => getModelFor(f, library) as TypeParameter)
       .toList(growable: false);
 
   @override

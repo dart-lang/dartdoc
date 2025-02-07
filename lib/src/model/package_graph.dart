@@ -748,11 +748,11 @@ class PackageGraph with CommentReferable, Nameable {
     // For elements defined in extensions, they are canonical.
     var enclosingElement = e.enclosingElement2;
     if (enclosingElement is ExtensionElement2) {
-      library ??= getModelForElement2(enclosingElement.library2) as Library?;
+      library ??= getModelForElement(enclosingElement.library2) as Library?;
       // TODO(keertip): Find a better way to exclude members of extensions
       // when libraries are specified using the "--include" flag.
       if (library != null && library.isDocumented) {
-        return getModelFor2(e, library,
+        return getModelFor(e, library,
             enclosingContainer: preferredClass);
       }
     }
@@ -764,7 +764,7 @@ class PackageGraph with CommentReferable, Nameable {
         e is MethodElement2 ||
         e is FieldElement2 ||
         e is PropertyAccessorElement2) {
-      var declarationModelElement = getModelForElement2(declaration);
+      var declarationModelElement = getModelForElement(declaration);
       e = declarationModelElement.element2;
       canonicalModelElement = _findCanonicalModelElementForAmbiguous(
           declarationModelElement, library,
@@ -774,15 +774,15 @@ class PackageGraph with CommentReferable, Nameable {
         if (e case PropertyInducingElement2(:var getter2, :var setter2)) {
           var getterElement = getter2 == null
               ? null
-              : getModelFor2(getter2, library) as Accessor;
+              : getModelFor(getter2, library) as Accessor;
           var setterElement = setter2 == null
               ? null
-              : getModelFor2(setter2, library) as Accessor;
-          canonicalModelElement = getModelForPropertyInducingElement2(
+              : getModelFor(setter2, library) as Accessor;
+          canonicalModelElement = getModelForPropertyInducingElement(
               e, library,
               getter: getterElement, setter: setterElement);
         } else {
-          canonicalModelElement = getModelFor2(e, library);
+          canonicalModelElement = getModelFor(e, library);
         }
       }
       assert(canonicalModelElement is! Inheritable);

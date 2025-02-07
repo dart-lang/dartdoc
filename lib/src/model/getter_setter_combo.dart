@@ -86,7 +86,7 @@ mixin GetterSetterCombo on ModelElement {
     var element = _constantInitializer.constructorName.element;
     if (element == null) return original;
 
-    var target = getModelForElement2(element) as Constructor;
+    var target = getModelForElement(element) as Constructor;
     var enclosingElement = target.enclosingElement;
     if (enclosingElement is! Class) return original;
 
