@@ -25649,7 +25649,6 @@ const _invisibleGetters = {
     'isExhaustive',
     'isFinal',
     'isInterface',
-    'isMacro',
     'isMixinApplication',
     'isMixinClass',
     'isSealed',
@@ -26248,6 +26247,7 @@ const _invisibleGetters = {
     'baseElement',
     'children',
     'children2',
+    'constantInitializer2',
     'context',
     'declaration',
     'defaultValueCode',
@@ -26331,6 +26331,7 @@ const _invisibleGetters = {
   'ParameterizedType': {'hashCode', 'runtimeType', 'typeArguments'},
   'PropertyAccessorElement2': {
     'baseElement',
+    'enclosingElement2',
     'firstFragment',
     'fragments',
     'hashCode',
