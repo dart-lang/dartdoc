@@ -20,7 +20,7 @@ import 'package:meta/meta.dart';
 /// [hasModifiers] override is not necessary for this mixin.
 mixin Constructable implements InheritingContainer {
   late final List<Constructor> constructors = element2.constructors2
-      .map((e) => getModelFor2(e, library) as Constructor)
+      .map((e) => getModelFor(e, library) as Constructor)
       .toList(growable: false);
 
   @override
@@ -111,7 +111,7 @@ abstract class InheritingContainer extends Container {
 
     return [
       for (var e in inheritedMethodElements)
-        getModelFor2(e, library, enclosingContainer: this) as Method,
+        getModelFor(e, library, enclosingContainer: this) as Method,
     ];
   }
 
@@ -125,7 +125,7 @@ abstract class InheritingContainer extends Container {
 
     return [
       for (var e in inheritedOperatorElements)
-        getModelFor2(e, library, enclosingContainer: this) as Operator,
+        getModelFor(e, library, enclosingContainer: this) as Operator,
     ];
   }
 
@@ -254,14 +254,14 @@ abstract class InheritingContainer extends Container {
 
   @override
   late final List<Method> declaredMethods = element2.methods2
-      .map((e) => getModelFor2(e, library) as Method)
+      .map((e) => getModelFor(e, library) as Method)
       .toList(growable: false);
 
   @override
   late final List<TypeParameter> typeParameters = element2.typeParameters2
-      .map((typeParameter) => getModelFor2(
+      .map((typeParameter) => getModelFor(
           typeParameter,
-          getModelForElement2(typeParameter.enclosingElement2!.library2!)
+          getModelForElement(typeParameter.enclosingElement2!.library2!)
               as Library) as TypeParameter)
       .toList(growable: false);
 
@@ -292,7 +292,7 @@ abstract class InheritingContainer extends Container {
 
   /// The [InheritingContainer] with the library in which [element] is defined.
   InheritingContainer get definingContainer =>
-      getModelFor2(element2, library) as InheritingContainer;
+      getModelFor(element2, library) as InheritingContainer;
 
   @override
 
@@ -347,7 +347,7 @@ abstract class InheritingContainer extends Container {
   List<Field> get _extensionInstanceFields => [
         for (var extension in potentiallyApplicableExtensionsSorted)
           for (var field in extension.instanceFields)
-            getModelForPropertyInducingElement2(
+            getModelForPropertyInducingElement(
               field.element2,
               library,
               enclosingContainer: extension,
@@ -371,7 +371,7 @@ abstract class InheritingContainer extends Container {
   List<Method> get _extensionInstanceMethods => [
         for (var extension in potentiallyApplicableExtensionsSorted)
           for (var method in extension.instanceMethods)
-            getModelFor2(method.element2, library,
+            getModelFor(method.element2, library,
                 enclosingContainer: extension) as Method,
       ];
 
@@ -388,7 +388,7 @@ abstract class InheritingContainer extends Container {
   List<Operator> get _extensionInstanceOperators => [
         for (var extension in potentiallyApplicableExtensionsSorted)
           for (var operator in extension.instanceOperators)
-            getModelFor2(operator.element2, library,
+            getModelFor(operator.element2, library,
                 enclosingContainer: extension) as Operator,
       ];
 
@@ -604,7 +604,7 @@ abstract class InheritingContainer extends Container {
       if (element == null) return null;
       final enclosingContainer =
           inheritedAccessors.contains(element) ? this : null;
-      return getModelFor2(element, library,
+      return getModelFor(element, library,
           enclosingContainer: enclosingContainer) as ContainerAccessor;
     }
 
@@ -644,14 +644,14 @@ abstract class InheritingContainer extends Container {
     if ((getter == null || getter.isInherited) &&
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
-      return getModelForPropertyInducingElement2(field, library,
+      return getModelForPropertyInducingElement(field, library,
           getter: getter, setter: setter, enclosingContainer: this) as Field;
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
       // half-inherited fields when traversing the inheritance tree.  Make
       // this better, somehow.
-      return getModelForPropertyInducingElement2(field, library,
+      return getModelForPropertyInducingElement(field, library,
           getter: getter, setter: setter) as Field;
     }
   }

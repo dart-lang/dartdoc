@@ -132,14 +132,14 @@ mixin CommentReferable implements Nameable {
         // First, cache the synthetic variable, so that the
         // PropertyAccessorElement getter and/or setter are set (see
         // `Field.new` regarding `enclosingCombo`).
-        packageGraph.getModelForElement2(variable);
+        packageGraph.getModelForElement(variable);
         // Then, use the result for the PropertyAccessorElement.
-        result = packageGraph.getModelForElement2(resultElement);
+        result = packageGraph.getModelForElement(resultElement);
       } else {
-        result = packageGraph.getModelForElement2(variable);
+        result = packageGraph.getModelForElement(variable);
       }
     } else {
-      result = packageGraph.getModelForElement2(resultElement);
+      result = packageGraph.getModelForElement(resultElement);
     }
     return _recurseChildrenAndFilter(referenceLookup, result, filter: filter);
   }

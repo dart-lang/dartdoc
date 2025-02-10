@@ -926,7 +926,7 @@ void main() async {
               .whereType<DirectiveUriWithLibrary>()
               .map((uri) => uri.library2)
         })
-          packageGraph.getModelForElement2(l) as Library
+          packageGraph.getModelForElement(l) as Library
       };
       expect(fakeLibraryImportedExported.any((l) => l.name == 'import_unusual'),
           isTrue);

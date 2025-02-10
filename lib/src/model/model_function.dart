@@ -10,8 +10,8 @@ import 'package:dartdoc/src/model/model.dart';
 
 /// A [ModelElement] for a [TopLevelFunctionElement] that isn't part of a type definition.
 class ModelFunction extends ModelFunctionTyped with Categorization {
-  ModelFunction(
-      TopLevelFunctionElement super.element2, super.library, super.packageGraph);
+  ModelFunction(TopLevelFunctionElement super.element2, super.library,
+      super.packageGraph);
 
   bool get isStatic => element2.isStatic;
 
@@ -19,7 +19,8 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
   String get name => element2.name3 ?? '';
 
   @override
-  TopLevelFunctionElement get element2 => super.element2 as TopLevelFunctionElement;
+  TopLevelFunctionElement get element2 =>
+      super.element2 as TopLevelFunctionElement;
 
   bool get isAsynchronous => element2.firstFragment.isAsynchronous;
 }
@@ -34,14 +35,13 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
 }
 
 class ModelFunctionTyped extends ModelElement with TypeParameters {
-
   @override
   final FunctionTypedElement2 element2;
 
   @override
   late final List<TypeParameter> typeParameters = [
     for (var p in element2.typeParameters2)
-      getModelFor2(p, library) as TypeParameter,
+      getModelFor(p, library) as TypeParameter,
   ];
 
   ModelFunctionTyped(this.element2, super.library, super.packageGraph);
@@ -82,7 +82,8 @@ class ModelFunctionTyped extends ModelElement with TypeParameters {
   @override
   Iterable<CommentReferable> get referenceParents => [library];
 
-  late final Callable modelType = getTypeFor(element2.type, library) as Callable;
+  late final Callable modelType =
+      getTypeFor(element2.type, library) as Callable;
 
   // For use in templates.
   bool get isProvidedByExtension => false;

@@ -40,7 +40,7 @@ abstract class ElementType with CommentReferable, Nameable {
         fElement.kind == ElementKind.NEVER) {
       return UndefinedElementType._from(type, library, packageGraph);
     }
-    var modelElement = packageGraph.getModelForElement2(fElement);
+    var modelElement = packageGraph.getModelForElement(fElement);
     return DefinedElementType._from(type, modelElement, library, packageGraph);
   }
 
@@ -137,7 +137,7 @@ class FunctionTypeElementType extends UndefinedElementType
       : super._();
 
   List<TypeParameter> get typeFormals => type.typeParameters
-      .map((p) => getModelFor2(p, library) as TypeParameter)
+      .map((p) => getModelFor(p, library) as TypeParameter)
       .toList(growable: false);
 
   @override
@@ -329,7 +329,7 @@ abstract class DefinedElementType extends ElementType {
 /// unless it is an alias reference.
 mixin Callable on ElementType {
   List<Parameter> get parameters => type.formalParameters
-      .map((p) => getModelFor2(p, library) as Parameter)
+      .map((p) => getModelFor(p, library) as Parameter)
       .toList(growable: false);
 
   late final ElementType returnType = getTypeFor(type.returnType, library);

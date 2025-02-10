@@ -55,7 +55,7 @@ mixin DocumentationComment
         if (!hasDocumentationComment && self.overriddenElement != null) {
           return self.overriddenElement!.documentationFrom;
         } else if (self.isInherited) {
-          return packageGraph.getModelForElement2(element2).documentationFrom;
+          return packageGraph.getModelForElement(element2).documentationFrom;
         } else {
           return [this];
         }

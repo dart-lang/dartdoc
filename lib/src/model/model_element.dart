@@ -803,7 +803,7 @@ abstract class ModelElement
   @override
   CommentReferable get definingCommentReferable {
     var element = element2;
-    return getModelForElement2(element);
+    return getModelForElement(element);
   }
 
   String get linkedObjectType => _packageGraph.dartCoreObject;

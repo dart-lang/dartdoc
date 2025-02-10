@@ -70,8 +70,9 @@ class Library extends ModelElement
       ...libraryElement.firstFragment.topLevelVariables2.map((v) => v.element),
       ...libraryElement.firstFragment.typeAliases2.map((a) => a.element),
     };
-    var exportedElements = {...libraryElement.exportNamespace.definedNames2.values}
-        .difference(localElements);
+    var exportedElements = {
+      ...libraryElement.exportNamespace.definedNames2.values
+    }.difference(localElements);
     var library = Library._(
       libraryElement,
       packageGraph,
@@ -140,7 +141,7 @@ class Library extends ModelElement
       if (importedLibrary != null) {
         prefixToLibrary
             .putIfAbsent(prefixName, () => {})
-            .add(getModelFor2(importedLibrary, library) as Library);
+            .add(getModelFor(importedLibrary, library) as Library);
       }
     }
     return prefixToLibrary;
@@ -362,7 +363,7 @@ class Library extends ModelElement
       _localElementsOfType<T extends Element2, U extends ModelElement>() =>
           _localElements
               .whereType<T>()
-              .map((e) => packageGraph.getModelFor2(e, this) as U);
+              .map((e) => packageGraph.getModelFor(e, this) as U);
 
   Iterable<U>
       _exportedElementsOfType<T extends Element2, U extends ModelElement>() =>
@@ -371,9 +372,9 @@ class Library extends ModelElement
             if (library == null) {
               throw StateError("The library of '$e' is null!");
             }
-            return packageGraph.getModelFor2(
+            return packageGraph.getModelFor(
               e,
-              packageGraph.getModelForElement2(library) as Library,
+              packageGraph.getModelForElement(library) as Library,
             ) as U;
           });
 
@@ -395,18 +396,19 @@ class Library extends ModelElement
     }.map(_topLevelVariableFor);
   }
 
-  TopLevelVariable _topLevelVariableFor(TopLevelVariableElement2 topLevelVariableElement) {
+  TopLevelVariable _topLevelVariableFor(
+      TopLevelVariableElement2 topLevelVariableElement) {
     Accessor? getter;
     var elementGetter = topLevelVariableElement.getter2;
     if (elementGetter != null) {
-      getter = packageGraph.getModelFor2(elementGetter, this) as Accessor;
+      getter = packageGraph.getModelFor(elementGetter, this) as Accessor;
     }
     Accessor? setter;
     var elementSetter = topLevelVariableElement.setter2;
     if (elementSetter != null) {
-      setter = packageGraph.getModelFor2(elementSetter, this) as Accessor;
+      setter = packageGraph.getModelFor(elementSetter, this) as Accessor;
     }
-    return getModelForPropertyInducingElement2(topLevelVariableElement, this,
+    return getModelForPropertyInducingElement(topLevelVariableElement, this,
         getter: getter, setter: setter) as TopLevelVariable;
   }
 
@@ -436,7 +438,7 @@ class Library extends ModelElement
   Map<String, CommentReferable> get referenceChildren {
     var referenceChildrenBuilder = <String, CommentReferable>{};
     var definedNamesModelElements =
-        element2.exportNamespace.definedNames2.values.map(getModelForElement2);
+        element2.exportNamespace.definedNames2.values.map(getModelForElement);
     referenceChildrenBuilder
         .addAll(definedNamesModelElements.whereNotType<Accessor>().asMapByName);
     // TODO(jcollins-g): warn and get rid of this case where it shows up.
@@ -500,19 +502,19 @@ class Library extends ModelElement
     ];
     return libraryMembers.map((member) {
       if (member is! GetterSetterCombo) {
-        return getModelForElement2(member.element2).fullyQualifiedName;
+        return getModelForElement(member.element2).fullyQualifiedName;
       }
       var getter = switch (member.getter) {
-        Accessor accessor => getModelForElement2(accessor.element2) as Accessor,
+        Accessor accessor => getModelForElement(accessor.element2) as Accessor,
         _ => null,
       };
       var setter = switch (member.setter) {
-        Accessor accessor => getModelForElement2(accessor.element2) as Accessor,
+        Accessor accessor => getModelForElement(accessor.element2) as Accessor,
         _ => null,
       };
-      return getModelForPropertyInducingElement2(
+      return getModelForPropertyInducingElement(
         member.element2 as TopLevelVariableElement2,
-        getModelForElement2(member.element2.library2!) as Library,
+        getModelForElement(member.element2.library2!) as Library,
         getter: getter,
         setter: setter,
       ).fullyQualifiedName;

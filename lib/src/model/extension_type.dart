@@ -53,7 +53,7 @@ class ExtensionType extends InheritingContainer with Constructable {
       setter = ContainerAccessor(
           fieldSetter, library, packageGraph, this);
     }
-    return getModelForPropertyInducingElement2(field, library,
+    return getModelForPropertyInducingElement(field, library,
         getter: getter, setter: setter) as Field;
   }).toList(growable: false);
 

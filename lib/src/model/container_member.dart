@@ -29,7 +29,7 @@ mixin ContainerMember on ModelElement {
   @protected
   @visibleForTesting
   late final Container definingEnclosingContainer =
-      getModelForElement2(element2.enclosingElement2!) as Container;
+      getModelForElement(element2.enclosingElement2!) as Container;
 
   @override
   Set<Attribute> get attributes => {

@@ -64,7 +64,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
 
   @override
   Container get enclosingElement =>
-      getModelFor2(element2.enclosingElement2, library) as Container;
+      getModelFor(element2.enclosingElement2, library) as Container;
 
   @override
   String get fileName =>
@@ -136,7 +136,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
 
     var parameterElements = parameters.map((parameter) {
       var e = dereferenceParameter(parameter.element2);
-      return e == null ? parameter : getModelForElement2(e);
+      return e == null ? parameter : getModelForElement(e);
     });
     return {
       for (var e in parameterElements) e.referenceName: e,

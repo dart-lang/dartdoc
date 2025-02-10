@@ -2,13 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart' show DartType;
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/accessor.dart';
@@ -59,21 +54,6 @@ mixin Nameable {
   ///
   /// A convenience method for [ModelElement.for_], see its documentation.
   ModelElement getModelFor(
-    Element element,
-    Library library, {
-    Container? enclosingContainer,
-  }) =>
-      ModelElement.for_(
-        element.asElement2!,
-        library,
-        packageGraph,
-        enclosingContainer: enclosingContainer,
-      );
-
-  /// Returns the [ModelElement] for [element], instantiating it if needed.
-  ///
-  /// A convenience method for [ModelElement.for_], see its documentation.
-  ModelElement getModelFor2(
     Element2 element,
     Library library, {
     Container? enclosingContainer,
@@ -89,14 +69,7 @@ mixin Nameable {
   ///
   /// A convenience method for [ModelElement.forElement], see its
   /// documentation.
-  ModelElement getModelForElement(Element element) =>
-      ModelElement.forElement(element.asElement2!, packageGraph);
-
-  /// Returns the [ModelElement] for [element], instantiating it if needed.
-  ///
-  /// A convenience method for [ModelElement.forElement], see its
-  /// documentation.
-  ModelElement getModelForElement2(Element2 element) =>
+  ModelElement getModelForElement(Element2 element) =>
       ModelElement.forElement(element, packageGraph);
 
   /// Returns the [ModelElement] for [element], instantiating it if needed.
@@ -107,29 +80,6 @@ mixin Nameable {
   // immediately before calling this method, and I imagine could instead just
   // call `getModelFor`.
   ModelElement getModelForPropertyInducingElement(
-    PropertyInducingElement element,
-    Library library, {
-    required Accessor? getter,
-    required Accessor? setter,
-    Container? enclosingContainer,
-  }) =>
-      ModelElement.forPropertyInducingElement(
-        element.asElement2 as PropertyInducingElement2,
-        library,
-        packageGraph,
-        getter: getter,
-        setter: setter,
-        enclosingContainer: enclosingContainer,
-      );
-
-  /// Returns the [ModelElement] for [element], instantiating it if needed.
-  ///
-  /// A convenience method for [ModelElement.forPropertyInducingElement], see
-  /// its documentation.
-  // TODO(srawlins): Most callers seem to determine `getter` and `setter`
-  // immediately before calling this method, and I imagine could instead just
-  // call `getModelFor`.
-  ModelElement getModelForPropertyInducingElement2(
     PropertyInducingElement2 element,
     Library library, {
     required Accessor? getter,
