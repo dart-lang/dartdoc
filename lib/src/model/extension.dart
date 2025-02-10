@@ -2,13 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
+import 'package:analyzer/src/dart/element/element.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/element/type_system.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -52,8 +52,9 @@ class Extension extends Container {
     extendedType = library.element2.typeSystem.promoteToNonNull(extendedType);
     var otherType = container.modelType.type;
     if (otherType is InterfaceType) {
-      otherType = library.element2.typeSystem.instantiateInterfaceToBounds(
-        element: otherType.element3.asElement,
+      otherType = (library.element2.typeSystem as TypeSystemImpl)
+          .instantiateInterfaceToBounds2(
+        element: otherType.element3 as InterfaceElementImpl2,
         nullabilitySuffix: NullabilitySuffix.none,
       );
 
