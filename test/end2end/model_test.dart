@@ -4,8 +4,6 @@
 
 // ignore_for_file: non_constant_identifier_names
 
- // ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
@@ -909,7 +907,7 @@ void main() async {
     });
 
     test('can import other libraries with unusual URIs', () {
-        final importLists = fakeLibrary.element2.fragments
+      final importLists = fakeLibrary.element2.fragments
           .map((fragment) => fragment.libraryImports2);
       final exportLists = fakeLibrary.element2.fragments
           .map((fragment) => fragment.libraryExports2);
