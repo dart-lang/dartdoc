@@ -2,9 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: non_constant_identifier_names
-
  // ignore_for_file: analyzer_use_new_elements
+
+// ignore_for_file: non_constant_identifier_names
 
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -909,7 +909,7 @@ void main() async {
     });
 
     test('can import other libraries with unusual URIs', () {
-        final importLists = fakeLibrary.element2.fragments
+      final importLists = fakeLibrary.element2.fragments
           .map((fragment) => fragment.libraryImports2);
       final exportLists = fakeLibrary.element2.fragments
           .map((fragment) => fragment.libraryExports2);
@@ -1679,19 +1679,6 @@ void main() async {
           .named('GadgetExtender');
       var gadgetGetter = GadgetExtender.instanceFields.named('gadgetGetter');
       expect(gadgetGetter.isCanonical, isTrue);
-    });
-
-    test(
-        'ExecutableElements from private classes and from public interfaces (#1561)',
-        () {
-      var MIEEMixinWithOverride =
-          fakeLibrary.classes.wherePublic.named('MIEEMixinWithOverride');
-      var problematicOperator =
-          MIEEMixinWithOverride.inheritedOperators.named('operator []=');
-      expect(problematicOperator.element2.enclosingElement2?.name3,
-          equals('_MIEEPrivateOverride'));
-      expect(problematicOperator.canonicalModelElement!.enclosingElement!.name,
-          equals('MIEEMixinWithOverride'));
     });
   });
 

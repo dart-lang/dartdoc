@@ -197,5 +197,37 @@ class D implements Object {}
     expect(toString.canonicalEnclosingContainer!.isDartCoreObject, isTrue);
   }
 
+  void test_multiplyInheritedOperator_oneIsPrivate() async {
+    // Test an edge case where inherited ExecutableElements can come both from
+    // private classes and public interfaces.  The test makes sure the class
+    // still takes precedence.
+    // See https://github.com/dart-lang/dartdoc/issues/1561.
+    var library = await bootPackageWithLibrary('''
+abstract class A<K, V> {
+  void operator []=(K key, V value);
+}
+
+abstract class B<K, V> implements A<K, V> {
+  @override
+  operator []=(K key, V value);
+}
+
+abstract class C<K, V> extends B<K, V> {}
+
+abstract class _D<K, V> implements A<K, V> {
+  @override
+  void operator []=(K key, V value);
+}
+
+abstract class E<K, V> = C<K, V> with _D<K, V>;
+''');
+
+    var indexAssign =
+        library.classes.named('E').inheritedOperators.named('operator []=');
+    expect(indexAssign.element2.enclosingElement2!.name3, '_D');
+    expect(indexAssign.canonicalEnclosingContainer!.name, 'E');
+    expect(indexAssign.canonicalModelElement!.enclosingElement!.name, 'E');
+  }
+
   // TODO(srawlins): Test everything else about classes.
 }
