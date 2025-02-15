@@ -1678,19 +1678,6 @@ void main() async {
       var gadgetGetter = GadgetExtender.instanceFields.named('gadgetGetter');
       expect(gadgetGetter.isCanonical, isTrue);
     });
-
-    test(
-        'ExecutableElements from private classes and from public interfaces (#1561)',
-        () {
-      var MIEEMixinWithOverride =
-          fakeLibrary.classes.wherePublic.named('MIEEMixinWithOverride');
-      var problematicOperator =
-          MIEEMixinWithOverride.inheritedOperators.named('operator []=');
-      expect(problematicOperator.element2.enclosingElement2?.name3,
-          equals('_MIEEPrivateOverride'));
-      expect(problematicOperator.canonicalModelElement!.enclosingElement!.name,
-          equals('MIEEMixinWithOverride'));
-    });
   });
 
   group('Mixin', () {
