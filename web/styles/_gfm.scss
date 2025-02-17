@@ -2,70 +2,75 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/* github alert styles */
-
+/// Alert/admonition styles used by GFM, but styled to match other Dart sites.
 .markdown-alert {
   margin-top: 1rem;
   margin-bottom: 1rem;
-  padding: 1.25rem;
-}
+  padding: 0.75rem;
 
-.markdown-alert > :last-child {
-  margin-bottom: 0;
-}
+  --alert-title-color: --main-inset-borderColor;
 
-.markdown-alert-title {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 0.5rem;
+  background-color: var(--main-inset-bgColor);
+  border-left: solid 0.25rem var(--alert-title-color);
 
-  font-weight: bold;
-  -webkit-font-smoothing: antialiased;
-}
+  > :last-child {
+    margin-bottom: 0;
+  }
 
-.markdown-alert-title:before {
-  font: 24px / 1 'Material Symbols Outlined';
-}
+  .markdown-alert-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 
-/* note, tip, important, warning, caution */
+    font-size: 1.125rem;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    color: var(--alert-title-color, inherit);
 
-.markdown-alert.markdown-alert-note {
-  background-color: var(--alert-info);
-}
+    &::before {
+      font: 22px / 1 'Material Symbols Outlined';
+      user-select: none;
+    }
+  }
 
-.markdown-alert-note .markdown-alert-title:before {
-  content: 'info';
-}
+  &.markdown-alert-note {
+    --alert-title-color: var(--alert-info-fgColor);
 
-.markdown-alert.markdown-alert-tip {
-  background-color: var(--alert-tip);
-}
+    .markdown-alert-title::before {
+      content: 'info';
+    }
+  }
 
-.markdown-alert-tip .markdown-alert-title:before {
-  content: 'lightbulb';
-}
+  &.markdown-alert-tip {
+    --alert-title-color: var(--alert-tip-fgColor);
 
-.markdown-alert.markdown-alert-important {
-  background-color: var(--alert-important);
-}
+    .markdown-alert-title::before {
+      content: 'lightbulb';
+    }
+  }
 
-.markdown-alert-important .markdown-alert-title:before {
-  content: 'feedback';
-}
+  &.markdown-alert-important {
+    --alert-title-color: var(--alert-important-fgColor);
 
-.markdown-alert.markdown-alert-warning {
-  background-color: var(--alert-warning);
-}
+    .markdown-alert-title::before {
+      content: 'feedback';
+    }
+  }
 
-.markdown-alert-warning .markdown-alert-title:before {
-  content: 'warning';
-}
+  &.markdown-alert-warning {
+    --alert-title-color: var(--alert-warning-fgColor);
 
-.markdown-alert.markdown-alert-caution {
-  background-color: var(--alert-error);
-}
+    .markdown-alert-title::before {
+      content: 'warning';
+    }
+  }
 
-.markdown-alert-caution .markdown-alert-title:before {
-  content: 'report';
+  &.markdown-alert-caution {
+    --alert-title-color: var(--alert-error-fgColor);
+
+    .markdown-alert-title::before {
+      content: 'report';
+    }
+  }
 }
