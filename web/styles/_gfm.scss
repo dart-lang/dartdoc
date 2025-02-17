@@ -8,64 +8,62 @@
   margin-top: 1rem;
   margin-bottom: 1rem;
   padding: 1.25rem;
-}
 
-.markdown-alert > :last-child {
-  margin-bottom: 0;
-}
+  > :last-child {
+    margin-bottom: 0;
+  }
 
-.markdown-alert-title {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 0.5rem;
+  .markdown-alert-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
 
-  font-weight: bold;
-  -webkit-font-smoothing: antialiased;
-}
+    font-weight: bold;
+    -webkit-font-smoothing: antialiased;
 
-.markdown-alert-title:before {
-  font: 24px / 1 'Material Symbols Outlined';
-}
+    &:before {
+      font: 24px / 1 'Material Symbols Outlined';
+    }
+  }
 
-/* note, tip, important, warning, caution */
+  &.markdown-alert-note {
+    background-color: var(--alert-info);
 
-.markdown-alert.markdown-alert-note {
-  background-color: var(--alert-info);
-}
+    .markdown-alert-title:before {
+      content: 'info';
+    }
+  }
 
-.markdown-alert-note .markdown-alert-title:before {
-  content: 'info';
-}
+  &.markdown-alert-tip {
+    background-color: var(--alert-tip);
 
-.markdown-alert.markdown-alert-tip {
-  background-color: var(--alert-tip);
-}
+    .markdown-alert-title:before {
+      content: 'lightbulb';
+    }
+  }
 
-.markdown-alert-tip .markdown-alert-title:before {
-  content: 'lightbulb';
-}
+  &.markdown-alert-important {
+    background-color: var(--alert-important);
 
-.markdown-alert.markdown-alert-important {
-  background-color: var(--alert-important);
-}
+    .markdown-alert-title:before {
+      content: 'feedback';
+    }
+  }
 
-.markdown-alert-important .markdown-alert-title:before {
-  content: 'feedback';
-}
+  &.markdown-alert-warning {
+    background-color: var(--alert-warning);
 
-.markdown-alert.markdown-alert-warning {
-  background-color: var(--alert-warning);
-}
+    .markdown-alert-title:before {
+      content: 'warning';
+    }
+  }
 
-.markdown-alert-warning .markdown-alert-title:before {
-  content: 'warning';
-}
+  &.markdown-alert-caution {
+    background-color: var(--alert-error);
 
-.markdown-alert.markdown-alert-caution {
-  background-color: var(--alert-error);
-}
-
-.markdown-alert-caution .markdown-alert-title:before {
-  content: 'report';
+    .markdown-alert-title:before {
+      content: 'report';
+    }
+  }
 }

@@ -2,40 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-.category.linked {
-  font-weight: bold;
-  opacity: 1;
-}
-
-/* Colors for category based on categoryOrder in dartdoc_options.config. */
-.category.cp-0 {
-  background-color: #54b7c4
-}
-
-.category.cp-1 {
-  background-color: #54c47f
-}
-
-.category.cp-2 {
-  background-color: #c4c254
-}
-
-.category.cp-3 {
-  background-color: #c49f54
-}
-
-.category.cp-4 {
-  background-color: #c45465
-}
-
-.category.cp-5 {
-  background-color: #c454c4
-}
-
-.category a {
-  color: white;
-}
-
 .category {
   padding: 2px 4px;
   font-size: 12px;
@@ -44,8 +10,42 @@
   text-transform: uppercase;
   color: white;
   opacity: .5;
-}
 
-h1 .category {
-  vertical-align: middle;
+  a {
+    color: white;
+  }
+
+  h1 & {
+    vertical-align: middle;
+  }
+
+  &.linked {
+    font-weight: bold;
+    opacity: 1;
+  }
+
+  /* Colors for category based on categoryOrder in dartdoc_options.config. */
+  &.cp-0 {
+    background-color: #54b7c4
+  }
+
+  &.cp-1 {
+    background-color: #54c47f
+  }
+
+  &.cp-2 {
+    background-color: #c4c254
+  }
+
+  &.cp-3 {
+    background-color: #c49f54
+  }
+
+  &.cp-4 {
+    background-color: #c45465
+  }
+
+  &.cp-5 {
+    background-color: #c454c4
+  }
 }
