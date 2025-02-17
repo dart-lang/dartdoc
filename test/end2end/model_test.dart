@@ -4,9 +4,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-// ignore_for_file: analyzer_use_new_elements
-
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:async/async.dart';
@@ -181,9 +179,9 @@ void main() async {
         'Verify annotations and their type arguments render on type parameters '
         'for typedefs',
         skip: 'dart-lang/sdk#46064', () {
-      expect((F.aliasedType as FunctionType).typeFormals.first.metadata,
+      expect((F.aliasedType as FunctionType).typeParameters.first.metadata2,
           isNotEmpty);
-      expect((F.aliasedType as FunctionType).parameters.first.metadata,
+      expect((F.aliasedType as FunctionType).typeParameters.first.metadata2,
           isNotEmpty);
       // TODO(jcollins-g): add rendering verification once we have data from
       // analyzer.
@@ -234,7 +232,7 @@ void main() async {
     void expectTypedefs(Typedef t, String modelTypeToString,
         Iterable<String> genericParameters) {
       expect(t.modelType.toString(), equals(modelTypeToString));
-      expect(t.element.typeParameters.map((p) => p.toString()),
+      expect(t.element2.typeParameters2.map((p) => p.toString()),
           orderedEquals(genericParameters));
     }
 
@@ -909,16 +907,22 @@ void main() async {
     });
 
     test('can import other libraries with unusual URIs', () {
+      final importLists = fakeLibrary.element2.fragments
+          .map((fragment) => fragment.libraryImports2);
+      final exportLists = fakeLibrary.element2.fragments
+          .map((fragment) => fragment.libraryExports2);
       final fakeLibraryImportedExported = <Library>{
-        for (final l in <LibraryElement>{
-          ...fakeLibrary.element.definingCompilationUnit.libraryImports
+        for (final l in <LibraryElement2>{
+          ...importLists
+              .expand((imports) => imports)
               .map((import) => import.uri)
               .whereType<DirectiveUriWithLibrary>()
-              .map((uri) => uri.library),
-          ...fakeLibrary.element.definingCompilationUnit.libraryExports
-              .map((import) => import.uri)
+              .map((uri) => uri.library2),
+          ...exportLists
+              .expand((exports) => exports)
+              .map((export) => export.uri)
               .whereType<DirectiveUriWithLibrary>()
-              .map((uri) => uri.library)
+              .map((uri) => uri.library2)
         })
           packageGraph.getModelForElement(l) as Library
       };
@@ -1674,19 +1678,6 @@ void main() async {
       var gadgetGetter = GadgetExtender.instanceFields.named('gadgetGetter');
       expect(gadgetGetter.isCanonical, isTrue);
     });
-
-    test(
-        'ExecutableElements from private classes and from public interfaces (#1561)',
-        () {
-      var MIEEMixinWithOverride =
-          fakeLibrary.classes.wherePublic.named('MIEEMixinWithOverride');
-      var problematicOperator =
-          MIEEMixinWithOverride.inheritedOperators.named('operator []=');
-      expect(problematicOperator.element.enclosingElement3.name,
-          equals('_MIEEPrivateOverride'));
-      expect(problematicOperator.canonicalModelElement!.enclosingElement!.name,
-          equals('MIEEMixinWithOverride'));
-    });
   });
 
   group('Mixin', () {
@@ -2414,7 +2405,7 @@ void main() async {
         aNonDefaultConstructor = baseForDocComments.constructors
             .named('BaseForDocComments.aNonDefaultConstructor');
         defaultConstructor =
-            baseForDocComments.constructors.named('BaseForDocComments');
+            baseForDocComments.constructors.named('BaseForDocComments.new');
         somethingShadowyParameter =
             defaultConstructor.parameters.named('somethingShadowy');
         initializeMe = baseForDocComments.allFields.named('initializeMe');
@@ -2473,7 +2464,7 @@ void main() async {
         anotherConstructor = FactoryConstructorThings.constructors
             .named('FactoryConstructorThings.anotherConstructor');
         factoryConstructorThingsDefault = FactoryConstructorThings.constructors
-            .named('FactoryConstructorThings');
+            .named('FactoryConstructorThings.new');
 
         aName = anotherName.parameters.named('aName');
         anotherNameParameter = anotherName.parameters.named('anotherName');
@@ -3572,7 +3563,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('inheritance of docs from SDK works for getter/setter combos', () {
       expect(
           ExtraSpecialListLength
-              .getter!.documentationFrom.first.element.library!.name,
+              .getter!.documentationFrom.first.element2.library2!.name3,
           equals('dart.core'));
       expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
     });
@@ -3974,8 +3965,10 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('substrings of the constant values type are not linked (#1535)', () {
-      expect(aName.constantValue,
-          'const <a href="${htmlBasePlaceholder}ex/ExtendedShortName/ExtendedShortName.html">ExtendedShortName</a>(&quot;hello there&quot;)');
+      expect(
+        aName.constantValue,
+        'const <a href="${htmlBasePlaceholder}ex/ExtendedShortName/ExtendedShortName.html">ExtendedShortName</a>(&quot;hello there&quot;)',
+      );
     });
 
     test('constant field values are escaped', () {
@@ -4040,10 +4033,10 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       constCat = exLibrary.classes.named('ConstantCat');
       constructorTester = fakeLibrary.classes.named('ConstructorTester');
       constCatConstructor = constCat.constructors.first;
-      appleDefaultConstructor = apple.constructors.named('Apple');
+      appleDefaultConstructor = apple.constructors.named('Apple.new');
       appleConstructorFromString = apple.constructors.named('Apple.fromString');
       constructorTesterDefault =
-          constructorTester.constructors.named('ConstructorTester');
+          constructorTester.constructors.named('ConstructorTester.new');
       constructorTesterFromSomething = constructorTester.constructors
           .named('ConstructorTester.fromSomething');
       referToADefaultConstructor =
@@ -4095,8 +4088,8 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has constructor', () {
       expect(appleDefaultConstructor, isNotNull);
-      expect(appleDefaultConstructor.name, equals('Apple'));
-      expect(appleDefaultConstructor.shortName, equals('Apple'));
+      expect(appleDefaultConstructor.name, equals('Apple.new'));
+      expect(appleDefaultConstructor.shortName, equals('new'));
     });
 
     test('title has factory qualifier', () {

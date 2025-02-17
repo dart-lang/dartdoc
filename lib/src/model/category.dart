@@ -2,9 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
@@ -80,8 +78,6 @@ class Category
     }
   }
 
-  @override
-  Element? get element => null;
 
   @override
   Element2? get element2 => null;

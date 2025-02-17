@@ -1,9 +1,8 @@
 // Copyright (c) 2019, the Dart project authors. Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
-// ignore_for_file: analyzer_use_new_elements
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -32,6 +31,9 @@ abstract class Container extends ModelElement
     with Categorization, TypeParameters {
   Container(super.library, super.packageGraph);
 
+  @override
+  Element2 get element2;
+
   // TODO(jcollins-g): Implement a ContainerScope that flattens supertypes?
   @override
   Scope? get scope => null;
@@ -39,20 +41,20 @@ abstract class Container extends ModelElement
   @override
   bool get hasParameters => false;
 
-  bool get isExtension => element is ExtensionElement;
+  bool get isExtension => element2 is ExtensionElement2;
 
   /// Whether this is an enum.
-  bool get isEnum => element is EnumElement;
+  bool get isEnum => element2 is EnumElement2;
 
   /// Whether this is an interface (e.g. class, enum, mixin, or extension type).
-  bool get isInterface => element is InterfaceElement;
+  bool get isInterface => element2 is InterfaceElement2;
 
   /// Whether this is a mixin.
-  bool get isMixin => element is MixinElement;
+  bool get isMixin => element2 is MixinElement2;
 
   /// Whether this container represents the Object class from 'dart:core'.
   bool get isDartCoreObject =>
-      element.name == 'Object' && element.library?.name == 'dart.core';
+      element2.name3 == 'Object' && element2.library2?.name3 == 'dart.core';
 
   /// The model elements of all of the members of this container, including
   /// declared and inherited ones.
@@ -156,10 +158,10 @@ abstract class Container extends ModelElement
 
   /// This container might be canonical for elements it does not contain.
   /// See [Inheritable.canonicalEnclosingContainer].
-  bool containsElement(Element? element) => _allElements.contains(element);
+  bool containsElement(Element2? element) => _allElements.contains(element);
 
-  late final Set<Element> _allElements =
-      allModelElements.map((e) => e.element).toSet();
+  late final Set<Element2> _allElements =
+      allModelElements.map((e) => e.element2).toSet();
 
   bool get hasPublicStaticFields => staticFields.any((e) => e.isPublic);
 

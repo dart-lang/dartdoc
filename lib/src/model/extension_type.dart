@@ -2,9 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -12,13 +10,14 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
 
 class ExtensionType extends InheritingContainer with Constructable {
+
   @override
-  final ExtensionTypeElement element;
+  final ExtensionTypeElement2  element2;
 
   late final ElementType representationType =
-      getTypeFor(element.representation.type, library);
+      getTypeFor(element2.representation2.type, library);
 
-  ExtensionType(this.element, super.library, super.packageGraph);
+  ExtensionType(this.element2, super.library, super.packageGraph);
 
   @override
   Library get enclosingElement => library;
@@ -42,15 +41,17 @@ class ExtensionType extends InheritingContainer with Constructable {
   bool get isSealed => false;
 
   @override
-  late final List<Field> declaredFields = element.fields.map((field) {
+  late final List<Field> declaredFields = element2.fields2.map((field) {
     ContainerAccessor? getter, setter;
-    final fieldGetter = field.getter;
+    final fieldGetter = field.getter2;
     if (fieldGetter != null) {
-      getter = ContainerAccessor(fieldGetter, library, packageGraph, this);
+      getter = ContainerAccessor(
+          fieldGetter, library, packageGraph, this);
     }
-    final fieldSetter = field.setter;
+    final fieldSetter = field.setter2;
     if (fieldSetter != null) {
-      setter = ContainerAccessor(fieldSetter, library, packageGraph, this);
+      setter = ContainerAccessor(
+          fieldSetter, library, packageGraph, this);
     }
     return getModelForPropertyInducingElement(field, library,
         getter: getter, setter: setter) as Field;

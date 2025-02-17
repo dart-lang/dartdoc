@@ -2,15 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'dart:async';
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
@@ -19,7 +16,6 @@ import 'package:analyzer/src/context/builder.dart' show EmbedderYamlLocator;
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
 // ignore: implementation_imports
-import 'package:analyzer/src/dart/element/element.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/sdk/sdk.dart'
     show EmbedderSdk, FolderBasedDartSdk;
@@ -225,10 +221,10 @@ class PubPackageBuilder implements PackageBuilder {
   /// Discovers and resolves libraries, invoking [addLibrary] with each result.
   ///
   /// Uses [processedLibraries] to prevent calling [addLibrary] more than once
-  /// with the same [LibraryElement]. Adds each [LibraryElement] found to
+  /// with the same [LibraryElement2]. Adds each [LibraryElement2] found to
   /// [processedLibraries].
   Future<void> _discoverLibraries(PackageGraph uninitializedPackageGraph,
-      Set<LibraryElement> processedLibraries, Set<String> files) async {
+      Set<LibraryElement2> processedLibraries, Set<String> files) async {
     files = {...files};
     // Discover Dart libraries in a loop. In each iteration of the loop, we take
     // a set of files (starting with the ones passed into the function), resolve
@@ -276,15 +272,15 @@ class PubPackageBuilder implements PackageBuilder {
           _knownParts.add(file);
           continue;
         }
-        newFiles.addFilesReferencedBy(resolvedLibrary.element);
+        newFiles.addFilesReferencedBy(resolvedLibrary.element2);
         for (var unit in resolvedLibrary.units) {
-          newFiles.addFilesReferencedBy(unit.declaredElement);
+          newFiles.addFilesReferencedByFragment(unit.declaredFragment);
         }
-        if (processedLibraries.contains(resolvedLibrary.element)) {
+        if (processedLibraries.contains(resolvedLibrary.element2)) {
           continue;
         }
         uninitializedPackageGraph.addLibraryToGraph(resolvedLibrary);
-        processedLibraries.add(resolvedLibrary.element);
+        processedLibraries.add(resolvedLibrary.element2);
       }
       files.addAll(newFiles);
       var externals = _includedExternalsFrom(newFiles);
@@ -472,7 +468,7 @@ class PubPackageBuilder implements PackageBuilder {
     var files = await _getFilesToDocument();
 
     logInfo('Discovering libraries...');
-    var foundLibraries = <LibraryElement>{};
+    var foundLibraries = <LibraryElement2>{};
     await _discoverLibraries(
       uninitializedPackageGraph,
       foundLibraries,
@@ -484,9 +480,9 @@ class PubPackageBuilder implements PackageBuilder {
 
   /// Throws an exception if any configured-to-be-included files were not found
   /// while gathering libraries.
-  void _checkForMissingIncludedFiles(Set<LibraryElement> foundLibraries) {
+  void _checkForMissingIncludedFiles(Set<LibraryElement2> foundLibraries) {
     if (_config.include.isNotEmpty) {
-      var knownLibraryNames = foundLibraries.map((l) => l.name);
+      var knownLibraryNames = foundLibraries.map((l) => l.name3);
       var notFound = _config.include
           .difference(Set.of(knownLibraryNames))
           .difference(_config.exclude);
@@ -519,12 +515,11 @@ class PubPackageBuilder implements PackageBuilder {
 /// Contains the [ResolvedLibraryResult] and any additional information about
 /// the library.
 class DartDocResolvedLibrary {
-  final LibraryElement element;
-  LibraryElement2 get element2 => element as LibraryElementImpl;
+  final LibraryElement2 element2;
   final List<CompilationUnit> units;
 
   DartDocResolvedLibrary(ResolvedLibraryResult result)
-      : element = result.element,
+      : element2 = result.element2,
         units = result.units.map((unit) => unit.unit).toList();
 }
 
@@ -532,35 +527,28 @@ extension on Set<String> {
   /// Adds [element]'s path and all of its part files' paths to `this`, and
   /// recursively adds the paths of all imported and exported libraries.
   ///
-  /// [element] must be a [LibraryElement] or [CompilationUnitElement].
-  void addFilesReferencedBy(Element? element) {
+  /// [element] must be a [LibraryElement2].
+  void addFilesReferencedBy(LibraryElement2? element) {
     if (element == null) return;
 
-    var path = element.source?.fullName;
-    if (path == null) return;
+    for (var fragment in element.fragments) {
+      addFilesReferencedByFragment(fragment);
+    }
+  }
+
+  void addFilesReferencedByFragment(LibraryFragment? fragment) {
+    if (fragment == null) return;
+
+    var path = fragment.source.fullName;
 
     if (add(path)) {
-      var libraryImports = switch (element) {
-        LibraryElement() => element.definingCompilationUnit.libraryImports,
-        CompilationUnitElement(:var libraryImports) => libraryImports,
-        _ => const <LibraryImportElement>[],
-      };
+      var libraryImports = fragment.libraryImports2;
       for (var import in libraryImports) {
-        addFilesReferencedBy(import.importedLibrary);
+        addFilesReferencedBy(import.importedLibrary2);
       }
-
-      var libraryExports = switch (element) {
-        LibraryElement() => element.definingCompilationUnit.libraryExports,
-        CompilationUnitElement(:var libraryExports) => libraryExports,
-        _ => const <LibraryExportElement>[],
-      };
+      var libraryExports = fragment.libraryExports2;
       for (var export in libraryExports) {
-        addFilesReferencedBy(export.exportedLibrary);
-      }
-      if (element is LibraryElement) {
-        for (var unit in element.units) {
-          addFilesReferencedBy(unit);
-        }
+        addFilesReferencedBy(export.exportedLibrary2);
       }
     }
   }

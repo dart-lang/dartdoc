@@ -2,9 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
@@ -16,8 +14,9 @@ import 'package:dartdoc/src/model/model.dart';
 
 class Method extends ModelElement
     with ContainerMember, Inheritable, TypeParameters {
+
   @override
-  final MethodElement element;
+  final MethodElement2 element2;
 
   Container? _enclosingContainer;
 
@@ -26,20 +25,20 @@ class Method extends ModelElement
   @override
   late final List<TypeParameter> typeParameters;
 
-  Method(this.element, super.library, super.packageGraph)
+  Method(this.element2, super.library, super.packageGraph)
       : _isInherited = false {
     _calcTypeParameters();
   }
 
-  Method.inherited(
-      this.element, this._enclosingContainer, super.library, super.packageGraph,
+  Method.inherited(this.element2, this._enclosingContainer, super.library,
+      super.packageGraph,
       {ExecutableMember? super.originalMember})
       : _isInherited = true {
     _calcTypeParameters();
   }
 
   Method.providedByExtension(
-    this.element,
+    this.element2,
     this._enclosingContainer,
     super.library,
     super.packageGraph, {
@@ -49,7 +48,7 @@ class Method extends ModelElement
   }
 
   void _calcTypeParameters() {
-    typeParameters = element.typeParameters.map((f) {
+    typeParameters = element2.typeParameters2.map((f) {
       return getModelFor(f, library) as TypeParameter;
     }).toList(growable: false);
   }
@@ -69,7 +68,7 @@ class Method extends ModelElement
 
   @override
   Container get enclosingElement => _enclosingContainer ??=
-      getModelFor(element.enclosingElement3, library) as Container;
+      getModelFor(element2.enclosingElement2!, library) as Container;
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;
@@ -79,8 +78,8 @@ class Method extends ModelElement
 
   String get fullkind {
     // A method cannot be abstract and static at the same time.
-    if (element.isAbstract) return 'abstract $kind';
-    if (element.isStatic) return 'static $kind';
+    if (element2.isAbstract) return 'abstract $kind';
+    if (element2.isStatic) return 'static $kind';
     return kind.toString();
   }
 
@@ -97,7 +96,7 @@ class Method extends ModelElement
   bool get isOperator => false;
 
   bool get isProvidedByExtension =>
-      element.enclosingElement3 is ExtensionElement;
+      element2.enclosingElement2 is ExtensionElement2;
 
   /// The [enclosingElement], which is expected to be an [Extension].
   Extension get enclosingExtension => enclosingElement as Extension;
@@ -108,7 +107,7 @@ class Method extends ModelElement
         if (isInherited) Attribute.inherited,
       };
 
-  bool get isStatic => element.isStatic;
+  bool get isStatic => element2.isStatic;
 
   @override
   Kind get kind => Kind.method;
@@ -118,22 +117,22 @@ class Method extends ModelElement
       super.originalMember as ExecutableMember?;
 
   late final Callable modelType =
-      getTypeFor((originalMember ?? element).type, library) as Callable;
+      getTypeFor((originalMember ?? element2).type, library) as Callable;
 
   @override
   Method? get overriddenElement {
     if (_enclosingContainer is Extension ||
-        element.enclosingElement3 is ExtensionElement) {
+        element2.enclosingElement2 is ExtensionElement2) {
       return null;
     }
-    var parent = element.enclosingElement3 as InterfaceElement;
+    var parent = element2.enclosingElement2 as InterfaceElement2;
     for (var t in parent.allSupertypes) {
-      Element? e = t.getMethod(element.name);
+      Element2? e = t.getMethod2(element2.name3 ?? '');
       if (e != null) {
         assert(
-          e.enclosingElement3 is InterfaceElement,
-          'Expected "${e.enclosingElement3?.name}" to be a InterfaceElement, '
-          'but was ${e.enclosingElement3.runtimeType}',
+          e.enclosingElement2 is InterfaceElement2,
+          'Expected "${e.enclosingElement2?.name3}" to be a InterfaceElement, '
+          'but was ${e.enclosingElement2.runtimeType}',
         );
         return getModelForElement(e) as Method?;
       }

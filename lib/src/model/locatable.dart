@@ -2,9 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
-import 'package:analyzer/dart/element/element.dart' show Element;
 import 'package:dartdoc/src/model/model.dart';
 
 /// Something that can be located for warning purposes.
@@ -26,8 +23,7 @@ mixin Locatable {
 
   String? get href;
 
-  /// A string indicating the URI of this Locatable, usually derived from
-  /// [Element.location].
+  /// A string indicating the URI of this Locatable.
   String get location;
 
   /// Whether this is the "canonical" copy of an element.

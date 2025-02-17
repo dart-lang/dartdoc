@@ -2,15 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 /// Code for managing comment reference lookups in dartdoc.
 library;
 
 import 'dart:core';
 
 import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/library.dart';
@@ -61,7 +59,7 @@ mixin CommentReferable implements Nameable {
       if (result != null) {
         if (result is Prefix &&
             result.name == '_' &&
-            library!.element.featureSet.isEnabled(Feature.wildcard_variables)) {
+            library!.element2.featureSet.isEnabled(Feature.wildcard_variables)) {
           // A wildcard import prefix is non-binding.
           continue;
         }
@@ -107,7 +105,7 @@ mixin CommentReferable implements Nameable {
     _ReferenceChildrenLookup referenceLookup, {
     required bool Function(CommentReferable?) filter,
   }) {
-    Element? resultElement;
+    Element2? resultElement;
     final scope = this.scope;
     if (scope != null) {
       resultElement = scope.lookupPreferGetter(referenceLookup.lookup);
@@ -128,8 +126,8 @@ mixin CommentReferable implements Nameable {
     }
 
     ModelElement result;
-    if (resultElement is PropertyAccessorElement) {
-      final variable = resultElement.variable2!;
+    if (resultElement is PropertyAccessorElement2) {
+      final variable = resultElement.variable3!;
       if (variable.isSynthetic) {
         // First, cache the synthetic variable, so that the
         // PropertyAccessorElement getter and/or setter are set (see
@@ -209,16 +207,16 @@ mixin CommentReferable implements Nameable {
   Library? get library => null;
 
   /// For testing / comparison only, get the comment referable from where this
-  /// `ElementType` was defined.  Override where an [Element] is available.
+  /// `ElementType` was defined.  Override where an [Element2] is available.
   @internal
   CommentReferable get definingCommentReferable => this;
 }
 
 extension on Scope {
   /// Prefer the getter for a bundled lookup if both exist.
-  Element? lookupPreferGetter(String id) {
+  Element2? lookupPreferGetter(String id) {
     var result = lookup(id);
-    return result.getter ?? result.setter;
+    return result.getter2 ?? result.setter2;
   }
 }
 

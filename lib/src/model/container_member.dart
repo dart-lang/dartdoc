@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
@@ -31,7 +29,7 @@ mixin ContainerMember on ModelElement {
   @protected
   @visibleForTesting
   late final Container definingEnclosingContainer =
-      getModelForElement(element.enclosingElement3!) as Container;
+      getModelForElement(element2.enclosingElement2!) as Container;
 
   @override
   Set<Attribute> get attributes => {

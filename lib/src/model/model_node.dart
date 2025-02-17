@@ -2,20 +2,18 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'dart:convert';
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:meta/meta.dart';
 
 /// Stripped down information derived from [AstNode] containing only information
 /// needed to resurrect the source code of [_element].
 class ModelNode {
-  final Element _element;
+  final Element2 _element;
   final AnalysisContext _analysisContext;
   final int _sourceEnd;
   final int _sourceOffset;
@@ -25,7 +23,7 @@ class ModelNode {
 
   factory ModelNode(
     AstNode? sourceNode,
-    Element element,
+    Element2 element,
     AnalysisContext analysisContext, {
     CommentData? commentData,
   }) {
@@ -67,7 +65,7 @@ class ModelNode {
   late final String sourceCode = () {
     if (_isSynthetic) return '';
 
-    var path = _element.source?.fullName;
+    var path = _element.firstFragment.libraryFragment?.source.fullName;
     if (path == null) return '';
 
     var fileResult = _analysisContext.currentSession.getFile(path);
@@ -117,7 +115,7 @@ class CommentDocImportData {
 /// Comment reference data is not available on the analyzer's Element model, so
 /// we store it in instances of this class after resolving libraries.
 class CommentReferenceData {
-  final Element element;
+  final Element2 element;
   final String name;
   final int offset;
   final int length;

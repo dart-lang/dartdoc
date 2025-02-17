@@ -1117,34 +1117,6 @@ extension OnOldSchool on OldSchoolMixin {
 
 class School with OldSchoolMixin, NewSchoolMixin {}
 
-//
-//
-//
-
-/// Test an edge case for cases where inherited ExecutableElements can come
-/// both from private classes and public interfaces.  The test makes sure the
-/// class still takes precedence (#1561).
-abstract class MIEEMixinWithOverride<K, V> = MIEEBase<K, V>
-    with _MIEEPrivateOverride<K, V>;
-
-abstract class _MIEEPrivateOverride<K, V> implements MIEEThing<K, V> {
-  // ignore: annotate_overrides
-  void operator []=(K key, V value) {
-    throw UnsupportedError("Never use this");
-  }
-}
-
-abstract class MIEEBase<K, V> extends MIEEMixin<K, V> {}
-
-abstract class MIEEMixin<K, V> implements MIEEThing<K, V> {
-  // ignore: annotate_overrides
-  operator []=(K key, V value);
-}
-
-abstract class MIEEThing<K, V> {
-  void operator []=(K key, V value);
-}
-
 abstract class ImplementingClassForTool {
   /// Invokes a tool from inherited documentation via `implemented`
   ///

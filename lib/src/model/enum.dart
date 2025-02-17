@@ -2,20 +2,19 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:meta/meta.dart';
 
 class Enum extends InheritingContainer with Constructable, MixedInTypes {
+ 
   @override
-  final EnumElement element;
+  final EnumElement2 element2;
 
-  Enum(this.element, super.library, super.packageGraph);
+  Enum(this.element2, super.library, super.packageGraph);
 
   @override
   late final List<ModelElement> allModelElements = [
@@ -82,7 +81,7 @@ class Enum extends InheritingContainer with Constructable, MixedInTypes {
 class EnumField extends Field {
   final int index;
 
-  EnumField.forConstant(this.index, FieldElement element, Library library,
+  EnumField.forConstant(this.index, FieldElement2 element, Library library,
       PackageGraph packageGraph, Accessor? getter)
       : super(
             element, library, packageGraph, getter as ContainerAccessor?, null);
@@ -92,9 +91,9 @@ class EnumField extends Field {
 
   @override
   bool get hasConstantValueForDisplay {
-    final enum_ = element.enclosingElement3 as EnumElement;
+    final enum_ = element2.enclosingElement2 as EnumElement2;
     final enumHasDefaultConstructor =
-        enum_.constructors.any((c) => c.isDefaultConstructor);
+        enum_.constructors2.any((c) => c.isDefaultConstructor);
     // If this enum does not have any explicit constructors (and so only has a
     // default constructor), then there is no meaningful constant initializer to
     // display.
@@ -103,7 +102,7 @@ class EnumField extends Field {
 
   @override
   String get constantValueBase =>
-      element.library.featureSet.isEnabled(Feature.enhanced_enums)
+      element2.library2.featureSet.isEnabled(Feature.enhanced_enums)
           ? super.constantValueBase
           : renderedName;
 

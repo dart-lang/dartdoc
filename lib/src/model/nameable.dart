@@ -2,16 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
-import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart' show DartType;
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/accessor.dart';
+import 'package:dartdoc/src/model/constructor.dart';
 import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
@@ -58,7 +54,7 @@ mixin Nameable {
   ///
   /// A convenience method for [ModelElement.for_], see its documentation.
   ModelElement getModelFor(
-    Element element,
+    Element2 element,
     Library library, {
     Container? enclosingContainer,
   }) =>
@@ -71,32 +67,10 @@ mixin Nameable {
 
   /// Returns the [ModelElement] for [element], instantiating it if needed.
   ///
-  /// A convenience method for [ModelElement.for_], see its documentation.
-  ModelElement getModelFor2(
-    Element2 element,
-    Library library, {
-    Container? enclosingContainer,
-  }) =>
-      ModelElement.for_(
-        element.asElement!,
-        library,
-        packageGraph,
-        enclosingContainer: enclosingContainer,
-      );
-
-  /// Returns the [ModelElement] for [element], instantiating it if needed.
-  ///
   /// A convenience method for [ModelElement.forElement], see its
   /// documentation.
-  ModelElement getModelForElement(Element element) =>
+  ModelElement getModelForElement(Element2 element) =>
       ModelElement.forElement(element, packageGraph);
-
-  /// Returns the [ModelElement] for [element], instantiating it if needed.
-  ///
-  /// A convenience method for [ModelElement.forElement], see its
-  /// documentation.
-  ModelElement getModelForElement2(Element2 element) =>
-      ModelElement.forElement(element.asElement!, packageGraph);
 
   /// Returns the [ModelElement] for [element], instantiating it if needed.
   ///
@@ -106,7 +80,7 @@ mixin Nameable {
   // immediately before calling this method, and I imagine could instead just
   // call `getModelFor`.
   ModelElement getModelForPropertyInducingElement(
-    PropertyInducingElement element,
+    PropertyInducingElement2 element,
     Library library, {
     required Accessor? getter,
     required Accessor? setter,
@@ -130,6 +104,12 @@ mixin Nameable {
 int byName(Nameable a, Nameable b) {
   if (a is Library && b is Library) {
     return compareAsciiLowerCaseNatural(a.displayName, b.displayName);
+  }
+
+  if (a is Constructor && b is Constructor) {
+    var aName = a.name.replaceFirst('.new', '');
+    var bName = b.name.replaceFirst('.new', '');
+    return compareAsciiLowerCaseNatural(aName, bName);
   }
 
   var stringCompare = compareAsciiLowerCaseNatural(a.name, b.name);

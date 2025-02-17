@@ -2,17 +2,15 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/render/documentation_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
 
 class Documentation {
-  final Warnable _element;
+  final Warnable _warnable;
 
-  Documentation.forElement(this._element);
+  Documentation.forElement(this._warnable);
 
   /// The documentation text, rendered with the appropriate
   /// [DocumentationRenderer].
@@ -40,10 +38,10 @@ class Documentation {
       // set one. We have this awkward check to make sure we set both fields if
       // we'll need both fields.
       assert(
-        _element.isCanonical,
-        "generating docs for non-canonical element: '$_element' "
-        "('${_element.runtimeType}', ${_element.hashCode}), representing "
-        "'${_element.element}'",
+        _warnable.isCanonical,
+        "generating docs for non-canonical element: '$_warnable' "
+        "('${_warnable.runtimeType}', ${_warnable.hashCode}), representing "
+        "'${_warnable.element2}'",
       );
       return _asHtml;
     }
@@ -57,7 +55,7 @@ class Documentation {
     if (_hasOneLinerBeenRendered || _hasHtmlBeenRendered) {
       return _asOneLiner;
     }
-    _renderDocumentation(storeFullText: _element.isCanonical);
+    _renderDocumentation(storeFullText: _warnable.isCanonical);
     _hasOneLinerBeenRendered = true;
     return _asOneLiner;
   }
@@ -67,7 +65,7 @@ class Documentation {
 
     var renderResult = _renderer.render(parseResult,
         processFullDocs: storeFullText,
-        sanitizeHtml: _element.config.sanitizeHtml);
+        sanitizeHtml: _warnable.config.sanitizeHtml);
 
     if (storeFullText) {
       _asHtml = renderResult.asHtml;
@@ -76,12 +74,12 @@ class Documentation {
   }
 
   List<md.Node> _parseDocumentation({required bool processFullText}) {
-    final text = _element.documentation;
+    final text = _warnable.documentation;
     if (text == null || text.isEmpty) {
       return const [];
     }
-    showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
-    var document = MarkdownDocument.withElementLinkResolver(_element);
+    showWarningsForGenericsOutsideSquareBracketsBlocks(text, _warnable);
+    var document = MarkdownDocument.withElementLinkResolver(_warnable);
     return document.parseMarkdownText(text, processFullText: processFullText);
   }
 

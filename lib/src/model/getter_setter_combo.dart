@@ -2,21 +2,26 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'dart:convert';
 
 import 'package:analyzer/dart/ast/ast.dart'
     show Expression, InstanceCreationExpression;
+import 'package:analyzer/dart/element/element2.dart' show Annotatable;
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/element.dart'
     show ConstVariableElement;
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/accessor.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
+import 'package:dartdoc/src/model/class.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/constructor.dart';
+import 'package:dartdoc/src/model/documentation_comment.dart';
+import 'package:dartdoc/src/model/enum.dart';
+import 'package:dartdoc/src/model/model_element.dart';
+import 'package:dartdoc/src/model/parameter.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:meta/meta.dart';
 
@@ -73,23 +78,25 @@ mixin GetterSetterCombo on ModelElement {
   bool get hasConstantValueForDisplay => false;
 
   late final Expression? _constantInitializer =
-      (element as ConstVariableElement).constantInitializer;
+      (element2.firstFragment as ConstVariableElement).constantInitializer;
 
   String linkifyConstantValue(String original) {
     if (_constantInitializer is! InstanceCreationExpression) return original;
 
-    var constructorName = _constantInitializer.constructorName.toString();
-    var staticElement = _constantInitializer.constructorName.staticElement;
-    if (staticElement == null) return original;
+    var element = _constantInitializer.constructorName.element;
+    if (element == null) return original;
 
-    var target = getModelForElement(staticElement) as Constructor;
+    var target = getModelForElement(element) as Constructor;
     var enclosingElement = target.enclosingElement;
     if (enclosingElement is! Class) return original;
 
     // TODO(jcollins-g): this logic really should be integrated into
     // `Constructor`, but that's not trivial because of `linkedName`'s usage.
-    if (enclosingElement.name == target.name) {
-      return original.replaceAll(constructorName, target.linkedName);
+    if (target.isUnnamedConstructor) {
+      var parts = target.linkedNameParts;
+      // We don't want the `.new` representation of an unnamed constructor.
+      var linkedName = '${parts.tag}${enclosingElement.name}${parts.endTag}';
+      return original.replaceAll(enclosingElement.name, linkedName);
     }
     return original.replaceAll('${enclosingElement.name}.${target.name}',
         '${enclosingElement.linkedName}.${target.linkedName}');
@@ -108,10 +115,10 @@ mixin GetterSetterCombo on ModelElement {
     // explicit setters/getters will be handled by those objects, but
     // if a warning comes up for an enclosing synthetic field we have to
     // put it somewhere.  So pick an accessor.
-    if (element.isSynthetic) {
+    if (element2.isSynthetic) {
       if (hasExplicitGetter) return getter!.characterLocation;
       if (hasExplicitSetter) return setter!.characterLocation;
-      assert(false, 'Field and accessors can not all be synthetic: $element');
+      assert(false, 'Field and accessors can not all be synthetic: $element2');
     }
     return super.characterLocation;
   }
@@ -137,9 +144,9 @@ mixin GetterSetterCombo on ModelElement {
 
     initializerString = 'const $initializerString';
 
-    var isImplicitConstructorCall = _constantInitializer
-            .constructorName.staticElement?.isDefaultConstructor ??
-        false;
+    var isImplicitConstructorCall =
+        _constantInitializer.constructorName.element?.isDefaultConstructor ??
+            false;
     if (isImplicitConstructorCall) {
       // For an enum value with an implicit constructor call (like
       // `enum E { one, two; }`), `constantInitializer.toString()` does not
@@ -206,13 +213,13 @@ mixin GetterSetterCombo on ModelElement {
   @override
   late final String documentationComment =
       _getterSetterDocumentationComment.isEmpty
-          ? element.documentationComment ?? ''
+          ? (element2 as Annotatable).documentationComment ?? ''
           : _getterSetterDocumentationComment;
 
   @override
   bool get hasDocumentationComment =>
       _getterSetterDocumentationComment.isNotEmpty ||
-      element.documentationComment != null;
+      (element2 as Annotatable).documentationComment != null;
 
   /// Derives a documentation comment for the combo by copying documentation
   /// from the [getter] and/or [setter].

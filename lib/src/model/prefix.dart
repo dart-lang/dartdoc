@@ -2,41 +2,47 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: analyzer_use_new_elements
-
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-/// Represents a [PrefixElement] for dartdoc.
+/// Represents a [PrefixElement2] for dartdoc.
 ///
 /// Like [Parameter], it doesn't have doc pages, but participates in lookups.
 /// Forwards to its referenced library if referred to directly.
 class Prefix extends ModelElement with HasNoPage {
+
   @override
-  final PrefixElement element;
+  final PrefixElement2 element2;
 
   /// [library] is the library the prefix is defined in, not the [Library]
-  /// referred to by the [PrefixElement].
-  Prefix(this.element, super.library, super.packageGraph);
+  /// referred to by the [PrefixElement2].
+  Prefix(this.element2, super.library, super.packageGraph);
 
   @override
   bool get isCanonical => false;
 
   // TODO(jcollins-g): consider connecting PrefixElement to the imported library
   // in analyzer?
-  late final Library associatedLibrary = getModelForElement(library
-      .element.definingCompilationUnit.libraryImports
-      .firstWhere((i) => i.prefix?.element == element)
-      .importedLibrary!) as Library;
+  late final Library associatedLibrary =
+      getModelForElement(_getImportedLibraryElement()!) as Library;
+
+  LibraryElement2? _getImportedLibraryElement() {
+    final importLists =
+        library.element2.fragments.map((fragment) => fragment.libraryImports2);
+    return importLists
+        .expand((import) => import)
+        .firstWhere((i) => i.prefix2?.element == element2)
+        .importedLibrary2;
+  }
 
   @override
   Library? get canonicalModelElement => associatedLibrary.canonicalLibrary;
 
   @override
-  Scope get scope => element.scope;
+  Scope get scope => element2.scope;
 
   @override
   ModelElement get enclosingElement => library;

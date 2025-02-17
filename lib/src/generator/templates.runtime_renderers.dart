@@ -8,8 +8,6 @@
 // ignore_for_file: unused_import
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: analyzer_use_new_elements
-
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
@@ -221,14 +219,14 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'PropertyAccessorElement',
+                          'PropertyAccessorElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -240,12 +238,12 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['PropertyAccessorElement']!,
+                    getters: _invisibleGetters['PropertyAccessorElement2']!,
                   );
                 },
               ),
@@ -1349,6 +1347,13 @@ class _Renderer_Category extends RendererBase<Category> {
               ..._Renderer_MarkdownFileDocumentation.propertyMap<CT_>(),
               ..._Renderer_LibraryContainer.propertyMap<CT_>(),
               ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
+              ..._Renderer_Nameable.propertyMap<CT_>(),
+              ..._Renderer_Warnable.propertyMap<CT_>(),
+              ..._Renderer_CommentReferable.propertyMap<CT_>(),
+              ..._Renderer_Locatable.propertyMap<CT_>(),
+              ..._Renderer_MarkdownFileDocumentation.propertyMap<CT_>(),
+              ..._Renderer_LibraryContainer.propertyMap<CT_>(),
+              ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -1661,30 +1666,6 @@ class _Renderer_Category extends RendererBase<Category> {
                     sink,
                     parent: r,
                     getters: _invisibleGetters['DocumentLocation']!,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Element'),
-
-                isNullValue: (CT_ c) => c.element == null,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['Element']!,
                   );
                 },
               ),
@@ -2616,14 +2597,14 @@ class _Renderer_Class extends RendererBase<Class> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'ClassElement',
+                          'ClassElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -2635,12 +2616,12 @@ class _Renderer_Class extends RendererBase<Class> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['ClassElement']!,
+                    getters: _invisibleGetters['ClassElement2']!,
                   );
                 },
               ),
@@ -3308,6 +3289,8 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
               ..._Renderer_ModelElement.propertyMap<CT_>(),
               ..._Renderer_ContainerMember.propertyMap<CT_>(),
               ..._Renderer_TypeParameters.propertyMap<CT_>(),
+              ..._Renderer_ContainerMember.propertyMap<CT_>(),
+              ..._Renderer_TypeParameters.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -3412,14 +3395,14 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'ConstructorElement',
+                          'ConstructorElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -3431,12 +3414,12 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['ConstructorElement']!,
+                    getters: _invisibleGetters['ConstructorElement2']!,
                   );
                 },
               ),
@@ -3476,6 +3459,38 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                     sink,
                     parent: r,
                   );
+                },
+              ),
+              'fileName': Property(
+                getValue: (CT_ c) => c.fileName,
+                renderVariable: (
+                  CT_ c,
+                  Property<CT_> self,
+                  List<String> remainingNames,
+                ) {
+                  if (remainingNames.isEmpty) {
+                    return self.getValue(c).toString();
+                  }
+                  var name = remainingNames.first;
+                  var nextProperty = _Renderer_String.propertyMap().getValue(
+                    name,
+                  );
+                  return nextProperty.renderVariable(
+                    self.getValue(c) as String,
+                    nextProperty,
+                    [...remainingNames.skip(1)],
+                  );
+                },
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  _render_String(c.fileName, ast, r.template, sink, parent: r);
                 },
               ),
               'fullKind': Property(
@@ -4270,6 +4285,8 @@ class _Renderer_Container extends RendererBase<Container> {
               ..._Renderer_ModelElement.propertyMap<CT_>(),
               ..._Renderer_Categorization.propertyMap<CT_>(),
               ..._Renderer_TypeParameters.propertyMap<CT_>(),
+              ..._Renderer_Categorization.propertyMap<CT_>(),
+              ..._Renderer_TypeParameters.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -4546,6 +4563,34 @@ class _Renderer_Container extends RendererBase<Container> {
                   return c.declaredOperators.map(
                     (e) =>
                         _render_Operator(e, ast, r.template, sink, parent: r),
+                  );
+                },
+              ),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'Element2',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.element2,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['Element2']!,
                   );
                 },
               ),
@@ -5879,6 +5924,7 @@ class _Renderer_Documentable extends RendererBase<Documentable> {
             () => {
               ..._Renderer_Object.propertyMap<CT_>(),
               ..._Renderer_Nameable.propertyMap<CT_>(),
+              ..._Renderer_Nameable.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -6400,11 +6446,15 @@ class _Renderer_DocumentationComment
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Element'),
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'Element2',
+                        ),
 
                 isNullValue: (CT_ c) => false,
 
@@ -6415,12 +6465,12 @@ class _Renderer_DocumentationComment
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['Element']!,
+                    getters: _invisibleGetters['Element2']!,
                   );
                 },
               ),
@@ -7019,14 +7069,14 @@ class _Renderer_Enum extends RendererBase<Enum> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'EnumElement',
+                          'EnumElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -7038,12 +7088,12 @@ class _Renderer_Enum extends RendererBase<Enum> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['EnumElement']!,
+                    getters: _invisibleGetters['EnumElement2']!,
                   );
                 },
               ),
@@ -7568,14 +7618,14 @@ class _Renderer_Extension extends RendererBase<Extension> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'ExtensionElement',
+                          'ExtensionElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -7587,12 +7637,12 @@ class _Renderer_Extension extends RendererBase<Extension> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['ExtensionElement']!,
+                    getters: _invisibleGetters['ExtensionElement2']!,
                   );
                 },
               ),
@@ -8250,6 +8300,7 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
             () => {
               ..._Renderer_InheritingContainer.propertyMap<CT_>(),
               ..._Renderer_Constructable.propertyMap<CT_>(),
+              ..._Renderer_Constructable.propertyMap<CT_>(),
               'allModelElements': Property(
                 getValue: (CT_ c) => c.allModelElements,
                 renderVariable:
@@ -8298,14 +8349,14 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'ExtensionTypeElement',
+                          'ExtensionTypeElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -8317,12 +8368,12 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['ExtensionTypeElement']!,
+                    getters: _invisibleGetters['ExtensionTypeElement2']!,
                   );
                 },
               ),
@@ -9264,6 +9315,9 @@ class _Renderer_Field extends RendererBase<Field> {
               ..._Renderer_GetterSetterCombo.propertyMap<CT_>(),
               ..._Renderer_ContainerMember.propertyMap<CT_>(),
               ..._Renderer_Inheritable.propertyMap<CT_>(),
+              ..._Renderer_GetterSetterCombo.propertyMap<CT_>(),
+              ..._Renderer_ContainerMember.propertyMap<CT_>(),
+              ..._Renderer_Inheritable.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -9406,14 +9460,14 @@ class _Renderer_Field extends RendererBase<Field> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'FieldElement',
+                          'FieldElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -9425,12 +9479,12 @@ class _Renderer_Field extends RendererBase<Field> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['FieldElement']!,
+                    getters: _invisibleGetters['FieldElement2']!,
                   );
                 },
               ),
@@ -11686,14 +11740,14 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'InterfaceElement',
+                          'InterfaceElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -11705,12 +11759,12 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['InterfaceElement']!,
+                    getters: _invisibleGetters['InterfaceElement2']!,
                   );
                 },
               ),
@@ -12863,6 +12917,9 @@ class _Renderer_Library extends RendererBase<Library> {
               ..._Renderer_Categorization.propertyMap<CT_>(),
               ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
               ..._Renderer_CanonicalFor.propertyMap<CT_>(),
+              ..._Renderer_Categorization.propertyMap<CT_>(),
+              ..._Renderer_TopLevelContainer.propertyMap<CT_>(),
+              ..._Renderer_CanonicalFor.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -13074,34 +13131,6 @@ class _Renderer_Library extends RendererBase<Library> {
                   );
                 },
               ),
-              'compilationUnitElement': Property(
-                getValue: (CT_ c) => c.compilationUnitElement,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'CompilationUnitElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.compilationUnitElement,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['CompilationUnitElement']!,
-                  );
-                },
-              ),
               'constants': Property(
                 getValue: (CT_ c) => c.constants,
                 renderVariable:
@@ -13196,34 +13225,6 @@ class _Renderer_Library extends RendererBase<Library> {
                     r.template,
                     sink,
                     parent: r,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'LibraryElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['LibraryElement']!,
                   );
                 },
               ),
@@ -13941,6 +13942,34 @@ class _Renderer_Library extends RendererBase<Library> {
                   );
                 },
               ),
+              'unitElement': Property(
+                getValue: (CT_ c) => c.unitElement,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'LibraryFragment',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.unitElement,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['LibraryFragment']!,
+                  );
+                },
+              ),
             },
           )
           as Map<String, Property<CT_>>;
@@ -14140,7 +14169,7 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
   }
 }
 
-String renderLibrary(LibraryTemplateData context, Template template) {
+String renderLibraryRedirect(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14386,7 +14415,7 @@ class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData> {
   }
 }
 
-String renderLibraryRedirect(LibraryTemplateData context, Template template) {
+String renderLibrary(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14829,6 +14858,9 @@ class _Renderer_Method extends RendererBase<Method> {
               ..._Renderer_ContainerMember.propertyMap<CT_>(),
               ..._Renderer_Inheritable.propertyMap<CT_>(),
               ..._Renderer_TypeParameters.propertyMap<CT_>(),
+              ..._Renderer_ContainerMember.propertyMap<CT_>(),
+              ..._Renderer_Inheritable.propertyMap<CT_>(),
+              ..._Renderer_TypeParameters.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -14961,14 +14993,14 @@ class _Renderer_Method extends RendererBase<Method> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'MethodElement',
+                          'MethodElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -14980,12 +15012,12 @@ class _Renderer_Method extends RendererBase<Method> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['MethodElement']!,
+                    getters: _invisibleGetters['MethodElement2']!,
                   );
                 },
               ),
@@ -15826,14 +15858,14 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
             CT_,
             () => {
               ..._Renderer_InheritingContainer.propertyMap<CT_>(),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'MixinElement',
+                          'MixinElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -15845,12 +15877,12 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['MixinElement']!,
+                    getters: _invisibleGetters['MixinElement2']!,
                   );
                 },
               ),
@@ -16290,6 +16322,13 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
               ..._Renderer_SourceCode.propertyMap<CT_>(),
               ..._Renderer_FeatureSet.propertyMap<CT_>(),
               ..._Renderer_DocumentationComment.propertyMap<CT_>(),
+              ..._Renderer_CommentReferable.propertyMap<CT_>(),
+              ..._Renderer_Warnable.propertyMap<CT_>(),
+              ..._Renderer_Locatable.propertyMap<CT_>(),
+              ..._Renderer_Nameable.propertyMap<CT_>(),
+              ..._Renderer_SourceCode.propertyMap<CT_>(),
+              ..._Renderer_FeatureSet.propertyMap<CT_>(),
+              ..._Renderer_DocumentationComment.propertyMap<CT_>(),
               'annotations': Property(
                 getValue: (CT_ c) => c.annotations,
                 renderVariable:
@@ -16519,34 +16558,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                   );
                 },
               ),
-              'compilationUnitElement': Property(
-                getValue: (CT_ c) => c.compilationUnitElement,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'CompilationUnitElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.compilationUnitElement,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['CompilationUnitElement']!,
-                  );
-                },
-              ),
               'config': Property(
                 getValue: (CT_ c) => c.config,
                 renderVariable:
@@ -16632,30 +16643,6 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                     r.template,
                     sink,
                     parent: r,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Element'),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['Element']!,
                   );
                 },
               ),
@@ -17676,6 +17663,34 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                   );
                 },
               ),
+              'unitElement': Property(
+                getValue: (CT_ c) => c.unitElement,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
+                        self.renderSimpleVariable(
+                          c,
+                          remainingNames,
+                          'LibraryFragment',
+                        ),
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  renderSimple(
+                    c.unitElement,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                    getters: _invisibleGetters['LibraryFragment']!,
+                  );
+                },
+              ),
             },
           )
           as Map<String, Property<CT_>>;
@@ -17716,14 +17731,15 @@ class _Renderer_ModelFunction extends RendererBase<ModelFunction> {
             () => {
               ..._Renderer_ModelFunctionTyped.propertyMap<CT_>(),
               ..._Renderer_Categorization.propertyMap<CT_>(),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              ..._Renderer_Categorization.propertyMap<CT_>(),
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'FunctionElement',
+                          'TopLevelFunctionElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -17735,12 +17751,12 @@ class _Renderer_ModelFunction extends RendererBase<ModelFunction> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['FunctionElement']!,
+                    getters: _invisibleGetters['TopLevelFunctionElement']!,
                   );
                 },
               ),
@@ -17833,6 +17849,7 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
             () => {
               ..._Renderer_ModelElement.propertyMap<CT_>(),
               ..._Renderer_TypeParameters.propertyMap<CT_>(),
+              ..._Renderer_TypeParameters.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -17909,14 +17926,14 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'FunctionTypedElement',
+                          'FunctionTypedElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -17928,12 +17945,12 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['FunctionTypedElement']!,
+                    getters: _invisibleGetters['FunctionTypedElement2']!,
                   );
                 },
               ),
@@ -19203,30 +19220,6 @@ class _Renderer_Package extends RendererBase<Package> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Element'),
-
-                isNullValue: (CT_ c) => c.element == null,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['Element']!,
-                  );
-                },
-              ),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -19986,7 +19979,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -20343,13 +20336,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -20412,14 +20405,14 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'ParameterElement',
+                          'FormalParameterElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -20431,12 +20424,12 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['ParameterElement']!,
+                    getters: _invisibleGetters['FormalParameterElement']!,
                   );
                 },
               ),
@@ -21397,30 +21390,6 @@ class _Renderer_SourceCode extends RendererBase<SourceCode> {
                     sink,
                     parent: r,
                     getters: _invisibleGetters['CharacterLocation']!,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Element'),
-
-                isNullValue: (CT_ c) => c.element == null,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['Element']!,
                   );
                 },
               ),
@@ -23636,6 +23605,8 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
               ..._Renderer_ModelElement.propertyMap<CT_>(),
               ..._Renderer_GetterSetterCombo.propertyMap<CT_>(),
               ..._Renderer_Categorization.propertyMap<CT_>(),
+              ..._Renderer_GetterSetterCombo.propertyMap<CT_>(),
+              ..._Renderer_Categorization.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -23778,14 +23749,14 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'TopLevelVariableElement',
+                          'TopLevelVariableElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -23797,12 +23768,12 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['TopLevelVariableElement']!,
+                    getters: _invisibleGetters['TopLevelVariableElement2']!,
                   );
                 },
               ),
@@ -24208,14 +24179,14 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter> {
                   );
                 },
               ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
+              'element2': Property(
+                getValue: (CT_ c) => c.element2,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'TypeParameterElement',
+                          'TypeParameterElement2',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -24227,12 +24198,12 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element,
+                    c.element2,
                     ast,
                     r.template,
                     sink,
                     parent: r,
-                    getters: _invisibleGetters['TypeParameterElement']!,
+                    getters: _invisibleGetters['TypeParameterElement2']!,
                   );
                 },
               ),
@@ -24756,6 +24727,8 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
               ..._Renderer_ModelElement.propertyMap<CT_>(),
               ..._Renderer_TypeParameters.propertyMap<CT_>(),
               ..._Renderer_Categorization.propertyMap<CT_>(),
+              ..._Renderer_TypeParameters.propertyMap<CT_>(),
+              ..._Renderer_Categorization.propertyMap<CT_>(),
               'aboveSidebarPath': Property(
                 getValue: (CT_ c) => c.aboveSidebarPath,
                 renderVariable: (
@@ -24894,34 +24867,6 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                     r.template,
                     sink,
                     parent: r,
-                  );
-                },
-              ),
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'TypeAliasElement',
-                        ),
-
-                isNullValue: (CT_ c) => false,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['TypeAliasElement']!,
                   );
                 },
               ),
@@ -25626,30 +25571,6 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
       _propertyMapCache.putIfAbsent(
             CT_,
             () => {
-              'element': Property(
-                getValue: (CT_ c) => c.element,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Element'),
-
-                isNullValue: (CT_ c) => c.element == null,
-
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.element,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['Element']!,
-                  );
-                },
-              ),
               'element2': Property(
                 getValue: (CT_ c) => c.element2,
                 renderVariable:
@@ -25715,10 +25636,9 @@ const _invisibleGetters = {
     'lineNumber',
     'runtimeType',
   },
-  'ClassElement': {
-    'augmentation',
-    'augmentationTarget',
-    'augmented',
+  'ClassElement2': {
+    'firstFragment',
+    'fragments',
     'hasNonFinalField',
     'hashCode',
     'isAbstract',
@@ -25745,52 +25665,27 @@ const _invisibleGetters = {
     'referenceParents',
     'scope',
   },
-  'CompilationUnitElement': {
-    'accessibleExtensions',
-    'accessors',
-    'classes',
-    'enclosingElement3',
-    'enums',
-    'extensionTypes',
-    'extensions',
-    'functions',
-    'hashCode',
-    'libraryExports',
-    'libraryImportPrefixes',
-    'libraryImports',
-    'lineInfo',
-    'mixins',
-    'parts',
-    'runtimeType',
-    'scope',
-    'session',
-    'topLevelVariables',
-    'typeAliases',
-  },
   'Constructable': {
     'constructors',
     'extraReferenceChildren',
     'hasPublicConstructors',
     'publicConstructorsSorted',
   },
-  'ConstructorElement': {
-    'augmentation',
-    'augmentationTarget',
-    'declaration',
-    'displayName',
-    'enclosingElement3',
+  'ConstructorElement2': {
+    'baseElement',
+    'enclosingElement2',
+    'firstFragment',
+    'fragments',
     'hashCode',
     'isConst',
     'isDefaultConstructor',
     'isFactory',
     'isGenerative',
-    'name',
-    'nameEnd',
-    'periodOffset',
-    'redirectedConstructor',
+    'name3',
+    'redirectedConstructor2',
     'returnType',
     'runtimeType',
-    'superConstructor',
+    'superConstructor2',
   },
   'ContainerModifier': {
     'displayName',
@@ -25876,7 +25771,7 @@ const _invisibleGetters = {
     'documentationComment',
     'documentationFrom',
     'documentationLocal',
-    'element',
+    'element2',
     'elementDocumentation',
     'hasDocumentationComment',
     'hasNodoc',
@@ -25884,58 +25779,6 @@ const _invisibleGetters = {
     'pathContext',
     'qualifiedName',
     'sourceFileName',
-  },
-  'Element': {
-    'children',
-    'context',
-    'declaration',
-    'displayName',
-    'documentationComment',
-    'enclosingElement3',
-    'hasAlwaysThrows',
-    'hasDeprecated',
-    'hasDoNotStore',
-    'hasDoNotSubmit',
-    'hasFactory',
-    'hasImmutable',
-    'hasInternal',
-    'hasIsTest',
-    'hasIsTestGroup',
-    'hasJS',
-    'hasLiteral',
-    'hasMustBeConst',
-    'hasMustBeOverridden',
-    'hasMustCallSuper',
-    'hasNonVirtual',
-    'hasOptionalTypeArgs',
-    'hasOverride',
-    'hasProtected',
-    'hasRedeclare',
-    'hasReopen',
-    'hasRequired',
-    'hasSealed',
-    'hasUseResult',
-    'hasVisibleForOverriding',
-    'hasVisibleForTemplate',
-    'hasVisibleForTesting',
-    'hasVisibleOutsideTemplate',
-    'hashCode',
-    'id',
-    'isPrivate',
-    'isPublic',
-    'isSynthetic',
-    'kind',
-    'library',
-    'location',
-    'metadata',
-    'name',
-    'nameLength',
-    'nameOffset',
-    'nonSynthetic',
-    'runtimeType',
-    'session',
-    'sinceSdkVersion',
-    'source',
   },
   'Element2': {
     'baseElement',
@@ -25957,10 +25800,10 @@ const _invisibleGetters = {
     'runtimeType',
     'session',
   },
-  'EnumElement': {
-    'augmentation',
-    'augmentationTarget',
-    'augmented',
+  'EnumElement2': {
+    'constants2',
+    'firstFragment',
+    'fragments',
     'hashCode',
     'runtimeType',
   },
@@ -26041,45 +25884,57 @@ const _invisibleGetters = {
     'typeParameters',
     'typeParameters2',
   },
-  'ExtensionElement': {
-    'augmentation',
-    'augmentationTarget',
-    'augmented',
+  'ExtensionElement2': {
     'extendedType',
+    'firstFragment',
+    'fragments',
     'hashCode',
     'runtimeType',
   },
-  'ExtensionTypeElement': {
-    'augmentation',
-    'augmentationTarget',
-    'augmented',
+  'ExtensionTypeElement2': {
+    'firstFragment',
+    'fragments',
     'hashCode',
-    'primaryConstructor',
-    'representation',
+    'primaryConstructor2',
+    'representation2',
     'runtimeType',
     'typeErasure',
   },
-  'FieldElement': {
-    'augmentation',
-    'augmentationTarget',
-    'declaration',
+  'FieldElement2': {
+    'baseElement',
+    'enclosingElement2',
+    'firstFragment',
+    'fragments',
     'hashCode',
     'isAbstract',
     'isCovariant',
     'isEnumConstant',
     'isExternal',
     'isPromotable',
-    'isStatic',
     'runtimeType',
   },
   'File': {'hashCode', 'lengthSync', 'modificationStamp', 'runtimeType'},
-  'FunctionElement': {
-    'augmentation',
-    'augmentationTarget',
+  'FormalParameterElement': {
+    'baseElement',
+    'defaultValueCode',
+    'firstFragment',
+    'formalParameters',
+    'fragments',
+    'hasDefaultValue',
     'hashCode',
-    'isDartCoreIdentical',
-    'isEntryPoint',
+    'isCovariant',
+    'isInitializingFormal',
+    'isNamed',
+    'isOptional',
+    'isOptionalNamed',
+    'isOptionalPositional',
+    'isPositional',
+    'isRequired',
+    'isRequiredNamed',
+    'isRequiredPositional',
+    'isSuperFormal',
     'runtimeType',
+    'typeParameters2',
   },
   'FunctionType': {
     'element',
@@ -26097,9 +25952,11 @@ const _invisibleGetters = {
     'typeFormals',
     'typeParameters',
   },
-  'FunctionTypedElement': {
+  'FunctionTypedElement2': {
+    'firstFragment',
+    'formalParameters',
+    'fragments',
     'hashCode',
-    'parameters',
     'returnType',
     'runtimeType',
     'type',
@@ -26155,19 +26012,18 @@ const _invisibleGetters = {
     'overriddenDepth',
     'overriddenElement',
   },
-  'InterfaceElement': {
+  'InterfaceElement2': {
     'allSupertypes',
-    'augmentationTarget',
-    'augmented',
-    'constructors',
+    'constructors2',
+    'firstFragment',
+    'fragments',
     'hashCode',
     'interfaces',
     'mixins',
-    'name',
     'runtimeType',
     'supertype',
     'thisType',
-    'unnamedConstructor',
+    'unnamedConstructor2',
   },
   'Iterable': {
     'first',
@@ -26181,31 +26037,6 @@ const _invisibleGetters = {
     'single',
   },
   'Kind': {'hashCode', 'index', 'runtimeType'},
-  'LibraryElement': {
-    'definingCompilationUnit',
-    'enclosingElement3',
-    'entryPoint',
-    'exportNamespace',
-    'exportedLibraries',
-    'featureSet',
-    'hashCode',
-    'identifier',
-    'importedLibraries',
-    'isDartAsync',
-    'isDartCore',
-    'isInSdk',
-    'languageVersion',
-    'library',
-    'loadLibraryFunction',
-    'name',
-    'publicNamespace',
-    'runtimeType',
-    'session',
-    'topLevelElements',
-    'typeProvider',
-    'typeSystem',
-    'units',
-  },
   'LibraryElement2': {
     'classes',
     'entryPoint2',
@@ -26237,6 +26068,33 @@ const _invisibleGetters = {
     'typeProvider',
     'typeSystem',
     'uri',
+  },
+  'LibraryFragment': {
+    'accessibleExtensions2',
+    'classes2',
+    'element',
+    'enclosingFragment',
+    'enums2',
+    'extensionTypes2',
+    'extensions2',
+    'functions2',
+    'getters',
+    'hashCode',
+    'importedLibraries2',
+    'libraryExports2',
+    'libraryImports2',
+    'lineInfo',
+    'mixins2',
+    'nextFragment',
+    'partIncludes',
+    'prefixes',
+    'previousFragment',
+    'runtimeType',
+    'scope',
+    'setters',
+    'source',
+    'topLevelVariables2',
+    'typeAliases2',
   },
   'List': {'hashCode', 'length', 'reversed', 'runtimeType'},
   'Locatable': {
@@ -26312,17 +26170,17 @@ const _invisibleGetters = {
     'sinceSdkVersion',
     'substitution',
   },
-  'MethodElement': {
-    'augmentation',
-    'augmentationTarget',
-    'declaration',
+  'MethodElement2': {
+    'baseElement',
+    'firstFragment',
+    'fragments',
     'hashCode',
+    'isOperator',
     'runtimeType',
   },
-  'MixinElement': {
-    'augmentation',
-    'augmentationTarget',
-    'augmented',
+  'MixinElement2': {
+    'firstFragment',
+    'fragments',
     'hashCode',
     'isBase',
     'runtimeType',
@@ -26384,34 +26242,12 @@ const _invisibleGetters = {
     'runtimeType',
     'version',
   },
-  'ParameterElement': {
-    'declaration',
-    'defaultValueCode',
-    'element',
-    'hasDefaultValue',
-    'hashCode',
-    'isCovariant',
-    'isInitializingFormal',
-    'isNamed',
-    'isOptional',
-    'isOptionalNamed',
-    'isOptionalPositional',
-    'isPositional',
-    'isRequired',
-    'isRequiredNamed',
-    'isRequiredPositional',
-    'isSuperFormal',
-    'name',
-    'parameterKind',
-    'parameters',
-    'runtimeType',
-    'typeParameters',
-  },
   'ParameterMember': {
     'augmentationSubstitution',
     'baseElement',
     'children',
     'children2',
+    'constantInitializer2',
     'context',
     'declaration',
     'defaultValueCode',
@@ -26493,18 +26329,14 @@ const _invisibleGetters = {
     'typeShared',
   },
   'ParameterizedType': {'hashCode', 'runtimeType', 'typeArguments'},
-  'PropertyAccessorElement': {
-    'augmentation',
-    'augmentationTarget',
-    'correspondingGetter',
-    'correspondingSetter',
-    'declaration',
-    'enclosingElement3',
+  'PropertyAccessorElement2': {
+    'baseElement',
+    'enclosingElement2',
+    'firstFragment',
+    'fragments',
     'hashCode',
-    'isGetter',
-    'isSetter',
     'runtimeType',
-    'variable2',
+    'variable3',
   },
   'Scope': {'hashCode', 'runtimeType'},
   'TemplateOptions': {
@@ -26517,21 +26349,21 @@ const _invisibleGetters = {
     'toolVersion',
     'useBaseHref',
   },
-  'TopLevelVariableElement': {
-    'augmentation',
-    'augmentationTarget',
-    'declaration',
+  'TopLevelFunctionElement': {
+    'baseElement',
+    'firstFragment',
+    'fragments',
     'hashCode',
-    'isExternal',
+    'isDartCoreIdentical',
+    'isEntryPoint',
     'runtimeType',
   },
-  'TypeAliasElement': {
-    'aliasedElement',
-    'aliasedType',
-    'enclosingElement3',
+  'TopLevelVariableElement2': {
+    'baseElement',
+    'firstFragment',
+    'fragments',
     'hashCode',
-    'isAugmentation',
-    'name',
+    'isExternal',
     'runtimeType',
   },
   'TypeAliasElement2': {
@@ -26543,12 +26375,12 @@ const _invisibleGetters = {
     'hashCode',
     'runtimeType',
   },
-  'TypeParameterElement': {
+  'TypeParameterElement2': {
+    'baseElement',
     'bound',
-    'declaration',
-    'displayName',
+    'firstFragment',
+    'fragments',
     'hashCode',
-    'name',
     'runtimeType',
   },
   'int': {
