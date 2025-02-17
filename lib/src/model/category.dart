@@ -80,7 +80,7 @@ class Category
 
 
   @override
-  Element2? get element2 => null;
+  Element2? get element => null;
 
   @override
   String get name => _categoryDefinition.displayName;

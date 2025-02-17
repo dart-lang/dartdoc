@@ -272,15 +272,15 @@ class PackageGraph with CommentReferable, Nameable {
     var commentData = declaration.documentationComment?.data;
 
     void addModelNode(Declaration declaration) {
-      var element = declaration.declaredFragment?.element;
-      if (element == null) {
+      var e = declaration.declaredFragment?.element;
+      if (e == null) {
         throw StateError("Expected '$declaration' to declare an element");
       }
       _modelNodes.putIfAbsent(
-        element,
+        e,
         () => ModelNode(
           declaration,
-          element,
+          e,
           _analysisContext,
           commentData: commentData,
         ),
@@ -398,7 +398,7 @@ class PackageGraph with CommentReferable, Nameable {
       {String? message,
       Iterable<Locatable> referredFrom = const [],
       Iterable<String> extendedDebug = const []}) {
-    var newEntry = (warnable?.element2, kind, message);
+    var newEntry = (warnable?.element, kind, message);
     if (_warnAlreadySeen.contains(newEntry)) {
       return;
     }
@@ -555,7 +555,7 @@ class PackageGraph with CommentReferable, Nameable {
       _previousSizeOfAllLibraries = _allLibraries.keys.length;
       _libraryExports = {};
       for (var library in publicLibraries) {
-        _tagExportsFor(library, library.element2);
+        _tagExportsFor(library, library.element);
       }
     }
     return _libraryExports;
@@ -574,7 +574,7 @@ class PackageGraph with CommentReferable, Nameable {
       _previousSizeOfAllLibraries = _allLibraries.keys.length;
       _libraryExports = {};
       for (var library in publicLibraries) {
-        _tagExportsFor(library, library.element2);
+        _tagExportsFor(library, library.element);
       }
     }
     return _libraryExports;
@@ -631,7 +631,7 @@ class PackageGraph with CommentReferable, Nameable {
       var list = _implementers.putIfAbsent(implemented, () => []);
       // TODO(srawlins): This would be more efficient if we created a
       // SplayTreeSet keyed off of `.element`.
-      if (!list.any((l) => l.element2 == implementer.element2)) {
+      if (!list.any((l) => l.element == implementer.element)) {
         list.add(implementer);
       }
     }
@@ -643,16 +643,16 @@ class PackageGraph with CommentReferable, Nameable {
             supertype.modelElement as InheritingContainer, container);
       }
       if (container is Class) {
-        for (var element in container.mixedInTypes.modelElements) {
-          checkAndAddContainer(element, container);
+        for (var modelElement in container.mixedInTypes.modelElements) {
+          checkAndAddContainer(modelElement, container);
         }
       } else if (container is Mixin) {
-        for (var element in container.superclassConstraints.modelElements) {
-          checkAndAddContainer(element, container);
+        for (var modelElement in container.superclassConstraints.modelElements) {
+          checkAndAddContainer(modelElement, container);
         }
       }
-      for (var element in container.publicInterfaceElements) {
-        checkAndAddContainer(element, container);
+      for (var modelElement in container.publicInterfaceElements) {
+        checkAndAddContainer(modelElement, container);
       }
     }
 
@@ -700,8 +700,8 @@ class PackageGraph with CommentReferable, Nameable {
       'Object';
 
   bool isAnnotationVisible(Class class_) =>
-      class_.element2.name3 == 'pragma' &&
-      class_.element2.library2.name3 == 'dart.core';
+      class_.element.name3 == 'pragma' &&
+      class_.element.library2.name3 == 'dart.core';
 
   @override
   String toString() {
@@ -733,7 +733,7 @@ class PackageGraph with CommentReferable, Nameable {
       {Container? preferredClass}) {
     assert(allLibrariesAdded);
     if (modelElement == null) return null;
-    var e = modelElement.element2;
+    var e = modelElement.element;
     if (preferredClass != null) {
       var canonicalClass =
           findCanonicalModelElementFor(preferredClass) as Container?;
@@ -765,7 +765,7 @@ class PackageGraph with CommentReferable, Nameable {
         e is FieldElement2 ||
         e is PropertyAccessorElement2) {
       var declarationModelElement = getModelForElement(declaration);
-      e = declarationModelElement.element2;
+      e = declarationModelElement.element;
       canonicalModelElement = _findCanonicalModelElementForAmbiguous(
           declarationModelElement, library,
           preferredClass: preferredClass as InheritingContainer?);
@@ -801,22 +801,22 @@ class PackageGraph with CommentReferable, Nameable {
   ModelElement? _findCanonicalModelElementForAmbiguous(
       ModelElement modelElement, Library? lib,
       {InheritingContainer? preferredClass}) {
-    var element = modelElement.element2;
+    var elem = modelElement.element;
     var candidates = <ModelElement>{};
     if (lib != null) {
       var constructedWithKey = allConstructedModelElements[
-          ConstructedModelElementsKey(element, null)];
+          ConstructedModelElementsKey(elem, null)];
       if (constructedWithKey != null) {
         candidates.add(constructedWithKey);
       }
       var constructedWithKeyWithClass = allConstructedModelElements[
-          ConstructedModelElementsKey(element, preferredClass)];
+          ConstructedModelElementsKey(elem, preferredClass)];
       if (constructedWithKeyWithClass != null) {
         candidates.add(constructedWithKeyWithClass);
       }
       if (candidates.isEmpty) {
         candidates = {
-          ...?allInheritableElements[InheritableElementsKey(element, lib)]
+          ...?allInheritableElements[InheritableElementsKey(elem, lib)]
               ?.where((me) => me.isCanonical),
         };
       }
@@ -826,7 +826,7 @@ class PackageGraph with CommentReferable, Nameable {
         findCanonicalModelElementFor(modelElement.enclosingElement);
     if (canonicalClass is InheritingContainer) {
       candidates.addAll(canonicalClass.allCanonicalModelElements
-          .where((m) => m.element2 == element));
+          .where((m) => m.element == elem));
     }
 
     var matches = {...candidates.where((me) => me.isCanonical)};

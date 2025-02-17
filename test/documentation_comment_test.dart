@@ -861,7 +861,7 @@ class _HasWarning extends Matcher {
       Map<Object?, Object?> matchState, bool verbose) {
     if (actual is ModelElement) {
       var warnings = actual
-          .packageGraph.packageWarningCounter.countedWarnings[actual.element2];
+          .packageGraph.packageWarningCounter.countedWarnings[actual.element];
       if (warnings == null) {
         return mismatchDescription.add('has no warnings');
       }

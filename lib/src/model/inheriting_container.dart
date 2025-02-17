@@ -19,7 +19,7 @@ import 'package:meta/meta.dart';
 /// Note that [Constructor]s are not considered to be modifiers so a
 /// [hasModifiers] override is not necessary for this mixin.
 mixin Constructable implements InheritingContainer {
-  late final List<Constructor> constructors = element2.constructors2
+  late final List<Constructor> constructors = element.constructors2
       .map((e) => getModelFor(e, library) as Constructor)
       .toList(growable: false);
 
@@ -71,7 +71,7 @@ abstract class InheritingContainer extends Container {
   InheritingContainer(super.library, super.packageGraph);
 
   DefinedElementType? get supertype {
-    final elementSupertype = element2.supertype;
+    final elementSupertype = element.supertype;
     return elementSupertype == null ||
             elementSupertype.element3.supertype == null
         ? null
@@ -100,7 +100,7 @@ abstract class InheritingContainer extends Container {
   ];
 
   Iterable<Method> get inheritedMethods {
-    var methodNames = declaredMethods.map((m) => m.element2.name3).toSet();
+    var methodNames = declaredMethods.map((m) => m.element.name3).toSet();
     var inheritedMethodElements = _inheritedElements
         .whereType<MethodElement2>()
         .where((e) =>
@@ -117,7 +117,7 @@ abstract class InheritingContainer extends Container {
 
   List<Operator> get inheritedOperators {
     var operatorNames =
-        declaredOperators.map((o) => o.element2.lookupName).toSet();
+        declaredOperators.map((o) => o.element.lookupName).toSet();
     var inheritedOperatorElements = _inheritedElements
         .whereType<MethodElement2>()
         .where((e) => e.isOperator && !operatorNames.contains(e.lookupName))
@@ -130,7 +130,7 @@ abstract class InheritingContainer extends Container {
   }
 
   late final DefinedElementType modelType =
-      getTypeFor(element2.thisType, library) as DefinedElementType;
+      getTypeFor(element.thisType, library) as DefinedElementType;
 
   /// A list of the inherited executable elements, one element per inherited
   /// `Name`.
@@ -140,7 +140,7 @@ abstract class InheritingContainer extends Container {
   /// case of ties, concrete inherited elements are prefered to non-concrete
   /// ones.
   late final List<ExecutableElement2> _inheritedElements = () {
-    if (element2 case ClassElement2 classElement
+    if (element case ClassElement2 classElement
         when classElement.isDartCoreObject) {
       return const <ExecutableElement2>[];
     }
@@ -148,14 +148,14 @@ abstract class InheritingContainer extends Container {
     // The mapping of all of the inherited element names to their _concrete_
     // implementation element.
     var concreteInheritanceMap =
-        packageGraph.inheritanceManager.getInheritedConcreteMap(element2);
+        packageGraph.inheritanceManager.getInheritedConcreteMap(element);
     // The mapping of all inherited element names to the nearest inherited
     // element that they resolve to.
     var inheritanceMap =
-        packageGraph.inheritanceManager.getInheritedMap(element2);
+        packageGraph.inheritanceManager.getInheritedMap(element);
 
     var inheritanceChainElements =
-        inheritanceChain.map((c) => c.element2).toList(growable: false);
+        inheritanceChain.map((c) => c.element).toList(growable: false);
 
     // A combined map of names to inherited _concrete_ Elements, and other
     // inherited Elements.
@@ -222,7 +222,7 @@ abstract class InheritingContainer extends Container {
     // For half-inherited fields, the analyzer only links the non-inherited
     // to the [FieldElement].  Compose our [Field] class by hand by looking up
     // inherited accessors that may be related.
-    for (var field in element2.fields2) {
+    for (var field in element.fields2) {
       var getterElement = field.getter2;
       if (getterElement == null && accessorMap.containsKey(field.name3)) {
         getterElement = accessorMap[field.name3]!
@@ -253,12 +253,12 @@ abstract class InheritingContainer extends Container {
   }();
 
   @override
-  late final List<Method> declaredMethods = element2.methods2
+  late final List<Method> declaredMethods = element.methods2
       .map((e) => getModelFor(e, library) as Method)
       .toList(growable: false);
 
   @override
-  late final List<TypeParameter> typeParameters = element2.typeParameters2
+  late final List<TypeParameter> typeParameters = element.typeParameters2
       .map((typeParameter) => getModelFor(
           typeParameter,
           getModelForElement(typeParameter.enclosingElement2!.library2!)
@@ -292,12 +292,12 @@ abstract class InheritingContainer extends Container {
 
   /// The [InheritingContainer] with the library in which [element] is defined.
   InheritingContainer get definingContainer =>
-      getModelFor(element2, library) as InheritingContainer;
+      getModelFor(element, library) as InheritingContainer;
 
   @override
 
   @override
-  InterfaceElement2 get element2;
+  InterfaceElement2 get element;
 
   @override
   Library get enclosingElement => library;
@@ -348,7 +348,7 @@ abstract class InheritingContainer extends Container {
         for (var extension in potentiallyApplicableExtensionsSorted)
           for (var field in extension.instanceFields)
             getModelForPropertyInducingElement(
-              field.element2,
+              field.element,
               library,
               enclosingContainer: extension,
               getter: field.getter,
@@ -371,7 +371,7 @@ abstract class InheritingContainer extends Container {
   List<Method> get _extensionInstanceMethods => [
         for (var extension in potentiallyApplicableExtensionsSorted)
           for (var method in extension.instanceMethods)
-            getModelFor(method.element2, library,
+            getModelFor(method.element, library,
                 enclosingContainer: extension) as Method,
       ];
 
@@ -388,7 +388,7 @@ abstract class InheritingContainer extends Container {
   List<Operator> get _extensionInstanceOperators => [
         for (var extension in potentiallyApplicableExtensionsSorted)
           for (var operator in extension.instanceOperators)
-            getModelFor(operator.element2, library,
+            getModelFor(operator.element, library,
                 enclosingContainer: extension) as Operator,
       ];
 
@@ -426,7 +426,7 @@ abstract class InheritingContainer extends Container {
 
   @visibleForTesting
   late final List<DefinedElementType> directInterfaces = [
-    for (var interface in element2.interfaces)
+    for (var interface in element.interfaces)
       getTypeFor(interface, library) as DefinedElementType
   ];
 
@@ -497,7 +497,7 @@ abstract class InheritingContainer extends Container {
     // implements `EfficientLengthIterable<T>` which implements `Iterable<T>`),
     // but there is no chance of type arguments differing, as that is illegal.
     void addInterfaceIfUnique(DefinedElementType type) {
-      var firstPublicSuperElement = type.modelElement.element2;
+      var firstPublicSuperElement = type.modelElement.element;
       if (firstPublicSuperElement is InterfaceElement2) {
         if (interfaceElements.add(firstPublicSuperElement)) {
           interfaces.add(type);
@@ -612,8 +612,8 @@ abstract class InheritingContainer extends Container {
     var setter = containerAccessorFrom(setterElement);
     // Rebind [getterElement], [setterElement] as [ModelElement.from] can
     // resolve [Member]s.
-    getterElement = getter?.element2;
-    setterElement = setter?.element2;
+    getterElement = getter?.element;
+    setterElement = setter?.element;
     assert(getter != null || setter != null);
     if (field == null) {
       // Pick an appropriate [FieldElement] to represent this element.
@@ -664,7 +664,7 @@ abstract class InheritingContainer extends Container {
 
 /// Add the ability to support mixed-in types to an [InheritingContainer].
 mixin MixedInTypes on InheritingContainer {
-  late final List<DefinedElementType> mixedInTypes = element2.mixins
+  late final List<DefinedElementType> mixedInTypes = element.mixins
       .map((f) => getTypeFor(f, library) as DefinedElementType)
       .toList(growable: false);
 

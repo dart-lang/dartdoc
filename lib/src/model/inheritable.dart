@@ -14,7 +14,7 @@ import 'package:dartdoc/src/model/model.dart';
 /// We can search the inheritance chain between this instance and
 /// [definingEnclosingContainer] in [Inheritable.canonicalEnclosingContainer],
 /// for the canonical [Class] closest to where this member was defined.  We
-/// can then know that when we find [Inheritable.element2] inside that [Class]'s
+/// can then know that when we find [Inheritable.element] inside that [Class]'s
 /// namespace, that's the one we should treat as canonical and implementors of
 /// this class can use that knowledge to determine canonicalization.
 ///
@@ -54,7 +54,7 @@ mixin Inheritable on ContainerMember {
   @override
   Container? computeCanonicalEnclosingContainer() {
     if (isInherited) {
-      var searchElement = element2.baseElement;
+      var searchElement = element.baseElement;
       // TODO(jcollins-g): generate warning if an inherited element's definition
       // is in an intermediate non-canonical class in the inheritance chain?
       Container? found;
@@ -123,8 +123,8 @@ mixin Inheritable on ContainerMember {
   /// implementation.
   bool _isHiddenInterface(Container? c) =>
       c != null &&
-      c.element2.name3 == 'Interceptor' &&
-      c.element2.library2?.name3 == '_interceptors';
+      c.element.name3 == 'Interceptor' &&
+      c.element.library2?.name3 == '_interceptors';
 
   /// A roughly ordered list of this element's enclosing container's inheritance
   /// chain.

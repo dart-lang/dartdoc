@@ -41,7 +41,7 @@ final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 mixin DocumentationComment
     implements Documentable, Warnable, Locatable, SourceCode {
   @override
-  Element2 get element2;
+  Element2 get element;
 
   List<DocumentationComment>? _documentationFrom;
 
@@ -55,7 +55,7 @@ mixin DocumentationComment
         if (!hasDocumentationComment && self.overriddenElement != null) {
           return self.overriddenElement!.documentationFrom;
         } else if (self.isInherited) {
-          return packageGraph.getModelForElement(element2).documentationFrom;
+          return packageGraph.getModelForElement(element).documentationFrom;
         } else {
           return [this];
         }
@@ -70,15 +70,15 @@ mixin DocumentationComment
 
   /// The rawest form of the documentation comment, including comment delimiters
   /// like `///`, `//`, `/*`, `*/`.
-  String get documentationComment => (element2 is Annotatable)
-      ? (element2 as Annotatable).documentationComment ?? ''
+  String get documentationComment => (element is Annotatable)
+      ? (element as Annotatable).documentationComment ?? ''
       : '';
 
   /// Whether `this` has a synthetic/inherited or local documentation comment,
   /// and false otherwise.
   bool get hasDocumentationComment =>
-      element2 is Annotatable &&
-      (element2 as Annotatable).documentationComment != null;
+      element is Annotatable &&
+      (element as Annotatable).documentationComment != null;
 
   /// Whether the raw documentation comment is considered to be 'nodoc', an
   /// attribute indicating that any documentation should not be included in
@@ -91,7 +91,7 @@ mixin DocumentationComment
   /// * the documentation comment contains the `@nodoc` dartdoc directive.
   late final bool hasNodoc = () {
     if (packageGraph
-        .configSetsNodocFor(element2.library2!.firstFragment.source.fullName)) {
+        .configSetsNodocFor(element.library2!.firstFragment.source.fullName)) {
       return true;
     }
     if (!hasDocumentationComment) {

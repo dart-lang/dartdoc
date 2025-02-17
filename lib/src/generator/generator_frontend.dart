@@ -149,7 +149,7 @@ class GeneratorFrontEnd implements Generator {
       for (var lib in package.libraries.whereDocumented) {
         if (!multiplePackages) {
           logInfo('Generating docs for library ${lib.breadcrumbName} from '
-              '${lib.element2.firstFragment.source.uri}...');
+              '${lib.element.firstFragment.source.uri}...');
         }
         if (!lib.isAnonymous && !lib.hasDocumentation) {
           packageGraph.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);

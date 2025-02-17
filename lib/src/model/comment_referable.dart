@@ -59,7 +59,7 @@ mixin CommentReferable implements Nameable {
       if (result != null) {
         if (result is Prefix &&
             result.name == '_' &&
-            library!.element2.featureSet.isEnabled(Feature.wildcard_variables)) {
+            library!.element.featureSet.isEnabled(Feature.wildcard_variables)) {
           // A wildcard import prefix is non-binding.
           continue;
         }

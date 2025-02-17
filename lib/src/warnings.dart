@@ -96,7 +96,7 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
 /// with an analyzer [element].
 mixin Warnable implements CommentReferable, Documentable, Locatable {
 
-  Element2? get element2;
+  Element2? get element;
 
   void warn(
     PackageWarning kind, {
@@ -547,7 +547,7 @@ class PackageWarningCounter {
     if (e == null) {
       return false;
     }
-    final warning = _countedWarnings[e.element2];
+    final warning = _countedWarnings[e.element];
     if (warning != null) {
       final messages = warning[kind];
       return messages != null &&
@@ -577,7 +577,7 @@ class PackageWarningCounter {
     }
     var elementName = e == null ? '<global>' : e.fullyQualifiedName;
     _countedWarnings
-        .putIfAbsent(e?.element2, () => {})
+        .putIfAbsent(e?.element, () => {})
         .putIfAbsent(kind, () => {})
         .add(message);
     _writeWarning(

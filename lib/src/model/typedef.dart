@@ -13,13 +13,13 @@ abstract class Typedef extends ModelElement
     with TypeParameters, Categorization {
 
   @override
-  final TypeAliasElement2 element2;
+  final TypeAliasElement2 element;
 
-  Typedef(this.element2, super.library, super.packageGraph);
+  Typedef(this.element, super.library, super.packageGraph);
 
-  DartType get aliasedType => element2.aliasedType;
+  DartType get aliasedType => element.aliasedType;
 
-  late final ElementType modelType = getTypeFor(element2.aliasedType, library);
+  late final ElementType modelType = getTypeFor(element.aliasedType, library);
 
   @override
   Library get enclosingElement => library;
@@ -62,7 +62,7 @@ abstract class Typedef extends ModelElement
   Kind get kind => Kind.typedef;
 
   @override
-  List<TypeParameter> get typeParameters => element2.typeParameters2
+  List<TypeParameter> get typeParameters => element.typeParameters2
       .map((f) => getModelFor(f, library) as TypeParameter)
       .toList(growable: false);
 
@@ -127,10 +127,10 @@ class FunctionTypedef extends Typedef {
   FunctionTypedef(super.element, super.library, super.packageGraph) {
     assert(
         isCallable,
-        'Expected callable but: ${element2.runtimeType} is FunctionTypedElement '
-        '|| (${element2.runtimeType} is TypeAliasElement && '
-        '${element2.aliasedType.runtimeType} is FunctionType) is not true for '
-        '"${element2.name3}" in "${element2.library2}"');
+        'Expected callable but: ${element.runtimeType} is FunctionTypedElement '
+        '|| (${element.runtimeType} is TypeAliasElement && '
+        '${element.aliasedType.runtimeType} is FunctionType) is not true for '
+        '"${element.name3}" in "${element.library2}"');
   }
 
   @override

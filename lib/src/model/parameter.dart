@@ -13,25 +13,25 @@ import 'package:dartdoc/src/model/model.dart';
 class Parameter extends ModelElement with HasNoPage {
 
   @override
-  final FormalParameterElement element2;
+  final FormalParameterElement element;
 
-  Parameter(this.element2, super.library, super.packageGraph,
+  Parameter(this.element, super.library, super.packageGraph,
       {ParameterMember? super.originalMember});
 
   String? get defaultValue =>
-      hasDefaultValue ? element2.defaultValueCode : null;
+      hasDefaultValue ? element.defaultValueCode : null;
 
   @override
   ModelElement? get enclosingElement {
-    final enclosingElement = element2.enclosingElement2;
+    final enclosingElement = element.enclosingElement2;
     return enclosingElement == null
         ? null
         : getModelFor(enclosingElement, library);
   }
 
   bool get hasDefaultValue {
-    return element2.defaultValueCode != null &&
-        element2.defaultValueCode!.isNotEmpty;
+    return element.defaultValueCode != null &&
+        element.defaultValueCode!.isNotEmpty;
   }
 
   @override
@@ -39,7 +39,7 @@ class Parameter extends ModelElement with HasNoPage {
 
   @override
   String get htmlId {
-    final enclosingElement = element2.enclosingElement2;
+    final enclosingElement = element.enclosingElement2;
     if (enclosingElement == null) {
       return 'param-$name';
     }
@@ -62,22 +62,22 @@ class Parameter extends ModelElement with HasNoPage {
   }
 
   @override
-  int get hashCode => element2.hashCode;
+  int get hashCode => element.hashCode;
 
   @override
   bool operator ==(Object other) =>
-      other is Parameter && (element2.type == other.element2.type);
+      other is Parameter && (element.type == other.element.type);
 
-  bool get isCovariant => element2.isCovariant;
+  bool get isCovariant => element.isCovariant;
 
-  bool get isRequiredPositional => element2.isRequiredPositional;
+  bool get isRequiredPositional => element.isRequiredPositional;
 
-  bool get isNamed => element2.isNamed;
+  bool get isNamed => element.isNamed;
 
-  bool get isOptionalPositional => element2.isOptionalPositional;
+  bool get isOptionalPositional => element.isOptionalPositional;
 
   /// Only true if this is a required named parameter.
-  bool get isRequiredNamed => element2.isRequiredNamed;
+  bool get isRequiredNamed => element.isRequiredNamed;
 
   @override
   Kind get kind => Kind.parameter;
@@ -105,5 +105,5 @@ class Parameter extends ModelElement with HasNoPage {
       super.originalMember as ParameterMember?;
 
   late final ElementType modelType =
-      getTypeFor((originalMember ?? element2).type, library);
+      getTypeFor((originalMember ?? element).type, library);
 }

@@ -85,9 +85,9 @@ abstract class GeneratorBackend {
         isSidebar ? '' : data.htmlBase,
       );
     }
-    var element = data.self;
+    var e = data.self;
     writer.write(filename, content,
-        element: element is Warnable ? element : null);
+        element: e is Warnable ? e : null);
   }
 
   /// Emits JSON describing the [categories] defined by the package.

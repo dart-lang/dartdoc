@@ -14,10 +14,10 @@ import 'package:meta/meta.dart';
 class Mixin extends InheritingContainer {
 
   @override
-  final MixinElement2 element2;
+  final MixinElement2 element;
 
   late final List<ParameterizedElementType> superclassConstraints = [
-    ...element2.superclassConstraints.where((e) => !e.isDartCoreObject).map(
+    ...element.superclassConstraints.where((e) => !e.isDartCoreObject).map(
         (InterfaceType i) => getTypeFor(i, library) as ParameterizedElementType)
   ];
 
@@ -41,7 +41,7 @@ class Mixin extends InheritingContainer {
     ...interfaceElements.expandInheritanceChain,
   ];
 
-  Mixin(this.element2, super.library, super.packageGraph);
+  Mixin(this.element, super.library, super.packageGraph);
 
   @override
   @visibleForOverriding
@@ -57,7 +57,7 @@ class Mixin extends InheritingContainer {
   bool get isAbstract => false;
 
   @override
-  bool get isBase => element2.isBase;
+  bool get isBase => element.isBase;
 
   @override
   bool get isFinal => false;

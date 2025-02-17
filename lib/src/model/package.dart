@@ -156,7 +156,7 @@ class Package extends LibraryContainer
     if (!packageMeta.isSdk) return false;
     final packagePath = packageGraph.packageMeta.dir.path;
     return libraries.any((l) => _pathContext.isWithin(
-        packagePath, l.element2.firstFragment.source.fullName));
+        packagePath, l.element.firstFragment.source.fullName));
   }
 
   /// True if the global config excludes this package by name.
@@ -374,7 +374,7 @@ class Package extends LibraryContainer
   final PackageMeta packageMeta;
 
   @override
-  Element2? get element2 => null;
+  Element2? get element => null;
 
   @override
   List<String> get containerOrder => config.packageOrder;

@@ -13,14 +13,14 @@ class TopLevelVariable extends ModelElement
     with GetterSetterCombo, Categorization {
 
   @override
-  final TopLevelVariableElement2 element2;
+  final TopLevelVariableElement2 element;
 
   @override
   final Accessor? getter;
   @override
   final Accessor? setter;
 
-  TopLevelVariable(this.element2, super.library, super.packageGraph,
+  TopLevelVariable(this.element, super.library, super.packageGraph,
       this.getter, this.setter) {
     getter?.enclosingCombo = this;
     setter?.enclosingCombo = this;
@@ -58,18 +58,18 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  bool get isConst => element2.isConst;
+  bool get isConst => element.isConst;
 
   @override
   bool get isFinal {
     /// isFinal returns true for the variable even if it has an explicit getter
     /// (which means we should not document it as "final").
     if (hasExplicitGetter) return false;
-    return element2.isFinal;
+    return element.isFinal;
   }
 
   @override
-  bool get isLate => isFinal && element2.isLate;
+  bool get isLate => isFinal && element.isLate;
 
   // For use in templates.
   bool get isProvidedByExtension => false;

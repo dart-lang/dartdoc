@@ -12,9 +12,9 @@ import 'package:meta/meta.dart';
 class Enum extends InheritingContainer with Constructable, MixedInTypes {
  
   @override
-  final EnumElement2 element2;
+  final EnumElement2 element;
 
-  Enum(this.element2, super.library, super.packageGraph);
+  Enum(this.element, super.library, super.packageGraph);
 
   @override
   late final List<ModelElement> allModelElements = [
@@ -91,7 +91,7 @@ class EnumField extends Field {
 
   @override
   bool get hasConstantValueForDisplay {
-    final enum_ = element2.enclosingElement2 as EnumElement2;
+    final enum_ = element.enclosingElement2 as EnumElement2;
     final enumHasDefaultConstructor =
         enum_.constructors2.any((c) => c.isDefaultConstructor);
     // If this enum does not have any explicit constructors (and so only has a
@@ -102,7 +102,7 @@ class EnumField extends Field {
 
   @override
   String get constantValueBase =>
-      element2.library2.featureSet.isEnabled(Feature.enhanced_enums)
+      element.library2.featureSet.isEnabled(Feature.enhanced_enums)
           ? super.constantValueBase
           : renderedName;
 

@@ -78,15 +78,15 @@ mixin GetterSetterCombo on ModelElement {
   bool get hasConstantValueForDisplay => false;
 
   late final Expression? _constantInitializer =
-      (element2.firstFragment as ConstVariableElement).constantInitializer;
+      (element.firstFragment as ConstVariableElement).constantInitializer;
 
   String linkifyConstantValue(String original) {
     if (_constantInitializer is! InstanceCreationExpression) return original;
 
-    var element = _constantInitializer.constructorName.element;
-    if (element == null) return original;
+    var e = _constantInitializer.constructorName.element;
+    if (e == null) return original;
 
-    var target = getModelForElement(element) as Constructor;
+    var target = getModelForElement(e) as Constructor;
     var enclosingElement = target.enclosingElement;
     if (enclosingElement is! Class) return original;
 
@@ -115,10 +115,10 @@ mixin GetterSetterCombo on ModelElement {
     // explicit setters/getters will be handled by those objects, but
     // if a warning comes up for an enclosing synthetic field we have to
     // put it somewhere.  So pick an accessor.
-    if (element2.isSynthetic) {
+    if (element.isSynthetic) {
       if (hasExplicitGetter) return getter!.characterLocation;
       if (hasExplicitSetter) return setter!.characterLocation;
-      assert(false, 'Field and accessors can not all be synthetic: $element2');
+      assert(false, 'Field and accessors can not all be synthetic: $element');
     }
     return super.characterLocation;
   }
@@ -213,13 +213,13 @@ mixin GetterSetterCombo on ModelElement {
   @override
   late final String documentationComment =
       _getterSetterDocumentationComment.isEmpty
-          ? (element2 as Annotatable).documentationComment ?? ''
+          ? (element as Annotatable).documentationComment ?? ''
           : _getterSetterDocumentationComment;
 
   @override
   bool get hasDocumentationComment =>
       _getterSetterDocumentationComment.isNotEmpty ||
-      (element2 as Annotatable).documentationComment != null;
+      (element as Annotatable).documentationComment != null;
 
   /// Derives a documentation comment for the combo by copying documentation
   /// from the [getter] and/or [setter].
