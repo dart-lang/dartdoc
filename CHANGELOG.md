@@ -1,9 +1,10 @@
-## 8.3.3-wip
+## 8.3.3
 
 * Require Dart 3.6 or later.
-* Require analyzer 7.2.0 APIs.
+* Require analyzer 7.3.0 APIs.
 * Update the design of GitHub-flavored Markdown alerts for
   improved accessibility and to better match GitHub and other Dart sites.
+* Many internal migrations for analyzer APIs.
 
 ## 8.3.2
 
