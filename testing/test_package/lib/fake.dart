@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element, unused_import
+
 /// # WOW FAKE PACKAGE IS __BEST__ [PACKAGE][pkg]
 /// {@category Real Libraries}
 /// If you don't have this package yet, get it.
@@ -44,9 +46,21 @@
 /// * <http://myfakepackage.com/buthidethisone>
 ///
 /// [pkg]: http://example.org
-
-// ignore_for_file: unused_element, unused_import
-
+///
+/// > [!NOTE]
+/// > A highlighted note aside/admonition.
+///
+/// > [!TIP]
+/// > A highlighted tip aside/admonition.
+///
+/// > [!IMPORTANT]
+/// > A highlighted important aside/admonition.
+///
+/// > [!WARNING]
+/// > A highlighted warning aside/admonition.
+///
+/// > [!CAUTION]
+/// > A highlighted caution aside/admonition.
 library fake;
 
 import 'dart:async';
