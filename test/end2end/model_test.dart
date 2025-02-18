@@ -232,7 +232,7 @@ void main() async {
     void expectTypedefs(Typedef t, String modelTypeToString,
         Iterable<String> genericParameters) {
       expect(t.modelType.toString(), equals(modelTypeToString));
-      expect(t.element2.typeParameters2.map((p) => p.toString()),
+      expect(t.element.typeParameters2.map((p) => p.toString()),
           orderedEquals(genericParameters));
     }
 
@@ -907,9 +907,9 @@ void main() async {
     });
 
     test('can import other libraries with unusual URIs', () {
-      final importLists = fakeLibrary.element2.fragments
+      final importLists = fakeLibrary.element.fragments
           .map((fragment) => fragment.libraryImports2);
-      final exportLists = fakeLibrary.element2.fragments
+      final exportLists = fakeLibrary.element.fragments
           .map((fragment) => fragment.libraryExports2);
       final fakeLibraryImportedExported = <Library>{
         for (final l in <LibraryElement2>{
@@ -1186,7 +1186,7 @@ void main() async {
             contains(
                 '<a href="%%__HTMLBASE_dartdoc_internal__%%reexport_two/BaseReexported/action.html">ExtendedBaseReexported.action</a></p>'));
         var doAwesomeStuffWarnings = packageGraph.packageWarningCounter
-                .countedWarnings[doAwesomeStuff.element2] ??
+                .countedWarnings[doAwesomeStuff.element] ??
             {};
         expect(
             doAwesomeStuffWarnings,
@@ -3563,7 +3563,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('inheritance of docs from SDK works for getter/setter combos', () {
       expect(
           ExtraSpecialListLength
-              .getter!.documentationFrom.first.element2.library2!.name3,
+              .getter!.documentationFrom.first.element.library2!.name3,
           equals('dart.core'));
       expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
     });

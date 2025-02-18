@@ -219,8 +219,8 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -238,7 +238,7 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -1669,8 +1669,8 @@ class _Renderer_Category extends RendererBase<Category> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -1679,7 +1679,7 @@ class _Renderer_Category extends RendererBase<Category> {
                           'Element2',
                         ),
 
-                isNullValue: (CT_ c) => c.element2 == null,
+                isNullValue: (CT_ c) => c.element == null,
 
                 renderValue: (
                   CT_ c,
@@ -1688,7 +1688,7 @@ class _Renderer_Category extends RendererBase<Category> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -2597,8 +2597,8 @@ class _Renderer_Class extends RendererBase<Class> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -2616,7 +2616,7 @@ class _Renderer_Class extends RendererBase<Class> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -3395,8 +3395,8 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -3414,7 +3414,7 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -4566,8 +4566,8 @@ class _Renderer_Container extends RendererBase<Container> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -4585,7 +4585,7 @@ class _Renderer_Container extends RendererBase<Container> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -6446,8 +6446,8 @@ class _Renderer_DocumentationComment
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -6465,7 +6465,7 @@ class _Renderer_DocumentationComment
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -7069,8 +7069,8 @@ class _Renderer_Enum extends RendererBase<Enum> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -7088,7 +7088,7 @@ class _Renderer_Enum extends RendererBase<Enum> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -7618,8 +7618,8 @@ class _Renderer_Extension extends RendererBase<Extension> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -7637,7 +7637,7 @@ class _Renderer_Extension extends RendererBase<Extension> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -8349,8 +8349,8 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -8368,7 +8368,7 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -9460,8 +9460,8 @@ class _Renderer_Field extends RendererBase<Field> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -9479,7 +9479,7 @@ class _Renderer_Field extends RendererBase<Field> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -11740,8 +11740,8 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -11759,7 +11759,7 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -13228,8 +13228,8 @@ class _Renderer_Library extends RendererBase<Library> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -13247,7 +13247,7 @@ class _Renderer_Library extends RendererBase<Library> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -14993,8 +14993,8 @@ class _Renderer_Method extends RendererBase<Method> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -15012,7 +15012,7 @@ class _Renderer_Method extends RendererBase<Method> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -15858,8 +15858,8 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
             CT_,
             () => {
               ..._Renderer_InheritingContainer.propertyMap<CT_>(),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -15877,7 +15877,7 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -16646,8 +16646,8 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -16665,7 +16665,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -17732,8 +17732,8 @@ class _Renderer_ModelFunction extends RendererBase<ModelFunction> {
               ..._Renderer_ModelFunctionTyped.propertyMap<CT_>(),
               ..._Renderer_Categorization.propertyMap<CT_>(),
               ..._Renderer_Categorization.propertyMap<CT_>(),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -17751,7 +17751,7 @@ class _Renderer_ModelFunction extends RendererBase<ModelFunction> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -17926,8 +17926,8 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -17945,7 +17945,7 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -19220,8 +19220,8 @@ class _Renderer_Package extends RendererBase<Package> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -19230,7 +19230,7 @@ class _Renderer_Package extends RendererBase<Package> {
                           'Element2',
                         ),
 
-                isNullValue: (CT_ c) => c.element2 == null,
+                isNullValue: (CT_ c) => c.element == null,
 
                 renderValue: (
                   CT_ c,
@@ -19239,7 +19239,7 @@ class _Renderer_Package extends RendererBase<Package> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -20405,8 +20405,8 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -20424,7 +20424,7 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -23749,8 +23749,8 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -23768,7 +23768,7 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -24179,8 +24179,8 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -24198,7 +24198,7 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -24870,8 +24870,8 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                   );
                 },
               ),
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -24889,7 +24889,7 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -25571,8 +25571,8 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
       _propertyMapCache.putIfAbsent(
             CT_,
             () => {
-              'element2': Property(
-                getValue: (CT_ c) => c.element2,
+              'element': Property(
+                getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
                         self.renderSimpleVariable(
@@ -25581,7 +25581,7 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
                           'Element2',
                         ),
 
-                isNullValue: (CT_ c) => c.element2 == null,
+                isNullValue: (CT_ c) => c.element == null,
 
                 renderValue: (
                   CT_ c,
@@ -25590,7 +25590,7 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
                   StringSink sink,
                 ) {
                   renderSimple(
-                    c.element2,
+                    c.element,
                     ast,
                     r.template,
                     sink,
@@ -25771,7 +25771,7 @@ const _invisibleGetters = {
     'documentationComment',
     'documentationFrom',
     'documentationLocal',
-    'element2',
+    'element',
     'elementDocumentation',
     'hasDocumentationComment',
     'hasNodoc',

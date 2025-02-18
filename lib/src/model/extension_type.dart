@@ -12,12 +12,12 @@ import 'package:meta/meta.dart';
 class ExtensionType extends InheritingContainer with Constructable {
 
   @override
-  final ExtensionTypeElement2  element2;
+  final ExtensionTypeElement2  element;
 
   late final ElementType representationType =
-      getTypeFor(element2.representation2.type, library);
+      getTypeFor(element.representation2.type, library);
 
-  ExtensionType(this.element2, super.library, super.packageGraph);
+  ExtensionType(this.element, super.library, super.packageGraph);
 
   @override
   Library get enclosingElement => library;
@@ -41,7 +41,7 @@ class ExtensionType extends InheritingContainer with Constructable {
   bool get isSealed => false;
 
   @override
-  late final List<Field> declaredFields = element2.fields2.map((field) {
+  late final List<Field> declaredFields = element.fields2.map((field) {
     ContainerAccessor? getter, setter;
     final fieldGetter = field.getter2;
     if (fieldGetter != null) {

@@ -10,41 +10,41 @@ import 'package:dartdoc/src/model/model.dart';
 
 /// A [ModelElement] for a [TopLevelFunctionElement] that isn't part of a type definition.
 class ModelFunction extends ModelFunctionTyped with Categorization {
-  ModelFunction(TopLevelFunctionElement super.element2, super.library,
+  ModelFunction(TopLevelFunctionElement super.element, super.library,
       super.packageGraph);
 
-  bool get isStatic => element2.isStatic;
+  bool get isStatic => element.isStatic;
 
   @override
-  String get name => element2.name3 ?? '';
+  String get name => element.name3 ?? '';
 
   @override
-  TopLevelFunctionElement get element2 =>
-      super.element2 as TopLevelFunctionElement;
+  TopLevelFunctionElement get element =>
+      super.element as TopLevelFunctionElement;
 
-  bool get isAsynchronous => element2.firstFragment.isAsynchronous;
+  bool get isAsynchronous => element.firstFragment.isAsynchronous;
 }
 
 /// A [ModelElement] for a [FunctionTypedElement2] that is part of an
 /// explicit typedef.
 class ModelFunctionTypedef extends ModelFunctionTyped {
-  ModelFunctionTypedef(super.element2, super.library, super.packageGraph);
+  ModelFunctionTypedef(super.element, super.library, super.packageGraph);
 
   @override
-  String get name => element2.enclosingElement2!.name3!;
+  String get name => element.enclosingElement2!.name3!;
 }
 
 class ModelFunctionTyped extends ModelElement with TypeParameters {
   @override
-  final FunctionTypedElement2 element2;
+  final FunctionTypedElement2 element;
 
   @override
   late final List<TypeParameter> typeParameters = [
-    for (var p in element2.typeParameters2)
+    for (var p in element.typeParameters2)
       getModelFor(p, library) as TypeParameter,
   ];
 
-  ModelFunctionTyped(this.element2, super.library, super.packageGraph);
+  ModelFunctionTyped(this.element, super.library, super.packageGraph);
 
   @override
   Library get enclosingElement => library;
@@ -83,7 +83,7 @@ class ModelFunctionTyped extends ModelElement with TypeParameters {
   Iterable<CommentReferable> get referenceParents => [library];
 
   late final Callable modelType =
-      getTypeFor(element2.type, library) as Callable;
+      getTypeFor(element.type, library) as Callable;
 
   // For use in templates.
   bool get isProvidedByExtension => false;

@@ -14,13 +14,13 @@ const int _separatorChar = 0x3B;
 /// which exports this [ModelElement], ideally in its library's package.
 Library? canonicalLibraryCandidate(ModelElement modelElement) {
   var thisAndExported =
-      modelElement.packageGraph.libraryExports[modelElement.library.element2];
+      modelElement.packageGraph.libraryExports[modelElement.library.element];
   if (thisAndExported == null) {
     return null;
   }
 
   // Since we're looking for a library, go up in the tree until we find it.
-  var topLevelElement = modelElement.element2;
+  var topLevelElement = modelElement.element;
   while (topLevelElement.enclosingElement2 is! LibraryElement2 &&
       topLevelElement.enclosingElement2 != null) {
     topLevelElement = topLevelElement.enclosingElement2!;
@@ -36,7 +36,7 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
     if (!l.isPublic) return false;
     if (l.package.documentedWhere == DocumentLocation.missing) return false;
     if (modelElement is Library) return true;
-    var lookup = l.element2.exportNamespace.definedNames2[topLevelElementName];
+    var lookup = l.element.exportNamespace.definedNames2[topLevelElementName];
     return topLevelElement ==
         (lookup is PropertyAccessorElement2 ? lookup.variable3 : lookup);
   }).toList(growable: true);
@@ -124,7 +124,7 @@ final class _Canonicalization {
 
   /// Calculates a candidate for the canonical library of [_modelElement], among [libraries].
   Library canonicalLibraryCandidate(Iterable<Library> libraries) {
-    var locationPieces = _getElementLocation(_modelElement.element2)
+    var locationPieces = _getElementLocation(_modelElement.element)
         .split(_locationSplitter)
         .where((s) => s.isNotEmpty)
         .toSet();

@@ -13,7 +13,7 @@ class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable {
  
   @override
-  final FieldElement2 element2;
+  final FieldElement2 element;
 
   @override
   final ContainerAccessor? getter;
@@ -28,7 +28,7 @@ class Field extends ModelElement
   final Container enclosingElement;
 
   Field(
-    this.element2,
+    this.element,
     super.library,
     super.packageGraph,
     this.getter,
@@ -36,7 +36,7 @@ class Field extends ModelElement
   )   :
         isInherited = false,
         enclosingElement =
-            ModelElement.for_(element2.enclosingElement2, library, packageGraph)
+            ModelElement.for_(element.enclosingElement2, library, packageGraph)
                 as Container,
         assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
@@ -44,7 +44,7 @@ class Field extends ModelElement
   }
 
   Field.providedByExtension(
-    this.element2,
+    this.element,
     this.enclosingElement,
     super.library,
     super.packageGraph,
@@ -58,7 +58,7 @@ class Field extends ModelElement
   }
 
   Field.inherited(
-    this.element2,
+    this.element,
     this.enclosingElement,
     super.library,
     super.packageGraph,
@@ -102,12 +102,12 @@ class Field extends ModelElement
   }
 
   @override
-  bool get isConst => element2.isConst;
+  bool get isConst => element.isConst;
 
   /// Whether the [FieldElement2] is covariant, or the first parameter for the
   /// setter is covariant.
   @override
-  bool get isCovariant => setter?.isCovariant == true || element2.isCovariant;
+  bool get isCovariant => setter?.isCovariant == true || element.isCovariant;
 
   /// Whether this field is final.
   ///
@@ -116,22 +116,22 @@ class Field extends ModelElement
   @override
   bool get isFinal {
     if (hasExplicitGetter) return false;
-    return element2.isFinal;
+    return element.isFinal;
   }
 
   @override
-  bool get isLate => isFinal && element2.isLate;
+  bool get isLate => isFinal && element.isLate;
 
-  bool get isStatic => element2.isStatic;
+  bool get isStatic => element.isStatic;
 
   @override
   Kind get kind => isConst ? Kind.constant : Kind.property;
 
   String get fullkind =>
-      element2.isAbstract ? 'abstract $kind' : kind.toString();
+      element.isAbstract ? 'abstract $kind' : kind.toString();
 
   bool get isProvidedByExtension =>
-      element2.enclosingElement2 is ExtensionElement2;
+      element.enclosingElement2 is ExtensionElement2;
 
   /// The [enclosingElement], which is expected to be an [Extension].
   Extension get enclosingExtension => enclosingElement as Extension;

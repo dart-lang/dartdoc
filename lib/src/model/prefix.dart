@@ -15,11 +15,11 @@ import 'package:dartdoc/src/model/model.dart';
 class Prefix extends ModelElement with HasNoPage {
 
   @override
-  final PrefixElement2 element2;
+  final PrefixElement2 element;
 
   /// [library] is the library the prefix is defined in, not the [Library]
   /// referred to by the [PrefixElement2].
-  Prefix(this.element2, super.library, super.packageGraph);
+  Prefix(this.element, super.library, super.packageGraph);
 
   @override
   bool get isCanonical => false;
@@ -31,10 +31,10 @@ class Prefix extends ModelElement with HasNoPage {
 
   LibraryElement2? _getImportedLibraryElement() {
     final importLists =
-        library.element2.fragments.map((fragment) => fragment.libraryImports2);
+        library.element.fragments.map((fragment) => fragment.libraryImports2);
     return importLists
         .expand((import) => import)
-        .firstWhere((i) => i.prefix2?.element == element2)
+        .firstWhere((i) => i.prefix2?.element == element)
         .importedLibrary2;
   }
 
@@ -42,7 +42,7 @@ class Prefix extends ModelElement with HasNoPage {
   Library? get canonicalModelElement => associatedLibrary.canonicalLibrary;
 
   @override
-  Scope get scope => element2.scope;
+  Scope get scope => element.scope;
 
   @override
   ModelElement get enclosingElement => library;

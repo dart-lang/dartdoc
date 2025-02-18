@@ -41,7 +41,7 @@ class Documentation {
         _warnable.isCanonical,
         "generating docs for non-canonical element: '$_warnable' "
         "('${_warnable.runtimeType}', ${_warnable.hashCode}), representing "
-        "'${_warnable.element2}'",
+        "'${_warnable.element}'",
       );
       return _asHtml;
     }

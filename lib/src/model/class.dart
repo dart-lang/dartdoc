@@ -17,7 +17,7 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   @override
 
   @override
-  final ClassElement2 element2;
+  final ClassElement2 element;
 
   @override
   late final List<ModelElement> allModelElements = [
@@ -45,10 +45,10 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
     ...interfaceElements.expandInheritanceChain,
   ];
 
-  Class(this.element2, Library library, PackageGraph packageGraph)
+  Class(this.element, Library library, PackageGraph packageGraph)
       : super(library, packageGraph) {
-    if (element2.name3 == 'Object' &&
-        library.element2.name3 == 'dart.core' &&
+    if (element.name3 == 'Object' &&
+        library.element.name3 == 'dart.core' &&
         package.name == 'Dart') {
       packageGraph.objectClass = this;
     }
@@ -58,31 +58,31 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   String get fileName => '$name-class.html';
 
   @override
-  bool get isAbstract => element2.isAbstract;
+  bool get isAbstract => element.isAbstract;
 
   @override
-  bool get isBase => element2.isBase && !element2.isSealed;
+  bool get isBase => element.isBase && !element.isSealed;
 
   bool get isErrorOrException {
     bool isError(InterfaceElement2 e) =>
         e.library2.isDartCore && (e.name3 == 'Exception' || e.name3 == 'Error');
 
-    if (isError(element2)) return true;
-    return element2.allSupertypes.map((t) => t.element3).any(isError);
+    if (isError(element)) return true;
+    return element.allSupertypes.map((t) => t.element3).any(isError);
   }
 
   @override
-  bool get isFinal => element2.isFinal && !element2.isSealed;
+  bool get isFinal => element.isFinal && !element.isSealed;
 
   @override
   bool get isImplementableInterface =>
-      element2.isInterface && !element2.isSealed;
+      element.isInterface && !element.isSealed;
 
   @override
-  bool get isMixinClass => element2.isMixinClass;
+  bool get isMixinClass => element.isMixinClass;
 
   @override
-  bool get isSealed => element2.isSealed;
+  bool get isSealed => element.isSealed;
 
   @override
   Kind get kind => Kind.class_;

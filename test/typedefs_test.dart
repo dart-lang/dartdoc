@@ -255,6 +255,6 @@ R<int> f(int a, String b) {
     expect(
         fFunc.modelType.returnType,
         isA<AliasedUndefinedElementType>().having((e) => e.typeAliasElement2,
-            'typeAliasElement', equals(rTypedef.element2)));
+            'typeAliasElement', equals(rTypedef.element)));
   }
 }

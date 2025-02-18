@@ -20,12 +20,12 @@ import 'package:meta/meta.dart';
 /// setters, operators).
 class Extension extends Container {
   @override
-  final ExtensionElement2 element2;
+  final ExtensionElement2 element;
 
   late final ElementType extendedElement =
-      getTypeFor(element2.extendedType, library);
+      getTypeFor(element.extendedType, library);
 
-  Extension(this.element2, super.library, super.packageGraph);
+  Extension(this.element, super.library, super.packageGraph);
 
   /// Whether this extension applies to every static type.
   bool get alwaysApplies {
@@ -49,10 +49,10 @@ class Extension extends Container {
     if (extendedType is DynamicType || extendedType is VoidType) {
       return true;
     }
-    extendedType = library.element2.typeSystem.promoteToNonNull(extendedType);
+    extendedType = library.element.typeSystem.promoteToNonNull(extendedType);
     var otherType = container.modelType.type;
     if (otherType is InterfaceType) {
-      otherType = (library.element2.typeSystem as TypeSystemImpl)
+      otherType = (library.element.typeSystem as TypeSystemImpl)
           .instantiateInterfaceToBounds2(
         element: otherType.element3 as InterfaceElementImpl2,
         nullabilitySuffix: NullabilitySuffix.none,
@@ -61,7 +61,7 @@ class Extension extends Container {
       for (var superType in [otherType, ...otherType.allSupertypes]) {
         var isSameBaseType = superType.element3 == extendedType.element3;
         if (isSameBaseType &&
-            library.element2.typeSystem.isSubtypeOf(extendedType, superType)) {
+            library.element.typeSystem.isSubtypeOf(extendedType, superType)) {
           return true;
         }
       }
@@ -81,7 +81,7 @@ class Extension extends Container {
       instanceFields.wherePublic.toList(growable: false)..sort(byName);
 
   @override
-  late final List<Method> declaredMethods = element2.methods2
+  late final List<Method> declaredMethods = element.methods2
       .map((e) => getModelFor(e, library, enclosingContainer: this) as Method)
       .toList(growable: false);
 
@@ -100,10 +100,10 @@ class Extension extends Container {
   ]..sort();
 
   @override
-  String get name => element2.name3 == null ? '' : super.name;
+  String get name => element.name3 == null ? '' : super.name;
 
   @override
-  late final List<Field> declaredFields = element2.fields2.map((field) {
+  late final List<Field> declaredFields = element.fields2.map((field) {
     ContainerAccessor? getter, setter;
     final fieldGetter = field.getter2;
     if (fieldGetter != null) {
@@ -120,7 +120,7 @@ class Extension extends Container {
   }).toList(growable: false);
 
   @override
-  late final List<TypeParameter> typeParameters = element2.typeParameters2
+  late final List<TypeParameter> typeParameters = element.typeParameters2
       .map((typeParameter) => getModelFor(
           typeParameter,
           getModelForElement(typeParameter.enclosingElement2!.library2!)

@@ -11,13 +11,13 @@ import 'package:dartdoc/src/model/model.dart';
 class Dynamic extends ModelElement with HasNoPage {
  
    @override
-   final Element2 element2;
+   final Element2 element;
 
-  Dynamic(this.element2, PackageGraph packageGraph)
+  Dynamic(this.element, PackageGraph packageGraph)
       : super(Library.sentinel, packageGraph);
 
   UndefinedElementType get modelType =>
-      throw UnimplementedError('(${element2.runtimeType}) $element2');
+      throw UnimplementedError('(${element.runtimeType}) $element');
 
   /// `dynamic` is not a real object, and so we can't document it, so there
   /// can be nothing canonical for it.

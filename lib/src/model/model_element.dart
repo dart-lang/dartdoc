@@ -379,7 +379,7 @@ abstract class ModelElement
   Iterable<Category?> get displayedCategories => const [];
 
   @override
-  ModelNode? get modelNode => packageGraph.getModelNodeFor(element2);
+  ModelNode? get modelNode => packageGraph.getModelNodeFor(element);
 
   /// This element's [Annotation]s.
   ///
@@ -387,7 +387,7 @@ abstract class ModelElement
   /// supposed to be invisible (like `@pragma`). While `null` elements indicate
   /// invalid code from analyzer's perspective, some are present in `sky_engine`
   /// (`@Native`) so we don't want to crash here.
-  late final List<Annotation> annotations = element2.metadata
+  late final List<Annotation> annotations = element.metadata
       .where((m) => m.isVisibleAnnotation)
       .map((m) => Annotation(m, library, packageGraph))
       .toList(growable: false);
@@ -414,7 +414,7 @@ abstract class ModelElement
       return false;
     }
 
-    if (element2 case LibraryElement2(:var identifier, :var firstFragment)) {
+    if (element case LibraryElement2(:var identifier, :var firstFragment)) {
       // Private Dart SDK libraries are not public.
       if (identifier.startsWith('dart:_') ||
           identifier.startsWith('dart:nativewrappers/') ||
@@ -429,13 +429,13 @@ abstract class ModelElement
       }
     }
 
-    return !element2.hasPrivateName && !hasNodoc;
+    return !element.hasPrivateName && !hasNodoc;
   }();
 
   @override
   late final DartdocOptionContext config =
       DartdocOptionContext.fromContextElement(
-          packageGraph.config, library.element2, packageGraph.resourceProvider);
+          packageGraph.config, library.element, packageGraph.resourceProvider);
 
   bool get hasAttributes => attributes.isNotEmpty;
 
@@ -463,9 +463,9 @@ abstract class ModelElement
 
   /// Whether this is a function, or if it is an type alias to a function.
   bool get isCallable =>
-      element2 is FunctionTypedElement2 ||
-      (element2 is TypeAliasElement2 &&
-          (element2 as TypeAliasElement2).aliasedType is FunctionType);
+      element is FunctionTypedElement2 ||
+      (element is TypeAliasElement2 &&
+          (element as TypeAliasElement2).aliasedType is FunctionType);
 
   /// The canonical ModelElement for this ModelElement, or null if there isn't
   /// one.
@@ -499,7 +499,7 @@ abstract class ModelElement
   /// A public, documented library which exports this [ModelElement], ideally in
   /// [library]'s package.
   late final Library? canonicalLibrary = () {
-    if (element2.hasPrivateName) {
+    if (element.hasPrivateName) {
       // Privately named elements can never have a canonical library.
       return null;
     }
@@ -547,7 +547,7 @@ abstract class ModelElement
       documentationFrom.map((e) => e.documentationLocal).join('<p>'));
 
   @override
-  Element2 get element2;
+  Element2 get element;
 
   @override
   String get location {
@@ -585,13 +585,13 @@ abstract class ModelElement
   }();
 
   @override
-  String get sourceFileName => element2.library2!.firstFragment.source.fullName;
+  String get sourceFileName => element.library2!.firstFragment.source.fullName;
 
   @override
   late final CharacterLocation? characterLocation = () {
     final lineInfo = unitElement.lineInfo;
 
-    final nameOffset = element2.firstFragment.nameOffset2;
+    final nameOffset = element.firstFragment.nameOffset2;
     assert(nameOffset != null && nameOffset >= 0,
         'Invalid location data, $nameOffset, for element: $fullyQualifiedName');
     if (nameOffset != null && nameOffset >= 0) {
@@ -601,12 +601,12 @@ abstract class ModelElement
   }();
 
   LibraryFragment get unitElement {
-    Fragment? fragment = element2.firstFragment;
+    Fragment? fragment = element.firstFragment;
     while (fragment != null) {
       if (fragment is LibraryFragment) return fragment;
       fragment = fragment.enclosingFragment;
     }
-    throw StateError('Unable to find enclosing LibraryFragment for $element2');
+    throw StateError('Unable to find enclosing LibraryFragment for $element');
   }
 
   bool get hasAnnotations => annotations.isNotEmpty;
@@ -634,8 +634,8 @@ abstract class ModelElement
   bool get isDeprecated {
     // If element.metadata is empty, it might be because this is a property
     // where the metadata belongs to the individual getter/setter
-    if (element2.metadata.isEmpty && element2 is PropertyInducingElement2) {
-      var pie = element2 as PropertyInducingElement2;
+    if (element.metadata.isEmpty && element is PropertyInducingElement2) {
+      var pie = element as PropertyInducingElement2;
 
       // The getter or the setter might be null – so the stored value may be
       // `true`, `false`, or `null`
@@ -651,7 +651,7 @@ abstract class ModelElement
       // deprecated if both are deprecated.
       return deprecatedValues.every((d) => d);
     }
-    return element2.metadata.any((a) => a.isDeprecated);
+    return element.metadata.any((a) => a.isDeprecated);
   }
 
   @override
@@ -682,8 +682,8 @@ abstract class ModelElement
     // If `name` is empty, we probably have the wrong Element association or
     // there's an analyzer issue.
     assert(name.isNotEmpty ||
-        element2.kind == ElementKind.DYNAMIC ||
-        element2.kind == ElementKind.NEVER ||
+        element.kind == ElementKind.DYNAMIC ||
+        element.kind == ElementKind.NEVER ||
         this is ModelFunction);
 
     final href = this.href;
@@ -725,7 +725,7 @@ abstract class ModelElement
       _parameterRenderer.renderLinkedParams(parameters, showMetadata: false);
 
   @override
-  String get name => element2.lookupName!;
+  String get name => element.lookupName!;
 
   @override
   String get oneLineDoc => elementDocumentation.asOneLiner;
@@ -746,7 +746,7 @@ abstract class ModelElement
   // TODO(srawlins): This really smells like it should just be implemented in
   // the subclasses.
   late final List<Parameter> parameters = () {
-    final e = element2;
+    final e = element;
     if (!isCallable) {
       throw StateError(
           '$e (${e.runtimeType}) cannot have parameters');
@@ -802,7 +802,6 @@ abstract class ModelElement
   @internal
   @override
   CommentReferable get definingCommentReferable {
-    var element = element2;
     return getModelForElement(element);
   }
 

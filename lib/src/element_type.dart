@@ -322,7 +322,7 @@ abstract class DefinedElementType extends ElementType {
   @internal
   @override
   CommentReferable get definingCommentReferable =>
-      ModelElement.forElement(modelElement.element2, packageGraph);
+      ModelElement.forElement(modelElement.element, packageGraph);
 }
 
 /// Any callable [ElementType] will mix-in this class, whether anonymous or not,

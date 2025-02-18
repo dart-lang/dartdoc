@@ -22,7 +22,7 @@ class _LibrarySentinel implements Library {
 class Library extends ModelElement
     with Categorization, TopLevelContainer, CanonicalFor {
   @override
-  final LibraryElement2 element2;
+  final LibraryElement2 element;
 
   /// The set of [Element2]s declared directly in this library.
   final Set<Element2> _localElements;
@@ -48,7 +48,7 @@ class Library extends ModelElement
   /// abstract getter.
   static final Library sentinel = _LibrarySentinel();
 
-  Library._(this.element2, PackageGraph packageGraph, this.package,
+  Library._(this.element, PackageGraph packageGraph, this.package,
       this._restoredUri, this._localElements, this._exportedElements)
       : super(sentinel, packageGraph);
 
@@ -88,20 +88,20 @@ class Library extends ModelElement
 
   /// Allow scope for Libraries.
   @override
-  Scope get scope => element2.firstFragment.scope;
+  Scope get scope => element.firstFragment.scope;
 
-  bool get isInSdk => element2.isInSdk;
+  bool get isInSdk => element.isInSdk;
 
   @override
   CharacterLocation? get characterLocation {
-    if (element2.firstFragment.nameOffset2 == null) {
+    if (element.firstFragment.nameOffset2 == null) {
       return CharacterLocation(1, 1);
     }
     return super.characterLocation;
   }
 
   @override
-  LibraryFragment get unitElement => element2.library2.firstFragment;
+  LibraryFragment get unitElement => element.library2.firstFragment;
 
   @override
 
@@ -114,7 +114,7 @@ class Library extends ModelElement
   bool get isPublic {
     if (!super.isPublic) return false;
     final sdkLib =
-        packageGraph.sdkLibrarySources[element2.firstFragment.source];
+        packageGraph.sdkLibrarySources[element.firstFragment.source];
     if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
       return false;
     }
@@ -122,7 +122,7 @@ class Library extends ModelElement
         // TODO(srawlins): Stop supporting a 'name' here.
         config.isLibraryExcluded(name) ||
             config.isLibraryExcluded(
-                element2.firstFragment.source.uri.toString())) {
+                element.firstFragment.source.uri.toString())) {
       return false;
     }
     return true;
@@ -133,7 +133,7 @@ class Library extends ModelElement
   Map<String, Set<Library>> get _prefixToLibrary {
     var prefixToLibrary = <String, Set<Library>>{};
     // It is possible to have overlapping prefixes.
-    for (var i in element2.firstFragment.libraryImports2) {
+    for (var i in element.firstFragment.libraryImports2) {
       var prefixName = i.prefix2?.element.name3;
       if (prefixName == null) continue;
       // Ignore invalid imports.
@@ -223,7 +223,7 @@ class Library extends ModelElement
 
   /// Whether a libary is anonymous, either because it has no library directive
   /// or it has a library directive without a name.
-  bool get isAnonymous => element2.name3 == null || element2.name3!.isEmpty;
+  bool get isAnonymous => element.name3 == null || element.name3!.isEmpty;
 
   @override
   Kind get kind => Kind.library;
@@ -233,19 +233,19 @@ class Library extends ModelElement
 
   @override
   String get name {
-    var source = element2.firstFragment.source;
+    var source = element.firstFragment.source;
     if (source.uri.isScheme('dart')) {
       // There are inconsistencies in library naming + URIs for the Dart
       // SDK libraries; we rationalize them here.
       if (source.uri.toString().contains('/')) {
-        return element2.name3!.replaceFirst('dart.', 'dart:');
+        return element.name3!.replaceFirst('dart.', 'dart:');
       }
       return source.uri.toString();
-    } else if (element2.name3!.isNotEmpty) {
+    } else if (element.name3!.isNotEmpty) {
       // An empty name indicates that the library is "implicitly named" with the
       // empty string. That is, it either has no `library` directive, or it has
       // a `library` directive with no name.
-      return element2.name3!;
+      return element.name3!;
     }
     var baseName = pathContext.basename(source.fullName);
     if (baseName.endsWith('.dart')) {
@@ -269,7 +269,7 @@ class Library extends ModelElement
 
   /// The path portion of this library's import URI as a 'package:' URI.
   String get breadcrumbName {
-    var source = element2.firstFragment.source;
+    var source = element.firstFragment.source;
     if (source.uri.isScheme('dart')) {
       return name;
     }
@@ -295,7 +295,7 @@ class Library extends ModelElement
 
   /// The real packageMeta, as opposed to the package we are documenting with.
   late final PackageMeta? packageMeta =
-      packageGraph.packageMetaProvider.fromElement(element2, config.sdkDir);
+      packageGraph.packageMetaProvider.fromElement(element, config.sdkDir);
 
   late final List<Class> classesAndExceptions = [
     ..._localElementsOfType<ClassElement2, Class>(),
@@ -438,7 +438,7 @@ class Library extends ModelElement
   Map<String, CommentReferable> get referenceChildren {
     var referenceChildrenBuilder = <String, CommentReferable>{};
     var definedNamesModelElements =
-        element2.exportNamespace.definedNames2.values.map(getModelForElement);
+        element.exportNamespace.definedNames2.values.map(getModelForElement);
     referenceChildrenBuilder
         .addAll(definedNamesModelElements.whereNotType<Accessor>().asMapByName);
     // TODO(jcollins-g): warn and get rid of this case where it shows up.
@@ -448,7 +448,7 @@ class Library extends ModelElement
     for (var MapEntry(key: prefix, value: libraries)
         in _prefixToLibrary.entries) {
       if (prefix == '_' &&
-          element2.featureSet.isEnabled(Feature.wildcard_variables)) {
+          element.featureSet.isEnabled(Feature.wildcard_variables)) {
         // A wildcard import prefix is non-binding.
         continue;
       }
@@ -502,19 +502,19 @@ class Library extends ModelElement
     ];
     return libraryMembers.map((member) {
       if (member is! GetterSetterCombo) {
-        return getModelForElement(member.element2).fullyQualifiedName;
+        return getModelForElement(member.element).fullyQualifiedName;
       }
       var getter = switch (member.getter) {
-        Accessor accessor => getModelForElement(accessor.element2) as Accessor,
+        Accessor accessor => getModelForElement(accessor.element) as Accessor,
         _ => null,
       };
       var setter = switch (member.setter) {
-        Accessor accessor => getModelForElement(accessor.element2) as Accessor,
+        Accessor accessor => getModelForElement(accessor.element) as Accessor,
         _ => null,
       };
       return getModelForPropertyInducingElement(
-        member.element2 as TopLevelVariableElement2,
-        getModelForElement(member.element2.library2!) as Library,
+        member.element as TopLevelVariableElement2,
+        getModelForElement(member.element.library2!) as Library,
         getter: getter,
         setter: setter,
       ).fullyQualifiedName;

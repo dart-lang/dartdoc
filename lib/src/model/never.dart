@@ -10,9 +10,9 @@ import 'package:dartdoc/src/model/model.dart';
 class NeverType extends ModelElement with HasNoPage {
 
   @override
-  final Element2 element2;
+  final Element2 element;
 
-  NeverType(this.element2, PackageGraph packageGraph)
+  NeverType(this.element, PackageGraph packageGraph)
       : super(Library.sentinel, packageGraph);
 
   /// `Never` is not a real object, and so we can't document it, so there
