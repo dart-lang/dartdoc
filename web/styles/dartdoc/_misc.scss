@@ -12,10 +12,8 @@
   padding: 18px 4px;
   font-size: 18px;
   vertical-align: middle;
-}
 
-@media (max-width: 840px) {
-  .source-link {
+  @media (max-width: 840px) {
     padding: 7px 2px;
     font-size: 10px;
   }
