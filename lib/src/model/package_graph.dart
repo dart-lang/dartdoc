@@ -92,7 +92,7 @@ class PackageGraph with CommentReferable, Nameable {
   /// span packages.
   void addLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
     assert(!allLibrariesAdded);
-    var libraryElement2 = resolvedLibrary.element2;
+    var libraryElement2 = resolvedLibrary.element;
     var packageMeta =
         packageMetaProvider.fromElement(libraryElement2, config.sdkDir);
     if (packageMeta == null) {
@@ -107,7 +107,7 @@ class PackageGraph with CommentReferable, Nameable {
     }
     var package = Package.fromPackageMeta(packageMeta, this);
     var library = Library.fromLibraryResult(resolvedLibrary, this, package);
-    if (_shouldIncludeLibrary(resolvedLibrary.element2)) {
+    if (_shouldIncludeLibrary(resolvedLibrary.element)) {
       package.libraries.add(library);
     }
     _allLibraries[libraryElement2.firstFragment.source.fullName] = library;
@@ -222,10 +222,10 @@ class PackageGraph with CommentReferable, Nameable {
         // is no harm in grabbing ModelNode for each.
         var commentData = directive.documentationComment?.data;
         _modelNodes.putIfAbsent(
-            resolvedLibrary.element2,
+            resolvedLibrary.element,
             () => ModelNode(
                   directive,
-                  resolvedLibrary.element2,
+                  resolvedLibrary.element,
                   _analysisContext,
                   commentData: commentData,
                 ));
