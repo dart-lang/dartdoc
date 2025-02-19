@@ -56,7 +56,7 @@ class Library extends ModelElement
       PackageGraph packageGraph, Package package) {
     packageGraph.gatherModelNodes(resolvedLibrary);
 
-    var libraryElement = resolvedLibrary.element2;
+    var libraryElement = resolvedLibrary.element;
 
     var localElements = <Element2>{
       ...libraryElement.firstFragment.getters.map((g) => g.element),
@@ -77,7 +77,7 @@ class Library extends ModelElement
       libraryElement,
       packageGraph,
       package,
-      resolvedLibrary.element2.firstFragment.source.uri.toString(),
+      resolvedLibrary.element.firstFragment.source.uri.toString(),
       localElements,
       exportedElements,
     );
