@@ -272,15 +272,15 @@ class PubPackageBuilder implements PackageBuilder {
           _knownParts.add(file);
           continue;
         }
-        newFiles.addFilesReferencedBy(resolvedLibrary.element2);
+        newFiles.addFilesReferencedBy(resolvedLibrary.element);
         for (var unit in resolvedLibrary.units) {
           newFiles.addFilesReferencedByFragment(unit.declaredFragment);
         }
-        if (processedLibraries.contains(resolvedLibrary.element2)) {
+        if (processedLibraries.contains(resolvedLibrary.element)) {
           continue;
         }
         uninitializedPackageGraph.addLibraryToGraph(resolvedLibrary);
-        processedLibraries.add(resolvedLibrary.element2);
+        processedLibraries.add(resolvedLibrary.element);
       }
       files.addAll(newFiles);
       var externals = _includedExternalsFrom(newFiles);
@@ -515,11 +515,11 @@ class PubPackageBuilder implements PackageBuilder {
 /// Contains the [ResolvedLibraryResult] and any additional information about
 /// the library.
 class DartDocResolvedLibrary {
-  final LibraryElement2 element2;
+  final LibraryElement2 element;
   final List<CompilationUnit> units;
 
   DartDocResolvedLibrary(ResolvedLibraryResult result)
-      : element2 = result.element2,
+      : element = result.element2,
         units = result.units.map((unit) => unit.unit).toList();
 }
 
