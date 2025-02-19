@@ -45,6 +45,15 @@
   --alert-important-fgColor: #7953bf;
   --alert-warning-fgColor: #955d00;
   --alert-error-fgColor: #c43131;
+
+  #light-theme-button {
+    display: none;
+  }
+
+  // Hide dark-mode only images from GitHub's themable image support.
+  img[src$="#gh-dark-mode-only"] {
+    display: none;
+  }
 }
 
 .dark-theme {
@@ -88,53 +97,34 @@
   --alert-important-fgColor: #ad81ff;
   --alert-warning-fgColor: #cea11f;
   --alert-error-fgColor: #ff6666;
-}
 
-#theme {
-  display: none;
+  #dark-theme-button {
+    display: none;
+  }
+
+  // Hide light-mode only images from GitHub's themable image support.
+  img[src$="#gh-light-mode-only"] {
+    display: none;
+  }
 }
 
 #theme-button {
+  // Reset button appearance.
+  appearance: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+
   position: absolute;
   right: 30px;
-  height: 24px;
-}
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
 
-#theme-button .material-symbols-outlined {
   color: var(--main-icon-color);
-  user-select: none;
-  cursor: pointer;
-}
 
-#theme-button .material-symbols-outlined:hover {
-  color: var(--main-hyperlinks-color);
-}
-
-li .material-symbols-outlined, dt .material-symbols-outlined {
-  font-size: 1em;
-  vertical-align: text-bottom;
-}
-
-dt .material-symbols-outlined {
-  text-indent: 0;
-}
-
-.light-theme #light-theme-button {
-  display: none;
-}
-
-.dark-theme #dark-theme-button {
-  display: none;
-}
-
-/*
-Only show images that fit their theme using GitHub's syntax, see:
-https://github.blog/changelog/2021-11-24-specify-theme-context-for-images-in-markdown/
-*/
-.dark-theme img[src$="#gh-light-mode-only"] {
-  display: none;
-}
-
-.light-theme img[src$="#gh-dark-mode-only"] {
-  display: none;
+  &:hover {
+    color: var(--main-hyperlinks-color);
+  }
 }
