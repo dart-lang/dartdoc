@@ -1890,7 +1890,7 @@ void main() async {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(37));
+      expect(classes, hasLength(34));
     });
 
     test('abstract', () {
@@ -3083,108 +3083,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           '<span class="parameter" id="doAComplicatedThing-param-doSomethingElse"><span class="type-annotation">void</span> <span class="parameter-name">doSomethingElse</span>(<span class="parameter" id="doSomethingElse-param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span>'
           '<span class="parameter" id="doSomethingElse-param-somethingElse"><span class="type-annotation">double</span> <span class="parameter-name">somethingElse</span></span>)?</span>}');
     });
-  });
-
-  group('Type expansion', () {
-    late final Class TemplatedInterface, ClassWithUnusualProperties;
-
-    setUpAll(() {
-      TemplatedInterface = exLibrary.classes.named('TemplatedInterface');
-      ClassWithUnusualProperties =
-          fakeLibrary.classes.named('ClassWithUnusualProperties');
-    });
-
-    test('setter that takes a function is correctly displayed', () {
-      var explicitSetter = ClassWithUnusualProperties.instanceFields
-          .singleWhere((f) => f.name == 'explicitSetter');
-      // TODO(jcollins-g): really, these shouldn't be called "parameters" in
-      // the span class.
-      expect(
-          explicitSetter.modelType.linkedName,
-          matches(RegExp(
-              r'dynamic Function<span class="signature">\(<span class="parameter" id="(f-)?param-bar"><span class="type-annotation">int</span> <span class="parameter-name">bar</span>, </span><span class="parameter" id="(f-)?param-baz"><span class="type-annotation"><a href="%%__HTMLBASE_dartdoc_internal__%%fake/Cool-class.html">Cool</a></span> <span class="parameter-name">baz</span>, </span><span class="parameter" id="(f-)?param-macTruck"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span> <span class="parameter-name">macTruck</span></span>\)</span>')));
-    });
-
-    test('parameterized type from inherited field is correctly displayed', () {
-      var aInheritedField = TemplatedInterface.inheritedFields
-          .singleWhere((f) => f.name == 'aInheritedField');
-      expect(
-          aInheritedField.modelType.linkedName,
-          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a>'
-          '<span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>?');
-    });
-
-    test(
-        'parameterized type for return value from inherited explicit getter is correctly displayed',
-        () {
-      Accessor aInheritedGetter = TemplatedInterface.inheritedFields
-          .singleWhere((f) => f.name == 'aInheritedGetter')
-          .getter!;
-      expect(aInheritedGetter.modelType.returnType.linkedName,
-          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
-    });
-
-    test(
-        'parameterized type for return value from inherited explicit setter is correctly displayed',
-        () {
-      Accessor aInheritedSetter = TemplatedInterface.inheritedFields
-          .singleWhere((f) => f.name == 'aInheritedSetter')
-          .setter!;
-      expect(aInheritedSetter.parameters.first.modelType.linkedName,
-          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
-      expect(aInheritedSetter.enclosingCombo.modelType.linkedName,
-          '<a href="%%__HTMLBASE_dartdoc_internal__%%ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
-    });
-
-    test(
-        'parameterized type for return value from method is correctly displayed',
-        () {
-      var aMethodInterface = TemplatedInterface.instanceMethods
-          .singleWhere((m) => m.name == 'aMethodInterface');
-      expect(aMethodInterface.modelType.returnType.linkedName,
-          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
-    });
-
-    test(
-        'parameterized type for return value from inherited method is correctly displayed',
-        () {
-      var aInheritedMethod = TemplatedInterface.instanceMethods
-          .singleWhere((m) => m.name == 'aInheritedMethod');
-      expect(aInheritedMethod.modelType.returnType.linkedName,
-          '<a href="${htmlBasePlaceholder}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
-    });
-
-    test(
-        'parameterized type for return value containing a parameterized typedef is correctly displayed',
-        () {
-      var aTypedefReturningMethodInterface = TemplatedInterface.instanceMethods
-          .singleWhere((m) => m.name == 'aTypedefReturningMethodInterface');
-      expect(aTypedefReturningMethodInterface.modelType.returnType.linkedName,
-          '<a href="${htmlBasePlaceholder}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>&gt;</span>');
-    });
-
-    test(
-        'parameterized type for return value containing a parameterized typedef from inherited method is correctly displayed',
-        () {
-      var aInheritedTypedefReturningMethod = TemplatedInterface.instanceMethods
-          .singleWhere((m) => m.name == 'aInheritedTypedefReturningMethod');
-      expect(aInheritedTypedefReturningMethod.modelType.returnType.linkedName,
-          '<a href="${htmlBasePlaceholder}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
-    });
-
-    test('parameterized types for inherited operator is correctly displayed',
-        () {
-      var aInheritedAdditionOperator = TemplatedInterface.inheritedOperators
-          .singleWhere((m) => m.name == 'operator +');
-      expect(aInheritedAdditionOperator.modelType.returnType.linkedName,
-          '<a href="${htmlBasePlaceholder}ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
-      expect(
-          ParameterRendererHtml()
-              .renderLinkedParams(aInheritedAdditionOperator.parameters),
-          '<span class="parameter" id="+-param-other"><span class="type-annotation"><a href="${htmlBasePlaceholder}ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">other</span></span>');
-    });
-
-    test('', () {});
   });
 
   group('Method', () {

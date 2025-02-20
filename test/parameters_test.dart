@@ -66,7 +66,6 @@ void f(int _) {}
   void test_formalParameter_generic_method() async {
     var library = await bootPackageWithLibrary('''
 class C {
-  C() {}
   int one(int Function<T>(T)? f) {
     return 1;
   }

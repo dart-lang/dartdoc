@@ -562,9 +562,6 @@ abstract class ClassWithUnusualProperties extends ImplicitProperties {
     return _aFunction;
   }
 
-  /// Set to [f], and don't warn about [bar] or [baz].
-  set explicitSetter(f(int bar, Cool baz, List<int> macTruck)) {}
-
   /// This property has some docs, too.
   final Set finalProperty = Set();
 
