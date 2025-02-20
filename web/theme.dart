@@ -8,34 +8,36 @@ import 'package:web/web.dart';
 
 void init() {
   var bodyElement = document.body;
-
   if (bodyElement == null) {
     return;
   }
 
-  var theme = document.getElementById('theme') as HTMLInputElement;
+  var themeButton =
+      document.getElementById('theme-button') as HTMLButtonElement;
 
-  void switchThemes() {
-    if (theme.checked) {
-      bodyElement.setAttribute('class', 'dark-theme');
-      theme.setAttribute('value', 'dark-theme');
+  void switchThemes(bool toDarkMode) {
+    if (toDarkMode) {
+      bodyElement.classList.remove('light-theme');
+      bodyElement.classList.add('dark-theme');
+
       window.localStorage.setItem('colorTheme', 'true');
     } else {
-      bodyElement.setAttribute('class', 'light-theme');
-      theme.setAttribute('value', 'light-theme');
+      bodyElement.classList.remove('dark-theme');
+      bodyElement.classList.add('light-theme');
+
       window.localStorage.setItem('colorTheme', 'false');
     }
   }
 
-  theme.addEventListener(
-    'change',
+  themeButton.addEventListener(
+    'click',
     (Event _) {
-      switchThemes();
+      final currentlyDarkMode = bodyElement.classList.contains('dark-theme');
+      switchThemes(!currentlyDarkMode);
     }.toJS,
   );
 
   if (window.localStorage.getItem('colorTheme') case var colorTheme?) {
-    theme.checked = colorTheme == 'true';
-    switchThemes();
+    switchThemes(colorTheme == 'true');
   }
 }
