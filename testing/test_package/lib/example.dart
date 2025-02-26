@@ -88,26 +88,6 @@ typedef String processMessage<T>(String msg);
 
 typedef String ParameterizedTypedef<T>(T msg, int foo);
 
-/// Support class to test inheritance + type expansion from implements clause.
-abstract class ParameterizedClass<T> {
-  AnotherParameterizedClass<T> aInheritedMethod(int foo);
-  ParameterizedTypedef<T> aInheritedTypedefReturningMethod();
-  AnotherParameterizedClass<T>? aInheritedField;
-  AnotherParameterizedClass<T> get aInheritedGetter;
-  ParameterizedClass<T> operator +(ParameterizedClass<T> other);
-  set aInheritedSetter(AnotherParameterizedClass<T> thingToSet);
-}
-
-class AnotherParameterizedClass<B> {}
-
-/// Class for testing expansion of type from implements clause.
-abstract class TemplatedInterface<A> implements ParameterizedClass<List<int>> {
-  AnotherParameterizedClass<List<int>> aMethodInterface(A value);
-  ParameterizedTypedef<List<String>> aTypedefReturningMethodInterface();
-  AnotherParameterizedClass<Stream<List<int>>>? aField;
-  set aSetter(AnotherParameterizedClass<List<bool>> thingToSet);
-}
-
 class TemplatedClass<X> {
   int aMethod(X input) {
     return 5;
