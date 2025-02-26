@@ -6,27 +6,25 @@ footer {
   flex: 0 0 16px;
   text-align: center;
   padding: 16px 20px;
-}
 
-footer {
   color: #fff;
   background-color: var(--main-footer-background);
   width: 100%;
-}
 
-footer p {
-  margin: 0;
-}
+  p {
+    margin: 0;
+  }
 
-footer .no-break {
-  white-space: nowrap;
-}
+  .no-break {
+    white-space: nowrap;
+  }
 
-footer .container {
-  padding-left: 0;
-  padding-right: 0;
-}
+  .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
 
-footer a, footer a:hover {
-  color: #fff;
+  a, a:hover {
+    color: #fff;
+  }
 }
