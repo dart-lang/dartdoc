@@ -324,7 +324,7 @@ Future<void> runDoc(ArgResults commandResults) async {
     'help' => _docHelp(),
     'package' => _docPackage(commandResults, withStats: stats),
     'sdk' => docSdk(withStats: stats),
-    'testing-package' => docTestingPackage(),
+    'testing-package' => docTestingPackage(withStats: stats),
     _ => throw UnimplementedError('Unknown doc target: "$target"'),
   };
 }
@@ -515,11 +515,15 @@ Map<String, String> createThrowawayPubCache() {
 final String _defaultPubCache = Platform.environment['PUB_CACHE'] ??
     path.context.resolveTildePath('~/.pub-cache');
 
-Future<String> docTestingPackage() async {
+Future<String> docTestingPackage({
+  bool withStats = false,
+}) async {
   var testPackagePath = testPackage.absolute.path;
   var launcher = SubprocessLauncher('doc-test-package');
-  await launcher.runStreamedDartCommand(['pub', 'get'],
-      workingDirectory: testPackagePath);
+  await launcher.runStreamedDartCommand(
+    ['pub', 'get'],
+    workingDirectory: testPackagePath,
+  );
   var outputPath = _testingPackageDocsDir.absolute.path;
   await launcher.runStreamedDartCommand(
     [
@@ -533,7 +537,21 @@ Future<String> docTestingPackage() async {
       '--pretty-index-json',
     ],
     workingDirectory: testPackagePath,
+    withStats: withStats,
   );
+
+  if (withStats && (Platform.isLinux || Platform.isMacOS)) {
+    // Prints all files in `outputPath`, newline-separated.
+    var findResult = Process.runSync('find', [outputPath, '-type', 'f']);
+    var fileCount = (findResult.stdout as String).split('\n').length;
+    var diskUsageResult = Process.runSync('du', ['-sh', outputPath]);
+    // Output looks like
+    // 146M    /var/folders/72/ltck4q353hsg3bn8kpkg7f84005w15/T/sdkdocsHcquiB
+    var diskUsageNumber =
+        (diskUsageResult.stdout as String).trim().split(RegExp('\\s+')).first;
+    print('Generated $fileCount files amounting to $diskUsageNumber.');
+  }
+
   return outputPath;
 }
 
