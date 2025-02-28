@@ -13,6 +13,10 @@ a {
   text-decoration: none;
 }
 
+button {
+  padding: 0;
+}
+
 section {
   /* Note that the generated HTML for pub packages may have `section` tags
      transformed into `div` tags. */
