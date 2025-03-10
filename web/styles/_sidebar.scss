@@ -2,60 +2,58 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-.sidebar ol {
-  list-style: none;
-  line-height: 22px;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding: 0 0 15px 0;
-}
+.sidebar {
+  h5, ol li {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 3px 0 3px 3px;
+  }
 
-.sidebar h5 a,
-.sidebar h5 a:hover {
-  color: var(--main-sidebar-color);
-}
+  ol {
+    list-style: none;
+    line-height: 22px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0 0 15px 0;
 
-.sidebar h5,
-.sidebar ol li {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  padding: 3px 0 3px 3px;
-}
+    li {
+      &.section-title {
+        font-size: 18px;
+        font-weight: normal;
+        text-transform: uppercase;
+        padding-top: 25px;
+      }
 
-.sidebar h5 {
-  color: var(--main-sidebar-color);
-  font-size: 18px;
-  margin: 0 0 22px 0;
-  padding-top: 0;
-}
+      &.section-subtitle {
+        font-weight: 400;
+        text-transform: uppercase;
 
-.sidebar ol li.section-title {
-  font-size: 18px;
-  font-weight: normal;
-  text-transform: uppercase;
-  padding-top: 25px;
-}
+        a {
+          color: inherit;
+        }
+      }
 
-.sidebar ol li.section-subtitle a {
-  color: inherit;
-}
+      &.section-subitem {
+        margin-left: 12px;
+      }
 
-.sidebar ol li.section-subtitle {
-  font-weight: 400;
-  text-transform: uppercase;
-}
+      &:first-child {
+        padding-top: 3px;
+        margin-top: 0;
+      }
+    }
+  }
 
-.sidebar ol li.section-subitem {
-  margin-left: 12px;
-}
+  h5 {
+    color: var(--main-sidebar-color);
+    font-size: 18px;
+    margin: 0 0 22px 0;
+    padding-top: 0;
 
-.sidebar ol li:first-child {
-  padding-top: 3px;
-  margin-top: 0;
-}
-
-button {
-  padding: 0;
+    a, a:hover {
+      color: var(--main-sidebar-color);
+    }
+  }
 }
 
 #sidenav-left-toggle {
@@ -65,10 +63,60 @@ button {
   color: var(--main-icon-color);
   user-select: none;
   cursor: pointer;
+
+  &:hover {
+    color: var(--main-hyperlinks-color);
+  }
+
+  @media screen and (max-width: 320px) {
+    margin-right: 10px;
+    margin-left: 20px;
+  }
 }
 
-#sidenav-left-toggle:hover {
-  color: var(--main-hyperlinks-color);
+#overlay-under-drawer {
+  display: none;
+
+  opacity: 0.4;
+  height: 100%;
+  z-index: 1999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: black;
+}
+
+.sidebar-offcanvas-left {
+  flex: 0 1 230px;
+  order: 1;
+  overflow-y: scroll;
+  padding: 20px 0 15px 30px;
+  margin: 5px 20px 0 0;
+
+  h5 {
+    margin-bottom: 10px;
+
+    &:last-of-type {
+      border: 0;
+      margin-bottom: 25px;
+    }
+  }
+}
+
+.sidebar-offcanvas-right {
+  flex: 0 1 12em;
+  order: 3;
+  overflow-y: scroll;
+  padding: 20px 15px 15px 15px;
+  margin-top: 5px;
+  margin-right: 20px;
+
+  // The right nav should disappear out of view when the window shrinks.
+  @media screen and (max-width: 992px) {
+    display: none;
+  }
 }
 
 /* left-nav disappears, and can transition in from the left */
@@ -84,15 +132,6 @@ button {
   }
 
   #overlay-under-drawer.active {
-    opacity: 0.4;
-    height: 100%;
-    z-index: 1999;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: black;
     display: block;
   }
 
@@ -103,12 +142,19 @@ button {
     z-index: 2000;
     top: 0;
     width: 280px; /* works all the way down to an iphone 4 */
+    // Set a max width for narrow layouts that accounts for margin.
+    max-width: calc(100% - 20px);
     height: 90%;
     background-color: var(--main-bg-color);
     overflow-y: scroll; /* TODO: how to hide scroll bars? */
     padding: 10px;
     margin: 10px 10px;
     box-shadow: 5px 5px 5px 5px #444444;
+
+    &.active {
+      // Enable animating the drawer into the page view.
+      left: 0;
+    }
   }
 
   ol#sidebar-nav {
@@ -116,62 +162,10 @@ button {
     white-space: pre-line;
   }
 
-  .sidebar-offcanvas-left.active {
-    left: 0; /* this animates our drawer into the page */
-  }
-
-  .self-name {
+  header .self-name {
     display: inline-block;
     color: var(--main-hyperlinks-color);
   }
-}
-
-.sidebar-offcanvas-left h5 {
-  margin-bottom: 10px;
-}
-
-.sidebar-offcanvas-left h5:last-of-type {
-  border: 0;
-  margin-bottom: 25px;
-}
-
-/* the right nav disappears out of view when the window shrinks */
-@media screen and (max-width: 992px) {
-  .sidebar-offcanvas-right {
-    display: none;
-  }
-}
-
-#overlay-under-drawer {
-  display: none;
-}
-
-@media screen and (max-width: 320px) {
-  #sidenav-left-toggle {
-    margin-right: 10px;
-    margin-left: 20px;
-  }
-
-  .self-name {
-    margin-right: 10px;
-  }
-}
-
-.sidebar-offcanvas-left {
-  flex: 0 1 230px;
-  order: 1;
-  overflow-y: scroll;
-  padding: 20px 0 15px 30px;
-  margin: 5px 20px 0 0;
-}
-
-.sidebar-offcanvas-right {
-  flex: 0 1 12em;
-  order: 3;
-  overflow-y: scroll;
-  padding: 20px 15px 15px 15px;
-  margin-top: 5px;
-  margin-right: 20px;
 }
 
 ::-webkit-scrollbar-button{ display: none; height: 13px; border-radius: 0; background-color: #AAA; }
