@@ -88,12 +88,19 @@
   background-color: black;
 }
 
+.sidebar-offcanvas-left, .sidebar-offcanvas-right {
+  position: sticky;
+  top: var(--main-header-height);
+  overflow-y: auto;
+  min-height: 0;
+  max-height: calc(100vh - var(--main-header-height));
+}
+
 .sidebar-offcanvas-left {
   flex: 0 1 230px;
   order: 1;
-  overflow-y: scroll;
-  padding: 20px 0 15px 30px;
-  margin: 5px 20px 0 0;
+  padding: 25px 0 15px 30px;
+  margin-right: 20px;
 
   h5 {
     margin-bottom: 10px;
@@ -108,10 +115,7 @@
 .sidebar-offcanvas-right {
   flex: 0 1 12em;
   order: 3;
-  overflow-y: scroll;
-  padding: 20px 15px 15px 15px;
-  margin-top: 5px;
-  margin-right: 20px;
+  padding: 25px 20px 15px 15px;
 
   // The right nav should disappear out of view when the window shrinks.
   @media screen and (max-width: 992px) {
@@ -146,7 +150,7 @@
     max-width: calc(100% - 20px);
     height: 90%;
     background-color: var(--main-bg-color);
-    overflow-y: scroll; /* TODO: how to hide scroll bars? */
+    overflow-y: scroll;
     padding: 10px;
     margin: 10px 10px;
     box-shadow: 5px 5px 5px 5px #444444;
@@ -167,11 +171,3 @@
     color: var(--main-hyperlinks-color);
   }
 }
-
-::-webkit-scrollbar-button{ display: none; height: 13px; border-radius: 0; background-color: #AAA; }
-::-webkit-scrollbar-button:hover{ background-color: #AAA; }
-::-webkit-scrollbar-thumb{ background-color: var(--main-scrollbar-color); }
-::-webkit-scrollbar-thumb:hover{ background-color: var(--main-scrollbar-color); }
-::-webkit-scrollbar{ width: 4px; }
-
-.main-content::-webkit-scrollbar{ width: 8px; }

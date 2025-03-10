@@ -3,10 +3,15 @@
 // BSD-style license that can be found in the LICENSE file.
 
 header {
-  flex: 0 0 50px;
+  flex: 0 0 var(--main-header-height, 50px);
   display: flex;
   flex-direction: row;
   align-items: center;
+
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
   padding-left: 30px;
   padding-right: 30px;
   background-color: var(--main-header-color);
