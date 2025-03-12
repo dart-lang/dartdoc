@@ -94,8 +94,6 @@ final class _Canonicalization {
       if (ancestor is! ElementImpl2) {
         if (ancestor is LibraryElementImpl) {
           components.insert(0, ancestor.identifier);
-        } else if (ancestor is AugmentableElement) {
-          components.insert(0, ancestor.identifier);
         } else {
           throw Exception('${ancestor.runtimeType} is not an ElementImpl2');
         }
@@ -141,7 +139,8 @@ final class _Canonicalization {
     var confidence = highestScore - secondHighestScore;
     final canonicalLibrary = librariesByScore.last;
 
-    if (confidence < _modelElement.config.ambiguousReexportScorerMinConfidence) {
+    if (confidence <
+        _modelElement.config.ambiguousReexportScorerMinConfidence) {
       var libraryNames = librariesByScore.map((l) => l.name);
       var message = '$libraryNames -> ${canonicalLibrary.name} '
           '(confidence ${confidence.toStringAsPrecision(4)})';
