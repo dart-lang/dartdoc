@@ -89,6 +89,8 @@
 }
 
 .sidebar-offcanvas-left, .sidebar-offcanvas-right {
+  // Even as the primary viewport scrolls, the sidebars should remain visible,
+  // but below the top header which is always at the top of the viewport.
   position: sticky;
   top: var(--main-header-height);
   overflow-y: auto;
@@ -145,7 +147,7 @@
     transition: all .25s ease-out;
     z-index: 2000;
     top: 0;
-    width: 280px; /* works all the way down to an iphone 4 */
+    width: 280px;
     // Set a max width for narrow layouts that accounts for margin.
     max-width: calc(100% - 20px);
     height: 90%;

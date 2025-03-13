@@ -8,6 +8,7 @@ header {
   flex-direction: row;
   align-items: center;
 
+  // Position the header at the top of the view port, even on scrolling.
   position: sticky;
   top: 0;
   z-index: 10;

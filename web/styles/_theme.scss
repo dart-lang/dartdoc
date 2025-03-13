@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 :root {
+  // Used by the header and sticky elements wanting to position below it.
   --main-header-height: 50px;
 }
 
