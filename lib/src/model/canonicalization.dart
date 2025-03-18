@@ -92,7 +92,7 @@ final class _Canonicalization {
     Element2? ancestor = element;
     while (ancestor != null) {
       if (ancestor is! ElementImpl2) {
-        if (ancestor is LibraryElementImpl) {
+        if (ancestor is LibraryElement2) {
           components.insert(0, ancestor.identifier);
         } else {
           throw Exception('${ancestor.runtimeType} is not an ElementImpl2');
@@ -100,13 +100,7 @@ final class _Canonicalization {
         ancestor = ancestor.enclosingElement2;
       } else {
         components.insert(0, ancestor.identifier);
-        if (ancestor is LocalFunctionElementImpl) {
-          ancestor = (ancestor.wrappedElement.enclosingElement2
-                  as ExecutableElementImpl)
-              .element;
-        } else {
-          ancestor = ancestor.enclosingElement2;
-        }
+        ancestor = ancestor.enclosingElement2;
       }
     }
     var buffer = StringBuffer();
