@@ -13,7 +13,6 @@ import 'package:dartdoc/src/model/model.dart';
 /// Like [Parameter], it doesn't have doc pages, but participates in lookups.
 /// Forwards to its referenced library if referred to directly.
 class Prefix extends ModelElement with HasNoPage {
-
   @override
   final PrefixElement2 element;
 
@@ -27,15 +26,21 @@ class Prefix extends ModelElement with HasNoPage {
   // TODO(jcollins-g): consider connecting PrefixElement to the imported library
   // in analyzer?
   late final Library associatedLibrary =
-      getModelForElement(_getImportedLibraryElement()!) as Library;
+      getModelForElement(_importedLibraryElement) as Library;
 
-  LibraryElement2? _getImportedLibraryElement() {
+  LibraryElement2 get _importedLibraryElement {
     final importLists =
         library.element.fragments.map((fragment) => fragment.libraryImports2);
-    return importLists
+    var libraryImport = importLists
         .expand((import) => import)
-        .firstWhere((i) => i.prefix2?.element == element)
-        .importedLibrary2;
+        .firstWhere((i) => i.prefix2?.element == element);
+    var importedLibrary = libraryImport.importedLibrary2;
+    if (importedLibrary == null) {
+      throw StateError(
+          'Unexpected null LibraryElement2 for imported library at '
+          '${libraryImport.uri}');
+    }
+    return importedLibrary;
   }
 
   @override
