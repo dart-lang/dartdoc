@@ -2,13 +2,16 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+html {
+  // Account for sticky header, so fragments appear below it after scrolling.
+  scroll-padding-top: calc(var(--main-header-height) + 1rem);
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
-  height: 100%;
   width: 100%;
-  overflow: hidden;
   box-sizing: border-box;
 }
 
@@ -19,7 +22,6 @@ body {
 body {
   display: flex;
   flex-direction: column;
-  -webkit-overflow-scrolling: touch;
 
   -webkit-text-size-adjust: 100%;
   overflow-x: hidden;
@@ -34,5 +36,4 @@ main {
   flex: 1;
   display: flex;
   flex-direction: row;
-  min-height: 0;
 }

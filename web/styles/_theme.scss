@@ -2,6 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+:root {
+  // Used by the header and sticky elements wanting to position below it.
+  --main-header-height: 50px;
+}
+
 .light-theme {
   /*background-color body, listdropdown*/
   --main-bg-color: #fff;
@@ -13,16 +18,12 @@
   --main-text-color: #111111;
   /*typehead search-box*/
   --main-search-bar: #fff;
-  /* scrollbar-thumb */
-  --main-scrollbar-color: #CCC;
   /* footer */
   --main-footer-background: #111111;
   /*header text color*/
   --main-h-text: black;
   /* hyperlinks*/
   --main-hyperlinks-color: #0175C2;
-  /*search background*/
-  --main-search-background: transparent;
 
   --main-inset-bgColor: #f5f5f7;
   --main-inset-borderColor: #dadce0;
@@ -36,7 +37,6 @@
   --main-var-color: #008080;
   --main-string-color: #d14;
 
-  --main-number-filter: invert(0%);
   --main-icon-color: black;
 
   /* alerts */
@@ -45,6 +45,8 @@
   --alert-important-fgColor: #7953bf;
   --alert-warning-fgColor: #955d00;
   --alert-error-fgColor: #c43131;
+
+  color-scheme: light;
 
   #light-theme-button {
     display: none;
@@ -67,14 +69,10 @@
   --main-text-color: #fff;
   /*typehead search-box*/
   --main-search-bar: #454545;
-  /* scrollbar-thumb */
-  --main-scrollbar-color: #5f6368;
   /* footer */
   --main-footer-background: #27323a;
   /* hyperlinks*/
   --main-hyperlinks-color: #00D2FA;
-  /*search background*/
-  --main-search-background: black;
 
   --main-inset-bgColor: #242b32;
   --main-inset-borderColor: #676f7e;
@@ -88,7 +86,6 @@
   --main-var-color: #55A09B;
   --main-string-color: #FF2D64;
 
-  --main-number-filter: invert(100%);
   --main-icon-color: white;
 
   /* alerts */
@@ -97,6 +94,8 @@
   --alert-important-fgColor: #ad81ff;
   --alert-warning-fgColor: #cea11f;
   --alert-error-fgColor: #ff6666;
+
+  color-scheme: dark;
 
   #dark-theme-button {
     display: none;

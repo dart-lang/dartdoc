@@ -56,16 +56,17 @@
 
 
 .typeahead {
-  padding: 17px 17px 17px 50px;
+  padding: 16px 16px 16px 32px;
   width: 422px;
-  height: 20px;
-  font-size: 13px;
+  height: 24px;
+  font-size: 15px;
+  background-color: var(--main-bg-color);
+  color: var(--main-text-color);
   background-image: url("./search.svg");
   background-repeat: no-repeat;
-  background-position: 4%;
+  background-position: 2%;
   outline: 0;
   background-size: 20px;
-  filter: var(--main-number-filter);
 }
 
 .search-summary {
