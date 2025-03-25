@@ -36,9 +36,14 @@ class Prefix extends ModelElement with HasNoPage {
         .firstWhere((i) => i.prefix2?.element == element);
     var importedLibrary = libraryImport.importedLibrary2;
     if (importedLibrary == null) {
-      throw StateError(
-          'Unexpected null LibraryElement2 for imported library at '
-          '${libraryImport.uri}');
+      var message = 'Unexpected null LibraryElement2 for imported library at '
+          '${library.element.firstFragment.source.uri}, at offset '
+          '${libraryImport.importKeywordOffset}';
+      var directiveUri = libraryImport.uri;
+      if (directiveUri is DirectiveUriWithRelativeUriString) {
+        message += 'for import URI: "${directiveUri.relativeUriString}"';
+      }
+      throw StateError(message);
     }
     return importedLibrary;
   }
