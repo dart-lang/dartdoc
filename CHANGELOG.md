@@ -1,6 +1,6 @@
 ## 9.0.0-dev
 
-* Remove the deprecated `nodoc` option.
+* Remove the deprecated `templates-dir` option.
 
 ## 8.3.3
 
