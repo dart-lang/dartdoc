@@ -82,22 +82,5 @@ List<DartdocOption> createGeneratorOptions(
             'If provided, add a rel="canonical" prefixed with provided value. '
             'Consider using if building many versions of the docs for public '
             'SEO; learn more at https://goo.gl/gktN6F.'),
-    // TODO(kallentu): Remove --templates-dir completely.
-    DartdocOptionArgOnly<String?>(
-      'templatesDir',
-      null,
-      resourceProvider,
-      optionIs: OptionKind.dir,
-      mustExist: true,
-      hide: true,
-      help: '(deprecated) Path to a directory with templates to use instead of '
-          'the default ones. Directory must contain a file for each of the '
-          'following: 404error, category, class, constant, constructor, '
-          'enum, function, index, library, method, mixin, property, '
-          'top_level_constant, top_level_property, typedef. Partial '
-          'templates are supported; they must begin with an underscore, and '
-          'references to them must omit the leading underscore '
-          '(e.g. use {{>foo}} to reference the partial template named _foo).',
-    ),
   ];
 }

@@ -1,3 +1,7 @@
+## 9.0.0-dev
+
+* Remove the deprecated `templates-dir` option.
+
 ## 8.3.3
 
 * Require Dart 3.6 or later.
