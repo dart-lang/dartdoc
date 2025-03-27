@@ -85,15 +85,9 @@ mixin DocumentationComment
   /// dartdoc's generated output.
   ///
   /// An element is considered to be 'nodoc' if any of the following are true:
-  /// * a global 'nodoc' configuration has been set for this element (this
-  ///   feature is deprecated),
   /// * the element has no documentation comment,
   /// * the documentation comment contains the `@nodoc` dartdoc directive.
   late final bool hasNodoc = () {
-    if (packageGraph
-        .configSetsNodocFor(element.library2!.firstFragment.source.fullName)) {
-      return true;
-    }
     if (!hasDocumentationComment) {
       return false;
     }
