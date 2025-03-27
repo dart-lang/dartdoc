@@ -2,6 +2,7 @@
 * Remove deprecated `missingCodeBlockLanguage` warning.
 * Remove the deprecated `templates-dir` option.
 * Remove the deprecated `nodoc` option.
+* Remove the deprecated `include-external` option.
 
 ## 8.3.4
 * The URL for category pages now uses _category name_ instead of

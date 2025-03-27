@@ -36,10 +36,6 @@ import 'package:path/path.dart' as p show Context;
 abstract class PackageBuilder {
   // Builds package graph to be used by documentation generator.
   Future<PackageGraph> buildPackageGraph();
-
-  /// The `include-external` option is deprecated, so we track whether it was
-  /// used, to report it.
-  bool get includeExternalsWasSpecified;
 }
 
 /// A package builder that understands pub package format.
@@ -281,11 +277,6 @@ class PubPackageBuilder implements PackageBuilder {
         processedLibraries.add(resolvedLibrary.element);
       }
       files.addAll(newFiles);
-      var externals = _includedExternalsFrom(newFiles);
-      if (externals.isNotEmpty) {
-        includeExternalsWasSpecified = true;
-      }
-      files.addAll(externals);
 
       var packages = _packageMetasForFiles(files.difference(_knownParts));
       filesInCurrentPass = {...files.difference(_knownParts)};
@@ -382,25 +373,11 @@ class PubPackageBuilder implements PackageBuilder {
     return dirs;
   }
 
-  /// Calculates 'includeExternal' based on a list of files.
-  ///
-  /// Assumes each file might be part of a [DartdocOptionContext], and loads
-  /// those objects to find any [DartdocOptionContext.includeExternal]
-  /// configurations therein.
-  List<String> _includedExternalsFrom(Iterable<String> files) => [
-        for (var file in files)
-          ...DartdocOptionContext.fromContext(
-            _config,
-            _config.resourceProvider.getFile(file),
-            _config.resourceProvider,
-          ).includeExternal,
-      ];
-
   /// Returns the set of files that may contain elements that need to be
   /// documented.
   ///
-  /// This takes into account the 'auto-include-dependencies' option, the
-  /// 'exclude' option, and the 'include-external' option.
+  /// This takes into account the 'auto-include-dependencies' option, and the
+  /// 'exclude' option.
   Future<Set<String>> _getFilesToDocument() async {
     if (_config.topLevelPackageMeta.isSdk) {
       return _sdkFilesToDocument
@@ -410,12 +387,7 @@ class PubPackageBuilder implements PackageBuilder {
       var packagesToDocument = await _findPackagesToDocument(
         _config.inputDir,
       );
-      var files = _findFilesToDocumentInPackage(packagesToDocument).toList();
-      var externals = _includedExternalsFrom(files);
-      if (externals.isNotEmpty) {
-        includeExternalsWasSpecified = true;
-        files = [...files, ...externals];
-      }
+      var files = _findFilesToDocumentInPackage(packagesToDocument);
       return {
         ...files.map(
             (s) => _pathContext.absolute(_resourceProvider.getFile(s).path)),
@@ -443,9 +415,6 @@ class PubPackageBuilder implements PackageBuilder {
               .fromUri(packageConfig[package.name]!.packageUriRoot)),
     };
   }
-
-  @override
-  bool includeExternalsWasSpecified = false;
 
   Iterable<String> get _embedderSdkFiles => [
         for (var dartUri in _embedderSdkUris)
