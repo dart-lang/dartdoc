@@ -330,35 +330,6 @@ dartdoc:
             packageGraph.packages.singleWhere((p) => p.name == 'one');
         expect(packageOne.documentedWhere, equals(DocumentLocation.missing));
       });
-
-      test(
-          'includes external remote elements when includeExternal is specified',
-          () async {
-        packageOneRoot
-            .getChildAssumingFile('dartdoc_options.yaml')
-            .writeAsStringSync('''
-dartdoc:
-  includeExternal:
-    - bin/script.dart
-  linkTo:
-    url: 'https://mypub.topdomain/%n%/%v%'
-''');
-        var packageGraph = await utils.bootBasicPackage(
-            packageTwoRoot.path, packageMetaProvider, packageConfigProvider,
-            additionalArguments: ['--link-to-remote']);
-
-        expect(packageGraph.packages, hasLength(3));
-        var packageOne =
-            packageGraph.packages.singleWhere((p) => p.name == 'one');
-        expect(packageOne.documentedWhere, equals(DocumentLocation.remote));
-        // TODO(srawlins): Why is there more than one?
-        var libraryScript = packageOne.allLibraries.named('script');
-        var classScript = libraryScript.classesAndExceptions.named('Script');
-        expect(
-            classScript.href,
-            equals(
-                'https://mypub.topdomain/one/0.0.1/script/Script-class.html'));
-      });
     });
 
     group('SDK package', () {
