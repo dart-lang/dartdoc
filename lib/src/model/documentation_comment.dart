@@ -116,7 +116,6 @@ mixin DocumentationComment
       // them unprocessed causes #2272.
       docs = _stripHtmlAndAddToIndex(docs);
     }
-    _analyzeCodeBlocks(docs);
     return docs;
   }
 
@@ -132,7 +131,6 @@ mixin DocumentationComment
     // would need to be processed by `processCommentDirectives`.
     docs = await _evaluateTools(docs);
     docs = processCommentDirectives(docs);
-    _analyzeCodeBlocks(docs);
     return docs;
   }
 
@@ -697,37 +695,6 @@ mixin DocumentationComment
       }
       return '$option${match[0]}';
     });
-  }
-
-  static final _codeBlockPattern =
-      RegExp(r'^[ ]{0,3}(`{3,}|~{3,})(.*)$', multiLine: true);
-
-  /// Analyze fenced code blocks present in the documentation comment,
-  /// warning if there is no language specified.
-  void _analyzeCodeBlocks(String docs) {
-    if (config.packageWarningOptions
-            .warningModes[PackageWarning.missingCodeBlockLanguage] ==
-        PackageWarningMode.ignore) {
-      return;
-    }
-    final results = _codeBlockPattern.allMatches(docs).toList(growable: false);
-    if (results.isEmpty) {
-      return;
-    }
-    final firstOfPair = <Match>[];
-    for (var i = 0; i < results.length; i++) {
-      if (i.isEven && i != results.length - 1) {
-        firstOfPair.add(results[i]);
-      }
-    }
-    for (var e in firstOfPair) {
-      final result = e.group(2)!.trim();
-      if (result.isEmpty) {
-        warn(PackageWarning.missingCodeBlockLanguage,
-            message:
-                'A fenced code block in Markdown should have a language specified');
-      }
-    }
   }
 
   bool _documentationLocalIsSet = false;
