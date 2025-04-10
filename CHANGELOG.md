@@ -1,3 +1,7 @@
+## 8.3.4-wip
+* The URL for category pages now uses _category name_ instead of
+  _category `displayName`_.
+
 ## 8.3.3
 
 * Require Dart 3.6 or later.

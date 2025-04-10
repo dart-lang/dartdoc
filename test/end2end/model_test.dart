@@ -720,13 +720,13 @@ void main() async {
       expect(
           category.categoryLabel,
           '<span class="category superb cp-0 linked" title="This is part of the Superb topic.">'
-          '<a href="${htmlBasePlaceholder}topics/Superb-topic.html">Superb</a></span>');
+          '<a href="${htmlBasePlaceholder}topics/Excellent-topic.html">Superb</a></span>');
     });
 
     test('CategoryRendererHtml renders linkedName', () {
       var category = packageGraph.publicPackages.first.categories.first;
       expect(category.linkedName,
-          '<a href="${htmlBasePlaceholder}topics/Superb-topic.html">Superb</a>');
+          '<a href="${htmlBasePlaceholder}topics/Excellent-topic.html">Superb</a>');
     });
   });
 
