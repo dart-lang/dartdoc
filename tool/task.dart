@@ -9,7 +9,6 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:args/args.dart';
 import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart' as crypto;
-import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:sass/sass.dart' as sass;
@@ -497,12 +496,7 @@ Future<void> docSdk({bool withStats = false}) async => _docSdk(
 Map<String, String> createThrowawayPubCache() {
   var pubCache = Directory.systemTemp.createTempSync('pubcache');
   var pubCacheBin = Directory(path.join(pubCache.path, 'bin'));
-  var defaultCache = Directory(_defaultPubCache);
-  if (defaultCache.existsSync()) {
-    io_utils.copy(defaultCache, pubCache);
-  } else {
-    pubCacheBin.createSync();
-  }
+  pubCacheBin.createSync();
   return Map.fromIterables([
     'PUB_CACHE',
     'PATH',
@@ -511,9 +505,6 @@ Map<String, String> createThrowawayPubCache() {
     [pubCacheBin.path, Platform.environment['PATH']].join(':'),
   ]);
 }
-
-final String _defaultPubCache = Platform.environment['PUB_CACHE'] ??
-    path.context.resolveTildePath('~/.pub-cache');
 
 Future<String> docTestingPackage({
   bool withStats = false,
