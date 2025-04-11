@@ -170,15 +170,14 @@ class PackageGraph with CommentReferable, Nameable {
           e.canonicalModelElement == null ||
           e is Library ||
           e.enclosingElement!.isCanonical) {
-        for (var d in e.documentationFrom
-            .where((d) => d.hasDocumentationComment)) {
+        for (var d
+            in e.documentationFrom.where((d) => d.hasDocumentationComment)) {
           if (d.needsPrecache && !precachedElements.contains(d)) {
             precachedElements.add(d as ModelElement);
             futures.add(d.precacheLocalDocs());
             // [TopLevelVariable]s get their documentation from getters and
             // setters, so should be precached if either has a template.
-            if (e is TopLevelVariable &&
-                !precachedElements.contains(e)) {
+            if (e is TopLevelVariable && !precachedElements.contains(e)) {
               precachedElements.add(e);
               futures.add(e.precacheLocalDocs());
             }
@@ -647,7 +646,8 @@ class PackageGraph with CommentReferable, Nameable {
           checkAndAddContainer(modelElement, container);
         }
       } else if (container is Mixin) {
-        for (var modelElement in container.superclassConstraints.modelElements) {
+        for (var modelElement
+            in container.superclassConstraints.modelElements) {
           checkAndAddContainer(modelElement, container);
         }
       }
@@ -752,8 +752,7 @@ class PackageGraph with CommentReferable, Nameable {
       // TODO(keertip): Find a better way to exclude members of extensions
       // when libraries are specified using the "--include" flag.
       if (library != null && library.isDocumented) {
-        return getModelFor(e, library,
-            enclosingContainer: preferredClass);
+        return getModelFor(e, library, enclosingContainer: preferredClass);
       }
     }
     // TODO(jcollins-g): The data structures should be changed to eliminate
@@ -778,8 +777,7 @@ class PackageGraph with CommentReferable, Nameable {
           var setterElement = setter2 == null
               ? null
               : getModelFor(setter2, library) as Accessor;
-          canonicalModelElement = getModelForPropertyInducingElement(
-              e, library,
+          canonicalModelElement = getModelForPropertyInducingElement(e, library,
               getter: getterElement, setter: setterElement);
         } else {
           canonicalModelElement = getModelFor(e, library);
@@ -791,8 +789,7 @@ class PackageGraph with CommentReferable, Nameable {
       }
     }
     // Prefer fields and top-level variables.
-    if (e is PropertyAccessorElement2 &&
-        canonicalModelElement is Accessor) {
+    if (e is PropertyAccessorElement2 && canonicalModelElement is Accessor) {
       canonicalModelElement = canonicalModelElement.enclosingCombo;
     }
     return canonicalModelElement;
@@ -804,8 +801,8 @@ class PackageGraph with CommentReferable, Nameable {
     var elem = modelElement.element;
     var candidates = <ModelElement>{};
     if (lib != null) {
-      var constructedWithKey = allConstructedModelElements[
-          ConstructedModelElementsKey(elem, null)];
+      var constructedWithKey =
+          allConstructedModelElements[ConstructedModelElementsKey(elem, null)];
       if (constructedWithKey != null) {
         candidates.add(constructedWithKey);
       }
@@ -907,38 +904,6 @@ class PackageGraph with CommentReferable, Nameable {
     progressBarComplete();
 
     return allElements;
-  }
-
-  /// Cache of 'nodoc' configurations.
-  ///
-  /// Glob lookups can be expensive, so cache per filename.
-  final _configSetsNodocFor = HashMap<String, bool>();
-
-  /// Given an element's [fullName], look up the nodoc configuration data and
-  /// determine whether to unconditionally treat the element as "nodoc", an
-  /// attribute indicating that documentation should not be included in
-  /// dartdoc's generated output.
-  ///
-  /// This configuration setting is deprecated.
-  bool configSetsNodocFor(String fullName) {
-    return _configSetsNodocFor.putIfAbsent(fullName, () {
-      var file = resourceProvider.getFile(fullName);
-      // Direct lookup instead of generating a custom context will save some
-      // cycles.  We can't use the element's [DartdocOptionContext] because that
-      // might not be where the element was defined, which is what's important
-      // for nodoc's semantics.  Looking up the defining element just to pull
-      // a context is again, slow.
-      var globs = (config.optionSet['nodoc'].valueAt(file.parent) as List)
-          .cast<String>();
-      if (globs.isNotEmpty) {
-        packageGraph.defaultPackage.warn(
-          PackageWarning.deprecated,
-          message:
-              "The '--nodoc' option is deprecated, and will soon be removed.",
-        );
-      }
-      return utils.matchGlobs(globs, fullName);
-    });
   }
 
   /// Returns a macro by [name], or `null` if no macro is found.
