@@ -64,9 +64,8 @@ class PubPackageBuilder implements PackageBuilder {
       // of handling it ourselves?
       resourceProvider: packageMetaProvider.resourceProvider,
       sdkPath: config.sdkDir,
-      updateAnalysisOptions2: ({
+      updateAnalysisOptions3: ({
         required AnalysisOptionsImpl analysisOptions,
-        required ContextRoot contextRoot,
         required DartSdk sdk,
       }) =>
           analysisOptions
