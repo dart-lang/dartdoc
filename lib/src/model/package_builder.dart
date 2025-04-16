@@ -5,7 +5,6 @@
 import 'dart:async';
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
-import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element2.dart';
@@ -64,9 +63,8 @@ class PubPackageBuilder implements PackageBuilder {
       // of handling it ourselves?
       resourceProvider: packageMetaProvider.resourceProvider,
       sdkPath: config.sdkDir,
-      updateAnalysisOptions2: ({
+      updateAnalysisOptions3: ({
         required AnalysisOptionsImpl analysisOptions,
-        required ContextRoot contextRoot,
         required DartSdk sdk,
       }) =>
           analysisOptions
