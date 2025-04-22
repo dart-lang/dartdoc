@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
@@ -78,7 +77,6 @@ class Category
     }
   }
 
-
   @override
   Element2? get element => null;
 
@@ -107,7 +105,10 @@ class Category
   late final bool isDocumented =
       documentedWhere != DocumentLocation.missing && documentationFile != null;
 
-  String get filePath => 'topics/$name-topic.html';
+  String get filePath {
+    assert(_name != null);
+    return 'topics/$_name-topic.html';
+  }
 
   @override
   String? get href => isCanonical ? '${package.baseHref}$filePath' : null;
