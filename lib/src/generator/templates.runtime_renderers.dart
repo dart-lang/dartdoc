@@ -1846,6 +1846,38 @@ class _Renderer_Category extends RendererBase<Category> {
                   );
                 },
               ),
+              'fileName': Property(
+                getValue: (CT_ c) => c.fileName,
+                renderVariable: (
+                  CT_ c,
+                  Property<CT_> self,
+                  List<String> remainingNames,
+                ) {
+                  if (remainingNames.isEmpty) {
+                    return self.getValue(c).toString();
+                  }
+                  var name = remainingNames.first;
+                  var nextProperty = _Renderer_String.propertyMap().getValue(
+                    name,
+                  );
+                  return nextProperty.renderVariable(
+                    self.getValue(c) as String,
+                    nextProperty,
+                    [...remainingNames.skip(1)],
+                  );
+                },
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  _render_String(c.fileName, ast, r.template, sink, parent: r);
+                },
+              ),
               'filePath': Property(
                 getValue: (CT_ c) => c.filePath,
                 renderVariable: (
@@ -2155,6 +2187,44 @@ class _Renderer_Category extends RendererBase<Category> {
                   );
                 },
               ),
+              'redirectFilePath': Property(
+                getValue: (CT_ c) => c.redirectFilePath,
+                renderVariable: (
+                  CT_ c,
+                  Property<CT_> self,
+                  List<String> remainingNames,
+                ) {
+                  if (remainingNames.isEmpty) {
+                    return self.getValue(c).toString();
+                  }
+                  var name = remainingNames.first;
+                  var nextProperty = _Renderer_String.propertyMap().getValue(
+                    name,
+                  );
+                  return nextProperty.renderVariable(
+                    self.getValue(c) as String,
+                    nextProperty,
+                    [...remainingNames.skip(1)],
+                  );
+                },
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue: (
+                  CT_ c,
+                  RendererBase<CT_> r,
+                  List<MustachioNode> ast,
+                  StringSink sink,
+                ) {
+                  _render_String(
+                    c.redirectFilePath,
+                    ast,
+                    r.template,
+                    sink,
+                    parent: r,
+                  );
+                },
+              ),
               'referenceChildren': Property(
                 getValue: (CT_ c) => c.referenceChildren,
                 renderVariable:
@@ -2285,7 +2355,7 @@ class _Renderer_Category extends RendererBase<Category> {
   }
 }
 
-String renderCategory(CategoryTemplateData context, Template template) {
+String renderCategoryRedirect(CategoryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_CategoryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -2541,6 +2611,12 @@ class _Renderer_CategoryTemplateData
       return null;
     }
   }
+}
+
+String renderCategory(CategoryTemplateData context, Template template) {
+  var buffer = StringBuffer();
+  _render_CategoryTemplateData(context, template.ast, template, buffer);
+  return buffer.toString();
 }
 
 void _render_Class(
@@ -19948,7 +20024,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -20305,13 +20381,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();

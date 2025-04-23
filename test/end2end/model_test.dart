@@ -732,7 +732,7 @@ void main() async {
 
   test('Verify legacyFilePath set', () {
     var category = packageGraph.publicPackages.first.categories.first;
-    expect(category.legacyFilePath, 'topics/Superb-topic.html');
+    expect(category.redirectFilePath, 'topics/Superb-topic.html');
   });
 
   group('LibraryContainer', () {

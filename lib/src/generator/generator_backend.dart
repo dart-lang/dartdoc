@@ -116,20 +116,14 @@ abstract class GeneratorBackend {
     writer.write(_pathContext.join('index.json'), '$json\n');
   }
 
-  String _redirectContent(Category category) => '''<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="refresh" content="0; url=${category.fileName}" />
-    </head>
-</html> ''';
-
   /// Emits documentation content for the [category].
   void generateCategory(PackageGraph packageGraph, Category category) {
     var data = CategoryTemplateData(options, packageGraph, category);
     var content = templates.renderCategory(data);
     write(writer, category.filePath, data, content);
-    if (category.filePath != category.legacyFilePath) {
-      writer.write(category.legacyFilePath, _redirectContent(category));
+    if (category.filePath != category.redirectFilePath) {
+      var redirectContent = templates.renderCategoryRedirect(data);
+      write(writer, category.redirectFilePath, data, redirectContent);
     }
 
     runtimeStats.incrementAccumulator('writtenCategoryFileCount');

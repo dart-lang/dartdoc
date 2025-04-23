@@ -27,7 +27,7 @@ class Category
   @override
   final Package package;
 
-  final String? _internalName;
+  final String? _name;
 
   @override
   final DartdocOptionContext config;
@@ -62,10 +62,10 @@ class Category
 
   final CategoryDefinition _categoryDefinition;
 
-  Category(this._internalName, this.package, this.config)
+  Category(this._name, this.package, this.config)
       : _categoryDefinition =
-            config.categories.categoryDefinitions[_internalName.orDefault] ??
-                CategoryDefinition(_internalName, null, null);
+            config.categories.categoryDefinitions[_name.orDefault] ??
+                CategoryDefinition(_name, null, null);
 
   Iterable<ExternalItem> get externalItems => _categoryDefinition.externalItems;
 
@@ -84,7 +84,7 @@ class Category
   String get name => _categoryDefinition.displayName;
 
   @override
-  String get sortKey => _internalName.orDefault;
+  String get sortKey => _name.orDefault;
 
   @override
   List<String> get containerOrder => config.categoryOrder;
@@ -106,13 +106,13 @@ class Category
       documentedWhere != DocumentLocation.missing && documentationFile != null;
 
   String get fileName {
-    assert(_internalName != null);
-    return '$_internalName-topic.html';
+    assert(_name != null);
+    return '$_name-topic.html';
   }
 
   String get filePath => 'topics/$fileName';
 
-  String get legacyFilePath => 'topics/$name-topic.html';
+  String get redirectFilePath => 'topics/$name-topic.html';
 
   @override
   String? get href => isCanonical ? '${package.baseHref}$filePath' : null;
