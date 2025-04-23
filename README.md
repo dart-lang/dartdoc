@@ -109,7 +109,7 @@ its children that have the `@nodoc` tag in the documentation comment.
 
 ### dartdoc_options.yaml
 
-Creating a file named dartdoc_options.yaml at the top of your package can change how Dartdoc
+Creating a file named `dartdoc_options.yaml` at the top of your package can change how Dartdoc
 generates docs.
 
 An example (not necessarily recommended settings):
@@ -117,13 +117,13 @@ An example (not necessarily recommended settings):
 ```yaml
 dartdoc:
   categories:
-    "First Category":
+    awesome:
       markdown: doc/First.md
-      name: Awesome
-    "Second Category":
+      displayName: Awesome
+    great:
       markdown: doc/Second.md
-      name: Great
-  categoryOrder: ["First Category", "Second Category"]
+      displayName: Great
+  categoryOrder: [awesome, great]
   includeExternal: ['bin/unusually_located_library.dart']
   nodoc: ['lib/sekret/*.dart']
   linkTo:
@@ -137,17 +137,20 @@ dartdoc:
     - tool-error
 ```
 
-#### dartdoc_options.yaml fields
+#### `dartdoc_options.yaml` fields
 
 In general, **paths are relative** to the directory of the `dartdoc_options.yaml` file in which the option
 is defined, and should be specified as POSIX paths.  Dartdoc will convert POSIX paths automatically on Windows.
 Unrecognized options will be ignored.  Supported options:
 
-  * **categories**:  More details for each category/topic.  For topics you'd like to document, specify
-    the markdown file with `markdown:` to use for the category page.  Optionally, rename the
-    category from the source code into a display name with `name:`.  If there is no matching category
-    defined in dartdoc_options.yaml, those declared categories in the source code will be invisible.
-  * **categoryOrder**:  Specify the order of topics for display in the sidebar and
+  * **categories**: A map from _category names_ to _category definitions_.
+    The _category definition_ consists of a `markdown:` property and an optional `displayName:` property.
+    For topics you'd like to document, specify a _markdown file_ to be rendered on the category page,
+    using the `markdown:` property.
+    Optionally, you may specify a `displayName:` to be used in the rendered HTML, instead of the _category name_.
+    Categories are referenced in documentation comments using the `{@category <category name>}` tag.
+    Categories with no matching _category name_ defined in `dartdoc_options.yaml` will be invisible.
+  * **categoryOrder**:  A list of _category names_ specifying the order of topics for display in the sidebar and
     the package page.
   * **exclude**:  Specify a list of library names to avoid generating docs for,
     overriding any specified in include.  All libraries listed must be local to this package, unlike
@@ -210,12 +213,12 @@ You can tag libraries or top level classes, functions, and variables in their do
 the string `{@category YourCategory}`.  For libraries, that will cause the library to appear in a
 category when showing the sidebar on the Package and Library pages.  For other types of objects,
 the `{@category}` will be shown with a link to the category page **but only if specified in
-dartdoc_options.yaml**, as above.
+`dartdoc_options.yaml`**, as above.
 
 ```dart
 /// Here is my library.
 ///
-/// {@category Amazing}
+/// {@category awesome}
 library my_library;
 ```
 
