@@ -730,6 +730,11 @@ void main() async {
     });
   });
 
+  test('Verify legacyFilePath set', () {
+    var category = packageGraph.publicPackages.first.categories.first;
+    expect(category.legacyFilePath, 'topics/Superb-topic.html');
+  });
+
   group('LibraryContainer', () {
     late final TestLibraryContainer topLevel;
     var sortOrderBasic = ['theFirst', 'second', 'fruit'];

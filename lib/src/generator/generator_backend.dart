@@ -86,8 +86,7 @@ abstract class GeneratorBackend {
       );
     }
     var e = data.self;
-    writer.write(filename, content,
-        element: e is Warnable ? e : null);
+    writer.write(filename, content, element: e is Warnable ? e : null);
   }
 
   /// Emits JSON describing the [categories] defined by the package.
@@ -117,11 +116,22 @@ abstract class GeneratorBackend {
     writer.write(_pathContext.join('index.json'), '$json\n');
   }
 
+  String _redirectContent(Category category) => '''<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="refresh" content="0; url=${category.fileName}" />
+    </head>
+</html> ''';
+
   /// Emits documentation content for the [category].
   void generateCategory(PackageGraph packageGraph, Category category) {
     var data = CategoryTemplateData(options, packageGraph, category);
     var content = templates.renderCategory(data);
     write(writer, category.filePath, data, content);
+    if (category.filePath != category.legacyFilePath) {
+      writer.write(category.legacyFilePath, _redirectContent(category));
+    }
+
     runtimeStats.incrementAccumulator('writtenCategoryFileCount');
   }
 
