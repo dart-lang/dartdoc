@@ -730,7 +730,7 @@ void main() async {
     });
   });
 
-  test('Verify legacyFilePath set', () {
+  test('Verify redirectFilePath set', () {
     var category = packageGraph.publicPackages.first.categories.first;
     expect(category.redirectFilePath, 'topics/Superb-topic.html');
   });
