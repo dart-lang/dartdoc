@@ -74,52 +74,53 @@ analyzer:
       dartdocOptions: '''
 dartdoc:
   categories:
-    One:
+    cat1:
       markdown: one.md
+      displayName: One
     Documented:
       markdown: documented.md  
 ''',
       libFiles: [
         d.file('lib.dart', '''
 /// A class.
-/// {@category One}
+/// {@category cat1}
 class C1 {}
 
 /// A constant.
-/// {@category One}
+/// {@category cat1}
 const c1 = 1;
 
 /// An enum.
-/// {@category One}
+/// {@category cat1}
 enum E1 { one, two }
 
 /// A function.
-/// {@category One}
+/// {@category cat1}
 void F1() {}
 
 /// A mixin.
-/// {@category One}
+/// {@category cat1}
 mixin M1 {}
 
 /// A property.
-/// {@category One}
+/// {@category cat1}
 var p1 = 1;
 
 /// A typedef.
-/// {@category One}
+/// {@category cat1}
 typedef T1 = void Function();
 
 /// A typedef.
-/// {@category One}
+/// {@category cat1}
 // TODO(srawlins): Properly unit-test "typedef pointing to typedef".
 typedef T2 = T1;
 
 /// An extension.
-/// {@category One}
+/// {@category cat1}
 extension Ex on int {}
 
 /// An extension type.
-/// {@category One}
+/// {@category cat1}
 extension type ExType(int it) {}
 '''),
         d.file('other.dart', '''
@@ -136,13 +137,21 @@ library;
     await utils.writeDartdocResources(resourceProvider);
     await (await buildDartdoc()).generateDocs();
     topicOneLines = resourceProvider
-        .getFile(path.join(packagePath, 'doc', 'topics', 'One-topic.html'))
+        .getFile(path.join(packagePath, 'doc', 'topics', 'cat1-topic.html'))
         .readAsStringSync()
         .split('\n');
     indexPageLines = resourceProvider
         .getFile(path.join(packagePath, 'doc', 'index.html'))
         .readAsStringSync()
         .split('\n');
+  });
+
+  test('redirect category file created', () async {
+    final redirectContent = resourceProvider
+        .getFile(path.join(packagePath, 'doc', 'topics', 'One-topic.html'))
+        .readAsStringSync();
+
+    expect(redirectContent, contains('<meta http-equiv="refresh" content="0;'));
   });
 
   test('page links to classes annotated with category', () async {
@@ -214,7 +223,7 @@ library;
       topicOneLines,
       containsAllInOrder([
         matches('<div id="dartdoc-sidebar-right" '),
-        matches('<a href="../topics/One-topic.html#classes">Classes</a>'),
+        matches('<a href="../topics/cat1-topic.html#classes">Classes</a>'),
         matches('<a href="../lib/C1-class.html">C1</a>'),
       ]),
     );
@@ -225,7 +234,7 @@ library;
       topicOneLines,
       containsAllInOrder([
         matches('<div id="dartdoc-sidebar-right" '),
-        matches('<a href="../topics/One-topic.html#enums">Enums</a>'),
+        matches('<a href="../topics/cat1-topic.html#enums">Enums</a>'),
         matches('<a href="../lib/E1.html">E1</a>'),
       ]),
     );
@@ -236,7 +245,7 @@ library;
       topicOneLines,
       containsAllInOrder([
         matches('<div id="dartdoc-sidebar-right" '),
-        matches('<a href="../topics/One-topic.html#mixins">Mixins</a>'),
+        matches('<a href="../topics/cat1-topic.html#mixins">Mixins</a>'),
         matches('<a href="../lib/M1-mixin.html">M1</a>'),
       ]),
     );
@@ -247,7 +256,7 @@ library;
       topicOneLines,
       containsAllInOrder([
         matches('<div id="dartdoc-sidebar-right" '),
-        matches('<a href="../topics/One-topic.html#constants">Constants</a>'),
+        matches('<a href="../topics/cat1-topic.html#constants">Constants</a>'),
         matches('<a href="../lib/c1-constant.html">c1</a>'),
       ]),
     );
@@ -258,7 +267,8 @@ library;
       topicOneLines,
       containsAllInOrder([
         matches('<div id="dartdoc-sidebar-right" '),
-        matches('<a href="../topics/One-topic.html#properties">Properties</a>'),
+        matches(
+            '<a href="../topics/cat1-topic.html#properties">Properties</a>'),
         matches('<a href="../lib/p1.html">p1</a>'),
       ]),
     );
@@ -269,7 +279,7 @@ library;
       topicOneLines,
       containsAllInOrder([
         matches('<div id="dartdoc-sidebar-right" '),
-        matches('<a href="../topics/One-topic.html#functions">Functions</a>'),
+        matches('<a href="../topics/cat1-topic.html#functions">Functions</a>'),
         matches('<a href="../lib/F1.html">F1</a>'),
       ]),
     );
@@ -280,7 +290,7 @@ library;
       topicOneLines,
       containsAllInOrder([
         matches('<div id="dartdoc-sidebar-right" '),
-        matches('<a href="../topics/One-topic.html#typedefs">Typedefs</a>'),
+        matches('<a href="../topics/cat1-topic.html#typedefs">Typedefs</a>'),
         matches('<a href="../lib/T1.html">T1</a>'),
       ]),
     );
@@ -291,7 +301,8 @@ library;
       topicOneLines,
       containsAllInOrder([
         matches('<div id="dartdoc-sidebar-right" '),
-        matches('<a href="../topics/One-topic.html#extensions">Extensions</a>'),
+        matches(
+            '<a href="../topics/cat1-topic.html#extensions">Extensions</a>'),
         matches('<a href="../lib/Ex.html">Ex</a>'),
       ]),
     );
@@ -302,7 +313,7 @@ library;
       topicOneLines,
       containsAllInOrder([
         matches('<div id="dartdoc-sidebar-right" '),
-        matches('<a href="../topics/One-topic.html#extension-types">'
+        matches('<a href="../topics/cat1-topic.html#extension-types">'
             'Extension Types</a>'),
         matches('<a href="../lib/ExType-extension-type.html">ExType</a>'),
       ]),

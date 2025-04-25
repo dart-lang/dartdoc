@@ -12,6 +12,9 @@
 
 @Renderer(#renderCategory, Context<CategoryTemplateData>(), 'category',
     visibleTypes: _visibleTypes)
+@Renderer(#renderCategoryRedirect, Context<CategoryTemplateData>(),
+    'category_redirect',
+    visibleTypes: _visibleTypes)
 @Renderer(#renderClass, Context<ClassTemplateData>(), 'class')
 @Renderer(#renderConstructor, Context<ConstructorTemplateData>(), 'constructor')
 @Renderer(#renderEnum, Context<EnumTemplateData>(), 'enum')
@@ -92,6 +95,7 @@ const _visibleTypes = {
 /// The collection of [Template] objects.
 abstract class Templates {
   String renderCategory(CategoryTemplateData context);
+  String renderCategoryRedirect(CategoryTemplateData context);
   String renderClass<T extends Class>(ClassTemplateData context);
   String renderConstructor(ConstructorTemplateData context);
   String renderEnum(EnumTemplateData context);
@@ -140,6 +144,10 @@ class HtmlAotTemplates implements Templates {
   @override
   String renderCategory(CategoryTemplateData context) =>
       aot_renderers_for_html.renderCategory(context);
+
+  @override
+  String renderCategoryRedirect(CategoryTemplateData context) =>
+      aot_renderers_for_html.renderCategoryRedirect(context);
 
   @override
   String renderClass<T extends Class>(ClassTemplateData context) =>
@@ -221,6 +229,10 @@ class RuntimeTemplates implements Templates {
   @override
   String renderCategory(CategoryTemplateData context) =>
       runtime_renderers.renderCategory(context, _categoryTemplate);
+
+  @override
+  String renderCategoryRedirect(CategoryTemplateData context) =>
+      runtime_renderers.renderCategoryRedirect(context, _categoryTemplate);
 
   @override
   String renderClass<T extends Class>(ClassTemplateData context) =>

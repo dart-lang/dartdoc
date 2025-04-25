@@ -86,8 +86,7 @@ abstract class GeneratorBackend {
       );
     }
     var e = data.self;
-    writer.write(filename, content,
-        element: e is Warnable ? e : null);
+    writer.write(filename, content, element: e is Warnable ? e : null);
   }
 
   /// Emits JSON describing the [categories] defined by the package.
@@ -122,6 +121,11 @@ abstract class GeneratorBackend {
     var data = CategoryTemplateData(options, packageGraph, category);
     var content = templates.renderCategory(data);
     write(writer, category.filePath, data, content);
+    if (category.filePath != category.redirectFilePath) {
+      var redirectContent = templates.renderCategoryRedirect(data);
+      write(writer, category.redirectFilePath, data, redirectContent);
+    }
+
     runtimeStats.incrementAccumulator('writtenCategoryFileCount');
   }
 

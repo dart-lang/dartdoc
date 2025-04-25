@@ -234,6 +234,41 @@ String renderCategory(CategoryTemplateData context0) {
   return buffer.toString();
 }
 
+String renderCategoryRedirect(CategoryTemplateData context0) {
+  final buffer = StringBuffer();
+  buffer.write('''<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="canonical" href="''');
+  if (context0.useBaseHref) {
+    var context1 = context0.htmlBase;
+    buffer.write(context0.htmlBase);
+  }
+  buffer.writeEscaped(context0.self.href);
+  buffer.write('''" />
+    <meta http-equiv="refresh" content="0; url=''');
+  if (context0.useBaseHref) {
+    var context2 = context0.htmlBase;
+    buffer.write(context0.htmlBase);
+  }
+  buffer.writeEscaped(context0.self.href);
+  buffer.write('''" />
+  </head>
+  <body>
+    <p><a href="''');
+  if (context0.useBaseHref) {
+    var context3 = context0.htmlBase;
+    buffer.write(context0.htmlBase);
+  }
+  buffer.writeEscaped(context0.self.href);
+  buffer.write('''">New URL</a></p>
+  </body>
+</html>
+''');
+
+  return buffer.toString();
+}
+
 String renderClass(ClassTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderClass_partial_head_0(context0));

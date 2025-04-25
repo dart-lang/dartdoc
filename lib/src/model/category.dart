@@ -105,10 +105,16 @@ class Category
   late final bool isDocumented =
       documentedWhere != DocumentLocation.missing && documentationFile != null;
 
-  String get filePath {
+  String get fileName {
     assert(_name != null);
-    return 'topics/$_name-topic.html';
+    return '$_name-topic.html';
   }
+
+  String get filePath => 'topics/$fileName';
+
+  /// Prior to dartdoc 8.3.4 the `displayName` was used in the file path
+  /// for category pages. We now create a redirect file here instead.
+  String get redirectFilePath => 'topics/$name-topic.html';
 
   @override
   String? get href => isCanonical ? '${package.baseHref}$filePath' : null;
