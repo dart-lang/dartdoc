@@ -263,7 +263,8 @@ String renderCategoryRedirect(CategoryTemplateData context0) {
   buffer.writeEscaped(context0.self.href);
   buffer.write('''">New URL</a></p>
   </body>
-</html>''');
+</html>
+''');
 
   return buffer.toString();
 }

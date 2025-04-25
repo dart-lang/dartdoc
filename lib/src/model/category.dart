@@ -112,6 +112,8 @@ class Category
 
   String get filePath => 'topics/$fileName';
 
+  /// Prior to dartdoc 8.3.4 the `displayName` was used in the file path
+  /// for category pages. We now create a redirect file here instead.
   String get redirectFilePath => 'topics/$name-topic.html';
 
   @override
