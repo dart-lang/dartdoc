@@ -1,6 +1,7 @@
 ## 8.3.4-wip
 * The URL for category pages now uses _category name_ instead of
   _category `displayName`_.
+* Refactor 404 error page to use div instead of p for search form.
 
 ## 8.3.3
 
