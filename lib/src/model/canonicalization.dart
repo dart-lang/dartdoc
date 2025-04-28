@@ -3,8 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element2.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 
@@ -86,22 +84,16 @@ final class _Canonicalization {
     }
   }
 
-  // Copied from package analyzer ElementLocationImpl.fromElement.
   String _getElementLocation(Element2 element) {
     var components = <String>[];
     Element2? ancestor = element;
     while (ancestor != null) {
-      if (ancestor is! ElementImpl2) {
-        if (ancestor is LibraryElement2) {
-          components.insert(0, ancestor.identifier);
-        } else {
-          throw Exception('${ancestor.runtimeType} is not an ElementImpl2');
-        }
-        ancestor = ancestor.enclosingElement2;
-      } else {
+      if (ancestor is LibraryElement2) {
         components.insert(0, ancestor.identifier);
-        ancestor = ancestor.enclosingElement2;
+      } else {
+        components.insert(0, ancestor.name3!);
       }
+      ancestor = ancestor.enclosingElement2;
     }
     var buffer = StringBuffer();
     var length = components.length;
