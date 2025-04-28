@@ -4,8 +4,6 @@
 
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/source/line_info.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -13,8 +11,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 
 class Constructor extends ModelElement with ContainerMember, TypeParameters {
-  @override
-
   @override
   final ConstructorElement2 element;
 
@@ -30,7 +26,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
     }
     final lineInfo = unitElement.lineInfo;
     var offset = element.firstFragment.nameOffset2 ??
-        (element.firstFragment as ConstructorElementImpl).typeNameOffset;
+        element.firstFragment.typeNameOffset;
     if (offset != null && offset >= 0) {
       return lineInfo.getLocation(offset);
     }
