@@ -32,33 +32,33 @@ class Category
   @override
   final DartdocOptionContext config;
 
-  final List<Class> _classes = [];
+  final Set<Class> _classes = {};
 
-  final List<Class> _exceptions = [];
-
-  @override
-  final List<TopLevelVariable> constants = [];
+  final Set<Class> _exceptions = {};
 
   @override
-  final List<Extension> extensions = [];
+  final Set<TopLevelVariable> constants = {};
 
   @override
-  final List<ExtensionType> extensionTypes = [];
+  final Set<Extension> extensions = {};
 
   @override
-  final List<Enum> enums = [];
+  final Set<ExtensionType> extensionTypes = {};
 
   @override
-  final List<ModelFunction> functions = [];
+  final Set<Enum> enums = {};
 
   @override
-  final List<Mixin> mixins = [];
+  final Set<ModelFunction> functions = {};
 
   @override
-  final List<TopLevelVariable> properties = [];
+  final Set<Mixin> mixins = {};
 
   @override
-  final List<Typedef> typedefs = [];
+  final Set<TopLevelVariable> properties = {};
+
+  @override
+  final Set<Typedef> typedefs = {};
 
   final CategoryDefinition _categoryDefinition;
 
