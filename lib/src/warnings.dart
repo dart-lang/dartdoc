@@ -95,7 +95,6 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
 /// Something that package warnings can be reported on. Optionally associated
 /// with an analyzer [element].
 mixin Warnable implements CommentReferable, Documentable, Locatable {
-
   Element2? get element;
 
   void warn(
@@ -272,20 +271,6 @@ enum PackageWarning implements Comparable<PackageWarning> {
     'deprecated',
     'deprecated dartdoc usage: {0}',
     shortHelp: 'A dartdoc directive has a deprecated format.',
-  ),
-  // TODO(kallentu): Remove this warning.
-  missingCodeBlockLanguage(
-    'missing-code-block-language',
-    'missing code block language: {0}',
-    shortHelp: '(Deprecated: Use `missing_code_block_language_in_doc_comment` '
-        'lint) A fenced code block is missing a specified language.',
-    longHelp: '(Deprecated: Use `missing_code_block_language_in_doc_comment` '
-        'lint) To enable proper syntax highlighting of Markdown code blocks, '
-        'Dartdoc requires code blocks to specify the language used after the '
-        'initial declaration. As an example, to specify Dart you would open '
-        'the Markdown code block with ```dart or ~~~dart.',
-    defaultWarningMode: PackageWarningMode.ignore,
-    isDeprecated: true,
   );
 
   /// The name which can be used at the command line to enable this warning.
@@ -542,8 +527,7 @@ class PackageWarningCounter {
 
   /// Whether we've already warned for this combination of [e], [kind],
   /// and [messageFragment].
-  bool hasWarning(
-      Warnable? e, PackageWarning kind, String messageFragment) {
+  bool hasWarning(Warnable? e, PackageWarning kind, String messageFragment) {
     if (e == null) {
       return false;
     }
@@ -558,9 +542,8 @@ class PackageWarningCounter {
 
   /// Adds the warning to the counter, and writes out the fullMessage string
   /// if configured to do so.
-  void addWarning(Warnable? e
-  , PackageWarning kind, String message,
-      String fullMessage) {
+  void addWarning(
+      Warnable? e, PackageWarning kind, String message, String fullMessage) {
     assert(!hasWarning(e, kind, message));
     // TODO(jcollins-g): Make addWarning not accept nulls for element.
     PackageWarningOptionContext config =

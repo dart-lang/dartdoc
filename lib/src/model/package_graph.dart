@@ -170,15 +170,14 @@ class PackageGraph with CommentReferable, Nameable {
           e.canonicalModelElement == null ||
           e is Library ||
           e.enclosingElement!.isCanonical) {
-        for (var d in e.documentationFrom
-            .where((d) => d.hasDocumentationComment)) {
+        for (var d
+            in e.documentationFrom.where((d) => d.hasDocumentationComment)) {
           if (d.needsPrecache && !precachedElements.contains(d)) {
             precachedElements.add(d as ModelElement);
             futures.add(d.precacheLocalDocs());
             // [TopLevelVariable]s get their documentation from getters and
             // setters, so should be precached if either has a template.
-            if (e is TopLevelVariable &&
-                !precachedElements.contains(e)) {
+            if (e is TopLevelVariable && !precachedElements.contains(e)) {
               precachedElements.add(e);
               futures.add(e.precacheLocalDocs());
             }
@@ -468,8 +467,7 @@ class PackageGraph with CommentReferable, Nameable {
       PackageWarning.typeAsHtml ||
       PackageWarning.invalidParameter ||
       PackageWarning.toolError ||
-      PackageWarning.deprecated ||
-      PackageWarning.missingCodeBlockLanguage =>
+      PackageWarning.deprecated =>
         kind.messageFor([message])
     };
 
@@ -647,7 +645,8 @@ class PackageGraph with CommentReferable, Nameable {
           checkAndAddContainer(modelElement, container);
         }
       } else if (container is Mixin) {
-        for (var modelElement in container.superclassConstraints.modelElements) {
+        for (var modelElement
+            in container.superclassConstraints.modelElements) {
           checkAndAddContainer(modelElement, container);
         }
       }
@@ -752,8 +751,7 @@ class PackageGraph with CommentReferable, Nameable {
       // TODO(keertip): Find a better way to exclude members of extensions
       // when libraries are specified using the "--include" flag.
       if (library != null && library.isDocumented) {
-        return getModelFor(e, library,
-            enclosingContainer: preferredClass);
+        return getModelFor(e, library, enclosingContainer: preferredClass);
       }
     }
     // TODO(jcollins-g): The data structures should be changed to eliminate
@@ -778,8 +776,7 @@ class PackageGraph with CommentReferable, Nameable {
           var setterElement = setter2 == null
               ? null
               : getModelFor(setter2, library) as Accessor;
-          canonicalModelElement = getModelForPropertyInducingElement(
-              e, library,
+          canonicalModelElement = getModelForPropertyInducingElement(e, library,
               getter: getterElement, setter: setterElement);
         } else {
           canonicalModelElement = getModelFor(e, library);
@@ -791,8 +788,7 @@ class PackageGraph with CommentReferable, Nameable {
       }
     }
     // Prefer fields and top-level variables.
-    if (e is PropertyAccessorElement2 &&
-        canonicalModelElement is Accessor) {
+    if (e is PropertyAccessorElement2 && canonicalModelElement is Accessor) {
       canonicalModelElement = canonicalModelElement.enclosingCombo;
     }
     return canonicalModelElement;
@@ -804,8 +800,8 @@ class PackageGraph with CommentReferable, Nameable {
     var elem = modelElement.element;
     var candidates = <ModelElement>{};
     if (lib != null) {
-      var constructedWithKey = allConstructedModelElements[
-          ConstructedModelElementsKey(elem, null)];
+      var constructedWithKey =
+          allConstructedModelElements[ConstructedModelElementsKey(elem, null)];
       if (constructedWithKey != null) {
         candidates.add(constructedWithKey);
       }
