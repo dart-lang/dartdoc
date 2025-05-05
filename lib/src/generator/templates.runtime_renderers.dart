@@ -1541,7 +1541,7 @@ class _Renderer_Category extends RendererBase<Category> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'List<TopLevelVariable>',
+                          'Set<TopLevelVariable>',
                         ),
 
                 renderIterable: (
@@ -1735,7 +1735,7 @@ class _Renderer_Category extends RendererBase<Category> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'List<Enum>',
+                          'Set<Enum>',
                         ),
 
                 renderIterable: (
@@ -1777,7 +1777,7 @@ class _Renderer_Category extends RendererBase<Category> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'List<ExtensionType>',
+                          'Set<ExtensionType>',
                         ),
 
                 renderIterable: (
@@ -1804,7 +1804,7 @@ class _Renderer_Category extends RendererBase<Category> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'List<Extension>',
+                          'Set<Extension>',
                         ),
 
                 renderIterable: (
@@ -1917,7 +1917,7 @@ class _Renderer_Category extends RendererBase<Category> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'List<ModelFunction>',
+                          'Set<ModelFunction>',
                         ),
 
                 renderIterable: (
@@ -2054,7 +2054,7 @@ class _Renderer_Category extends RendererBase<Category> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'List<Mixin>',
+                          'Set<Mixin>',
                         ),
 
                 renderIterable: (
@@ -2167,7 +2167,7 @@ class _Renderer_Category extends RendererBase<Category> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'List<TopLevelVariable>',
+                          'Set<TopLevelVariable>',
                         ),
 
                 renderIterable: (
@@ -2320,7 +2320,7 @@ class _Renderer_Category extends RendererBase<Category> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'List<Typedef>',
+                          'Set<Typedef>',
                         ),
 
                 renderIterable: (

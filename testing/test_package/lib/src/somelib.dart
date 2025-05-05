@@ -1,5 +1,6 @@
 library reexport.somelib;
 
+/// {@category Unreal}
 class SomeClass {}
 
 class SomeOtherClass {}

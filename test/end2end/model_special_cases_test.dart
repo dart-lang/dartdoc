@@ -393,6 +393,25 @@ void main() {
       expect(SubForDocComments.categories.first.isDocumented, isFalse);
       expect(SubForDocComments.displayedCategories, isEmpty);
     });
+
+    test('No duplicate entries', () {
+      final categories = ginormousPackageGraph.localPackages
+          .firstWhere((p) => p.name == 'test_package')
+          .categories;
+      for (final c in categories) {
+        expect(c.classes.length, equals(c.classes.toSet().length));
+        expect(c.exceptions.length, equals(c.exceptions.toSet().length));
+        expect(c.extensions.length, equals(c.extensions.toSet().length));
+        expect(
+            c.extensionTypes.length, equals(c.extensionTypes.toSet().length));
+        expect(c.enums.length, equals(c.enums.toSet().length));
+        expect(c.mixins.length, equals(c.mixins.toSet().length));
+        expect(c.constants.length, equals(c.constants.toSet().length));
+        expect(c.properties.length, equals(c.properties.toSet().length));
+        expect(c.functions.length, equals(c.functions.toSet().length));
+        expect(c.typedefs.length, equals(c.typedefs.toSet().length));
+      }
+    });
   });
 
   group('Package', () {

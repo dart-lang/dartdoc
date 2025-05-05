@@ -125,7 +125,9 @@ extension type ExType(int it) {}
 '''),
         d.file('other.dart', '''
 /// {@category Documented}
-library;      
+library;
+
+export 'lib.dart' show C1, E1;
 '''),
       ],
       files: [
@@ -229,6 +231,15 @@ library;
     );
   });
 
+  test('classes are not duplicated', () async {
+    expect(
+      topicOneLines
+          .where((l) => l.contains('<a href="../lib/C1-class.html">C1</a>')),
+      // Once in the sidebar and once in the main body
+      hasLength(2),
+    );
+  });
+
   test('sidebar contains enums', () async {
     expect(
       topicOneLines,
@@ -237,6 +248,14 @@ library;
         matches('<a href="../topics/cat1-topic.html#enums">Enums</a>'),
         matches('<a href="../lib/E1.html">E1</a>'),
       ]),
+    );
+  });
+
+  test('enums are not duplicated', () async {
+    expect(
+      topicOneLines.where((l) => l.contains('<a href="../lib/E1.html">E1</a>')),
+      // Once in the sidebar and once in the main body
+      hasLength(2),
     );
   });
 
