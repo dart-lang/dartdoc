@@ -53,63 +53,55 @@ mixin Inheritable on ContainerMember {
 
   @override
   Container? computeCanonicalEnclosingContainer() {
-    if (isInherited) {
-      var searchElement = element.baseElement;
-      // TODO(jcollins-g): generate warning if an inherited element's definition
-      // is in an intermediate non-canonical class in the inheritance chain?
-      Container? found;
-      var reverseInheritance = _inheritance.reversed.toList();
-      for (var i = 0; i < reverseInheritance.length; i++) {
-        var container = reverseInheritance[i];
-        if (container.containsElement(searchElement)) {
-          var previousIsHiddenAndNotDefining = i > 0 &&
-              _isHiddenInterface(reverseInheritance[i - 1]) &&
-              container != definingEnclosingContainer;
-          var thisIsHiddenAndDefining = _isHiddenInterface(container) &&
-              container == definingEnclosingContainer;
-          // If the previous container in the search is one of the "hidden"
-          // interfaces, and it's not this member's defining container, OR if
-          // this container in the search is one of the "hidden" interfaces,
-          // and it is also this member's defining container, then we can just
-          // immediately return the canonical enclosing container of the
-          // overridden member in the previous, non-hidden container in the
-          // inheritance.
-          if (previousIsHiddenAndNotDefining || thisIsHiddenAndDefining) {
-            var previousVisible = reverseInheritance
-                .take(i)
-                .lastWhere((e) => !_isHiddenInterface(e));
-            var membersInPreviousVisible = previousVisible.allModelElements
-                .where((e) => e.name == name)
-                .whereType<Inheritable>()
-                .whereNotType<Field>();
-            assert(
-                membersInPreviousVisible.length == 1,
-                'found multiple members named "$name" in '
-                '"${previousVisible.name}": '
-                '${membersInPreviousVisible.toList()}');
-            return membersInPreviousVisible.first.canonicalEnclosingContainer;
-          }
-          var canonicalContainer = packageGraph
-              .findCanonicalModelElementFor(container) as Container?;
-          // TODO(jcollins-g): invert this lookup so traversal is recursive
-          // starting from the ModelElement.
-          if (canonicalContainer != null) {
-            assert(canonicalContainer.isCanonical);
-            assert(canonicalContainer.containsElement(searchElement));
-            found = canonicalContainer;
-            break;
-          }
+    if (!isInherited || definingEnclosingContainer is Extension) {
+      return super.computeCanonicalEnclosingContainer();
+    }
+
+    var searchElement = element.baseElement;
+    // TODO(jcollins-g): generate warning if an inherited element's definition
+    // is in an intermediate non-canonical class in the inheritance chain?
+    var reverseInheritance = _inheritance.reversed.toList();
+    for (var i = 0; i < reverseInheritance.length; i++) {
+      var container = reverseInheritance[i];
+      if (container.containsElement(searchElement)) {
+        var previousIsHiddenAndNotDefining = i > 0 &&
+            _isHiddenInterface(reverseInheritance[i - 1]) &&
+            container != definingEnclosingContainer;
+        var thisIsHiddenAndDefining = _isHiddenInterface(container) &&
+            container == definingEnclosingContainer;
+        // If the previous container in the search is one of the "hidden"
+        // interfaces, and it's not this member's defining container, OR if this
+        // container in the search is one of the "hidden" interfaces, and it is
+        // also this member's defining container, then we can immediately return
+        // the canonical enclosing container of the overridden member in the
+        // previous, non-hidden container in the inheritance.
+        if (previousIsHiddenAndNotDefining || thisIsHiddenAndDefining) {
+          var previousVisible = reverseInheritance
+              .take(i)
+              .lastWhere((e) => !_isHiddenInterface(e));
+          var membersInPreviousVisible = previousVisible.allModelElements
+              .where((e) => e.name == name)
+              .whereType<Inheritable>()
+              .whereNotType<Field>();
+          assert(
+              membersInPreviousVisible.length == 1,
+              'found multiple members named "$name" in '
+              '"${previousVisible.name}": '
+              '${membersInPreviousVisible.toList()}');
+          return membersInPreviousVisible.first.canonicalEnclosingContainer;
+        }
+        var canonicalContainer =
+            packageGraph.findCanonicalModelElementFor(container) as Container?;
+        // TODO(jcollins-g): invert this lookup so traversal is recursive
+        // starting from the ModelElement.
+        if (canonicalContainer != null) {
+          return canonicalContainer;
         }
       }
-      if (found != null) {
-        return found;
-      }
-    } else if (definingEnclosingContainer is! Extension) {
-      // TODO(jcollins-g): factor out extension logic into [Extendable].
-      return packageGraph.findCanonicalModelElementFor(enclosingElement)
-          as Container?;
     }
-    return super.computeCanonicalEnclosingContainer();
+
+    // None of the super-containers are canonical.
+    return null;
   }
 
   /// Whether [c] is a "hidden" interface.
