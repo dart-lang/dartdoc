@@ -36,7 +36,7 @@ final topLevelInternal = 'not documented';
 
 /// top level testing function
 @visibleForTesting
-String testingMethod() => 'not documented'
+String testingMethod() => 'not documented';
 
 /// This is the same name as a top-level const from the fake lib.
 const incorrectDocReference = 'same name as const from fake';
@@ -133,11 +133,11 @@ class Apple {
   
   /// No public docs for this
   @internal
-  int? internalField
+  int? internalField;
   
   /// No public docs for this   
   @visibleForTesting
-  int? testField
+  int? testField;
 
   ///Constructor
   Apple();
