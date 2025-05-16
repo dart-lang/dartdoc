@@ -429,6 +429,9 @@ abstract class ModelElement
       }
     }
 
+    if (element.isInternal) {
+      return false;
+    }
     return !element.hasPrivateName && !hasNodoc;
   }();
 
@@ -748,8 +751,7 @@ abstract class ModelElement
   late final List<Parameter> parameters = () {
     final e = element;
     if (!isCallable) {
-      throw StateError(
-          '$e (${e.runtimeType}) cannot have parameters');
+      throw StateError('$e (${e.runtimeType}) cannot have parameters');
     }
 
     final List<FormalParameterElement> params;

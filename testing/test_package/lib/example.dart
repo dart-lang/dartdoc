@@ -13,7 +13,7 @@ import 'package:test_package_imported/main.dart';
 
 export 'package:args/args.dart' show ArgParser;
 export 'dart:core' show deprecated, Deprecated;
-import 'package:meta/meta.dart' show protected, factory;
+import 'package:meta/meta.dart' show protected, factory, internal;
 
 export 'fake.dart' show Cool, ClassTemplateOneLiner;
 export 'src/mylib.dart' show Helper;
@@ -29,6 +29,11 @@ const String COMPLEX_COLOR = 'red' + '-' + 'green' + '-' + 'blue';
 /// top level var
 /// @nodoc
 const DO_NOT_DOCUMENT = 'not documented';
+
+/// top level internal variable
+// ignore: invalid_internal_annotation
+@internal
+final topLevelInternal = 'not documented';
 
 /// This is the same name as a top-level const from the fake lib.
 const incorrectDocReference = 'same name as const from fake';
@@ -122,6 +127,10 @@ class Apple {
 
   /// @nodoc no docs
   int? notDocumented;
+  
+  /// No public docs for this
+  @internal
+  int? internalField;
 
   ///Constructor
   Apple();
@@ -164,6 +173,11 @@ class Apple {
    * @nodoc method not documented
    */
   void notAPublicMethod() {}
+  
+  /// No public docs for this  
+  // ignore: invalid_internal_annotation 
+  @internal
+  void internalMethod() {}
 
   void paramFromExportLib(Helper helper) {}
 
@@ -236,6 +250,8 @@ class B extends Apple with Cat {
 
   @override
   void abstractMethod() {}
+  
+  @override void internalMethod() {}
 }
 
 /// Reference to nullable type: [Apple?] and null-checked variable [myNumber!].
