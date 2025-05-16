@@ -432,9 +432,6 @@ abstract class ModelElement
     if (element.isInternal) {
       return false;
     }
-    if (element.isVisibleForTesting) {
-      return false;
-    }
     return !element.hasPrivateName && !hasNodoc;
   }();
 

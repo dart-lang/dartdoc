@@ -3830,35 +3830,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           isTrue);
     });
 
-    test('@visibleForTesting annotation hides element from docs', () {
-      expect(exLibrary.functions.named('testingMethod').isPublic, false);
-
-      expect(
-          exLibrary.classes
-              .named('Apple')
-              .allFields
-              .named('testField')
-              .isPublic,
-          isFalse);
-
-      expect(
-          exLibrary.classes
-              .named('Apple')
-              .instanceMethods
-              .named('testMethod')
-              .isPublic,
-          isFalse);
-
-      // The overridden method is not internal, and thus exposed.
-      expect(
-          exLibrary.classes
-              .named('B')
-              .instanceMethods
-              .named('testMethod')
-              .isPublic,
-          isTrue);
-    });
-
     test('type arguments are correct', () {
       var modelType = mapWithDynamicKeys.modelType as ParameterizedElementType;
       expect(modelType.typeArguments, hasLength(2));

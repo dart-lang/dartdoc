@@ -13,7 +13,7 @@ import 'package:test_package_imported/main.dart';
 
 export 'package:args/args.dart' show ArgParser;
 export 'dart:core' show deprecated, Deprecated;
-import 'package:meta/meta.dart' show protected, factory, internal, visibleForTesting;
+import 'package:meta/meta.dart' show protected, factory, internal;
 
 export 'fake.dart' show Cool, ClassTemplateOneLiner;
 export 'src/mylib.dart' show Helper;
@@ -33,10 +33,6 @@ const DO_NOT_DOCUMENT = 'not documented';
 /// top level internal variable
 @internal
 final topLevelInternal = 'not documented';
-
-/// top level testing function
-@visibleForTesting
-String testingMethod() => 'not documented';
 
 /// This is the same name as a top-level const from the fake lib.
 const incorrectDocReference = 'same name as const from fake';
@@ -134,10 +130,6 @@ class Apple {
   /// No public docs for this
   @internal
   int? internalField;
-  
-  /// No public docs for this   
-  @visibleForTesting
-  int? testField;
 
   ///Constructor
   Apple();
@@ -184,10 +176,6 @@ class Apple {
   /// No public docs for this   
   @internal
   void internalMethod() {}
-  
-  /// No public docs for this   
-  @visibleForTesting
-  void testMethod() {}
 
   void paramFromExportLib(Helper helper) {}
 
