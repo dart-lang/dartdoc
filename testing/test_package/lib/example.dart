@@ -31,6 +31,7 @@ const String COMPLEX_COLOR = 'red' + '-' + 'green' + '-' + 'blue';
 const DO_NOT_DOCUMENT = 'not documented';
 
 /// top level internal variable
+// ignore: invalid_internal_annotation
 @internal
 final topLevelInternal = 'not documented';
 
@@ -173,7 +174,8 @@ class Apple {
    */
   void notAPublicMethod() {}
   
-  /// No public docs for this   
+  /// No public docs for this  
+  // ignore: invalid_internal_annotation 
   @internal
   void internalMethod() {}
 
@@ -250,8 +252,6 @@ class B extends Apple with Cat {
   void abstractMethod() {}
   
   @override void internalMethod() {}
-  
-  @override void testMethod() {}
 }
 
 /// Reference to nullable type: [Apple?] and null-checked variable [myNumber!].
