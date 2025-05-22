@@ -427,7 +427,7 @@ abstract class ModelElement
       }
     }
 
-    if (element.isInternal) {
+    if (element.annotations.any((e) => e.isInternal)) {
       return false;
     }
     return !element.hasPrivateName && !hasNodoc;
