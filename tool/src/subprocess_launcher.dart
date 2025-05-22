@@ -128,7 +128,6 @@ class SubprocessLauncher {
         await (stdoutFuture, stderrFuture, process.exitCode).wait;
 
     if (exitCode != 0) {
-      print('${await stdoutFuture} ${await stderrFuture}');
       throw SubprocessException(
         command: [executable, ...arguments].join(' '),
         workingDirectory: workingDirectory,
