@@ -14,8 +14,6 @@ import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, FieldMember, Member, ParameterMember;
-// ignore: implementation_imports
-import 'package:analyzer/src/utilities/extensions/element.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
@@ -387,7 +385,7 @@ abstract class ModelElement
   /// supposed to be invisible (like `@pragma`). While `null` elements indicate
   /// invalid code from analyzer's perspective, some are present in `sky_engine`
   /// (`@Native`) so we don't want to crash here.
-  late final List<Annotation> annotations = element.metadata
+  late final List<Annotation> annotations = element.annotations
       .where((m) => m.isVisibleAnnotation)
       .map((m) => Annotation(m, library, packageGraph))
       .toList(growable: false);
@@ -634,13 +632,13 @@ abstract class ModelElement
   bool get isDeprecated {
     // If element.metadata is empty, it might be because this is a property
     // where the metadata belongs to the individual getter/setter
-    if (element.metadata.isEmpty && element is PropertyInducingElement2) {
+    if (element.annotations.isEmpty && element is PropertyInducingElement2) {
       var pie = element as PropertyInducingElement2;
 
       // The getter or the setter might be null – so the stored value may be
       // `true`, `false`, or `null`
-      var getterDeprecated = pie.getter2?.metadata.any((a) => a.isDeprecated);
-      var setterDeprecated = pie.setter2?.metadata.any((a) => a.isDeprecated);
+      var getterDeprecated = pie.getter2?.metadata2.hasDeprecated;
+      var setterDeprecated = pie.setter2?.metadata2.hasDeprecated;
 
       var deprecatedValues = [getterDeprecated, setterDeprecated].nonNulls;
 
@@ -651,7 +649,12 @@ abstract class ModelElement
       // deprecated if both are deprecated.
       return deprecatedValues.every((d) => d);
     }
-    return element.metadata.any((a) => a.isDeprecated);
+
+    if (element case Annotatable element) {
+      return element.metadata2.hasDeprecated;
+    }
+
+    return false;
   }
 
   @override
@@ -748,8 +751,7 @@ abstract class ModelElement
   late final List<Parameter> parameters = () {
     final e = element;
     if (!isCallable) {
-      throw StateError(
-          '$e (${e.runtimeType}) cannot have parameters');
+      throw StateError('$e (${e.runtimeType}) cannot have parameters');
     }
 
     final List<FormalParameterElement> params;
@@ -821,5 +823,15 @@ extension on ElementAnnotation {
     }
 
     return true;
+  }
+}
+
+extension on Element2 {
+  List<ElementAnnotation> get annotations {
+    if (this case Annotatable self) {
+      return self.metadata2.annotations;
+    } else {
+      return const [];
+    }
   }
 }

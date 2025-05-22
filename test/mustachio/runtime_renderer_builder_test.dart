@@ -122,23 +122,24 @@ class Baz {}
                           'List<int>',
                         ),
 
-                renderIterable: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  return c.l1.map(
-                    (e) => renderSimple(
-                      e,
-                      ast,
-                      r.template,
-                      sink,
-                      parent: r,
-                      getters: _invisibleGetters['int']!,
-                    ),
-                  );
-                },
+                renderIterable:
+                    (
+                      CT_ c,
+                      RendererBase<CT_> r,
+                      List<MustachioNode> ast,
+                      StringSink sink,
+                    ) {
+                      return c.l1.map(
+                        (e) => renderSimple(
+                          e,
+                          ast,
+                          r.template,
+                          sink,
+                          parent: r,
+                          getters: _invisibleGetters['int']!,
+                        ),
+                      );
+                    },
               ),
 '''));
     });
@@ -155,21 +156,22 @@ class Baz {}
 
                 isNullValue: (CT_ c) => false,
 
-                renderValue: (
-                  CT_ c,
-                  RendererBase<CT_> r,
-                  List<MustachioNode> ast,
-                  StringSink sink,
-                ) {
-                  renderSimple(
-                    c.s1,
-                    ast,
-                    r.template,
-                    sink,
-                    parent: r,
-                    getters: _invisibleGetters['String']!,
-                  );
-                },
+                renderValue:
+                    (
+                      CT_ c,
+                      RendererBase<CT_> r,
+                      List<MustachioNode> ast,
+                      StringSink sink,
+                    ) {
+                      renderSimple(
+                        c.s1,
+                        ast,
+                        r.template,
+                        sink,
+                        parent: r,
+                        getters: _invisibleGetters['String']!,
+                      );
+                    },
               ),
 '''));
     });
