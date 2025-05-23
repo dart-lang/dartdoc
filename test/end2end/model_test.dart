@@ -3801,6 +3801,35 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           equals('Setter docs should be shown.'));
     });
 
+    test('@internal annotation hides element from docs', () {
+      expect(exLibrary.properties.named('topLevelInternal').isPublic, false);
+
+      expect(
+          exLibrary.classes
+              .named('Apple')
+              .allFields
+              .named('internalField')
+              .isPublic,
+          isFalse);
+
+      expect(
+          exLibrary.classes
+              .named('Apple')
+              .instanceMethods
+              .named('internalMethod')
+              .isPublicAndPackageDocumented,
+          isFalse);
+
+      // The overridden method is not internal, and thus exposed.
+      expect(
+          exLibrary.classes
+              .named('B')
+              .instanceMethods
+              .named('internalMethod')
+              .isPublicAndPackageDocumented,
+          isTrue);
+    });
+
     test('type arguments are correct', () {
       var modelType = mapWithDynamicKeys.modelType as ParameterizedElementType;
       expect(modelType.typeArguments, hasLength(2));
