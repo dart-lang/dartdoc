@@ -1,6 +1,7 @@
 # A CI configuration to write comments on PRs.
 
 name: Comment on the pull request
+permissions: read-all
 
 on:
   workflow_run:
