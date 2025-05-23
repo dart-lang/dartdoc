@@ -1,4 +1,4 @@
-## 8.3.4-wip
+## 8.3.4
 * The URL for category pages now uses _category name_ instead of
   _category `displayName`_.
 * Require analyzer 7.4.4 APIs.
