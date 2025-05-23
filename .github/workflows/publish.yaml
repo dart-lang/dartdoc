@@ -1,6 +1,7 @@
 # A CI configuration to auto-publish pub packages.
 
 name: Publish
+permissions: read-all
 
 on:
   pull_request:
