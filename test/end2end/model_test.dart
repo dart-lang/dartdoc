@@ -1158,22 +1158,6 @@ void main() async {
       });
     });
 
-    group('Comment processing', () {
-      test('can virtually add nodoc via options file', () {
-        var NodocMeLibrary =
-            packageGraph.defaultPackage.allLibraries.named('nodocme');
-        expect(NodocMeLibrary.hasNodoc, isTrue);
-        var NodocMeImplementation =
-            fakeLibrary.classes.named('NodocMeImplementation');
-        expect(NodocMeImplementation.hasNodoc, isTrue);
-        expect(NodocMeImplementation.isPublic, isFalse);
-        var MeNeitherEvenWithoutADocComment =
-            fakeLibrary.classes.named('MeNeitherEvenWithoutADocComment');
-        expect(MeNeitherEvenWithoutADocComment.hasNodoc, isTrue);
-        expect(MeNeitherEvenWithoutADocComment.isPublic, isFalse);
-      });
-    });
-
     group('doc references', () {
       late final String docsAsHtml;
 

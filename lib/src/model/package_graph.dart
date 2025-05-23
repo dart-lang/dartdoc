@@ -905,38 +905,6 @@ class PackageGraph with CommentReferable, Nameable {
     return allElements;
   }
 
-  /// Cache of 'nodoc' configurations.
-  ///
-  /// Glob lookups can be expensive, so cache per filename.
-  final _configSetsNodocFor = HashMap<String, bool>();
-
-  /// Given an element's [fullName], look up the nodoc configuration data and
-  /// determine whether to unconditionally treat the element as "nodoc", an
-  /// attribute indicating that documentation should not be included in
-  /// dartdoc's generated output.
-  ///
-  /// This configuration setting is deprecated.
-  bool configSetsNodocFor(String fullName) {
-    return _configSetsNodocFor.putIfAbsent(fullName, () {
-      var file = resourceProvider.getFile(fullName);
-      // Direct lookup instead of generating a custom context will save some
-      // cycles.  We can't use the element's [DartdocOptionContext] because that
-      // might not be where the element was defined, which is what's important
-      // for nodoc's semantics.  Looking up the defining element just to pull
-      // a context is again, slow.
-      var globs = (config.optionSet['nodoc'].valueAt(file.parent) as List)
-          .cast<String>();
-      if (globs.isNotEmpty) {
-        packageGraph.defaultPackage.warn(
-          PackageWarning.deprecated,
-          message:
-              "The '--nodoc' option is deprecated, and will soon be removed.",
-        );
-      }
-      return utils.matchGlobs(globs, fullName);
-    });
-  }
-
   /// Returns a macro by [name], or `null` if no macro is found.
   String? getMacro(String name) {
     assert(_localDocumentationBuilt);
