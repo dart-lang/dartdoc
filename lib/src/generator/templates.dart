@@ -116,18 +116,14 @@ abstract class Templates {
   String renderTopLevelProperty(TopLevelPropertyTemplateData context);
   String renderTypedef(TypedefTemplateData context);
 
-  /// Creates a [Templates] instance either from the default set of templates,
-  /// or a custom set if the 'templatesDir' Dartdoc option is used.
+  /// Creates a [Templates] instance from the default set of templates.
   ///
   /// [forceRuntimeTemplates] should only be given `true` during tests.
   static Future<Templates> fromContext(DartdocGeneratorOptionContext context,
+      // TODO(srawlins): Remove this option, as runtime templates are no longer
+      // supported.
       {bool forceRuntimeTemplates = false}) async {
-    var templatesDir = context.templatesDir;
-    if (templatesDir != null) {
-      return RuntimeTemplates._create(
-          context.resourceProvider.getFolder(templatesDir),
-          resourceProvider: context.resourceProvider);
-    } else if (forceRuntimeTemplates) {
+    if (forceRuntimeTemplates) {
       var directory = await context.resourceProvider
           .getResourceFolder('package:dartdoc/templates');
       return RuntimeTemplates._create(directory,
