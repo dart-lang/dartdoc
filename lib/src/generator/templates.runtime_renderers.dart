@@ -25764,7 +25764,6 @@ const _invisibleGetters = {
     'flutterRoot',
     'hashCode',
     'include',
-    'includeExternal',
     'includeSource',
     'injectHtml',
     'inputDir',
