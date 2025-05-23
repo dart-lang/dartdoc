@@ -427,9 +427,12 @@ abstract class ModelElement
       }
     }
 
-    if (element.annotations.any((e) => e.isInternal)) {
-      return false;
+    if (element.nonSynthetic2 case Annotatable(:var metadata2)) {
+      if (metadata2.hasInternal) {
+        return false;
+      }
     }
+
     return !element.hasPrivateName && !hasNodoc;
   }();
 
