@@ -1,5 +1,6 @@
 ## 9.0.0-wip
 * Remove deprecated `missingCodeBlockLanguage` warning.
+* Remove the deprecated `templates-dir` option.
 * Remove the deprecated `nodoc` option.
 
 ## 8.3.4
