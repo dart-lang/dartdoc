@@ -6,11 +6,9 @@ import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:meta/meta.dart';
 
 class Enum extends InheritingContainer with Constructable, MixedInTypes {
- 
   @override
   final EnumElement2 element;
 
@@ -51,12 +49,12 @@ class Enum extends InheritingContainer with Constructable, MixedInTypes {
       declaredFields.where((f) => f is! EnumField && f.isConst);
 
   @override
-  late final List<Field> publicEnumValues =
-      allFields.whereType<EnumField>().wherePublic.toList(growable: false);
-
-  @override
-  bool get hasPublicEnumValues =>
-      allFields.whereType<EnumField>().any((e) => e.isPublic);
+  late final List<Field> publicEnumValues = [
+    for (var value in element.constants2)
+      getModelForPropertyInducingElement(value, library,
+          getter: getModelFor(value.getter2!, library) as ContainerAccessor,
+          setter: null) as Field
+  ];
 
   @override
   bool get isAbstract => false;

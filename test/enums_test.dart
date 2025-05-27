@@ -657,12 +657,9 @@ export 'src/library.dart';
 
   void test_values_haveIndices() async {
     var library = await bootPackageWithLibrary('enum E { one, two, three }');
-    var oneValue =
-        library.enums.named('E').publicEnumValues.named('one') as EnumField;
-    var twoValue =
-        library.enums.named('E').publicEnumValues.named('two') as EnumField;
-    var threeValue =
-        library.enums.named('E').publicEnumValues.named('three') as EnumField;
+    var oneValue = library.enums.named('E').publicEnumValues.named('one');
+    var twoValue = library.enums.named('E').publicEnumValues.named('two');
+    var threeValue = library.enums.named('E').publicEnumValues.named('three');
 
     // TODO(srawlins): These should link back to the E enum. Something like
     // `'const <a href="$linkPrefix/E/E.html">E</a>(0)'`.

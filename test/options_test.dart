@@ -225,7 +225,7 @@ class Foo {
     final foo =
         packageGraph.localPackages.first.libraries.first.classes.named('Foo');
     // The name is not linked, but also does not error.
-    expect(foo.allFields.first.modelType.linkedName, 'Client?');
+    expect(foo.declaredFields.first.modelType.linkedName, 'Client?');
   }
 
   void test_includeCommandLineOption_overridesOptionsFileOption() async {
