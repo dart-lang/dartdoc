@@ -1207,8 +1207,6 @@ class DartdocOptionContext extends DartdocOptionContextBase
   // ignore: unused_element
   String get _linkToHosted => optionSet['linkTo']['hosted'].valueAt(context);
 
-  List<String> get nodoc => optionSet['nodoc'].valueAt(context);
-
   String get output => optionSet['output'].valueAt(context);
 
   PackageMeta get packageMeta => optionSet['packageMeta'].valueAt(context);
@@ -1501,13 +1499,6 @@ List<DartdocOption> createDartdocOptions(
             help: 'Allow links to be generated for packages outside this one.',
             negatable: true),
       ]),
-    // Deprecated. Use of this option is reported.
-    // TODO(srawlins): Remove.
-    DartdocOptionFileOnly<List<String>>('nodoc', [], resourceProvider,
-        optionIs: OptionKind.glob,
-        help: '(deprecated) Dart symbols declared in these files will be '
-            'treated as though they have the @nodoc directive added to their '
-            'documentation comment.'),
     DartdocOptionArgOnly<String>('output',
         resourceProvider.pathContext.join('doc', 'api'), resourceProvider,
         optionIs: OptionKind.dir, help: 'Path to the output directory.'),

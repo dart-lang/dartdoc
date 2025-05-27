@@ -25772,7 +25772,6 @@ const _invisibleGetters = {
     'linkToUrl',
     'maxFileCount',
     'maxTotalSize',
-    'nodoc',
     'optionSet',
     'output',
     'packageMeta',
