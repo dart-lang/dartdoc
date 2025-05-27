@@ -1,5 +1,6 @@
 ## 9.0.0-wip
 * Remove deprecated `missingCodeBlockLanguage` warning.
+* Remove the deprecated `templates-dir` option.
 
 ## 8.3.4
 * The URL for category pages now uses _category name_ instead of
