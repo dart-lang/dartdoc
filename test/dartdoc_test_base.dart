@@ -131,15 +131,15 @@ $libraryContent
         .named(libraryName);
   }
 
-  Future<Dartdoc> buildDartdoc({
+  Dartdoc buildDartdoc({
     List<String> excludeLibraries = const [],
     List<String> additionalArguments = const [],
     bool skipUnreachableSdkLibraries = true,
     bool useJson = false,
-  }) async {
+  }) {
     final dir = resourceProvider.getFolder(resourceProvider.pathContext
         .absolute(resourceProvider.pathContext.normalize(packagePath)));
-    final context = await generatorContextFromArgv([
+    final context = generatorContextFromArgv([
       '--input',
       dir.path,
       '--output',
@@ -165,7 +165,7 @@ $libraryContent
       outSink: outBuffer,
       errSink: errBuffer,
     );
-    return await Dartdoc.fromContext(context, packageBuilder);
+    return Dartdoc.fromContext(context, packageBuilder);
   }
 
   /// The real offset in a library generated with [bootPackageWithLibrary].

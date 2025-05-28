@@ -42,11 +42,7 @@
 @Renderer(#renderTypedef, Context<TypedefTemplateData>(), 'typedef')
 library;
 
-import 'package:analyzer/file_system/file_system.dart';
-import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/failure.dart';
-import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.aot_renderers_for_html.dart'
     as aot_renderers_for_html;
@@ -115,23 +111,6 @@ abstract class Templates {
   String renderSidebarForLibrary(TemplateDataWithLibrary<Documentable> context);
   String renderTopLevelProperty(TopLevelPropertyTemplateData context);
   String renderTypedef(TypedefTemplateData context);
-
-  /// Creates a [Templates] instance from the default set of templates.
-  ///
-  /// [forceRuntimeTemplates] should only be given `true` during tests.
-  static Future<Templates> fromContext(DartdocGeneratorOptionContext context,
-      // TODO(srawlins): Remove this option, as runtime templates are no longer
-      // supported.
-      {bool forceRuntimeTemplates = false}) async {
-    if (forceRuntimeTemplates) {
-      var directory = await context.resourceProvider
-          .getResourceFolder('package:dartdoc/templates');
-      return RuntimeTemplates._create(directory,
-          resourceProvider: context.resourceProvider);
-    } else {
-      return HtmlAotTemplates();
-    }
-  }
 }
 
 /// The [Templates] implementation which uses the render functions generated
@@ -221,6 +200,8 @@ class HtmlAotTemplates implements Templates {
 }
 
 /// The collection of [Template] objects parsed at runtime.
+// TODO(srawlins): Remove this class, and `templates.runtime_renderers.dart`, as
+// runtime templates are no longer supported.
 class RuntimeTemplates implements Templates {
   @override
   String renderCategory(CategoryTemplateData context) =>
@@ -324,59 +305,6 @@ class RuntimeTemplates implements Templates {
   final Template _sidebarLibraryTemplate;
   final Template _topLevelPropertyTemplate;
   final Template _typedefTemplate;
-
-  /// Creates a [Templates] from a custom set of template files, found in [dir].
-  static Future<Templates> _create(Folder dir,
-      {required ResourceProvider resourceProvider}) async {
-    Future<Template> loadTemplate(String templatePath) {
-      var templateFile = dir.getChildAssumingFile('$templatePath.html');
-      if (!templateFile.exists) {
-        throw DartdocFailure(
-            'Missing required template file: $templatePath.html');
-      }
-      return Template.parse(templateFile,
-          partialResolver: (String partialName) async =>
-              dir.getChildAssumingFile('_$partialName.html'));
-    }
-
-    var indexTemplate = await loadTemplate('index');
-    var libraryTemplate = await loadTemplate('library');
-    var searchPageTemplate = await loadTemplate('search');
-    var sidebarContainerTemplate = await loadTemplate('_sidebar_for_container');
-    var sidebarLibraryTemplate = await loadTemplate('_sidebar_for_library');
-    var categoryTemplate = await loadTemplate('category');
-    var classTemplate = await loadTemplate('class');
-    var constructorTemplate = await loadTemplate('constructor');
-    var enumTemplate = await loadTemplate('enum');
-    var errorTemplate = await loadTemplate('404error');
-    var extensionTemplate = await loadTemplate('extension');
-    var functionTemplate = await loadTemplate('function');
-    var methodTemplate = await loadTemplate('method');
-    var mixinTemplate = await loadTemplate('mixin');
-    var propertyTemplate = await loadTemplate('property');
-    var topLevelPropertyTemplate = await loadTemplate('top_level_property');
-    var typeDefTemplate = await loadTemplate('typedef');
-
-    return RuntimeTemplates._(
-      categoryTemplate,
-      libraryTemplate,
-      classTemplate,
-      constructorTemplate,
-      enumTemplate,
-      errorTemplate,
-      extensionTemplate,
-      functionTemplate,
-      indexTemplate,
-      methodTemplate,
-      mixinTemplate,
-      propertyTemplate,
-      searchPageTemplate,
-      sidebarContainerTemplate,
-      sidebarLibraryTemplate,
-      topLevelPropertyTemplate,
-      typeDefTemplate,
-    );
-  }
 
   RuntimeTemplates._(
     this._categoryTemplate,

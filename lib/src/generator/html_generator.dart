@@ -12,18 +12,13 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
-import 'package:meta/meta.dart';
 
 /// Creates a [Generator] with an [HtmlGeneratorBackend] backend.
-///
-/// [forceRuntimeTemplates] should only be given `true` during tests.
-Future<Generator> initHtmlGenerator(
+Generator initHtmlGenerator(
   DartdocGeneratorOptionContext context, {
   required FileWriter writer,
-  @visibleForTesting bool forceRuntimeTemplates = false,
-}) async {
-  var templates = await Templates.fromContext(context,
-      forceRuntimeTemplates: forceRuntimeTemplates);
+}) {
+  var templates = HtmlAotTemplates();
   var options = DartdocGeneratorBackendOptions.fromContext(context);
   var backend = HtmlGeneratorBackend(
       options, templates, writer, context.resourceProvider);

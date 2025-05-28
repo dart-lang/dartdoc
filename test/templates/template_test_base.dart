@@ -33,7 +33,7 @@ environment:
     packageConfigProvider.addPackageToConfigFor(
         packagePath, packageName, Uri.file('$packagePath/'));
 
-    await (await buildDartdoc()).generateDocs();
+    await buildDartdoc().generateDocs();
   }
 
   List<String> readLines(List<String> filePath) =>

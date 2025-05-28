@@ -98,7 +98,7 @@ extension Ext<T> on E<T> {}
         resourceProvider: resourceProvider,
       );
       await writeDartdocResources(resourceProvider);
-      final context = await generatorContextFromArgv([
+      final context = generatorContextFromArgv([
         '--input',
         packagePath,
         '--output',
@@ -118,7 +118,7 @@ extension Ext<T> on E<T> {}
         packageConfigProvider,
         skipUnreachableSdkLibraries: true,
       );
-      await (await Dartdoc.fromContext(context, packageBuilder)).generateDocs();
+      await Dartdoc.fromContext(context, packageBuilder).generateDocs();
       eLines = resourceProvider
           .getFile(path.join(packagePath, 'doc', 'lib', 'E.html'))
           .readAsStringSync()
