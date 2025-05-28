@@ -4,7 +4,6 @@
 
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/dartdoc.dart';
-import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
@@ -19,12 +18,11 @@ void main() async {
   late String packagePath;
   late MemoryResourceProvider resourceProvider;
   late PackageMetaProvider packageMetaProvider;
-  late DartdocGeneratorOptionContext context;
   late List<String> eLines;
   late List<String> eRightSidebarLines;
 
-  Future<PubPackageBuilder> createPackageBuilder() async {
-    context = await generatorContextFromArgv([
+  Dartdoc buildDartdoc() {
+    var context = generatorContextFromArgv([
       '--input',
       packagePath,
       '--output',
@@ -38,17 +36,13 @@ void main() async {
         getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
     packageConfigProvider.addPackageToConfigFor(
         packagePath, packageName, Uri.file('$packagePath/'));
-    return PubPackageBuilder(
+    var packageBuilder = PubPackageBuilder(
       context,
       packageMetaProvider,
       packageConfigProvider,
       skipUnreachableSdkLibraries: true,
     );
-  }
-
-  Future<Dartdoc> buildDartdoc() async {
-    final packageBuilder = await createPackageBuilder();
-    return await Dartdoc.fromContext(context, packageBuilder);
+    return Dartdoc.fromContext(context, packageBuilder);
   }
 
   group('extensions', () {
@@ -97,7 +91,8 @@ dartdoc:
         resourceProvider: resourceProvider,
       );
       await writeDartdocResources(resourceProvider);
-      await (await buildDartdoc()).generateDocs();
+      var dartdoc = buildDartdoc();
+      await dartdoc.generateDocs();
       eLines = resourceProvider
           .getFile(path.join(packagePath, 'doc', 'lib', 'E.html'))
           .readAsStringSync()

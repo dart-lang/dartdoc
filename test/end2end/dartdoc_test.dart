@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc.dart' show Dartdoc, DartdocResults;
 import 'package:dartdoc/src/dartdoc_options.dart';
@@ -63,13 +61,13 @@ void main() {
       tempDir.delete();
     });
 
-    Future<Dartdoc> buildDartdoc(
-        List<String> argv, Folder packageRoot, Folder tempDir) async {
-      var context = await generatorContextFromArgv(
+    Dartdoc buildDartdoc(
+        List<String> argv, Folder packageRoot, Folder tempDir) {
+      var context = generatorContextFromArgv(
           [...argv, '--input', packageRoot.path, '--output', tempDir.path],
           pubPackageMetaProvider);
 
-      return await Dartdoc.fromContext(
+      return Dartdoc.fromContext(
         context,
         PubPackageBuilder(
             context, pubPackageMetaProvider, PhysicalPackageConfigProvider(),
@@ -79,7 +77,7 @@ void main() {
 
     test('errors generate errors even when warnings are off', () async {
       var dartdoc =
-          await buildDartdoc(['--allow-tools'], testPackageToolError, tempDir);
+          buildDartdoc(['--allow-tools'], testPackageToolError, tempDir);
       var results = await dartdoc.generateDocsBase();
       var p = results.packageGraph;
       var unresolvedToolErrors = p.packageWarningCounter.countedWarnings.values
@@ -93,8 +91,8 @@ void main() {
     });
 
     test('basic interlinking test', () async {
-      var dartdoc = await buildDartdoc(
-          ['--exclude-packages=args'], _testPackageDir, tempDir);
+      var dartdoc =
+          buildDartdoc(['--exclude-packages=args'], _testPackageDir, tempDir);
       var results = await dartdoc.generateDocs();
       var p = results.packageGraph;
       var meta = p.publicPackages.firstWhere((p) => p.name == 'meta');
@@ -123,7 +121,7 @@ void main() {
 
       setUpAll(() async {
         tempDir = _resourceProvider.createSystemTemp('dartdoc.test.');
-        var dartdoc = await buildDartdoc([], _testPackageDir, tempDir);
+        var dartdoc = buildDartdoc([], _testPackageDir, tempDir);
         results = await dartdoc.generateDocs();
       });
 
@@ -145,7 +143,7 @@ void main() {
     test('generate docs for ${path.basename(_testPackageBadDir.path)} fails',
         skip: 'Blocked on getting analysis errors with correct interpretation '
             'from analysis_options', () async {
-      var dartdoc = await buildDartdoc([], _testPackageBadDir, tempDir);
+      var dartdoc = buildDartdoc([], _testPackageBadDir, tempDir);
 
       try {
         await dartdoc.generateDocs();
@@ -156,7 +154,7 @@ void main() {
     });
 
     test('generate docs for package with embedder yaml', () async {
-      var dartdoc = await buildDartdoc([], _testSkyEnginePackage, tempDir);
+      var dartdoc = buildDartdoc([], _testSkyEnginePackage, tempDir);
 
       var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -188,7 +186,7 @@ void main() {
 
     test('rel canonical prefix does not include base href', () async {
       final prefix = 'foo.bar/baz';
-      var dartdoc = await buildDartdoc(
+      var dartdoc = buildDartdoc(
           ['--rel-canonical-prefix', prefix], _testPackageDir, tempDir);
       await dartdoc.generateDocsBase();
 

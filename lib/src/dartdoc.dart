@@ -145,7 +145,7 @@ class Dartdoc {
   set generator(Generator newGenerator) => _generator = newGenerator;
 
   /// Factory method that builds Dartdoc with an empty generator.
-  static Dartdoc withEmptyGenerator(
+  factory Dartdoc.withEmptyGenerator(
     DartdocOptionContext config,
     PackageBuilder packageBuilder,
   ) {
@@ -157,12 +157,11 @@ class Dartdoc {
     );
   }
 
-  /// Asynchronous factory method that builds Dartdoc with a generator
-  /// determined by the given context.
-  static Future<Dartdoc> fromContext(
+  /// Builds Dartdoc with a generator determined by [context].
+  factory Dartdoc.fromContext(
     DartdocGeneratorOptionContext context,
     PackageBuilder packageBuilder,
-  ) async {
+  ) {
     var resourceProvider = context.resourceProvider;
     var outputPath = resourceProvider.pathContext.absolute(context.output);
     var outputDir = resourceProvider.getFolder(outputPath)..create();
@@ -175,7 +174,7 @@ class Dartdoc {
     return Dartdoc._(
       context,
       outputDir,
-      await initHtmlGenerator(context, writer: writer),
+      initHtmlGenerator(context, writer: writer),
       packageBuilder,
     );
   }

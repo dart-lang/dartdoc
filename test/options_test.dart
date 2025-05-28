@@ -55,12 +55,9 @@ dartdoc:
       libFiles: [d.file('lib.dart', '')],
       files: [d.file('anicon.png', 'Just plain text')],
     );
-    await (await buildDartdoc(
-      additionalArguments: [
-        '--auto-include-dependencies',
-      ],
-    ))
-        .generateDocs();
+    await buildDartdoc(
+      additionalArguments: ['--auto-include-dependencies'],
+    ).generateDocs();
 
     final faviconContent = resourceProvider
         .getFile(
@@ -80,7 +77,7 @@ dartdoc:
         d.dir('extras', [d.file('header.html', '<em>Header</em> things.')])
       ],
     );
-    await (await buildDartdoc()).generateDocs();
+    await buildDartdoc().generateDocs();
 
     final indexContent = resourceProvider
         .getFile(path.joinAll([packagePath, 'doc', 'index.html']))
@@ -99,7 +96,7 @@ dartdoc:
         d.dir('extras', [d.file('footer.html', '<em>Footer</em> things.')])
       ],
     );
-    await (await buildDartdoc()).generateDocs();
+    await buildDartdoc().generateDocs();
 
     final indexContent = resourceProvider
         .getFile(path.joinAll([packagePath, 'doc', 'index.html']))
@@ -118,7 +115,7 @@ dartdoc:
         d.dir('extras', [d.file('footer.txt', 'Just footer text')])
       ],
     );
-    await (await buildDartdoc()).generateDocs();
+    await buildDartdoc().generateDocs();
 
     final indexContent = resourceProvider
         .getFile(path.joinAll([packagePath, 'doc', 'index.html']))
@@ -137,7 +134,7 @@ dartdoc:
         d.dir('extras', [d.file('footer.txt', 'Just footer text')])
       ],
     );
-    await (await buildDartdoc()).generateDocs();
+    await buildDartdoc().generateDocs();
 
     final indexContent = resourceProvider
         .getFile(path.joinAll([packagePath, 'doc', 'index.html']))
@@ -440,7 +437,7 @@ class C1 {}
 
   void test_emptyPackage() async {
     await createPackage();
-    await (await buildDartdoc()).generateDocs();
+    await buildDartdoc().generateDocs();
 
     expect(outBuffer, isEmpty);
     expect(
@@ -478,7 +475,7 @@ class Foo {}
 '''),
       ],
     );
-    final dartdoc = await buildDartdoc(additionalArguments: [
+    final dartdoc = buildDartdoc(additionalArguments: [
       '--quiet',
     ]);
     await dartdoc.generateDocs();
@@ -502,7 +499,7 @@ class Foo {}
 '''),
       ],
     );
-    final dartdoc = await buildDartdoc(additionalArguments: [
+    final dartdoc = buildDartdoc(additionalArguments: [
       '--no-generate-docs',
     ]);
     await dartdoc.generateDocs();
@@ -532,7 +529,7 @@ class Foo {}
       ],
     );
     await writeDartdocResources(resourceProvider);
-    final dartdoc = await buildDartdoc(useJson: true);
+    final dartdoc = buildDartdoc(useJson: true);
     await dartdoc.generateDocs();
 
     expect(
@@ -584,7 +581,7 @@ class Foo {
       ],
     );
     final dartdoc =
-        await buildDartdoc(additionalArguments: ['--max-file-count', '2']);
+        buildDartdoc(additionalArguments: ['--max-file-count', '2']);
     await expectLater(
         dartdoc.generateDocs,
         throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
@@ -604,7 +601,7 @@ class Foo {
       ],
     );
     final dartdoc =
-        await buildDartdoc(additionalArguments: ['--max-file-count', '2000']);
+        buildDartdoc(additionalArguments: ['--max-file-count', '2000']);
     await dartdoc.generateDocs();
   }
 
@@ -621,7 +618,7 @@ class Foo {
       ],
     );
     final dartdoc =
-        await buildDartdoc(additionalArguments: ['--max-total-size', '15000']);
+        buildDartdoc(additionalArguments: ['--max-total-size', '15000']);
     await expectLater(
         dartdoc.generateDocs,
         throwsA(const TypeMatcher<DartdocFailure>().having((f) => f.message,
@@ -640,8 +637,8 @@ class Foo {
 '''),
       ],
     );
-    final dartdoc = await buildDartdoc(
-        additionalArguments: ['--max-total-size', '15000000']);
+    final dartdoc =
+        buildDartdoc(additionalArguments: ['--max-total-size', '15000000']);
     await dartdoc.generateDocs();
   }
 

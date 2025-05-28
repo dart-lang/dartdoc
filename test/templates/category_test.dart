@@ -4,7 +4,6 @@
 
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/dartdoc.dart';
-import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
@@ -19,12 +18,11 @@ void main() async {
   late String packagePath;
   late MemoryResourceProvider resourceProvider;
   late PackageMetaProvider packageMetaProvider;
-  late DartdocGeneratorOptionContext context;
   late List<String> topicOneLines;
   late List<String> indexPageLines;
 
-  Future<PubPackageBuilder> createPackageBuilder() async {
-    context = await utils.generatorContextFromArgv([
+  Dartdoc buildDartdoc() {
+    var context = utils.generatorContextFromArgv([
       '--input',
       packagePath,
       '--output',
@@ -38,20 +36,13 @@ void main() async {
         .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
     packageConfigProvider.addPackageToConfigFor(
         packagePath, packageName, Uri.file('$packagePath/'));
-    return PubPackageBuilder(
+    var packageBuilder = PubPackageBuilder(
       context,
       packageMetaProvider,
       packageConfigProvider,
       skipUnreachableSdkLibraries: true,
     );
-  }
-
-  Future<Dartdoc> buildDartdoc() async {
-    final packageBuilder = await createPackageBuilder();
-    return await Dartdoc.fromContext(
-      context,
-      packageBuilder,
-    );
+    return Dartdoc.fromContext(context, packageBuilder);
   }
 
   setUpAll(() async {
@@ -137,7 +128,8 @@ export 'lib.dart' show C1, E1;
       resourceProvider: resourceProvider,
     );
     await utils.writeDartdocResources(resourceProvider);
-    await (await buildDartdoc()).generateDocs();
+    var dartdoc = buildDartdoc();
+    await dartdoc.generateDocs();
     topicOneLines = resourceProvider
         .getFile(path.join(packagePath, 'doc', 'topics', 'cat1-topic.html'))
         .readAsStringSync()
