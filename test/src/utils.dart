@@ -47,7 +47,7 @@ Future<DartdocOptionContext> contextFromArgv(
       'dartdoc', [createDartdocOptions], packageMetaProvider);
   optionSet.parseArguments(argv);
   return DartdocOptionContext.fromDefaultContextLocation(
-      optionSet, pubPackageMetaProvider.resourceProvider);
+      optionSet, packageMetaProvider.resourceProvider);
 }
 
 /// Convenience factory to build a [DartdocGeneratorOptionContext] and

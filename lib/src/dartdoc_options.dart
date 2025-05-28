@@ -1179,9 +1179,6 @@ class DartdocOptionContext extends DartdocOptionContextBase
   late final Set<String> include =
       Set.of(optionSet['include'].valueAt(context));
 
-  List<String> get includeExternal =>
-      optionSet['includeExternal'].valueAt(context);
-
   bool get includeSource => optionSet['includeSource'].valueAt(context);
 
   bool get injectHtml => optionSet['injectHtml'].valueAt(context);
@@ -1394,7 +1391,7 @@ List<DartdocOption> createDartdocOptions(
     DartdocOptionArgOnly<bool>(
         'autoIncludeDependencies', false, resourceProvider,
         help: 'Include all the used libraries into the docs, even the ones not '
-            'in the current package or "include-external"',
+            'in the current package',
         negatable: true),
     DartdocOptionArgFile<List<String>>(
         'categoryOrder', const [], resourceProvider,
@@ -1426,12 +1423,6 @@ List<DartdocOption> createDartdocOptions(
         mustExist: true),
     DartdocOptionArgFile<List<String>>('include', [], resourceProvider,
         help: 'Names of libraries to document.', splitCommas: true),
-    DartdocOptionArgFile<List<String>>('includeExternal', [], resourceProvider,
-        optionIs: OptionKind.file,
-        help: 'Additional (external) dart files to include; use '
-            '"<directory name>/<file name>", as in "lib/material.dart".',
-        mustExist: true,
-        splitCommas: true),
     DartdocOptionArgOnly<bool>('includeSource', true, resourceProvider,
         help: 'Show source code blocks.', negatable: true),
     DartdocOptionArgOnly<bool>('injectHtml', false, resourceProvider,
