@@ -99,15 +99,13 @@ abstract class InheritingContainer extends Container {
     ...typeParameters,
   ];
 
+  @visibleForTesting
   Iterable<Method> get inheritedMethods {
     var methodNames = declaredMethods.map((m) => m.element.name3).toSet();
-    var inheritedMethodElements = _inheritedElements
+    var inheritedMethodElements = element.inheritedMembers.values
         .whereType<MethodElement2>()
-        .where((e) =>
-            !e.isOperator &&
-            e is! PropertyAccessorElement2 &&
-            !methodNames.contains(e.name3))
-        .toSet();
+        .where((e) => !e.isOperator)
+        .where((e) => !methodNames.contains(e.name3));
 
     return [
       for (var e in inheritedMethodElements)
@@ -115,13 +113,14 @@ abstract class InheritingContainer extends Container {
     ];
   }
 
+  @visibleForTesting
   List<Operator> get inheritedOperators {
     var operatorNames =
         declaredOperators.map((o) => o.element.lookupName).toSet();
-    var inheritedOperatorElements = _inheritedElements
+    var inheritedOperatorElements = element.inheritedMembers.values
         .whereType<MethodElement2>()
-        .where((e) => e.isOperator && !operatorNames.contains(e.lookupName))
-        .toSet();
+        .where((e) => e.isOperator)
+        .where((e) => !operatorNames.contains(e.name3));
 
     return [
       for (var e in inheritedOperatorElements)
@@ -132,74 +131,10 @@ abstract class InheritingContainer extends Container {
   late final DefinedElementType modelType =
       getTypeFor(element.thisType, library) as DefinedElementType;
 
-  /// A list of the inherited executable elements, one element per inherited
-  /// `Name`.
-  ///
-  /// In this list, elements that are "closer" in the inheritance chain to
-  /// _this_ element are preferred over elements that are further away. In the
-  /// case of ties, concrete inherited elements are prefered to non-concrete
-  /// ones.
-  late final List<ExecutableElement2> _inheritedElements = () {
-    if (element case ClassElement2 classElement
-        when classElement.isDartCoreObject) {
-      return const <ExecutableElement2>[];
-    }
-
-    // The mapping of all of the inherited element names to their _concrete_
-    // implementation element.
-    var concreteInheritanceMap =
-        packageGraph.inheritanceManager.getInheritedConcreteMap(element);
-    // The mapping of all inherited element names to the nearest inherited
-    // element that they resolve to.
-    var inheritanceMap =
-        packageGraph.inheritanceManager.getInheritedMap(element);
-
-    var inheritanceChainElements =
-        inheritanceChain.map((c) => c.element).toList(growable: false);
-
-    // A combined map of names to inherited _concrete_ Elements, and other
-    // inherited Elements.
-    var combinedMap = {
-      for (var MapEntry(:key, :value) in concreteInheritanceMap.entries)
-        key.name: value,
-    };
-    for (var MapEntry(key: name, value: inheritedElement)
-        in inheritanceMap.entries) {
-      var combinedMapElement = combinedMap[name.name];
-      if (combinedMapElement == null) {
-        combinedMap[name.name] = inheritedElement;
-        continue;
-      }
-
-      // Elements in the inheritance chain starting from `this.element` up to,
-      // but not including, `Object`.
-      var enclosingElement =
-          inheritedElement.enclosingElement2 as InterfaceElement2;
-      assert(inheritanceChainElements.contains(enclosingElement) ||
-          enclosingElement.isDartCoreObject);
-
-      // If the concrete element from `getInheritedConcreteMap2` is farther in
-      // the inheritance chain from this class than the (non-concrete) one
-      // provided by `getInheritedMap2`, prefer the latter. This correctly
-      // accounts for intermediate abstract classes that have method/field
-      // implementations.
-      var enclosingElementFromCombined =
-          combinedMapElement.enclosingElement2 as InterfaceElement2;
-      if (inheritanceChainElements.indexOf(enclosingElementFromCombined) <
-          inheritanceChainElements.indexOf(enclosingElement)) {
-        combinedMap[name.name] = inheritedElement;
-      }
-    }
-
-    // Finally, return all of the elements ultimately collected in the combined
-    // map.
-    return combinedMap.values.toList(growable: false);
-  }();
-
   /// All fields defined on this container, _including inherited fields_.
-  late List<Field> allFields = () {
+  late final List<Field> _allFields = () {
     var inheritedAccessorElements = {
-      ..._inheritedElements.whereType<PropertyAccessorElement2>()
+      ...element.inheritedMembers.values.whereType<PropertyAccessorElement2>()
     };
 
     // This structure keeps track of inherited accessors, allowing lookup
@@ -285,16 +220,14 @@ abstract class InheritingContainer extends Container {
   List<ModelElement> get allModelElements => _allModelElements;
 
   @override
-  Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
+  Iterable<Field> get constantFields => _allFields.where((f) => f.isConst);
 
   @override
-  Iterable<Field> get declaredFields => allFields.where((f) => !f.isInherited);
+  Iterable<Field> get declaredFields => _allFields.where((f) => !f.isInherited);
 
   /// The [InheritingContainer] with the library in which [element] is defined.
   InheritingContainer get definingContainer =>
       getModelFor(element, library) as InheritingContainer;
-
-  @override
 
   @override
   InterfaceElement2 get element;
@@ -333,10 +266,10 @@ abstract class InheritingContainer extends Container {
   List<InheritingContainer> get inheritanceChain;
 
   @visibleForTesting
-  Iterable<Field> get inheritedFields => allFields.where((f) => f.isInherited);
+  Iterable<Field> get inheritedFields => _allFields.where((f) => f.isInherited);
 
   @override
-  Iterable<Field> get instanceFields => allFields.where((f) => !f.isStatic);
+  Iterable<Field> get instanceFields => _allFields.where((f) => !f.isStatic);
 
   @override
   late final List<Field> availableInstanceFieldsSorted = [
@@ -371,8 +304,8 @@ abstract class InheritingContainer extends Container {
   List<Method> get _extensionInstanceMethods => [
         for (var extension in potentiallyApplicableExtensionsSorted)
           for (var method in extension.instanceMethods)
-            getModelFor(method.element, library,
-                enclosingContainer: extension) as Method,
+            getModelFor(method.element, library, enclosingContainer: extension)
+                as Method,
       ];
 
   @override
@@ -675,11 +608,6 @@ mixin MixedInTypes on InheritingContainer {
 
   Iterable<DefinedElementType> get publicMixedInTypes =>
       mixedInTypes.wherePublic;
-}
-
-extension on InterfaceElement2 {
-  bool get isDartCoreObject =>
-      name3 == 'Object' && library2.name3 == 'dart.core';
 }
 
 extension DefinedElementTypeIterableExtension on Iterable<DefinedElementType> {

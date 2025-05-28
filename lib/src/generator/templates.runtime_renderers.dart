@@ -7213,14 +7213,6 @@ class _Renderer_Enum extends RendererBase<Enum> {
                       );
                     },
               ),
-              'hasPublicEnumValues': Property(
-                getValue: (CT_ c) => c.hasPublicEnumValues,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'bool'),
-
-                getBool: (CT_ c) => c.hasPublicEnumValues,
-              ),
               'inheritanceChain': Property(
                 getValue: (CT_ c) => c.inheritanceChain,
                 renderVariable:
@@ -11498,29 +11490,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
             CT_,
             () => {
               ..._Renderer_Container.propertyMap<CT_>(),
-              'allFields': Property(
-                getValue: (CT_ c) => c.allFields,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'List<Field>',
-                        ),
-
-                renderIterable:
-                    (
-                      CT_ c,
-                      RendererBase<CT_> r,
-                      List<MustachioNode> ast,
-                      StringSink sink,
-                    ) {
-                      return c.allFields.map(
-                        (e) =>
-                            _render_Field(e, ast, r.template, sink, parent: r),
-                      );
-                    },
-              ),
               'allModelElements': Property(
                 getValue: (CT_ c) => c.allModelElements,
                 renderVariable:
@@ -11944,57 +11913,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                     ) {
                       return c.inheritanceChain.map(
                         (e) => _render_InheritingContainer(
-                          e,
-                          ast,
-                          r.template,
-                          sink,
-                          parent: r,
-                        ),
-                      );
-                    },
-              ),
-              'inheritedMethods': Property(
-                getValue: (CT_ c) => c.inheritedMethods,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'Iterable<Method>',
-                        ),
-
-                renderIterable:
-                    (
-                      CT_ c,
-                      RendererBase<CT_> r,
-                      List<MustachioNode> ast,
-                      StringSink sink,
-                    ) {
-                      return c.inheritedMethods.map(
-                        (e) =>
-                            _render_Method(e, ast, r.template, sink, parent: r),
-                      );
-                    },
-              ),
-              'inheritedOperators': Property(
-                getValue: (CT_ c) => c.inheritedOperators,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'List<Operator>',
-                        ),
-
-                renderIterable:
-                    (
-                      CT_ c,
-                      RendererBase<CT_> r,
-                      List<MustachioNode> ast,
-                      StringSink sink,
-                    ) {
-                      return c.inheritedOperators.map(
-                        (e) => _render_Operator(
                           e,
                           ast,
                           r.template,
@@ -14263,7 +14181,7 @@ class _Renderer_LibraryContainer extends RendererBase<LibraryContainer> {
   }
 }
 
-String renderLibraryRedirect(LibraryTemplateData context, Template template) {
+String renderLibrary(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -14501,7 +14419,7 @@ class _Renderer_LibraryTemplateData extends RendererBase<LibraryTemplateData> {
   }
 }
 
-String renderLibrary(LibraryTemplateData context, Template template) {
+String renderLibraryRedirect(LibraryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_LibraryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -20021,7 +19939,7 @@ class _Renderer_Package extends RendererBase<Package> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderIndex(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -20379,7 +20297,7 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderIndex(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();

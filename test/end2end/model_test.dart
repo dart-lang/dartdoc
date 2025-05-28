@@ -243,7 +243,7 @@ void main() async {
     test('typedef references display aliases', () {
       var g = C.instanceMethods.named('g');
 
-      var c = C2.allFields.named('c');
+      var c = C2.declaredFields.named('c');
       var d = C2.instanceMethods.named('d');
 
       expectAliasedTypeName(c.modelType as Aliased, equals('T1'));
@@ -263,8 +263,8 @@ void main() async {
     test('typedef references to special types work',
         skip: 'dart-lang/sdk#45291', () {
       var a = generalizedTypedefs.properties.named('a');
-      var b = C2.allFields.named('b');
-      var f = C.allFields.named('f');
+      var b = C2.declaredFields.named('b');
+      var f = C.declaredFields.named('f');
       expectAliasedTypeName(a.modelType as Aliased, equals('T0'));
       expectAliasedTypeName(b.modelType as Aliased, equals('T0'));
       expectAliasedTypeName(f.modelType as Aliased, equals('T0'));
@@ -1699,7 +1699,7 @@ void main() async {
       var MixedInImplementation =
           fakeLibrary.classes.wherePublic.named('MixedInImplementation');
       var MixInImplementation = fakeLibrary.mixins.named('MixInImplementation');
-      var mixinGetter = MixInImplementation.allFields.named('mixinGetter');
+      var mixinGetter = MixInImplementation.instanceFields.named('mixinGetter');
 
       expect(ThingToImplementInMixin.hasModifiers, isTrue);
       expect(MixInImplementation.hasModifiers, isTrue);
@@ -1713,7 +1713,7 @@ void main() async {
         orderedEquals([MixedInImplementation]),
       );
       expect(
-        MixedInImplementation.allFields
+        MixedInImplementation.inheritedFields
             .named('mixinGetter')
             .canonicalModelElement,
         equals(mixinGetter),
@@ -2118,7 +2118,7 @@ void main() async {
         T8 = generalizedTypedefs.typedefs.named('T8');
         C1 = generalizedTypedefs.classes.named('C1');
         C2 = generalizedTypedefs.classes.named('C2');
-        C1a = C1.allFields.named('a');
+        C1a = C1.declaredFields.named('a');
       });
 
       test('Verify basic ability to link anything', () {
@@ -2178,8 +2178,8 @@ void main() async {
         // This group tests lookups from the perspective of the reexported
         // elements, to verify that various fallbacks work correctly.
         ExtendingAgain = two_exports.classes.named('ExtendingAgain');
-        aField = ExtendingAgain.allFields.named('aField');
-        anotherField = ExtendingAgain.allFields.named('anotherField');
+        aField = ExtendingAgain.inheritedFields.named('aField');
+        anotherField = ExtendingAgain.declaredFields.named('anotherField');
 
         aNotReexportedVariable =
             local_scope.properties.named('aNotReexportedVariable');
@@ -2397,9 +2397,9 @@ void main() async {
             baseForDocComments.constructors.named('BaseForDocComments.new');
         somethingShadowyParameter =
             defaultConstructor.parameters.named('somethingShadowy');
-        initializeMe = baseForDocComments.allFields.named('initializeMe');
+        initializeMe = baseForDocComments.declaredFields.named('initializeMe');
         somethingShadowy =
-            baseForDocComments.allFields.named('somethingShadowy');
+            baseForDocComments.declaredFields.named('somethingShadowy');
         doAwesomeStuff =
             baseForDocComments.instanceMethods.named('doAwesomeStuff');
         anotherMethod =
@@ -2433,18 +2433,18 @@ void main() async {
         ExtraSpecialList = fakeLibrary.classes.named('ExtraSpecialList');
         forInheriting = fakeLibrary.classes
             .named('ImplicitProperties')
-            .allFields
+            .declaredFields
             .named('forInheriting');
         action = packageGraph.libraries
             .named('reexport.somelib')
             .classes
             .named('BaseReexported')
-            .allFields
+            .declaredFields
             .named('action');
         aConstructorShadowed = baseForDocComments.constructors
             .named('BaseForDocComments.aConstructorShadowed');
         aConstructorShadowedField =
-            baseForDocComments.allFields.named('aConstructorShadowed');
+            baseForDocComments.declaredFields.named('aConstructorShadowed');
 
         FactoryConstructorThings =
             fakeLibrary.classes.named('FactoryConstructorThings');
@@ -2462,11 +2462,11 @@ void main() async {
         differentName = anotherName.parameters.named('differentName');
         redHerring = anotherConstructor.parameters.named('redHerring');
 
-        aNameField = FactoryConstructorThings.allFields.named('aName');
+        aNameField = FactoryConstructorThings.declaredFields.named('aName');
         yetAnotherNameField =
-            FactoryConstructorThings.allFields.named('yetAnotherName');
+            FactoryConstructorThings.declaredFields.named('yetAnotherName');
         initViaFieldFormal =
-            FactoryConstructorThings.allFields.named('initViaFieldFormal');
+            FactoryConstructorThings.declaredFields.named('initViaFieldFormal');
 
         aMethod = FactoryConstructorThings.instanceMethods.named('aMethod');
         yetAnotherName = aMethod.parameters.named('yetAnotherName');
@@ -2499,7 +2499,7 @@ void main() async {
           expect(referenceLookup(FactoryConstructorThings, 'aName'),
               equals(MatchingLinkResult(aNameField)));
           var anotherNameField =
-              FactoryConstructorThings.allFields.named('anotherName');
+              FactoryConstructorThings.declaredFields.named('anotherName');
           expect(referenceLookup(FactoryConstructorThings, 'anotherName'),
               equals(MatchingLinkResult(anotherNameField)));
           expect(referenceLookup(FactoryConstructorThings, 'yetAnotherName'),
@@ -3645,13 +3645,14 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
 
       // classB has a variety of inherited and partially overridden fields.
       // All should have valid locations on their accessors.
-      for (var a in classB.allFields.expand(expandAccessors)) {
+      for (var a in classB.inheritedFields.expand(expandAccessors)) {
         expectValidLocation(a.characterLocation!);
       }
 
       // Enums also have fields and have historically had problems.
       var macrosFromAccessors = fakeLibrary.enums.named('MacrosFromAccessors');
-      for (var a in macrosFromAccessors.allFields.expand(expandAccessors)) {
+      for (var a
+          in macrosFromAccessors.inheritedFields.expand(expandAccessors)) {
         if (a.name == 'values') {
           continue;
         }
@@ -3791,7 +3792,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           exLibrary.classes
               .named('Apple')
-              .allFields
+              .instanceFields
               .named('internalField')
               .isPublic,
           isFalse);
