@@ -734,7 +734,7 @@ abstract class ModelElement
       _parameterRenderer.renderLinkedParams(parameters, showMetadata: false);
 
   @override
-  String get name => element.lookupName!;
+  String get name => element.lookupName ?? '';
 
   @override
   String get oneLineDoc => elementDocumentation.asOneLiner;
