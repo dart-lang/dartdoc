@@ -555,33 +555,46 @@ String renderError(PackageTemplateData context0) {
   final buffer = StringBuffer();
   buffer.write(_renderError_partial_head_0(context0));
   buffer.writeln();
-  buffer.write('''  <div id="dartdoc-main-content" class="main-content">
-    <h1>404: Something\'s gone wrong :-(</h1>
-    <section class="desc">
-      <p>You\'ve tried to visit a page that doesn\'t exist.  Luckily this site
-         has other <a href="index.html">pages</a>.</p>
-      <p>If you were looking for something specific, try searching:
+  buffer.write('''<div id="dartdoc-main-content" class="main-content">
+  <h1>404: Something\'s gone wrong :-(</h1>
+  <section class="desc">
+    <p>
+      You\'ve tried to visit a page that doesn\'t exist. Luckily this site has
+      other <a href="index.html">pages</a>.
+    </p>
+    <div>
+      If you were looking for something specific, try searching:
       <form class="search-body" role="search">
-        <input type="text" id="search-body" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+        <input
+          type="text"
+          id="search-body"
+          autocomplete="off"
+          disabled
+          class="form-control typeahead"
+          placeholder="Loading search..."
+        />
       </form>
-      </p>
-    </section>
-  </div> <!-- /.main-content -->
-  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    ''');
+    </div>
+  </section>
+</div>
+<!-- /.main-content -->
+<div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+  ''');
   buffer.write(_renderError_partial_search_sidebar_1(context0));
   buffer.writeln();
-  buffer.write('''    <h5><span class="package-name">''');
+  buffer.write('''  <h5>
+    <span class="package-name">''');
   buffer.writeEscaped(context0.self.name);
-  buffer.write('''</span> <span class="package-kind">''');
+  buffer.write('''</span>
+    <span class="package-kind">''');
   buffer.writeEscaped(context0.self.kind.toString());
-  buffer.write('''</span></h5>
-    ''');
+  buffer.write('''</span>
+  </h5>
+  ''');
   buffer.write(_renderError_partial_packages_2(context0));
   buffer.writeln();
-  buffer.write('''  </div>
-  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
-  </div>
+  buffer.write('''</div>
+<div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right"></div>
 ''');
   buffer.write(_renderError_partial_footer_3(context0));
   buffer.writeln();
