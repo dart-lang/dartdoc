@@ -107,6 +107,17 @@
   }
 }
 
+.loading-theme {
+  // Until the light-mode or dark-mode class is applied to the body,
+  // this class tells the browser to use the system theme's lightness.
+  // This prevents a white flash while the page is loading.
+  color-scheme: light dark;
+  background: initial;
+  color: initial;
+  --main-bg-color: initial;
+  --main-header-color: initial;
+}
+
 #theme-button {
   // Reset button appearance.
   appearance: none;

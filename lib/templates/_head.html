@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="color-scheme" content="light dark">
   <meta name="description" content="{{ metaDescription }}">
   <title>{{ title }}</title>
   {{ #relCanonicalPrefix }}
@@ -30,7 +31,7 @@
 </head>
 
 {{! We don't use <base href>, but we do lookup the htmlBase from javascript. }}
-<body data-base-href="{{{htmlBase}}}" data-using-base-href="{{{useBaseHref}}}" class="light-theme">
+<body data-base-href="{{{htmlBase}}}" data-using-base-href="{{{useBaseHref}}}" class="light-theme loading-theme">
 
 <div id="overlay-under-drawer"></div>
 
