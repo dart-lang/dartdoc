@@ -4,6 +4,7 @@
 * Remove the deprecated `nodoc` option.
 * Remove the deprecated `include-external` option.
 * Refactor 404 error page to use div instead of p for search form.
+* Fix the flash of white while loading pages in dark mode in Firefox.
 
 ## 8.3.4
 * The URL for category pages now uses _category name_ instead of
