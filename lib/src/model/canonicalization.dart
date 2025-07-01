@@ -89,7 +89,7 @@ final class _Canonicalization {
     Element2? ancestor = element;
     while (ancestor != null) {
       if (ancestor is LibraryElement2) {
-        components.insert(0, ancestor.identifier);
+        components.insert(0, ancestor.uri.toString());
       } else {
         components.insert(0, ancestor.name3!);
       }
