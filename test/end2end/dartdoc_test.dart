@@ -110,7 +110,7 @@ void main() {
       expect(
           useSomethingInAnotherPackage.modelType.linkedName,
           matches(
-              r'<a (class="deprecated" )?href="https://pub.dev/documentation/meta/[^"]*/meta/Required-class.html">Required</a>(\?)?'));
+              r'<a class="deprecated" href="https://pub.dev/documentation/meta/[^"]*/meta/Required-class.html">Required</a>\?'));
       var link = RegExp('/dart-core/String-class.html">String</a>');
       expect(useSomethingInTheSdk.modelType.linkedName, contains(link));
     });

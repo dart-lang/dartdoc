@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        sdk: [3.7.0, dev]
+        sdk: [3.8.0, dev]
         job: [main, flutter, packages, sdk-docs]
         include:
           - os: macos-latest
@@ -35,9 +35,9 @@ jobs:
             # Do not try to run flutter against the "stable" sdk,
             # it is unlikely to work and produces uninteresting
             # results.
-          - sdk: 3.7.0
+          - sdk: 3.8.0
             job: flutter
-          - sdk: 3.7.0
+          - sdk: 3.8.0
             job: sdk-docs
 
     steps:
