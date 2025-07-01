@@ -412,11 +412,12 @@ abstract class ModelElement
       return false;
     }
 
-    if (element case LibraryElement2(:var identifier, :var firstFragment)) {
+    if (element case LibraryElement2(:var uri, :var firstFragment)) {
+      final url = uri.toString();
       // Private Dart SDK libraries are not public.
-      if (identifier.startsWith('dart:_') ||
-          identifier.startsWith('dart:nativewrappers/') ||
-          'dart:nativewrappers' == identifier) {
+      if (url.startsWith('dart:_') ||
+          url.startsWith('dart:nativewrappers/') ||
+          url == 'dart:nativewrappers') {
         return false;
       }
       // Package-private libraries are not public.
