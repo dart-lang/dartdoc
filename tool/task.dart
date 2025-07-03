@@ -121,6 +121,10 @@ Future<void> analyzeTestPackages() async {
   }
 }
 
+Future<void> _runFormatter() async {
+  await SubprocessLauncher('formatter').runStreamedDartCommand(['format', '.']);
+}
+
 Future<void> _buildHelp() async {
   print('''
 Usage:
@@ -155,8 +159,11 @@ Future<void> buildAll() async {
   await buildDartdocOptions();
 }
 
-Future<void> buildRenderers() async => await SubprocessLauncher('build')
-    .runStreamedDartCommand([path.join('tool', 'mustachio', 'builder.dart')]);
+Future<void> buildRenderers() async {
+  await SubprocessLauncher('build')
+      .runStreamedDartCommand([path.join('tool', 'mustachio', 'builder.dart')]);
+  await _runFormatter();
+}
 
 Future<void> buildDartdocOptions() async {
   var version = _getPackageVersion();
