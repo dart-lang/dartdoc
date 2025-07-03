@@ -10,8 +10,8 @@ import 'package:dartdoc/src/model/model.dart';
 
 /// A [ModelElement] for a [TopLevelFunctionElement] that isn't part of a type definition.
 class ModelFunction extends ModelFunctionTyped with Categorization {
-  ModelFunction(TopLevelFunctionElement super.element, super.library,
-      super.packageGraph);
+  ModelFunction(
+      TopLevelFunctionElement super.element, super.library, super.packageGraph);
 
   bool get isStatic => element.isStatic;
 
@@ -82,8 +82,7 @@ class ModelFunctionTyped extends ModelElement with TypeParameters {
   @override
   Iterable<CommentReferable> get referenceParents => [library];
 
-  late final Callable modelType =
-      getTypeFor(element.type, library) as Callable;
+  late final Callable modelType = getTypeFor(element.type, library) as Callable;
 
   // For use in templates.
   bool get isProvidedByExtension => false;

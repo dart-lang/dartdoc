@@ -95,10 +95,13 @@ Future<void> runAnalyze(ArgResults commandResults) async {
   }
 }
 
-Future<void> analyzePackage() async =>
-    await SubprocessLauncher('analyze').runStreamedDartCommand(
-      ['analyze', '--fatal-infos', '.'],
-    );
+Future<void> analyzePackage() async {
+  await SubprocessLauncher('format').runStreamedDartCommand(
+      ['format', '--output=none', '--set-exit-if-changed', '.']);
+  await SubprocessLauncher('analyze').runStreamedDartCommand(
+    ['analyze', '--fatal-infos', '.'],
+  );
+}
 
 Future<void> analyzeTestPackages() async {
   var testPackagePaths = [
@@ -117,6 +120,10 @@ Future<void> analyzeTestPackages() async {
       workingDirectory: testPackagePath,
     );
   }
+}
+
+Future<void> _runFormatter() async {
+  await SubprocessLauncher('formatter').runStreamedDartCommand(['format', '.']);
 }
 
 Future<void> _buildHelp() async {
@@ -153,8 +160,11 @@ Future<void> buildAll() async {
   await buildDartdocOptions();
 }
 
-Future<void> buildRenderers() async => await SubprocessLauncher('build')
-    .runStreamedDartCommand([path.join('tool', 'mustachio', 'builder.dart')]);
+Future<void> buildRenderers() async {
+  await SubprocessLauncher('build')
+      .runStreamedDartCommand([path.join('tool', 'mustachio', 'builder.dart')]);
+  await _runFormatter();
+}
 
 Future<void> buildDartdocOptions() async {
   var version = _getPackageVersion();

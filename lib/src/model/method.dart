@@ -14,7 +14,6 @@ import 'package:dartdoc/src/model/model.dart';
 
 class Method extends ModelElement
     with ContainerMember, Inheritable, TypeParameters {
-
   @override
   final MethodElement2 element;
 
@@ -30,8 +29,8 @@ class Method extends ModelElement
     _calcTypeParameters();
   }
 
-  Method.inherited(this.element, this._enclosingContainer, super.library,
-      super.packageGraph,
+  Method.inherited(
+      this.element, this._enclosingContainer, super.library, super.packageGraph,
       {ExecutableMember? super.originalMember})
       : _isInherited = true {
     _calcTypeParameters();

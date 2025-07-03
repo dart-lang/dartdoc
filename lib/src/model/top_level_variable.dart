@@ -11,7 +11,6 @@ import 'package:dartdoc/src/model/model.dart';
 /// Top-level variables. But also picks up getters and setters?
 class TopLevelVariable extends ModelElement
     with GetterSetterCombo, Categorization {
-
   @override
   final TopLevelVariableElement2 element;
 
@@ -20,8 +19,8 @@ class TopLevelVariable extends ModelElement
   @override
   final Accessor? setter;
 
-  TopLevelVariable(this.element, super.library, super.packageGraph,
-      this.getter, this.setter) {
+  TopLevelVariable(this.element, super.library, super.packageGraph, this.getter,
+      this.setter) {
     getter?.enclosingCombo = this;
     setter?.enclosingCombo = this;
   }

@@ -15,7 +15,6 @@ import 'package:dartdoc/src/model/model.dart';
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends InheritingContainer with Constructable, MixedInTypes {
   @override
-
   @override
   final ClassElement2 element;
 
@@ -75,8 +74,7 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   bool get isFinal => element.isFinal && !element.isSealed;
 
   @override
-  bool get isImplementableInterface =>
-      element.isInterface && !element.isSealed;
+  bool get isImplementableInterface => element.isInterface && !element.isSealed;
 
   @override
   bool get isMixinClass => element.isMixinClass;

@@ -9,7 +9,6 @@ import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class TypeParameter extends ModelElement with HasNoPage {
-
   @override
   final TypeParameterElement2 element;
 

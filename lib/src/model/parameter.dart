@@ -11,15 +11,13 @@ import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Parameter extends ModelElement with HasNoPage {
-
   @override
   final FormalParameterElement element;
 
   Parameter(this.element, super.library, super.packageGraph,
       {ParameterMember? super.originalMember});
 
-  String? get defaultValue =>
-      hasDefaultValue ? element.defaultValueCode : null;
+  String? get defaultValue => hasDefaultValue ? element.defaultValueCode : null;
 
   @override
   ModelElement? get enclosingElement {

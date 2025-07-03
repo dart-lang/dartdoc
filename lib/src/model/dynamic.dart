@@ -9,9 +9,8 @@ import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Dynamic extends ModelElement with HasNoPage {
- 
-   @override
-   final Element2 element;
+  @override
+  final Element2 element;
 
   Dynamic(this.element, PackageGraph packageGraph)
       : super(Library.sentinel, packageGraph);

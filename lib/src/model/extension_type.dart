@@ -10,9 +10,8 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
 
 class ExtensionType extends InheritingContainer with Constructable {
-
   @override
-  final ExtensionTypeElement2  element;
+  final ExtensionTypeElement2 element;
 
   late final ElementType representationType =
       getTypeFor(element.representation2.type, library);
@@ -45,13 +44,11 @@ class ExtensionType extends InheritingContainer with Constructable {
     ContainerAccessor? getter, setter;
     final fieldGetter = field.getter2;
     if (fieldGetter != null) {
-      getter = ContainerAccessor(
-          fieldGetter, library, packageGraph, this);
+      getter = ContainerAccessor(fieldGetter, library, packageGraph, this);
     }
     final fieldSetter = field.setter2;
     if (fieldSetter != null) {
-      setter = ContainerAccessor(
-          fieldSetter, library, packageGraph, this);
+      setter = ContainerAccessor(fieldSetter, library, packageGraph, this);
     }
     return getModelForPropertyInducingElement(field, library,
         getter: getter, setter: setter) as Field;

@@ -92,8 +92,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
   @override
   Kind get kind => Kind.constructor;
 
-  late final Callable modelType =
-      getTypeFor(element.type, library) as Callable;
+  late final Callable modelType = getTypeFor(element.type, library) as Callable;
 
   @override
   String get name =>

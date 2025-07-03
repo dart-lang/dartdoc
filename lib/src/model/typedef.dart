@@ -11,7 +11,6 @@ import 'package:dartdoc/src/model/model.dart';
 
 abstract class Typedef extends ModelElement
     with TypeParameters, Categorization {
-
   @override
   final TypeAliasElement2 element;
 

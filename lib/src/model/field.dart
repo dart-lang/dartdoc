@@ -11,7 +11,6 @@ import 'package:dartdoc/src/model/model.dart';
 
 class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable {
- 
   @override
   final FieldElement2 element;
 
@@ -33,8 +32,7 @@ class Field extends ModelElement
     super.packageGraph,
     this.getter,
     this.setter,
-  )   :
-        isInherited = false,
+  )   : isInherited = false,
         enclosingElement =
             ModelElement.for_(element.enclosingElement2, library, packageGraph)
                 as Container,
@@ -50,8 +48,7 @@ class Field extends ModelElement
     super.packageGraph,
     this.getter,
     this.setter,
-  )   :
-        isInherited = false,
+  )   : isInherited = false,
         assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
     setter?.enclosingCombo = this;
@@ -64,8 +61,7 @@ class Field extends ModelElement
     super.packageGraph,
     this.getter,
     this.setter,
-  )   : 
-        isInherited = true,
+  )   : isInherited = true,
         assert(getter != null || setter != null) {
     // Can't set `isInherited` to true if this is the defining element, because
     // that would mean it isn't inherited.

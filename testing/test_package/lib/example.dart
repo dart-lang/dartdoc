@@ -127,7 +127,7 @@ class Apple {
 
   /// @nodoc no docs
   int? notDocumented;
-  
+
   /// No public docs for this
   @internal
   int? internalField;
@@ -173,9 +173,9 @@ class Apple {
    * @nodoc method not documented
    */
   void notAPublicMethod() {}
-  
-  /// No public docs for this  
-  // ignore: invalid_internal_annotation 
+
+  /// No public docs for this
+  // ignore: invalid_internal_annotation
   @internal
   void internalMethod() {}
 
@@ -250,8 +250,9 @@ class B extends Apple with Cat {
 
   @override
   void abstractMethod() {}
-  
-  @override void internalMethod() {}
+
+  @override
+  void internalMethod() {}
 }
 
 /// Reference to nullable type: [Apple?] and null-checked variable [myNumber!].

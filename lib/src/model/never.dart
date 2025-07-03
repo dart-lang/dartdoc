@@ -8,7 +8,6 @@ import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class NeverType extends ModelElement with HasNoPage {
-
   @override
   final Element2 element;
 

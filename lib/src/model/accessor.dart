@@ -18,7 +18,6 @@ import 'package:dartdoc/src/warnings.dart';
 
 /// Getters and setters.
 class Accessor extends ModelElement {
-
   @override
   final PropertyAccessorElement2 element;
 

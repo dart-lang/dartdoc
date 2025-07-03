@@ -113,8 +113,7 @@ class Library extends ModelElement
   ///   not found in it's 'lib/src' directory, and it is not excluded.
   bool get isPublic {
     if (!super.isPublic) return false;
-    final sdkLib =
-        packageGraph.sdkLibrarySources[element.firstFragment.source];
+    final sdkLib = packageGraph.sdkLibrarySources[element.firstFragment.source];
     if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
       return false;
     }
