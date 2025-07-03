@@ -94,10 +94,13 @@ Future<void> runAnalyze(ArgResults commandResults) async {
   }
 }
 
-Future<void> analyzePackage() async =>
-    await SubprocessLauncher('analyze').runStreamedDartCommand(
-      ['analyze', '--fatal-infos', '.'],
-    );
+Future<void> analyzePackage() async {
+  await SubprocessLauncher('format').runStreamedDartCommand(
+      ['format', '--output=none', '--set-exit-if-changed', '.']);
+  await SubprocessLauncher('analyze').runStreamedDartCommand(
+    ['analyze', '--fatal-infos', '.'],
+  );
+}
 
 Future<void> analyzeTestPackages() async {
   var testPackagePaths = [
