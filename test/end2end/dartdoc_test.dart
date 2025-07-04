@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc.dart' show Dartdoc, DartdocResults;
 import 'package:dartdoc/src/dartdoc_options.dart';
@@ -15,9 +17,13 @@ import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
+import 'package:shelf/shelf_io.dart';
+import 'package:shelf_static/shelf_static.dart';
 import 'package:test/test.dart';
 
 import '../src/utils.dart';
+import 'screenshot_utils.dart';
+import 'test_browser.dart';
 
 final _resourceProvider = pubPackageMetaProvider.resourceProvider;
 final _pathContext = _resourceProvider.pathContext;
@@ -51,6 +57,8 @@ void main() {
       // Set up the pub metadata for our test packages.
       runPubGet(testPackageToolError.path);
       runPubGet(_testSkyEnginePackage.path);
+
+      if (isScreenshotDirSet) {}
     });
 
     setUp(() async {
@@ -203,6 +211,41 @@ void main() {
       expect(level2.exists, isTrue);
       expect(level2.readAsStringSync(),
           contains('<link rel="canonical" href="$prefix/ex/Apple/m.html">'));
+
+      if (isScreenshotDirSet) {
+        final server = await _setupStaticHttpServer(tempDir.path);
+        final browser = TestBrowser(origin: 'http://localhost:${server.port}');
+        final allPaths = Directory(tempDir.path)
+            .listSync(recursive: true, followLinks: true)
+            .map((f) => path.relative(f.path, from: tempDir.path))
+            .where((p) => p.endsWith('.html'))
+            .toList();
+        final paths = [
+          'index.html',
+          'ex/index.html',
+          'ex/HtmlInjection-class.html',
+          'ex/IntSet/sum.html',
+        ];
+        assert(paths.every(allPaths.contains));
+        try {
+          await browser.startBrowser();
+          final session = await browser.createSession();
+          await session.withPage<void>(fn: (page) async {
+            for (final p in paths) {
+              await page.gotoOrigin('/$p');
+              final prefix = p.replaceAll('.html', '').replaceAll('.', '-');
+              await page.takeScreenshots(selector: 'body', prefix: prefix);
+            }
+          });
+        } finally {
+          await server.close();
+          await browser.close();
+        }
+      }
     });
   }, timeout: Timeout.factor(12));
+}
+
+Future<HttpServer> _setupStaticHttpServer(String path) async {
+  return await serve(createStaticHandler(path), 'localhost', 0);
 }
