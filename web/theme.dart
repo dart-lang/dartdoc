@@ -27,6 +27,8 @@ void init() {
 
       window.localStorage.setItem('colorTheme', 'false');
     }
+
+    bodyElement.classList.remove('loading-theme');
   }
 
   themeButton.addEventListener(
@@ -39,5 +41,8 @@ void init() {
 
   if (window.localStorage.getItem('colorTheme') case var colorTheme?) {
     switchThemes(colorTheme == 'true');
+  } else {
+    // Default to light mode.
+    switchThemes(false);
   }
 }
