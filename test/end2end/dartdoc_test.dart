@@ -57,8 +57,6 @@ void main() {
       // Set up the pub metadata for our test packages.
       runPubGet(testPackageToolError.path);
       runPubGet(_testSkyEnginePackage.path);
-
-      if (isScreenshotDirSet) {}
     });
 
     setUp(() async {
