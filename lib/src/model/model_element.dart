@@ -512,6 +512,11 @@ abstract class ModelElement
     // This is not accurate if we are still constructing the Package.
     assert(packageGraph.allLibrariesAdded);
 
+    var isLocalLibrary = packageGraph.localLibraries.contains(library);
+    if (!isLocalLibrary && !config.linkToRemote) {
+      return null;
+    }
+
     var definingLibraryIsPublic =
         packageGraph.publicLibraries.contains(library);
     var possibleCanonicalLibrary =

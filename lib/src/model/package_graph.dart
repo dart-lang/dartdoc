@@ -679,7 +679,7 @@ class PackageGraph with CommentReferable, Nameable {
     return libraries.wherePublic.toSet();
   }();
 
-  late final List<Library> _localLibraries = () {
+  late final List<Library> localLibraries = () {
     assert(allLibrariesAdded);
     return localPackages.expand((p) => p.libraries).toList(growable: false)
       ..sort();
@@ -687,7 +687,7 @@ class PackageGraph with CommentReferable, Nameable {
 
   late final Set<Library> localPublicLibraries = () {
     assert(allLibrariesAdded);
-    return _localLibraries.wherePublic.toSet();
+    return localLibraries.wherePublic.toSet();
   }();
 
   /// The String name representing the `Object` type.
