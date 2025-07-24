@@ -25601,6 +25601,7 @@ const _invisibleGetters = {
     'nonSynthetic2',
     'runtimeType',
     'session',
+    'sinceSdkVersion',
   },
   'EnumElement2': {
     'constants2',
@@ -26052,6 +26053,7 @@ const _invisibleGetters = {
     'baseElement',
     'children',
     'children2',
+    'constantInitializer',
     'constantInitializer2',
     'context',
     'declaration',
