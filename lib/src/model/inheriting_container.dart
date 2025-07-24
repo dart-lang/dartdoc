@@ -72,8 +72,7 @@ abstract class InheritingContainer extends Container {
 
   DefinedElementType? get supertype {
     final elementSupertype = element.supertype;
-    return elementSupertype == null ||
-            elementSupertype.element3.supertype == null
+    return elementSupertype == null
         ? null
         : getTypeFor(elementSupertype, library) as DefinedElementType;
   }
@@ -255,15 +254,6 @@ abstract class InheritingContainer extends Container {
   bool get hasPublicInheritedMethods => inheritedMethods.any((e) => e.isPublic);
 
   bool get hasPublicSuperChainReversed => superChain.any((e) => e.isPublic);
-
-  /// A sorted list of [element]'s inheritance chain, including interfaces and
-  /// mixins.
-  ///
-  /// Note: this list is really not even the same as ordinary Dart inheritance,
-  /// because we pretend that interfaces are part of the inheritance chain
-  /// to include them in the set of things we might link to for documentation
-  /// purposes.
-  List<InheritingContainer> get inheritanceChain;
 
   @visibleForTesting
   Iterable<Field> get inheritedFields => _allFields.where((f) => f.isInherited);
@@ -488,10 +478,8 @@ abstract class InheritingContainer extends Container {
     return interfaces;
   }
 
-  Iterable<InheritingContainer> get publicInterfaceElements => [
-        for (var interface in publicInterfaces)
-          interface.modelElement as InheritingContainer,
-      ];
+  Iterable<InheritingContainer> get publicInterfaceElements =>
+      publicInterfaces.modelElements;
 
   Iterable<DefinedElementType> get publicSuperChainReversed =>
       [...superChain.wherePublic].reversed;
@@ -502,6 +490,9 @@ abstract class InheritingContainer extends Container {
     var typeChain = <DefinedElementType>[];
     var parent = supertype;
     while (parent != null) {
+      if ((parent.modelElement as Container).isDartCoreObject) {
+        break;
+      }
       typeChain.add(parent);
       final parentType = parent.type;
       if (parentType is! InterfaceType) {
@@ -510,9 +501,7 @@ abstract class InheritingContainer extends Container {
       }
 
       var superclass = parentType.superclass;
-      // Avoid adding `Object` to the `superChain` (`_supertype` already has
-      // this check).
-      if (superclass == null || superclass.superclass == null) {
+      if (superclass == null) {
         break;
       }
       parent = getTypeFor(superclass, library) as DefinedElementType?;
@@ -614,11 +603,4 @@ extension DefinedElementTypeIterableExtension on Iterable<DefinedElementType> {
   /// The [ModelElement] for each element.
   List<InheritingContainer> get modelElements =>
       map((e) => e.modelElement as InheritingContainer).toList();
-}
-
-extension InheritingContainerIterableExtension
-    on Iterable<InheritingContainer> {
-  /// Expands each element to its inheritance chain.
-  Iterable<InheritingContainer> get expandInheritanceChain =>
-      expand((e) => e.inheritanceChain);
 }

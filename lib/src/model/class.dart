@@ -15,8 +15,6 @@ import 'package:dartdoc/src/model/model.dart';
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends InheritingContainer with Constructable, MixedInTypes {
   @override
-
-  @override
   final ClassElement2 element;
 
   @override
@@ -28,22 +26,6 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   @override
   String get sidebarPath =>
       '${canonicalLibraryOrThrow.dirName}/$name-class-sidebar.html';
-
-  @override
-  late final List<InheritingContainer> inheritanceChain = [
-    this,
-
-    // Caching should make this recursion a little less painful.
-    for (var container in mixedInTypes.modelElements.reversed)
-      ...container.inheritanceChain,
-
-    for (var container in superChain.modelElements)
-      ...container.inheritanceChain,
-
-    // Interfaces need to come last, because classes in the superChain might
-    // implement them even when they aren't mentioned.
-    ...interfaceElements.expandInheritanceChain,
-  ];
 
   Class(this.element, Library library, PackageGraph packageGraph)
       : super(library, packageGraph) {
@@ -75,8 +57,7 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   bool get isFinal => element.isFinal && !element.isSealed;
 
   @override
-  bool get isImplementableInterface =>
-      element.isInterface && !element.isSealed;
+  bool get isImplementableInterface => element.isInterface && !element.isSealed;
 
   @override
   bool get isMixinClass => element.isMixinClass;

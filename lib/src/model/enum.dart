@@ -21,16 +21,6 @@ class Enum extends InheritingContainer with Constructable, MixedInTypes {
   ];
 
   @override
-  late final List<InheritingContainer> inheritanceChain = [
-    this,
-    for (var container in mixedInTypes.modelElements.reversed)
-      ...container.inheritanceChain,
-    for (var container in superChain.modelElements)
-      ...container.inheritanceChain,
-    ...interfaceElements.expandInheritanceChain,
-  ];
-
-  @override
   // Prevent a collision with the library file.
   String get fileName => name == 'index' ? '$name-enum.html' : '$name.html';
 
