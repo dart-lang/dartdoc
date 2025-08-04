@@ -12,7 +12,6 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:meta/meta.dart';
 
 class Mixin extends InheritingContainer {
-
   @override
   final MixinElement2 element;
 
@@ -27,19 +26,6 @@ class Mixin extends InheritingContainer {
   @override
   String get sidebarPath =>
       '${canonicalLibraryOrThrow.dirName}/$name-mixin-sidebar.html';
-
-  @override
-  late final List<InheritingContainer> inheritanceChain = [
-    this,
-    ...superclassConstraints.modelElements.expandInheritanceChain,
-
-    for (var container in superChain.modelElements)
-      ...container.inheritanceChain,
-
-    // Interfaces need to come last, because classes in the `superChain` might
-    // implement them even when they aren't mentioned.
-    ...interfaceElements.expandInheritanceChain,
-  ];
 
   Mixin(this.element, super.library, super.packageGraph);
 

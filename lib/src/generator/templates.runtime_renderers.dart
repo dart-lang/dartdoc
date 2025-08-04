@@ -2734,34 +2734,6 @@ class _Renderer_Class extends RendererBase<Class> {
                       );
                     },
               ),
-              'inheritanceChain': Property(
-                getValue: (CT_ c) => c.inheritanceChain,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'List<InheritingContainer>',
-                        ),
-
-                renderIterable:
-                    (
-                      CT_ c,
-                      RendererBase<CT_> r,
-                      List<MustachioNode> ast,
-                      StringSink sink,
-                    ) {
-                      return c.inheritanceChain.map(
-                        (e) => _render_InheritingContainer(
-                          e,
-                          ast,
-                          r.template,
-                          sink,
-                          parent: r,
-                        ),
-                      );
-                    },
-              ),
               'isAbstract': Property(
                 getValue: (CT_ c) => c.isAbstract,
                 renderVariable:
@@ -7213,34 +7185,6 @@ class _Renderer_Enum extends RendererBase<Enum> {
                       );
                     },
               ),
-              'inheritanceChain': Property(
-                getValue: (CT_ c) => c.inheritanceChain,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'List<InheritingContainer>',
-                        ),
-
-                renderIterable:
-                    (
-                      CT_ c,
-                      RendererBase<CT_> r,
-                      List<MustachioNode> ast,
-                      StringSink sink,
-                    ) {
-                      return c.inheritanceChain.map(
-                        (e) => _render_InheritingContainer(
-                          e,
-                          ast,
-                          r.template,
-                          sink,
-                          parent: r,
-                        ),
-                      );
-                    },
-              ),
               'isAbstract': Property(
                 getValue: (CT_ c) => c.isAbstract,
                 renderVariable:
@@ -8516,34 +8460,6 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                         r.template,
                         sink,
                         parent: r,
-                      );
-                    },
-              ),
-              'inheritanceChain': Property(
-                getValue: (CT_ c) => c.inheritanceChain,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'List<InheritingContainer>',
-                        ),
-
-                renderIterable:
-                    (
-                      CT_ c,
-                      RendererBase<CT_> r,
-                      List<MustachioNode> ast,
-                      StringSink sink,
-                    ) {
-                      return c.inheritanceChain.map(
-                        (e) => _render_InheritingContainer(
-                          e,
-                          ast,
-                          r.template,
-                          sink,
-                          parent: r,
-                        ),
                       );
                     },
               ),
@@ -11893,34 +11809,6 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                         self.renderSimpleVariable(c, remainingNames, 'bool'),
 
                 getBool: (CT_ c) => c.hasPublicSuperChainReversed,
-              ),
-              'inheritanceChain': Property(
-                getValue: (CT_ c) => c.inheritanceChain,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'List<InheritingContainer>',
-                        ),
-
-                renderIterable:
-                    (
-                      CT_ c,
-                      RendererBase<CT_> r,
-                      List<MustachioNode> ast,
-                      StringSink sink,
-                    ) {
-                      return c.inheritanceChain.map(
-                        (e) => _render_InheritingContainer(
-                          e,
-                          ast,
-                          r.template,
-                          sink,
-                          parent: r,
-                        ),
-                      );
-                    },
               ),
               'instanceFields': Property(
                 getValue: (CT_ c) => c.instanceFields,
@@ -15921,34 +15809,6 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                         self.renderSimpleVariable(c, remainingNames, 'bool'),
 
                 getBool: (CT_ c) => c.hasPublicSuperclassConstraints,
-              ),
-              'inheritanceChain': Property(
-                getValue: (CT_ c) => c.inheritanceChain,
-                renderVariable:
-                    (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'List<InheritingContainer>',
-                        ),
-
-                renderIterable:
-                    (
-                      CT_ c,
-                      RendererBase<CT_> r,
-                      List<MustachioNode> ast,
-                      StringSink sink,
-                    ) {
-                      return c.inheritanceChain.map(
-                        (e) => _render_InheritingContainer(
-                          e,
-                          ast,
-                          r.template,
-                          sink,
-                          parent: r,
-                        ),
-                      );
-                    },
               ),
               'isAbstract': Property(
                 getValue: (CT_ c) => c.isAbstract,
@@ -25741,6 +25601,7 @@ const _invisibleGetters = {
     'nonSynthetic2',
     'runtimeType',
     'session',
+    'sinceSdkVersion',
   },
   'EnumElement2': {
     'constants2',
@@ -26192,6 +26053,7 @@ const _invisibleGetters = {
     'baseElement',
     'children',
     'children2',
+    'constantInitializer',
     'constantInitializer2',
     'context',
     'declaration',
