@@ -2418,6 +2418,7 @@ String _deduplicated__head(TemplateDataBase context0) {
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="color-scheme" content="light dark">
   <meta name="description" content="''');
   buffer.writeEscaped(context0.metaDescription);
   buffer.write('''">
@@ -2476,7 +2477,7 @@ String _deduplicated__head(TemplateDataBase context0) {
   buffer.write(context0.htmlBase);
   buffer.write('''" data-using-base-href="''');
   buffer.write(context0.useBaseHref.toString());
-  buffer.write('''" class="light-theme">
+  buffer.write('''" class="light-theme loading-theme">
 <div id="overlay-under-drawer"></div>
 <header id="title">
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
