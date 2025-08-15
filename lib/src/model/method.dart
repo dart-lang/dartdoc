@@ -2,10 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
+import 'package:analyzer/src/dart/element/member.dart' show SubstitutedExecutableElementImpl;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -16,7 +16,7 @@ class Method extends ModelElement
     with ContainerMember, Inheritable, TypeParameters {
 
   @override
-  final MethodElement2 element;
+  final MethodElement element;
 
   Container? _enclosingContainer;
 
@@ -32,7 +32,7 @@ class Method extends ModelElement
 
   Method.inherited(this.element, this._enclosingContainer, super.library,
       super.packageGraph,
-      {ExecutableMember? super.originalMember})
+      {SubstitutedExecutableElementImpl? super.originalMember})
       : _isInherited = true {
     _calcTypeParameters();
   }
@@ -42,13 +42,13 @@ class Method extends ModelElement
     this._enclosingContainer,
     super.library,
     super.packageGraph, {
-    ExecutableMember? super.originalMember,
+        SubstitutedExecutableElementImpl? super.originalMember,
   }) : _isInherited = false {
     _calcTypeParameters();
   }
 
   void _calcTypeParameters() {
-    typeParameters = element.typeParameters2.map((f) {
+    typeParameters = element.typeParameters.map((f) {
       return getModelFor(f, library) as TypeParameter;
     }).toList(growable: false);
   }
@@ -68,7 +68,7 @@ class Method extends ModelElement
 
   @override
   Container get enclosingElement => _enclosingContainer ??=
-      getModelFor(element.enclosingElement2!, library) as Container;
+      getModelFor(element.enclosingElement!, library) as Container;
 
   @override
   String get aboveSidebarPath => enclosingElement.sidebarPath;
@@ -96,7 +96,7 @@ class Method extends ModelElement
   bool get isOperator => false;
 
   bool get isProvidedByExtension =>
-      element.enclosingElement2 is ExtensionElement2;
+      element.enclosingElement is ExtensionElement;
 
   /// The [enclosingElement], which is expected to be an [Extension].
   Extension get enclosingExtension => enclosingElement as Extension;
@@ -113,8 +113,8 @@ class Method extends ModelElement
   Kind get kind => Kind.method;
 
   @override
-  ExecutableMember? get originalMember =>
-      super.originalMember as ExecutableMember?;
+  SubstitutedExecutableElementImpl? get originalMember =>
+      super.originalMember as SubstitutedExecutableElementImpl?;
 
   late final Callable modelType =
       getTypeFor((originalMember ?? element).type, library) as Callable;
@@ -122,17 +122,17 @@ class Method extends ModelElement
   @override
   Method? get overriddenElement {
     if (_enclosingContainer is Extension ||
-        element.enclosingElement2 is ExtensionElement2) {
+        element.enclosingElement is ExtensionElement) {
       return null;
     }
-    var parent = element.enclosingElement2 as InterfaceElement2;
+    var parent = element.enclosingElement as InterfaceElement;
     for (var t in parent.allSupertypes) {
-      Element2? e = t.getMethod2(element.name3 ?? '');
+      Element? e = t.getMethod(element.name ?? '');
       if (e != null) {
         assert(
-          e.enclosingElement2 is InterfaceElement2,
-          'Expected "${e.enclosingElement2?.name3}" to be a InterfaceElement, '
-          'but was ${e.enclosingElement2.runtimeType}',
+          e.enclosingElement is InterfaceElement,
+          'Expected "${e.enclosingElement?.name}" to be a InterfaceElement, '
+          'but was ${e.enclosingElement.runtimeType}',
         );
         return getModelForElement(e) as Method?;
       }
