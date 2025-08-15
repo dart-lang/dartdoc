@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -13,7 +13,7 @@ class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable {
  
   @override
-  final FieldElement2 element;
+  final FieldElement element;
 
   @override
   final ContainerAccessor? getter;
@@ -36,7 +36,7 @@ class Field extends ModelElement
   )   :
         isInherited = false,
         enclosingElement =
-            ModelElement.for_(element.enclosingElement2, library, packageGraph)
+            ModelElement.for_(element.enclosingElement, library, packageGraph)
                 as Container,
         assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
@@ -104,7 +104,7 @@ class Field extends ModelElement
   @override
   bool get isConst => element.isConst;
 
-  /// Whether the [FieldElement2] is covariant, or the first parameter for the
+  /// Whether the [FieldElement] is covariant, or the first parameter for the
   /// setter is covariant.
   @override
   bool get isCovariant => setter?.isCovariant == true || element.isCovariant;
@@ -131,7 +131,7 @@ class Field extends ModelElement
       element.isAbstract ? 'abstract $kind' : kind.toString();
 
   bool get isProvidedByExtension =>
-      element.enclosingElement2 is ExtensionElement2;
+      element.enclosingElement is ExtensionElement;
 
   /// The [enclosingElement], which is expected to be an [Extension].
   Extension get enclosingExtension => enclosingElement as Extension;
