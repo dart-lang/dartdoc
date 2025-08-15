@@ -36,7 +36,7 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
     if (modelElement is Library) return true;
     var lookup = l.element.exportNamespace.definedNames2[topLevelElementName];
     return topLevelElement ==
-        (lookup is PropertyAccessorElement2 ? lookup.variable3 : lookup);
+        (lookup is PropertyAccessorElement ? lookup.variable : lookup);
   }).toList(growable: true);
 
   if (candidateLibraries.isEmpty) {

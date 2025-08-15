@@ -541,9 +541,9 @@ abstract class InheritingContainer extends Container {
       // Pick an appropriate [FieldElement] to represent this element.
       // Only hard when dealing with a synthetic [Field].
       if (getter != null && setter == null) {
-        field = getterElement!.variable3 as FieldElement2;
+        field = getterElement!.variable as FieldElement;
       } else if (getter == null && setter != null) {
-        field = setterElement!.variable3 as FieldElement2;
+        field = setterElement!.variable as FieldElement;
       } else {
         // In this case: `getter != null && setter != null`.
         getter!;
@@ -556,9 +556,9 @@ abstract class InheritingContainer extends Container {
         if (setterEnclosingElement is Class &&
             setterEnclosingElement._isInheritingFrom(
                 getter.enclosingElement as InheritingContainer)) {
-          field = setterElement!.variable3 as FieldElement2;
+          field = setterElement!.variable3 as FieldElement;
         } else {
-          field = getterElement!.variable3 as FieldElement2;
+          field = getterElement!.variable3 as FieldElement;
         }
       }
     }

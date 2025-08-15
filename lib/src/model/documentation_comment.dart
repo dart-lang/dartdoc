@@ -70,9 +70,7 @@ mixin DocumentationComment
 
   /// The rawest form of the documentation comment, including comment delimiters
   /// like `///`, `//`, `/*`, `*/`.
-  String get documentationComment => (element is Annotatable)
-      ? (element as Annotatable).documentationComment ?? ''
-      : '';
+  String get documentationComment => element.documentationComment ?? '';
 
   /// Whether `this` has a synthetic/inherited or local documentation comment,
   /// and false otherwise.

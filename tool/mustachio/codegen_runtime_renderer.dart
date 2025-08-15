@@ -7,7 +7,7 @@ library;
 
 import 'dart:collection';
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
@@ -48,18 +48,18 @@ class RuntimeRenderersBuilder {
 
   /// Maps a type to the name of the render function which can render that type
   /// as a context type.
-  final _typeToRenderFunctionName = <InterfaceElement2, String>{};
+  final _typeToRenderFunctionName = <InterfaceElement, String>{};
 
   /// Maps a type to the name of the renderer class which can render that type
   /// as a context type.
-  final _typeToRendererClassName = <InterfaceElement2, String>{};
+  final _typeToRendererClassName = <InterfaceElement, String>{};
 
   final Uri _sourceUri;
 
   final TypeProvider _typeProvider;
   final TypeSystem _typeSystem;
 
-  final Set<Element2> _allVisibleElements;
+  final Set<Element> _allVisibleElements;
 
   /// Whether renderer classes are public. This should only be true for testing.
   final bool _rendererClassesArePublic;
@@ -104,7 +104,7 @@ import '${path.basename(_sourceUri.path)}';
 ''');
 
     specs.forEach(_addTypesForRendererSpec);
-    var builtRenderers = <InterfaceElement2>{};
+    var builtRenderers = <InterfaceElement>{};
     var elementsToProcess = _typesToProcess.toList()
       ..sort((a, b) => a._typeName.compareTo(b._typeName));
 
@@ -135,21 +135,21 @@ import '${path.basename(_sourceUri.path)}';
     spec.contextType.getters.forEach(_addPropertyToProcess);
 
     for (var mixin in spec.contextElement.mixins) {
-      _addTypeToProcess(mixin.element3,
+      _addTypeToProcess(mixin.element,
           isFullRenderer: true, includeRenderFunction: false);
     }
     var superclass = spec.contextElement.supertype;
 
     while (superclass != null) {
       // Any type specified with a renderer spec (`@Renderer`) is full.
-      _addTypeToProcess(superclass.element3,
+      _addTypeToProcess(superclass.element,
           isFullRenderer: true, includeRenderFunction: false);
-      for (var mixin in superclass.element3.mixins) {
-        _addTypeToProcess(mixin.element3,
+      for (var mixin in superclass.element.mixins) {
+        _addTypeToProcess(mixin.element,
             isFullRenderer: true, includeRenderFunction: false);
       }
       superclass.getters.forEach(_addPropertyToProcess);
-      superclass = superclass.element3.supertype;
+      superclass = superclass.element.supertype;
     }
   }
 
@@ -717,17 +717,15 @@ extension on InterfaceElement2 {
 extension on GetterElement {
   // Whether this getter should be omitted from the runtime renderer code.
   bool get shouldBeOmitted {
-    var variable = variable3;
     return isPrivate ||
         isStatic ||
-        metadata2.hasInternal ||
-        metadata2.hasProtected ||
-        metadata2.hasVisibleForOverriding ||
-        metadata2.hasVisibleForTesting ||
-        variable == null ||
-        variable.metadata2.hasInternal ||
-        variable.metadata2.hasProtected ||
-        variable.metadata2.hasVisibleForOverriding ||
-        variable.metadata2.hasVisibleForTesting;
+        metadata.hasInternal ||
+        metadata.hasProtected ||
+        metadata.hasVisibleForOverriding ||
+        metadata.hasVisibleForTesting ||
+        variable.metadata.hasInternal ||
+        variable.metadata.hasProtected ||
+        variable.metadata.hasVisibleForOverriding ||
+        variable.metadata.hasVisibleForTesting;
   }
 }
