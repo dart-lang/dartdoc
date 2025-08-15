@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -10,7 +10,7 @@ import 'package:dartdoc/src/model/model.dart';
 class NeverType extends ModelElement with HasNoPage {
 
   @override
-  final Element2 element;
+  final Element element;
 
   NeverType(this.element, PackageGraph packageGraph)
       : super(Library.sentinel, packageGraph);

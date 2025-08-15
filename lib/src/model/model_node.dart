@@ -7,13 +7,13 @@ import 'dart:convert';
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:meta/meta.dart';
 
 /// Stripped down information derived from [AstNode] containing only information
 /// needed to resurrect the source code of [_element].
 class ModelNode {
-  final Element2 _element;
+  final Element _element;
   final AnalysisContext _analysisContext;
   final int _sourceEnd;
   final int _sourceOffset;
@@ -23,7 +23,7 @@ class ModelNode {
 
   factory ModelNode(
     AstNode? sourceNode,
-    Element2 element,
+    Element element,
     AnalysisContext analysisContext, {
     CommentData? commentData,
   }) {
@@ -115,7 +115,7 @@ class CommentDocImportData {
 /// Comment reference data is not available on the analyzer's Element model, so
 /// we store it in instances of this class after resolving libraries.
 class CommentReferenceData {
-  final Element2 element;
+  final Element element;
   final String name;
   final int offset;
   final int length;

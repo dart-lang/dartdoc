@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart' show DartType;
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/element_type.dart';
@@ -54,7 +54,7 @@ mixin Nameable {
   ///
   /// A convenience method for [ModelElement.for_], see its documentation.
   ModelElement getModelFor(
-    Element2 element,
+    Element element,
     Library library, {
     Container? enclosingContainer,
   }) =>
@@ -69,7 +69,7 @@ mixin Nameable {
   ///
   /// A convenience method for [ModelElement.forElement], see its
   /// documentation.
-  ModelElement getModelForElement(Element2 element) =>
+  ModelElement getModelForElement(Element element) =>
       ModelElement.forElement(element, packageGraph);
 
   /// Returns the [ModelElement] for [element], instantiating it if needed.
@@ -80,7 +80,7 @@ mixin Nameable {
   // immediately before calling this method, and I imagine could instead just
   // call `getModelFor`.
   ModelElement getModelForPropertyInducingElement(
-    PropertyInducingElement2 element,
+    PropertyInducingElement element,
     Library library, {
     required Accessor? getter,
     required Accessor? setter,
