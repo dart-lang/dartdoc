@@ -46,12 +46,12 @@ Future<void> build(
         '${libraryResult.runtimeType}');
   }
 
-  var library = libraryResult.element2;
+  var library = libraryResult.element;
   var typeProvider = library.typeProvider;
   var typeSystem = library.typeSystem;
   var rendererSpecs = <RendererSpec>{};
-  for (var renderer in library.metadata2.annotations
-      .where((e) => e.element2!.enclosingElement2!.name3 == 'Renderer')) {
+  for (var renderer in library.metadata.annotations
+      .where((e) => e.element!.enclosingElement!.name == 'Renderer')) {
     rendererSpecs.add(_buildRendererSpec(renderer));
   }
 
