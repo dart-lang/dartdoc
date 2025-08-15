@@ -108,8 +108,8 @@ class Baz {}
         await resolveGeneratedLibrary2(aotRenderersForHtmlPath);
 
     var fooRenderFunction = renderersLibrary.getTopLevelFunction('renderFoo')!;
-    expect(fooRenderFunction.typeParameters2, hasLength(1));
-    var fBound = fooRenderFunction.typeParameters2.single.bound!;
+    expect(fooRenderFunction.typeParameters, hasLength(1));
+    var fBound = fooRenderFunction.typeParameters.single.bound!;
     expect(fBound.getDisplayString(), equals('num'));
   });
 

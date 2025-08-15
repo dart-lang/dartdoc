@@ -5,7 +5,7 @@
 /// @docImport 'package:dartdoc/src/model/package_graph.dart';
 library;
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/documentable.dart';
@@ -41,7 +41,7 @@ final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 mixin DocumentationComment
     implements Documentable, Warnable, Locatable, SourceCode {
   @override
-  Element2 get element;
+  Element get element;
 
   List<DocumentationComment>? _documentationFrom;
 
@@ -74,9 +74,7 @@ mixin DocumentationComment
 
   /// Whether `this` has a synthetic/inherited or local documentation comment,
   /// and false otherwise.
-  bool get hasDocumentationComment =>
-      element is Annotatable &&
-      (element as Annotatable).documentationComment != null;
+  bool get hasDocumentationComment => element.documentationComment != null;
 
   /// Whether the raw documentation comment is considered to be 'nodoc', an
   /// attribute indicating that any documentation should not be included in

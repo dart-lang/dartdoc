@@ -8,7 +8,7 @@ library;
 import 'dart:core';
 
 import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/library.dart';
@@ -105,7 +105,7 @@ mixin CommentReferable implements Nameable {
     _ReferenceChildrenLookup referenceLookup, {
     required bool Function(CommentReferable?) filter,
   }) {
-    Element2? resultElement;
+    Element? resultElement;
     final scope = this.scope;
     if (scope != null) {
       resultElement = scope.lookupPreferGetter(referenceLookup.lookup);
@@ -207,16 +207,16 @@ mixin CommentReferable implements Nameable {
   Library? get library => null;
 
   /// For testing / comparison only, get the comment referable from where this
-  /// `ElementType` was defined.  Override where an [Element2] is available.
+  /// `ElementType` was defined.  Override where an [Elemen2] is available.
   @internal
   CommentReferable get definingCommentReferable => this;
 }
 
 extension on Scope {
   /// Prefer the getter for a bundled lookup if both exist.
-  Element2? lookupPreferGetter(String id) {
+  Element? lookupPreferGetter(String id) {
     var result = lookup(id);
-    return result.getter2 ?? result.setter2;
+    return result.getter ?? result.setter;
   }
 }
 

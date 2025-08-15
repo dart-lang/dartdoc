@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/class.dart';
@@ -22,7 +22,7 @@ final class Annotation extends Attribute {
   final PackageGraph _packageGraph;
 
   Annotation(this._annotation, this._library, this._packageGraph)
-      : super(_annotation.element2!.name3!);
+      : super(_annotation.element!.name!);
 
   @override
   String get linkedNameWithParameters {
@@ -40,19 +40,19 @@ final class Annotation extends Attribute {
   }
 
   @override
-  String get linkedName => _annotation.element2 is PropertyAccessorElement2
-      ? _packageGraph.getModelForElement(_annotation.element2!).linkedName
+  String get linkedName => _annotation.element is PropertyAccessorElement
+      ? _packageGraph.getModelForElement(_annotation.element!).linkedName
       // TODO(jcollins-g): consider linking to constructor instead of type?
       : _modelType.linkedName;
 
-  late final ElementType _modelType = switch (_annotation.element2) {
+  late final ElementType _modelType = switch (_annotation.element) {
     ConstructorElement(:var returnType) =>
       _packageGraph.getTypeFor(returnType, _library),
     PropertyAccessorElement(:var variable) =>
       (_packageGraph.getModelForElement(variable) as GetterSetterCombo)
           .modelType,
     _ => throw StateError(
-        'non-callable element used as annotation?: ${_annotation.element2}')
+        'non-callable element used as annotation?: ${_annotation.element}')
   };
 
   bool get isPublic {

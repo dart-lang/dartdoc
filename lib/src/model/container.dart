@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -32,7 +32,7 @@ abstract class Container extends ModelElement
   Container(super.library, super.packageGraph);
 
   @override
-  Element2 get element;
+  Element get element;
 
   // TODO(jcollins-g): Implement a ContainerScope that flattens supertypes?
   @override
@@ -41,20 +41,20 @@ abstract class Container extends ModelElement
   @override
   bool get hasParameters => false;
 
-  bool get isExtension => element is ExtensionElement2;
+  bool get isExtension => element is ExtensionElement;
 
   /// Whether this is an enum.
-  bool get isEnum => element is EnumElement2;
+  bool get isEnum => element is EnumElement;
 
   /// Whether this is an interface (e.g. class, enum, mixin, or extension type).
-  bool get isInterface => element is InterfaceElement2;
+  bool get isInterface => element is InterfaceElement;
 
   /// Whether this is a mixin.
-  bool get isMixin => element is MixinElement2;
+  bool get isMixin => element is MixinElement;
 
   /// Whether this container represents the Object class from 'dart:core'.
   bool get isDartCoreObject =>
-      element.name3 == 'Object' && element.library2?.name3 == 'dart.core';
+      element.name == 'Object' && element.library?.name == 'dart.core';
 
   /// The model elements of all of the members of this container, including
   /// declared and inherited ones.
@@ -158,9 +158,9 @@ abstract class Container extends ModelElement
 
   /// This container might be canonical for elements it does not contain.
   /// See [Inheritable.canonicalEnclosingContainer].
-  bool containsElement(Element2? element) => _allElements.contains(element);
+  bool containsElement(Element? element) => _allElements.contains(element);
 
-  late final Set<Element2> _allElements =
+  late final Set<Element> _allElements =
       allModelElements.map((e) => e.element).toSet();
 
   bool get hasPublicStaticFields => staticFields.any((e) => e.isPublic);

@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 
@@ -19,11 +19,11 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
 
   // Since we're looking for a library, go up in the tree until we find it.
   var topLevelElement = modelElement.element;
-  while (topLevelElement.enclosingElement2 is! LibraryElement2 &&
-      topLevelElement.enclosingElement2 != null) {
-    topLevelElement = topLevelElement.enclosingElement2!;
+  while (topLevelElement.enclosingElement is! LibraryElement &&
+      topLevelElement.enclosingElement != null) {
+    topLevelElement = topLevelElement.enclosingElement!;
   }
-  var topLevelElementName = topLevelElement.name3;
+  var topLevelElementName = topLevelElement.name;
   if (topLevelElementName == null) {
     // Any member of an unnamed extension is not public, and has no
     // canonical library.
@@ -84,16 +84,16 @@ final class _Canonicalization {
     }
   }
 
-  String _getElementLocation(Element2 element) {
+  String _getElementLocation(Element element) {
     var components = <String>[];
-    Element2? ancestor = element;
+    Element? ancestor = element;
     while (ancestor != null) {
-      if (ancestor is LibraryElement2) {
+      if (ancestor is LibraryElement) {
         components.insert(0, ancestor.uri.toString());
       } else {
-        components.insert(0, ancestor.name3!);
+        components.insert(0, ancestor.name!);
       }
-      ancestor = ancestor.enclosingElement2;
+      ancestor = ancestor.enclosingElement;
     }
     var buffer = StringBuffer();
     var length = components.length;
