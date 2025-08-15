@@ -5,7 +5,7 @@
 // See the Mustachio README at tool/mustachio/README.md for high-level
 // documentation.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:meta/meta.dart';
 
@@ -89,5 +89,5 @@ class RendererSpec {
     this.standardHtmlTemplate,
   );
 
-  InterfaceElement2 get contextElement => contextType.element3;
+  InterfaceElement get contextElement => contextType.element;
 }

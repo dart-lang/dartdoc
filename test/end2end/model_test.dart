@@ -913,21 +913,21 @@ void main() async {
 
     test('can import other libraries with unusual URIs', () {
       final importLists = fakeLibrary.element.fragments
-          .map((fragment) => fragment.libraryImports2);
+          .map((fragment) => fragment.libraryImports);
       final exportLists = fakeLibrary.element.fragments
-          .map((fragment) => fragment.libraryExports2);
+          .map((fragment) => fragment.libraryExports);
       final fakeLibraryImportedExported = <Library>{
-        for (final l in <LibraryElement2>{
+        for (final l in <LibraryElement>{
           ...importLists
               .expand((imports) => imports)
               .map((import) => import.uri)
               .whereType<DirectiveUriWithLibrary>()
-              .map((uri) => uri.library2),
+              .map((uri) => uri.library),
           ...exportLists
               .expand((exports) => exports)
               .map((export) => export.uri)
               .whereType<DirectiveUriWithLibrary>()
-              .map((uri) => uri.library2)
+              .map((uri) => uri.library)
         })
           packageGraph.getModelForElement(l) as Library
       };
@@ -3450,7 +3450,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('inheritance of docs from SDK works for getter/setter combos', () {
       expect(
           ExtraSpecialListLength
-              .getter!.documentationFrom.first.element.library2!.name3,
+              .getter!.documentationFrom.first.element.library!.name,
           equals('dart.core'));
       expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
     });
