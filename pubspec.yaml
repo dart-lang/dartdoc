@@ -23,6 +23,7 @@ dependencies:
   yaml: ^3.1.2
 
 dev_dependencies:
+  analyzer_testing: ^0.1.2
   async: ^2.11.0
   dart_style: ^3.0.0
   lints: ">=5.0.0 <7.0.0"
