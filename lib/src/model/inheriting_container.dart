@@ -179,6 +179,17 @@ abstract class InheritingContainer extends Container {
           elements.firstWhereOrNull((e) => e is GetterElement);
       final setterElement =
           elements.firstWhereOrNull((e) => e is SetterElement);
+
+      final isNullOrTopMergeGetter = getterElement == null ||
+          getterElement.enclosingElement == element &&
+              !element.getters.contains(getterElement);
+      final isNullOrTopMergeSetter = setterElement == null ||
+          setterElement.enclosingElement == element &&
+              !element.setters.contains(setterElement);
+      if (isNullOrTopMergeGetter && isNullOrTopMergeSetter) {
+        return;
+      }
+
       fields.add(_createSingleField(
           getterElement, setterElement, inheritedAccessorElements));
     });
