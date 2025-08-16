@@ -2,9 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/element/member.dart'
-    show SubstitutedExecutableElementImpl, SubstitutedElementImpl;
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/comment_references/parser.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -16,17 +14,17 @@ class Operator extends Method {
     super.enclosingContainer,
     super.library,
     super.packageGraph, {
-        SubstitutedElementImpl? originalMember,
+    Element? originalMember,
   }) : super.providedByExtension(
-            originalMember: originalMember as SubstitutedExecutableElementImpl?);
+            originalElement: originalMember as ExecutableElement?);
 
   Operator.inherited(
     super.element,
     super.enclosingContainer,
     super.library,
     super.packageGraph, {
-        SubstitutedElementImpl? originalMember,
-  }) : super.inherited(originalMember: originalMember as SubstitutedExecutableElementImpl?);
+    Element? originalMember,
+  }) : super.inherited(originalElement: originalMember as ExecutableElement?);
 
   @override
   String get fullyQualifiedName =>

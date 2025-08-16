@@ -6,8 +6,6 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/element/member.dart' show SubstitutedExecutableElementImpl;
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -31,7 +29,7 @@ class Accessor extends ModelElement {
   late final GetterSetterCombo enclosingCombo;
 
   Accessor(this.element, super.library, super.packageGraph,
-      {SubstitutedExecutableElementImpl? super.originalMember});
+      {ExecutableElement? super.originalElement});
 
   @override
   CharacterLocation? get characterLocation => element.isSynthetic
@@ -39,8 +37,8 @@ class Accessor extends ModelElement {
       : super.characterLocation;
 
   @override
-  SubstitutedExecutableElementImpl? get originalMember =>
-      super.originalMember as SubstitutedExecutableElementImpl?;
+  ExecutableElement? get originalMember =>
+      super.originalMember as ExecutableElement?;
 
   late final Callable modelType =
       getTypeFor((originalMember ?? element).type, library) as Callable;
@@ -182,7 +180,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
 
   ContainerAccessor.inherited(
       super.element, super.library, super.packageGraph, this._enclosingElement,
-      {super.originalMember})
+      {super.originalElement})
       : isInherited = true;
 
   /// The index and values fields are never declared, and must be special cased.

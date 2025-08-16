@@ -11,14 +11,6 @@ import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart' show FunctionType;
 import 'package:analyzer/source/line_info.dart';
-
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/element/member.dart'
-    show
-        SubstitutedExecutableElementImpl,
-        SubstitutedFieldElementImpl,
-        SubstitutedElementImpl,
-        SubstitutedFormalParameterElementImpl;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
@@ -75,14 +67,258 @@ abstract class ModelElement
         DocumentationComment
     implements Comparable<ModelElement>, Documentable {
   // TODO(jcollins-g): This really wants a "member that has a type" class.
-  final SubstitutedElementImpl? _originalMember;
+  final Element? _originalMember;
   final Library _library;
 
   final PackageGraph _packageGraph;
 
-  ModelElement(this._library, this._packageGraph,
-      {SubstitutedElementImpl? originalMember})
-      : _originalMember = originalMember;
+  /// This element's [Annotation]s.
+  ///
+  /// Does not include annotations with `null` elements or that are otherwise
+  /// supposed to be invisible (like `@pragma`). While `null` elements indicate
+  /// invalid code from analyzer's perspective, some are present in `sky_engine`
+  /// (`@Native`) so we don't want to crash here.
+  late final List<Annotation> annotations = element.annotations
+      .where((m) => m.isVisibleAnnotation)
+      .map((m) => Annotation(m, library, packageGraph))
+      .toList(growable: false);
+
+  @override
+  late final bool isPublic = () {
+    if (name.isEmpty) {
+      return false;
+    }
+    if (this is! Library) {
+      final canonicalLibrary = this.canonicalLibrary;
+      var isLibraryOrCanonicalLibraryPrivate = !library.isPublic &&
+          (canonicalLibrary == null || !canonicalLibrary.isPublic);
+      if (library == Library.sentinel || isLibraryOrCanonicalLibraryPrivate) {
+        return false;
+      }
+    }
+    if (enclosingElement is Class && !(enclosingElement as Class).isPublic) {
+      return false;
+    }
+    // TODO(srawlins): Er, mixin? enum?
+    if (enclosingElement is Extension &&
+        !(enclosingElement as Extension).isPublic) {
+      return false;
+    }
+
+    if (element case LibraryElement(:var uri, :var firstFragment)) {
+      final url = uri.toString();
+      // Private Dart SDK libraries are not public.
+      if (url.startsWith('dart:_') ||
+          url.startsWith('dart:nativewrappers/') ||
+          url == 'dart:nativewrappers') {
+        return false;
+      }
+      // Package-private libraries are not public.
+      var elementUri = firstFragment.source.uri;
+      if (elementUri.scheme == 'package' &&
+          elementUri.pathSegments[1] == 'src') {
+        return false;
+      }
+    }
+
+    if (element.nonSynthetic.metadata.hasInternal) {
+      return false;
+    }
+    return !element.hasPrivateName && !hasNodoc;
+  }();
+
+  @override
+  late final DartdocOptionContext config =
+      DartdocOptionContext.fromContextElement(
+          packageGraph.config, library.element, packageGraph.resourceProvider);
+
+  /// The canonical ModelElement for this ModelElement, or null if there isn't
+  /// one.
+  late final ModelElement? canonicalModelElement = () {
+    final enclosingElement = this.enclosingElement;
+    var preferredClass = switch (enclosingElement) {
+      // TODO(srawlins): Add mixin.
+      Class() => enclosingElement,
+      Enum() => enclosingElement,
+      Extension() => enclosingElement,
+      ExtensionType() => enclosingElement,
+      _ => null,
+    };
+    return packageGraph.findCanonicalModelElementFor(this,
+        preferredClass: preferredClass);
+  }();
+
+  late final String sourceHref = SourceLinker.fromElement(this).href();
+
+  /// A public, documented library which exports this [ModelElement], ideally in
+  /// [library]'s package.
+  late final Library? canonicalLibrary = () {
+    if (element.hasPrivateName) {
+      // Privately named elements can never have a canonical library.
+      return null;
+    }
+
+    // This is not accurate if we are still constructing the Package.
+    assert(packageGraph.allLibrariesAdded);
+
+    var definingLibraryIsLocalPublic =
+        packageGraph.localPublicLibraries.contains(library);
+    var possibleCanonicalLibrary = definingLibraryIsLocalPublic
+        ? library
+        : canonicalLibraryCandidate(this);
+
+    if (possibleCanonicalLibrary != null) return possibleCanonicalLibrary;
+
+    if (this case Inheritable(isInherited: true)) {
+      if (!config.linkToRemote &&
+          packageGraph.publicLibraries.contains(library)) {
+        // If this is an element inherited from a container that isn't directly
+        // reexported, and we're not linking to remote, we can pretend that
+        // [library] is canonical.
+        return library;
+      }
+    }
+
+    return null;
+  }();
+
+  @override
+  late final String qualifiedName = () {
+    var enclosingElement = this.enclosingElement;
+
+    var result = name;
+    while (enclosingElement != null && enclosingElement is! Library) {
+      result = '${enclosingElement.name}.$result';
+      enclosingElement = enclosingElement.enclosingElement;
+    }
+    return result;
+  }();
+
+  @override
+  late final CharacterLocation? characterLocation = () {
+    final lineInfo = unitElement.lineInfo;
+
+    final nameOffset = element.firstFragment.nameOffset;
+    assert(nameOffset != null && nameOffset >= 0,
+        'Invalid location data, $nameOffset, for element: $fullyQualifiedName');
+    if (nameOffset != null && nameOffset >= 0) {
+      return lineInfo.getLocation(nameOffset);
+    }
+    return null;
+  }();
+
+  /// The name of this element, wrapped in an HTML link (an `<a>` tag) if [href]
+  /// is non-`null`.
+  late final String linkedName = () {
+    var parts = linkedNameParts;
+    return '${parts.tag}${parts.text}${parts.endTag}';
+  }();
+
+  // TODO(srawlins): This really smells like it should just be implemented in
+  // the subclasses.
+  late final List<Parameter> parameters = () {
+    final e = element;
+    if (!isCallable) {
+      throw StateError('$e (${e.runtimeType}) cannot have parameters');
+    }
+
+    final List<FormalParameterElement> params;
+    if (e is TypeAliasElement) {
+      final aliasedType = e.aliasedType;
+      if (aliasedType is FunctionType) {
+        params = aliasedType.formalParameters;
+      } else {
+        return const <Parameter>[];
+      }
+    } else if (e is ExecutableElement) {
+      if (_originalMember != null) {
+        assert(_originalMember is ExecutableElement);
+        params = (_originalMember as ExecutableElement).formalParameters;
+      } else {
+        params = e.formalParameters;
+      }
+    } else if (e is FunctionTypedElement) {
+      if (_originalMember != null) {
+        params = (_originalMember as FunctionTypedElement).formalParameters;
+      } else {
+        params = e.formalParameters;
+      }
+    } else {
+      return const <Parameter>[];
+    }
+
+    return List.of(
+      params
+          .map((p) => ModelElement.for_(p, library, packageGraph) as Parameter),
+      growable: false,
+    );
+  }();
+
+  @override
+  late final String sourceCode = const HtmlEscape().convert(super.sourceCode);
+
+  ModelElement(this._library, this._packageGraph, {Element? originalElement})
+      : _originalMember = originalElement;
+
+  /// Returns a [ModelElement] from a non-property-inducing [e].
+  ///
+  /// Do not construct any ModelElements except from this constructor or
+  /// [ModelElement.forPropertyInducingElement]. Specify [enclosingContainer]
+  /// if and only if this is to be an inherited or extended object.
+  // TODO(jcollins-g): this way of using the optional parameter is messy,
+  // clean that up.
+  // TODO(jcollins-g): Enforce construction restraint.
+  // TODO(jcollins-g): Allow e to be null and drop extraneous null checks.
+  factory ModelElement.for_(
+      Element e, Library library, PackageGraph packageGraph,
+      {Container? enclosingContainer}) {
+    assert(library != Library.sentinel ||
+        e is FormalParameterElement ||
+        e is TypeParameterElement ||
+        e is GenericFunctionTypeElement ||
+        e.kind == ElementKind.DYNAMIC ||
+        e.kind == ElementKind.NEVER);
+
+    Element? originalMember;
+    // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
+    //                   for members?
+    if (e is ExecutableElement) {
+      originalMember = e;
+      e = e.baseElement;
+    } else if (e is FieldElement) {
+      originalMember = e;
+      e = e.baseElement;
+    }
+
+    // Return the cached ModelElement if it exists.
+    var key = ConstructedModelElementsKey(e, enclosingContainer);
+    var cachedModelElement = packageGraph.allConstructedModelElements[key];
+    if (cachedModelElement != null) {
+      return cachedModelElement;
+    }
+
+    if (e.kind == ElementKind.DYNAMIC) {
+      return packageGraph.allConstructedModelElements[key] =
+          Dynamic(e, packageGraph);
+    }
+    if (e.kind == ElementKind.NEVER) {
+      return packageGraph.allConstructedModelElements[key] =
+          NeverType(e, packageGraph);
+    }
+
+    var newModelElement = ModelElement._constructFromElementDeclaration(
+      e,
+      library,
+      packageGraph,
+      enclosingContainer: enclosingContainer,
+      originalMember: originalMember,
+    );
+
+    _cacheNewModelElement(e, newModelElement, library,
+        enclosingContainer: enclosingContainer);
+
+    return newModelElement;
+  }
 
   /// Returns a [ModelElement] for an [Element], which can be a
   /// property-inducing element or not.
@@ -128,9 +364,7 @@ abstract class ModelElement
   }) {
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
     //                   for members?
-    if (e is SubstitutedElementImpl) {
-      e = e.baseElement as PropertyInducingElement;
-    }
+    e = e.baseElement as PropertyInducingElement;
 
     // Return the cached ModelElement if it exists.
     var cachedModelElement = packageGraph.allConstructedModelElements[
@@ -204,250 +438,6 @@ abstract class ModelElement
     return newModelElement;
   }
 
-  /// Returns a [ModelElement] from a non-property-inducing [e].
-  ///
-  /// Do not construct any ModelElements except from this constructor or
-  /// [ModelElement.forPropertyInducingElement]. Specify [enclosingContainer]
-  /// if and only if this is to be an inherited or extended object.
-  // TODO(jcollins-g): this way of using the optional parameter is messy,
-  // clean that up.
-  // TODO(jcollins-g): Enforce construction restraint.
-  // TODO(jcollins-g): Allow e to be null and drop extraneous null checks.
-  factory ModelElement.for_(
-      Element e, Library library, PackageGraph packageGraph,
-      {Container? enclosingContainer}) {
-    assert(library != Library.sentinel ||
-        e is FormalParameterElement ||
-        e is TypeParameterElement ||
-        e is GenericFunctionTypeElement ||
-        e.kind == ElementKind.DYNAMIC ||
-        e.kind == ElementKind.NEVER);
-
-    SubstitutedElementImpl? originalMember;
-    // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
-    //                   for members?
-    if (e is SubstitutedExecutableElementImpl) {
-      originalMember = e;
-      e = e.baseElement;
-    } else if (e is SubstitutedFieldElementImpl) {
-      originalMember = e;
-      e = e.baseElement;
-    }
-
-    // Return the cached ModelElement if it exists.
-    var key = ConstructedModelElementsKey(e, enclosingContainer);
-    var cachedModelElement = packageGraph.allConstructedModelElements[key];
-    if (cachedModelElement != null) {
-      return cachedModelElement;
-    }
-
-    if (e.kind == ElementKind.DYNAMIC) {
-      return packageGraph.allConstructedModelElements[key] =
-          Dynamic(e, packageGraph);
-    }
-    if (e.kind == ElementKind.NEVER) {
-      return packageGraph.allConstructedModelElements[key] =
-          NeverType(e, packageGraph);
-    }
-
-    var newModelElement = ModelElement._constructFromElementDeclaration(
-      e,
-      library,
-      packageGraph,
-      enclosingContainer: enclosingContainer,
-      originalMember: originalMember,
-    );
-
-    _cacheNewModelElement(e, newModelElement, library,
-        enclosingContainer: enclosingContainer);
-
-    return newModelElement;
-  }
-
-  /// Caches a newly-created [ModelElement] from [ModelElement.for_] or
-  /// [ModelElement.forPropertyInducingElement].
-  static void _cacheNewModelElement(
-      Element e, ModelElement newModelElement, Library library,
-      {Container? enclosingContainer}) {
-    // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
-    //                   is fixed?
-    assert(enclosingContainer == null || enclosingContainer.library == library,
-        '$enclosingContainer.library != $library');
-    if (library != Library.sentinel && newModelElement is! Parameter) {
-      runtimeStats.incrementAccumulator('modelElementCacheInsertion');
-      var key = ConstructedModelElementsKey(e, enclosingContainer);
-      library.packageGraph.allConstructedModelElements[key] = newModelElement;
-      if (newModelElement is Inheritable) {
-        library.packageGraph.allInheritableElements
-            .putIfAbsent(InheritableElementsKey(e, library), () => {})
-            .add(newModelElement);
-      }
-    }
-  }
-
-  static ModelElement _constructFromElementDeclaration(
-    Element e,
-    Library library,
-    PackageGraph packageGraph, {
-    Container? enclosingContainer,
-    SubstitutedElementImpl? originalMember,
-  }) {
-    return switch (e) {
-      LibraryElement() => packageGraph.findButDoNotCreateLibraryFor(e)!,
-      PrefixElement() => Prefix(e, library, packageGraph),
-      EnumElement() => Enum(e, library, packageGraph),
-      MixinElement() => Mixin(e, library, packageGraph),
-      ClassElement() => Class(e, library, packageGraph),
-      ExtensionElement() => Extension(e, library, packageGraph),
-      ExtensionTypeElement() => ExtensionType(e, library, packageGraph),
-      TopLevelFunctionElement() => ModelFunction(e, library, packageGraph),
-      ConstructorElement() => Constructor(e, library, packageGraph),
-      GenericFunctionTypeElement() =>
-        ModelFunctionTypedef(e as FunctionTypedElement, library, packageGraph),
-      TypeAliasElement(aliasedType: FunctionType()) =>
-        FunctionTypedef(e, library, packageGraph),
-      TypeAliasElement()
-          when e.aliasedType.documentableElement2 is InterfaceElement =>
-        ClassTypedef(e, library, packageGraph),
-      TypeAliasElement() => GeneralizedTypedef(e, library, packageGraph),
-      MethodElement(isOperator: true) when enclosingContainer == null =>
-        Operator(e, library, packageGraph),
-      MethodElement(isOperator: true)
-          when e.enclosingElement is ExtensionElement =>
-        Operator.providedByExtension(
-            e, enclosingContainer, library, packageGraph),
-      MethodElement(isOperator: true) => Operator.inherited(
-          e, enclosingContainer, library, packageGraph,
-          originalMember: originalMember),
-      MethodElement(isOperator: false) when enclosingContainer == null =>
-        Method(e, library, packageGraph),
-      MethodElement(isOperator: false)
-          when e.enclosingElement is ExtensionElement =>
-        Method.providedByExtension(
-            e, enclosingContainer, library, packageGraph),
-      MethodElement(isOperator: false) => Method.inherited(
-          e, enclosingContainer, library, packageGraph,
-          originalMember: originalMember as SubstitutedExecutableElementImpl?),
-      FormalParameterElement() => Parameter(e, library, packageGraph,
-          originalMember:
-              originalMember as SubstitutedFormalParameterElementImpl?),
-      PropertyAccessorElement() => _constructFromPropertyAccessor(
-          e,
-          library,
-          packageGraph,
-          enclosingContainer: enclosingContainer,
-          originalMember: originalMember,
-        ),
-      TypeParameterElement() => TypeParameter(e, library, packageGraph),
-      _ => throw UnimplementedError('Unknown type ${e.runtimeType}'),
-    };
-  }
-
-  /// Constructs a [ModelElement] from a [PropertyAccessorElement].
-  static ModelElement _constructFromPropertyAccessor(
-    PropertyAccessorElement e,
-    Library library,
-    PackageGraph packageGraph, {
-    required Container? enclosingContainer,
-    required SubstitutedElementImpl? originalMember,
-  }) {
-    // Accessors can be part of a [Container], or a part of a [Library].
-    if (e.enclosingElement is ExtensionElement ||
-        e.enclosingElement is InterfaceElement) {
-      if (enclosingContainer == null || enclosingContainer is Extension) {
-        return ContainerAccessor(e, library, packageGraph, enclosingContainer);
-      }
-
-      return ContainerAccessor.inherited(
-          e, library, packageGraph, enclosingContainer,
-          originalMember: originalMember as SubstitutedExecutableElementImpl?);
-    }
-
-    return Accessor(e, library, packageGraph);
-  }
-
-  /// The model element enclosing this one.
-  ///
-  /// As some examples:
-  /// * Instances of some subclasses have no enclosing element, like [Library]
-  /// and [Dynamic].
-  /// * A [Container] is enclosed by a [Library].
-  /// * A [Method] is enclosed by a [Container].
-  /// * An [Accessor] is either enclosed by a [Container] or a [Library].
-  ModelElement? get enclosingElement;
-
-  // Stub for mustache, which would otherwise search enclosing elements to find
-  // names for members.
-  bool get hasCategoryNames => false;
-
-  // Stub for mustache.
-  Iterable<Category?> get displayedCategories => const [];
-
-  @override
-  ModelNode? get modelNode => packageGraph.getModelNodeFor(element);
-
-  /// This element's [Annotation]s.
-  ///
-  /// Does not include annotations with `null` elements or that are otherwise
-  /// supposed to be invisible (like `@pragma`). While `null` elements indicate
-  /// invalid code from analyzer's perspective, some are present in `sky_engine`
-  /// (`@Native`) so we don't want to crash here.
-  late final List<Annotation> annotations = element.annotations
-      .where((m) => m.isVisibleAnnotation)
-      .map((m) => Annotation(m, library, packageGraph))
-      .toList(growable: false);
-
-  @override
-  late final bool isPublic = () {
-    if (name.isEmpty) {
-      return false;
-    }
-    if (this is! Library) {
-      final canonicalLibrary = this.canonicalLibrary;
-      var isLibraryOrCanonicalLibraryPrivate = !library.isPublic &&
-          (canonicalLibrary == null || !canonicalLibrary.isPublic);
-      if (library == Library.sentinel || isLibraryOrCanonicalLibraryPrivate) {
-        return false;
-      }
-    }
-    if (enclosingElement is Class && !(enclosingElement as Class).isPublic) {
-      return false;
-    }
-    // TODO(srawlins): Er, mixin? enum?
-    if (enclosingElement is Extension &&
-        !(enclosingElement as Extension).isPublic) {
-      return false;
-    }
-
-    if (element case LibraryElement(:var uri, :var firstFragment)) {
-      final url = uri.toString();
-      // Private Dart SDK libraries are not public.
-      if (url.startsWith('dart:_') ||
-          url.startsWith('dart:nativewrappers/') ||
-          url == 'dart:nativewrappers') {
-        return false;
-      }
-      // Package-private libraries are not public.
-      var elementUri = firstFragment.source.uri;
-      if (elementUri.scheme == 'package' &&
-          elementUri.pathSegments[1] == 'src') {
-        return false;
-      }
-    }
-
-    if (element.nonSynthetic.metadata.hasInternal) {
-      return false;
-    }
-    return !element.hasPrivateName && !hasNodoc;
-  }();
-
-  @override
-  late final DartdocOptionContext config =
-      DartdocOptionContext.fromContextElement(
-          packageGraph.config, library.element, packageGraph.resourceProvider);
-
-  bool get hasAttributes => attributes.isNotEmpty;
-
   /// This element's attributes.
   ///
   /// This includes tags applied by Dartdoc for various attributes that should
@@ -470,32 +460,6 @@ abstract class ModelElement
         .join();
   }
 
-  /// Whether this is a function, or if it is an type alias to a function.
-  bool get isCallable =>
-      element is FunctionTypedElement ||
-      (element is TypeAliasElement &&
-          (element as TypeAliasElement).aliasedType is FunctionType);
-
-  /// The canonical ModelElement for this ModelElement, or null if there isn't
-  /// one.
-  late final ModelElement? canonicalModelElement = () {
-    final enclosingElement = this.enclosingElement;
-    var preferredClass = switch (enclosingElement) {
-      // TODO(srawlins): Add mixin.
-      Class() => enclosingElement,
-      Enum() => enclosingElement,
-      Extension() => enclosingElement,
-      ExtensionType() => enclosingElement,
-      _ => null,
-    };
-    return packageGraph.findCanonicalModelElementFor(this,
-        preferredClass: preferredClass);
-  }();
-
-  bool get hasSourceHref => sourceHref.isNotEmpty;
-
-  late final String sourceHref = SourceLinker.fromElement(this).href();
-
   Library get canonicalLibraryOrThrow {
     final canonicalLibrary = this.canonicalLibrary;
     if (canonicalLibrary == null) {
@@ -505,50 +469,14 @@ abstract class ModelElement
     return canonicalLibrary;
   }
 
-  /// A public, documented library which exports this [ModelElement], ideally in
-  /// [library]'s package.
-  late final Library? canonicalLibrary = () {
-    if (element.hasPrivateName) {
-      // Privately named elements can never have a canonical library.
-      return null;
-    }
-
-    // This is not accurate if we are still constructing the Package.
-    assert(packageGraph.allLibrariesAdded);
-
-    var definingLibraryIsLocalPublic =
-        packageGraph.localPublicLibraries.contains(library);
-    var possibleCanonicalLibrary = definingLibraryIsLocalPublic
-        ? library
-        : canonicalLibraryCandidate(this);
-
-    if (possibleCanonicalLibrary != null) return possibleCanonicalLibrary;
-
-    if (this case Inheritable(isInherited: true)) {
-      if (!config.linkToRemote &&
-          packageGraph.publicLibraries.contains(library)) {
-        // If this is an element inherited from a container that isn't directly
-        // reexported, and we're not linking to remote, we can pretend that
-        // [library] is canonical.
-        return library;
-      }
-    }
-
-    return null;
-  }();
-
+  @internal
   @override
-  bool get isCanonical {
-    if (!isPublic) return false;
-    if (this is Library && library != canonicalLibrary) return false;
-    // If there's no inheritance to deal with, we're done.
-    if (this is! Inheritable) return true;
-    final self = this as Inheritable;
-    // If we're the defining element, or if the defining element is not in the
-    // set of libraries being documented, then this element should be treated as
-    // canonical (given `library == canonicalLibrary`).
-    return self.enclosingElement == self.canonicalEnclosingContainer;
+  CommentReferable get definingCommentReferable {
+    return getModelForElement(element);
   }
+
+  // Stub for mustache.
+  Iterable<Category?> get displayedCategories => const [];
 
   /// The documentaion, stripped of its comment syntax, like `///` characters.
   @override
@@ -558,16 +486,15 @@ abstract class ModelElement
   @override
   Element get element;
 
-  @override
-  String get location {
-    // Call nothing from here that can emit warnings or you'll cause stack
-    // overflows.
-    var sourceUri = pathContext.toUri(sourceFileName);
-    if (characterLocation != null) {
-      return '($sourceUri:${characterLocation.toString()})';
-    }
-    return '($sourceUri)';
-  }
+  /// The model element enclosing this one.
+  ///
+  /// As some examples:
+  /// * Instances of some subclasses have no enclosing element, like [Library]
+  /// and [Dynamic].
+  /// * A [Container] is enclosed by a [Library].
+  /// * A [Method] is enclosed by a [Container].
+  /// * An [Accessor] is either enclosed by a [Container] or a [Library].
+  ModelElement? get enclosingElement;
 
   /// The name of the output file in which this element will be primarily
   /// documented.
@@ -581,49 +508,20 @@ abstract class ModelElement
   String get fullyQualifiedName =>
       this is Library ? name : '${library.name}.$qualifiedName';
 
-  @override
-  late final String qualifiedName = () {
-    var enclosingElement = this.enclosingElement;
-
-    var result = name;
-    while (enclosingElement != null && enclosingElement is! Library) {
-      result = '${enclosingElement.name}.$result';
-      enclosingElement = enclosingElement.enclosingElement;
-    }
-    return result;
-  }();
-
-  @override
-  String get sourceFileName => element.library!.firstFragment.source.fullName;
-
-  @override
-  late final CharacterLocation? characterLocation = () {
-    final lineInfo = unitElement.lineInfo;
-
-    final nameOffset = element.firstFragment.nameOffset;
-    assert(nameOffset != null && nameOffset >= 0,
-        'Invalid location data, $nameOffset, for element: $fullyQualifiedName');
-    if (nameOffset != null && nameOffset >= 0) {
-      return lineInfo.getLocation(nameOffset);
-    }
-    return null;
-  }();
-
-  LibraryFragment get unitElement {
-    Fragment? fragment = element.firstFragment;
-    while (fragment != null) {
-      if (fragment is LibraryFragment) return fragment;
-      fragment = fragment.enclosingFragment;
-    }
-    throw StateError('Unable to find enclosing LibraryFragment for $element');
-  }
-
   bool get hasAnnotations => annotations.isNotEmpty;
+
+  bool get hasAttributes => attributes.isNotEmpty;
+
+  // Stub for mustache, which would otherwise search enclosing elements to find
+  // names for members.
+  bool get hasCategoryNames => false;
 
   @override
   bool get hasDocumentation => documentation.isNotEmpty;
 
   bool get hasParameters => parameters.isNotEmpty;
+
+  bool get hasSourceHref => sourceHref.isNotEmpty;
 
   /// If [canonicalLibrary] (or [Inheritable.canonicalEnclosingContainer], for
   /// [Inheritable] subclasses) is `null`, this is `null`.
@@ -637,6 +535,25 @@ abstract class ModelElement
   }
 
   String get htmlId => name;
+
+  /// Whether this is a function, or if it is an type alias to a function.
+  bool get isCallable =>
+      element is FunctionTypedElement ||
+      (element is TypeAliasElement &&
+          (element as TypeAliasElement).aliasedType is FunctionType);
+
+  @override
+  bool get isCanonical {
+    if (!isPublic) return false;
+    if (this is Library && library != canonicalLibrary) return false;
+    // If there's no inheritance to deal with, we're done.
+    if (this is! Inheritable) return true;
+    final self = this as Inheritable;
+    // If we're the defining element, or if the defining element is not in the
+    // set of libraries being documented, then this element should be treated as
+    // canonical (given `library == canonicalLibrary`).
+    return self.enclosingElement == self.canonicalEnclosingContainer;
+  }
 
   bool get isConst => false;
 
@@ -674,19 +591,14 @@ abstract class ModelElement
 
   bool get isLate => false;
 
+  bool get isPublicAndPackageDocumented => isPublic && package.isDocumented;
+
   /// A human-friendly name for the kind of element this is.
   @override
   Kind get kind;
 
   @override
   Library get library => _library;
-
-  /// The name of this element, wrapped in an HTML link (an `<a>` tag) if [href]
-  /// is non-`null`.
-  late final String linkedName = () {
-    var parts = linkedNameParts;
-    return '${parts.tag}${parts.text}${parts.endTag}';
-  }();
 
   ({String tag, String text, String endTag}) get linkedNameParts {
     // If `name` is empty, we probably have the wrong Element association or
@@ -712,10 +624,7 @@ abstract class ModelElement
     );
   }
 
-  ParameterRenderer get _parameterRenderer => const ParameterRendererHtml();
-
-  ParameterRenderer get _parameterRendererDetailed =>
-      const ParameterRendererHtmlList();
+  String get linkedObjectType => _packageGraph.dartCoreObject;
 
   /// The list of linked parameters, as inline HTML, including metadata.
   ///
@@ -735,67 +644,52 @@ abstract class ModelElement
       _parameterRenderer.renderLinkedParams(parameters, showMetadata: false);
 
   @override
+  String get location {
+    // Call nothing from here that can emit warnings or you'll cause stack
+    // overflows.
+    var sourceUri = pathContext.toUri(sourceFileName);
+    if (characterLocation != null) {
+      return '($sourceUri:${characterLocation.toString()})';
+    }
+    return '($sourceUri)';
+  }
+
+  @override
+  ModelNode? get modelNode => packageGraph.getModelNodeFor(element);
+
+  @override
   String get name => element.lookupName ?? '';
 
   @override
   String get oneLineDoc => elementDocumentation.asOneLiner;
 
-  SubstitutedElementImpl? get originalMember => _originalMember;
+  Element? get originalMember => _originalMember;
+
+  @override
+  Package get package => library.package;
 
   @override
   PackageGraph get packageGraph => _packageGraph;
 
   @override
-  Package get package => library.package;
-
-  bool get isPublicAndPackageDocumented => isPublic && package.isDocumented;
-
-  @override
   p.Context get pathContext => packageGraph.resourceProvider.pathContext;
 
-  // TODO(srawlins): This really smells like it should just be implemented in
-  // the subclasses.
-  late final List<Parameter> parameters = () {
-    final e = element;
-    if (!isCallable) {
-      throw StateError('$e (${e.runtimeType}) cannot have parameters');
-    }
-
-    final List<FormalParameterElement> params;
-    if (e is TypeAliasElement) {
-      final aliasedType = e.aliasedType;
-      if (aliasedType is FunctionType) {
-        params = aliasedType.formalParameters;
-      } else {
-        return const <Parameter>[];
-      }
-    } else if (e is ExecutableElement) {
-      if (_originalMember != null) {
-        assert(_originalMember is SubstitutedExecutableElementImpl);
-        params = (_originalMember as SubstitutedExecutableElementImpl)
-            .formalParameters;
-      } else {
-        params = e.formalParameters;
-      }
-    } else if (e is FunctionTypedElement) {
-      if (_originalMember != null) {
-        params = (_originalMember as FunctionTypedElement).formalParameters;
-      } else {
-        params = e.formalParameters;
-      }
-    } else {
-      return const <Parameter>[];
-    }
-
-    return List.of(
-      params
-          .map((p) => ModelElement.for_(p, library, packageGraph) as Parameter),
-      growable: false,
-    );
-  }();
-
   @override
-  late final String sourceCode = const HtmlEscape().convert(super.sourceCode);
+  String get sourceFileName => element.library!.firstFragment.source.fullName;
+
+  LibraryFragment get unitElement {
+    Fragment? fragment = element.firstFragment;
+    while (fragment != null) {
+      if (fragment is LibraryFragment) return fragment;
+      fragment = fragment.enclosingFragment;
+    }
+    throw StateError('Unable to find enclosing LibraryFragment for $element');
+  }
+
+  ParameterRenderer get _parameterRenderer => const ParameterRendererHtml();
+
+  ParameterRenderer get _parameterRendererDetailed =>
+      const ParameterRendererHtmlList();
 
   @override
   int compareTo(Object other) {
@@ -809,13 +703,106 @@ abstract class ModelElement
   @override
   String toString() => '$runtimeType $name';
 
-  @internal
-  @override
-  CommentReferable get definingCommentReferable {
-    return getModelForElement(element);
+  /// Caches a newly-created [ModelElement] from [ModelElement.for_] or
+  /// [ModelElement.forPropertyInducingElement].
+  static void _cacheNewModelElement(
+      Element e, ModelElement newModelElement, Library library,
+      {Container? enclosingContainer}) {
+    // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
+    //                   is fixed?
+    assert(enclosingContainer == null || enclosingContainer.library == library,
+        '$enclosingContainer.library != $library');
+    if (library != Library.sentinel && newModelElement is! Parameter) {
+      runtimeStats.incrementAccumulator('modelElementCacheInsertion');
+      var key = ConstructedModelElementsKey(e, enclosingContainer);
+      library.packageGraph.allConstructedModelElements[key] = newModelElement;
+      if (newModelElement is Inheritable) {
+        library.packageGraph.allInheritableElements
+            .putIfAbsent(InheritableElementsKey(e, library), () => {})
+            .add(newModelElement);
+      }
+    }
   }
 
-  String get linkedObjectType => _packageGraph.dartCoreObject;
+  static ModelElement _constructFromElementDeclaration(
+    Element e,
+    Library library,
+    PackageGraph packageGraph, {
+    Container? enclosingContainer,
+    Element? originalMember,
+  }) {
+    return switch (e) {
+      LibraryElement() => packageGraph.findButDoNotCreateLibraryFor(e)!,
+      PrefixElement() => Prefix(e, library, packageGraph),
+      EnumElement() => Enum(e, library, packageGraph),
+      MixinElement() => Mixin(e, library, packageGraph),
+      ClassElement() => Class(e, library, packageGraph),
+      ExtensionElement() => Extension(e, library, packageGraph),
+      ExtensionTypeElement() => ExtensionType(e, library, packageGraph),
+      TopLevelFunctionElement() => ModelFunction(e, library, packageGraph),
+      ConstructorElement() => Constructor(e, library, packageGraph),
+      GenericFunctionTypeElement() =>
+        ModelFunctionTypedef(e as FunctionTypedElement, library, packageGraph),
+      TypeAliasElement(aliasedType: FunctionType()) =>
+        FunctionTypedef(e, library, packageGraph),
+      TypeAliasElement()
+          when e.aliasedType.documentableElement2 is InterfaceElement =>
+        ClassTypedef(e, library, packageGraph),
+      TypeAliasElement() => GeneralizedTypedef(e, library, packageGraph),
+      MethodElement(isOperator: true) when enclosingContainer == null =>
+        Operator(e, library, packageGraph),
+      MethodElement(isOperator: true)
+          when e.enclosingElement is ExtensionElement =>
+        Operator.providedByExtension(
+            e, enclosingContainer, library, packageGraph),
+      MethodElement(isOperator: true) => Operator.inherited(
+          e, enclosingContainer, library, packageGraph,
+          originalMember: originalMember),
+      MethodElement(isOperator: false) when enclosingContainer == null =>
+        Method(e, library, packageGraph),
+      MethodElement(isOperator: false)
+          when e.enclosingElement is ExtensionElement =>
+        Method.providedByExtension(
+            e, enclosingContainer, library, packageGraph),
+      MethodElement(isOperator: false) => Method.inherited(
+          e, enclosingContainer, library, packageGraph,
+          originalElement: originalMember as ExecutableElement?),
+      FormalParameterElement() => Parameter(e, library, packageGraph,
+          originalElement: originalMember as FormalParameterElement?),
+      PropertyAccessorElement() => _constructFromPropertyAccessor(
+          e,
+          library,
+          packageGraph,
+          enclosingContainer: enclosingContainer,
+          originalMember: originalMember,
+        ),
+      TypeParameterElement() => TypeParameter(e, library, packageGraph),
+      _ => throw UnimplementedError('Unknown type ${e.runtimeType}'),
+    };
+  }
+
+  /// Constructs a [ModelElement] from a [PropertyAccessorElement].
+  static ModelElement _constructFromPropertyAccessor(
+    PropertyAccessorElement e,
+    Library library,
+    PackageGraph packageGraph, {
+    required Container? enclosingContainer,
+    required Element? originalMember,
+  }) {
+    // Accessors can be part of a [Container], or a part of a [Library].
+    if (e.enclosingElement is ExtensionElement ||
+        e.enclosingElement is InterfaceElement) {
+      if (enclosingContainer == null || enclosingContainer is Extension) {
+        return ContainerAccessor(e, library, packageGraph, enclosingContainer);
+      }
+
+      return ContainerAccessor.inherited(
+          e, library, packageGraph, enclosingContainer,
+          originalElement: originalMember as ExecutableElement?);
+    }
+
+    return Accessor(e, library, packageGraph);
+  }
 }
 
 extension on ElementAnnotation {

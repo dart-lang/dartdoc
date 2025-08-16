@@ -3,10 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/element/member.dart'
-    show SubstitutedFormalParameterElementImpl;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -17,7 +13,7 @@ class Parameter extends ModelElement with HasNoPage {
   final FormalParameterElement element;
 
   Parameter(this.element, super.library, super.packageGraph,
-      {SubstitutedFormalParameterElementImpl? super.originalMember});
+      {FormalParameterElement? super.originalElement});
 
   String? get defaultValue => hasDefaultValue ? element.defaultValueCode : null;
 
@@ -101,8 +97,8 @@ class Parameter extends ModelElement with HasNoPage {
   }
 
   @override
-  SubstitutedFormalParameterElementImpl? get originalMember =>
-      super.originalMember as SubstitutedFormalParameterElementImpl?;
+  FormalParameterElement? get originalMember =>
+      super.originalMember as FormalParameterElement?;
 
   late final ElementType modelType =
       getTypeFor((originalMember ?? element).type, library);

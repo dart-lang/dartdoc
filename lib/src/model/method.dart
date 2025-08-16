@@ -4,8 +4,6 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/element/member.dart' show SubstitutedExecutableElementImpl;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -32,7 +30,7 @@ class Method extends ModelElement
 
   Method.inherited(this.element, this._enclosingContainer, super.library,
       super.packageGraph,
-      {SubstitutedExecutableElementImpl? super.originalMember})
+      {ExecutableElement? super.originalElement})
       : _isInherited = true {
     _calcTypeParameters();
   }
@@ -42,7 +40,7 @@ class Method extends ModelElement
     this._enclosingContainer,
     super.library,
     super.packageGraph, {
-        SubstitutedExecutableElementImpl? super.originalMember,
+        ExecutableElement? super.originalElement,
   }) : _isInherited = false {
     _calcTypeParameters();
   }
@@ -113,8 +111,8 @@ class Method extends ModelElement
   Kind get kind => Kind.method;
 
   @override
-  SubstitutedExecutableElementImpl? get originalMember =>
-      super.originalMember as SubstitutedExecutableElementImpl?;
+  ExecutableElement? get originalMember =>
+      super.originalMember as ExecutableElement?;
 
   late final Callable modelType =
       getTypeFor((originalMember ?? element).type, library) as Callable;
