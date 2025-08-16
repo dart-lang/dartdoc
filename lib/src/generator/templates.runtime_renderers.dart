@@ -484,7 +484,7 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'SubstitutedExecutableElementImpl',
+                          'ExecutableElement',
                         ),
 
                 isNullValue: (CT_ c) => c.originalMember == null,
@@ -502,8 +502,7 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                         r.template,
                         sink,
                         parent: r,
-                        getters:
-                            _invisibleGetters['SubstitutedExecutableElementImpl']!,
+                        getters: _invisibleGetters['ExecutableElement']!,
                       );
                     },
               ),
@@ -2363,7 +2362,7 @@ class _Renderer_Category extends RendererBase<Category> {
   }
 }
 
-String renderCategoryRedirect(CategoryTemplateData context, Template template) {
+String renderCategory(CategoryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_CategoryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -2613,7 +2612,7 @@ class _Renderer_CategoryTemplateData
   }
 }
 
-String renderCategory(CategoryTemplateData context, Template template) {
+String renderCategoryRedirect(CategoryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_CategoryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -15131,7 +15130,7 @@ class _Renderer_Method extends RendererBase<Method> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'SubstitutedExecutableElementImpl',
+                          'ExecutableElement',
                         ),
 
                 isNullValue: (CT_ c) => c.originalMember == null,
@@ -15149,8 +15148,7 @@ class _Renderer_Method extends RendererBase<Method> {
                         r.template,
                         sink,
                         parent: r,
-                        getters:
-                            _invisibleGetters['SubstitutedExecutableElementImpl']!,
+                        getters: _invisibleGetters['ExecutableElement']!,
                       );
                     },
               ),
@@ -17196,11 +17194,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                 getValue: (CT_ c) => c.originalMember,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'SubstitutedElementImpl',
-                        ),
+                        self.renderSimpleVariable(c, remainingNames, 'Element'),
 
                 isNullValue: (CT_ c) => c.originalMember == null,
 
@@ -17217,7 +17211,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['SubstitutedElementImpl']!,
+                        getters: _invisibleGetters['Element']!,
                       );
                     },
               ),
@@ -20477,7 +20471,7 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'SubstitutedFormalParameterElementImpl',
+                          'FormalParameterElement',
                         ),
 
                 isNullValue: (CT_ c) => c.originalMember == null,
@@ -20495,8 +20489,7 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                         r.template,
                         sink,
                         parent: r,
-                        getters:
-                            _invisibleGetters['SubstitutedFormalParameterElementImpl']!,
+                        getters: _invisibleGetters['FormalParameterElement']!,
                       );
                     },
               ),
@@ -25608,6 +25601,18 @@ const _invisibleGetters = {
     'hashCode',
     'runtimeType',
   },
+  'ExecutableElement': {
+    'baseElement',
+    'firstFragment',
+    'fragments',
+    'hasImplicitReturnType',
+    'hashCode',
+    'isAbstract',
+    'isExtensionTypeMember',
+    'isExternal',
+    'isStatic',
+    'runtimeType',
+  },
   'ExtensionElement': {
     'extendedType',
     'firstFragment',
@@ -25947,120 +25952,6 @@ const _invisibleGetters = {
     'variable3',
   },
   'Scope': {'hashCode', 'runtimeType'},
-  'SubstitutedElementImpl': {
-    'baseElement',
-    'displayName',
-    'hashCode',
-    'id',
-    'isPrivate',
-    'isPublic',
-    'isSynthetic',
-    'kind',
-    'lookupName',
-    'name',
-    'name3',
-    'nonSynthetic',
-    'nonSynthetic2',
-    'runtimeType',
-    'session',
-    'substitution',
-  },
-  'SubstitutedExecutableElementImpl': {
-    'baseElement',
-    'children',
-    'children2',
-    'displayName',
-    'documentationComment',
-    'enclosingElement',
-    'enclosingElement2',
-    'firstFragment',
-    'formalParameters',
-    'fragments',
-    'hasImplicitReturnType',
-    'hashCode',
-    'id',
-    'isAbstract',
-    'isExtensionTypeMember',
-    'isExternal',
-    'isPrivate',
-    'isPublic',
-    'isSimplyBounded',
-    'isStatic',
-    'isSynthetic',
-    'kind',
-    'library',
-    'library2',
-    'lookupName',
-    'metadata',
-    'metadata2',
-    'name',
-    'name3',
-    'nonSynthetic',
-    'nonSynthetic2',
-    'returnType',
-    'runtimeType',
-    'session',
-    'substitution',
-    'type',
-    'typeParameters',
-    'typeParameters2',
-  },
-  'SubstitutedFormalParameterElementImpl': {
-    'baseElement',
-    'children',
-    'children2',
-    'constantInitializer',
-    'defaultValueCode',
-    'displayName',
-    'documentationComment',
-    'enclosingElement',
-    'enclosingElement2',
-    'firstFragment',
-    'formalParameters',
-    'fragments',
-    'hasDefaultValue',
-    'hasImplicitType',
-    'hashCode',
-    'id',
-    'isConst',
-    'isCovariant',
-    'isFinal',
-    'isInitializingFormal',
-    'isLate',
-    'isNamed',
-    'isOptional',
-    'isOptionalNamed',
-    'isOptionalPositional',
-    'isPositional',
-    'isPrivate',
-    'isPublic',
-    'isRequired',
-    'isRequiredNamed',
-    'isRequiredPositional',
-    'isStatic',
-    'isSuperFormal',
-    'isSynthetic',
-    'kind',
-    'library',
-    'library2',
-    'lookupName',
-    'metadata',
-    'metadata2',
-    'name',
-    'name3',
-    'nameShared',
-    'nonSynthetic',
-    'nonSynthetic2',
-    'parameterKind',
-    'runtimeType',
-    'session',
-    'sinceSdkVersion',
-    'substitution',
-    'type',
-    'typeParameters',
-    'typeParameters2',
-    'typeShared',
-  },
   'TemplateOptions': {
     'customFooterContent',
     'customHeaderContent',
