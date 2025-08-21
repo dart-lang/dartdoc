@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -15,7 +15,7 @@ import 'package:dartdoc/src/model/model.dart';
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends InheritingContainer with Constructable, MixedInTypes {
   @override
-  final ClassElement2 element;
+  final ClassElement element;
 
   @override
   late final List<ModelElement> allModelElements = [
@@ -29,8 +29,8 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
 
   Class(this.element, Library library, PackageGraph packageGraph)
       : super(library, packageGraph) {
-    if (element.name3 == 'Object' &&
-        library.element.name3 == 'dart.core' &&
+    if (element.name == 'Object' &&
+        library.element.name == 'dart.core' &&
         package.name == 'Dart') {
       packageGraph.objectClass = this;
     }
@@ -46,11 +46,11 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   bool get isBase => element.isBase && !element.isSealed;
 
   bool get isErrorOrException {
-    bool isError(InterfaceElement2 e) =>
-        e.library2.isDartCore && (e.name3 == 'Exception' || e.name3 == 'Error');
+    bool isError(InterfaceElement e) =>
+        e.library.isDartCore && (e.name == 'Exception' || e.name == 'Error');
 
     if (isError(element)) return true;
-    return element.allSupertypes.map((t) => t.element3).any(isError);
+    return element.allSupertypes.map((t) => t.element).any(isError);
   }
 
   @override

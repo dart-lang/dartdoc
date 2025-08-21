@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -11,10 +11,10 @@ import 'package:meta/meta.dart';
 
 class ExtensionType extends InheritingContainer with Constructable {
   @override
-  final ExtensionTypeElement2 element;
+  final ExtensionTypeElement element;
 
   late final ElementType representationType =
-      getTypeFor(element.representation2.type, library);
+      getTypeFor(element.representation.type, library);
 
   ExtensionType(this.element, super.library, super.packageGraph);
 
@@ -40,13 +40,13 @@ class ExtensionType extends InheritingContainer with Constructable {
   bool get isSealed => false;
 
   @override
-  late final List<Field> declaredFields = element.fields2.map((field) {
+  late final List<Field> declaredFields = element.fields.map((field) {
     ContainerAccessor? getter, setter;
-    final fieldGetter = field.getter2;
+    final fieldGetter = field.getter;
     if (fieldGetter != null) {
       getter = ContainerAccessor(fieldGetter, library, packageGraph, this);
     }
-    final fieldSetter = field.setter2;
+    final fieldSetter = field.setter;
     if (fieldSetter != null) {
       setter = ContainerAccessor(fieldSetter, library, packageGraph, this);
     }

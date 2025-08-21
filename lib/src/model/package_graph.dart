@@ -5,7 +5,7 @@
 import 'dart:collection';
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/source/source.dart';
 // ignore: implementation_imports
@@ -114,8 +114,8 @@ class PackageGraph with CommentReferable, Nameable {
   }
 
   /// Whether [libraryElement] should be included in the libraries-to-document.
-  bool _shouldIncludeLibrary(LibraryElement2 libraryElement) =>
-      config.include.isEmpty || config.include.contains(libraryElement.name3);
+  bool _shouldIncludeLibrary(LibraryElement libraryElement) =>
+      config.include.isEmpty || config.include.contains(libraryElement.name);
 
   /// Call after all libraries are added.
   Future<void> initializePackageGraph() async {
@@ -200,7 +200,7 @@ class PackageGraph with CommentReferable, Nameable {
 
   // Many ModelElements have the same ModelNode; don't build/cache this data
   // more than once for them.
-  final Map<Element2, ModelNode> _modelNodes = {};
+  final Map<Element, ModelNode> _modelNodes = {};
 
   /// The Object class declared in the Dart SDK's 'dart:core' library.
   late InheritingContainer objectClass;
@@ -303,7 +303,7 @@ class PackageGraph with CommentReferable, Nameable {
     addModelNode(declaration);
   }
 
-  ModelNode? getModelNodeFor(Element2 element2) => _modelNodes[element2];
+  ModelNode? getModelNodeFor(Element element2) => _modelNodes[element2];
 
   /// It is safe to cache values derived from the [_implementers] table if this
   /// is true.
@@ -390,7 +390,7 @@ class PackageGraph with CommentReferable, Nameable {
   late final PackageWarningCounter packageWarningCounter =
       PackageWarningCounter(this);
 
-  final Set<(Element2? element, PackageWarning packageWarning, String? message)>
+  final Set<(Element? element, PackageWarning packageWarning, String? message)>
       _warnAlreadySeen = {};
 
   void warnOnElement(Warnable? warnable, PackageWarning kind,
@@ -505,8 +505,8 @@ class PackageGraph with CommentReferable, Nameable {
   Iterable<Package> get _documentedPackages =>
       packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
-  /// A mapping from a [LibraryElement2] to all of the [Library]s that export it.
-  Map<LibraryElement2, Set<Library>> _libraryExports = {};
+  /// A mapping from a [LibraryElement] to all of the [Library]s that export it.
+  Map<LibraryElement, Set<Library>> _libraryExports = {};
 
   /// Marks [publicLibrary] as a library that exports [libraryElement] and all
   /// libraries that [libraryElement] transitively exports.
@@ -514,8 +514,8 @@ class PackageGraph with CommentReferable, Nameable {
   /// [alreadyTagged] is used internall to prevent visiting in cycles.
   void _tagExportsFor(
     final Library publicLibrary,
-    final LibraryElement2 libraryElement, {
-    Set<(Library, LibraryElement2)>? alreadyTagged,
+    final LibraryElement libraryElement, {
+    Set<(Library, LibraryElement)>? alreadyTagged,
   }) {
     alreadyTagged ??= {};
     var key = (publicLibrary, libraryElement);
@@ -526,8 +526,8 @@ class PackageGraph with CommentReferable, Nameable {
     // Mark that `publicLibrary` exports `libraryElement`.
     _libraryExports.putIfAbsent(libraryElement, () => {}).add(publicLibrary);
     for (var fragment in libraryElement.fragments) {
-      for (var exportedElement in fragment.libraryExports2) {
-        var exportedLibrary = exportedElement.exportedLibrary2;
+      for (var exportedElement in fragment.libraryExports) {
+        var exportedLibrary = exportedElement.exportedLibrary;
         if (exportedLibrary != null) {
           // Follow the exports down; as `publicLibrary` exports `libraryElement`,
           // it also exports each `exportedLibrary`.
@@ -540,9 +540,9 @@ class PackageGraph with CommentReferable, Nameable {
 
   int _previousSizeOfAllLibraries = 0;
 
-  /// A mapping from a [LibraryElement2] to all of the [Library]s that export it,
+  /// A mapping from a [LibraryElement] to all of the [Library]s that export it,
   /// which is created if it is not yet populated.
-  Map<LibraryElement2, Set<Library>> get libraryExports {
+  Map<LibraryElement, Set<Library>> get libraryExports {
     // The map must be reset if we're still in the middle of adding libraries
     // (though this shouldn't happen).
     if (_allLibraries.keys.length != _previousSizeOfAllLibraries) {
@@ -559,9 +559,9 @@ class PackageGraph with CommentReferable, Nameable {
     return _libraryExports;
   }
 
-  /// A mapping from a [LibraryElement2] to all of the [Library]s that export it,
+  /// A mapping from a [LibraryElement] to all of the [Library]s that export it,
   /// which is created if it is not yet populated.
-  Map<LibraryElement2, Set<Library>> get libraryExports2 {
+  Map<LibraryElement, Set<Library>> get libraryExports2 {
     // The map must be reset if we're still in the middle of adding libraries
     // (though this shouldn't happen).
     if (_allLibraries.keys.length != _previousSizeOfAllLibraries) {
@@ -699,8 +699,8 @@ class PackageGraph with CommentReferable, Nameable {
       'Object';
 
   bool isAnnotationVisible(Class class_) =>
-      class_.element.name3 == 'pragma' &&
-      class_.element.library2.name3 == 'dart.core';
+      class_.element.name == 'pragma' &&
+      class_.element.library.name == 'dart.core';
 
   @override
   String toString() {
@@ -745,9 +745,9 @@ class PackageGraph with CommentReferable, Nameable {
       library = preferredClass.canonicalLibrary;
     }
     // For elements defined in extensions, they are canonical.
-    var enclosingElement = e.enclosingElement2;
-    if (enclosingElement is ExtensionElement2) {
-      library ??= getModelForElement(enclosingElement.library2) as Library?;
+    var enclosingElement = e.enclosingElement;
+    if (enclosingElement is ExtensionElement) {
+      library ??= getModelForElement(enclosingElement.library) as Library?;
       // TODO(keertip): Find a better way to exclude members of extensions
       // when libraries are specified using the "--include" flag.
       if (library != null && library.isDocumented) {
@@ -758,10 +758,10 @@ class PackageGraph with CommentReferable, Nameable {
     // guesswork with member elements.
     var declaration = e.baseElement;
     ModelElement? canonicalModelElement;
-    if (e is ConstructorElement2 ||
-        e is MethodElement2 ||
-        e is FieldElement2 ||
-        e is PropertyAccessorElement2) {
+    if (e is ConstructorElement ||
+        e is MethodElement ||
+        e is FieldElement ||
+        e is PropertyAccessorElement) {
       var declarationModelElement = getModelForElement(declaration);
       e = declarationModelElement.element;
       canonicalModelElement = _findCanonicalModelElementForAmbiguous(
@@ -769,13 +769,13 @@ class PackageGraph with CommentReferable, Nameable {
           preferredClass: preferredClass as InheritingContainer?);
     } else {
       if (library != null) {
-        if (e case PropertyInducingElement2(:var getter2, :var setter2)) {
-          var getterElement = getter2 == null
+        if (e case PropertyInducingElement(:var getter, :var setter)) {
+          var getterElement = getter == null
               ? null
-              : getModelFor(getter2, library) as Accessor;
-          var setterElement = setter2 == null
+              : getModelFor(getter, library) as Accessor;
+          var setterElement = setter == null
               ? null
-              : getModelFor(setter2, library) as Accessor;
+              : getModelFor(setter, library) as Accessor;
           canonicalModelElement = getModelForPropertyInducingElement(e, library,
               getter: getterElement, setter: setterElement);
         } else {
@@ -788,7 +788,7 @@ class PackageGraph with CommentReferable, Nameable {
       }
     }
     // Prefer fields and top-level variables.
-    if (e is PropertyAccessorElement2 && canonicalModelElement is Accessor) {
+    if (e is PropertyAccessorElement && canonicalModelElement is Accessor) {
       canonicalModelElement = canonicalModelElement.enclosingCombo;
     }
     return canonicalModelElement;
@@ -871,9 +871,9 @@ class PackageGraph with CommentReferable, Nameable {
   /// This is used when we might need a Library object that isn't actually
   /// a documentation entry point (for elements that have no Library within the
   /// set of canonical Libraries).
-  Library? findButDoNotCreateLibraryFor(Element2 e) {
+  Library? findButDoNotCreateLibraryFor(Element e) {
     // This is just a cache to avoid creating lots of libraries over and over.
-    return _allLibraries[e.library2?.firstFragment.source.fullName];
+    return _allLibraries[e.library?.firstFragment.source.fullName];
   }
 
   /// Gathers all of the model elements found in all of the libraries of all
@@ -982,7 +982,7 @@ class PackageGraph with CommentReferable, Nameable {
 }
 
 class ConstructedModelElementsKey {
-  final Element2 element;
+  final Element element;
   final Container? enclosingElement;
 
   ConstructedModelElementsKey(this.element, this.enclosingElement);
@@ -999,7 +999,7 @@ class ConstructedModelElementsKey {
 }
 
 class InheritableElementsKey {
-  final Element2 element;
+  final Element element;
   final Library library;
 
   InheritableElementsKey(this.element, this.library);
@@ -1020,7 +1020,7 @@ extension on Comment {
     for (var reference in references) {
       var commentReferable = reference.expression;
       String name;
-      Element2? staticElement;
+      Element? staticElement;
       if (commentReferable case PropertyAccessImpl(:var propertyName)) {
         var target = commentReferable.target;
         if (target is! PrefixedIdentifierImpl) continue;

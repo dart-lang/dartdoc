@@ -14,7 +14,7 @@ library;
 
 import 'dart:io' show exitCode, stderr, stdout;
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/src/dartdoc.dart' show dartdocVersion, programName;
@@ -1128,7 +1128,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
   /// Build a DartdocOptionContext from an analyzer element (using its source
   /// location).
   factory DartdocOptionContext.fromElement(DartdocOptionSet optionSet,
-      LibraryElement2 libraryElement, ResourceProvider resourceProvider) {
+      LibraryElement libraryElement, ResourceProvider resourceProvider) {
     return DartdocOptionContext(
         optionSet,
         resourceProvider.getFile(libraryElement.firstFragment.source.fullName),
@@ -1136,10 +1136,10 @@ class DartdocOptionContext extends DartdocOptionContextBase
   }
 
   /// Build a DartdocOptionContext from an existing [DartdocOptionContext] and a
-  /// new analyzer [Element2].
+  /// new analyzer [Element].
   factory DartdocOptionContext.fromContextElement(
       DartdocOptionContext optionContext,
-      LibraryElement2 libraryElement,
+      LibraryElement libraryElement,
       ResourceProvider resourceProvider) {
     return DartdocOptionContext.fromElement(
         optionContext.optionSet, libraryElement, resourceProvider);

@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:analyzer_testing/utilities/extensions/resource_provider.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:yaml/yaml.dart' as yaml;
 
@@ -109,28 +110,11 @@ Future<String> createPackage(
   }
 }
 
-extension DescriptorExtensions on d.Descriptor {
-  /// Creates this [d.Descriptor] in the [MemoryResourceProvider].
-  ///
-  /// For a [d.DirectoryDescriptor], the subtree will be created. For a
-  /// [d.FileDescriptor], the file contents will be written.
-  Future<String> createInMemory(MemoryResourceProvider resourceProvider,
-      [String? parent]) {
-    var self = this;
-    return switch (self) {
-      d.DirectoryDescriptor() => self.createInMemory(resourceProvider, parent),
-      d.FileDescriptor() => self.createInMemory(resourceProvider, parent!),
-      _ => throw StateError(
-          '$runtimeType is not a DirectoryDescriptor, nor a FileDescriptor!')
-    };
-  }
-}
-
 extension on d.DirectoryDescriptor {
   Future<String> createInMemory(MemoryResourceProvider resourceProvider,
       [String? parent]) async {
-    parent ??= resourceProvider.pathContext
-        .canonicalize(resourceProvider.convertPath('/temp'));
+    parent ??= resourceProvider.pathContext.canonicalize(
+        ResourceProviderExtension(resourceProvider).convertPath('/temp'));
     resourceProvider.newFolder(parent).create();
     var fullPath = resourceProvider.pathContext.join(parent, name);
     resourceProvider.newFolder(fullPath).create();
@@ -145,9 +129,26 @@ extension on d.FileDescriptor {
   Future<String> createInMemory(
       MemoryResourceProvider resourceProvider, String parent) async {
     var content = await readAsBytes().transform(utf8.decoder).join('');
-    var fullPath = resourceProvider
+    var fullPath = ResourceProviderExtension(resourceProvider)
         .convertPath(resourceProvider.pathContext.join(parent, name));
     resourceProvider.newFile(fullPath, content);
     return fullPath;
+  }
+}
+
+extension DescriptorExtensions on d.Descriptor {
+  /// Creates this [d.Descriptor] in the [MemoryResourceProvider].
+  ///
+  /// For a [d.DirectoryDescriptor], the subtree will be created. For a
+  /// [d.FileDescriptor], the file contents will be written.
+  Future<String> createInMemory(MemoryResourceProvider resourceProvider,
+      [String? parent]) {
+    var self = this;
+    return switch (self) {
+      d.DirectoryDescriptor() => self.createInMemory(resourceProvider, parent),
+      d.FileDescriptor() => self.createInMemory(resourceProvider, parent!),
+      _ => throw StateError(
+          '$runtimeType is not a DirectoryDescriptor, nor a FileDescriptor!')
+    };
   }
 }

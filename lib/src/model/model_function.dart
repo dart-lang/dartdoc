@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -16,7 +16,7 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
   bool get isStatic => element.isStatic;
 
   @override
-  String get name => element.name3 ?? '';
+  String get name => element.name ?? '';
 
   @override
   TopLevelFunctionElement get element =>
@@ -25,22 +25,22 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
   bool get isAsynchronous => element.firstFragment.isAsynchronous;
 }
 
-/// A [ModelElement] for a [FunctionTypedElement2] that is part of an
+/// A [ModelElement] for a [FunctionTypedElement] that is part of an
 /// explicit typedef.
 class ModelFunctionTypedef extends ModelFunctionTyped {
   ModelFunctionTypedef(super.element, super.library, super.packageGraph);
 
   @override
-  String get name => element.enclosingElement2!.name3!;
+  String get name => element.enclosingElement!.name!;
 }
 
 class ModelFunctionTyped extends ModelElement with TypeParameters {
   @override
-  final FunctionTypedElement2 element;
+  final FunctionTypedElement element;
 
   @override
   late final List<TypeParameter> typeParameters = [
-    for (var p in element.typeParameters2)
+    for (var p in element.typeParameters)
       getModelFor(p, library) as TypeParameter,
   ];
 

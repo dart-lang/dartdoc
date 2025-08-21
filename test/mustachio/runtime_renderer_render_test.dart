@@ -7,6 +7,7 @@ library;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:analyzer_testing/utilities/extensions/resource_provider.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 import 'package:path/path.dart' as path show Context;
 import 'package:test/test.dart';
@@ -19,8 +20,9 @@ void main() {
 
   late path.Context pathContext;
 
-  File getFile(String path) => resourceProvider
-      .getFile(pathContext.canonicalize(resourceProvider.convertPath(path)));
+  File getFile(String path) =>
+      resourceProvider.getFile(pathContext.canonicalize(
+          ResourceProviderExtension(resourceProvider).convertPath(path)));
 
   setUp(() {
     resourceProvider = MemoryResourceProvider();

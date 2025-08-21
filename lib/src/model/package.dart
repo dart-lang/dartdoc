@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -374,7 +374,7 @@ class Package extends LibraryContainer
   final PackageMeta packageMeta;
 
   @override
-  Element2? get element => null;
+  Element? get element => null;
 
   @override
   List<String> get containerOrder => config.packageOrder;

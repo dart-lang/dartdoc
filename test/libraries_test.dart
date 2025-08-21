@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:analyzer_testing/utilities/extensions/resource_provider.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
@@ -130,8 +131,10 @@ A doc comment.
       packageMetaProvider,
       packageConfigProvider,
     );
-    final daName = resourceProvider.convertPath('d/a');
-    final eaName = resourceProvider.convertPath('e/a');
+    final daName =
+        ResourceProviderExtension(resourceProvider).convertPath('d/a');
+    final eaName =
+        ResourceProviderExtension(resourceProvider).convertPath('e/a');
     final daLibrary = packageGraph.libraries.displayNamed(daName);
     final eaLibrary = packageGraph.libraries.displayNamed(eaName);
     final bLibrary = packageGraph.libraries.displayNamed('b');
@@ -257,7 +260,7 @@ class LibrariesInAdditionalPackageTest extends DartdocTestBase {
     return bootPackageFromFiles(
       [
         d.file('lib/lib1.dart', "import 'package:two/lib2.dart';"),
-        d.dir(resourceProvider.convertPath('vendor/two'), [
+        d.dir(ResourceProviderExtension(resourceProvider).convertPath('vendor/two'), [
           d.file('pubspec.yaml', '''
 name: two
 version: 0.0.1

@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
@@ -22,14 +22,14 @@ class _LibrarySentinel implements Library {
 class Library extends ModelElement
     with Categorization, TopLevelContainer, CanonicalFor {
   @override
-  final LibraryElement2 element;
+  final LibraryElement element;
 
-  /// The set of [Element2]s declared directly in this library.
-  final Set<Element2> _localElements;
+  /// The set of [Element]s declared directly in this library.
+  final Set<Element> _localElements;
 
-  /// The set of [Element2]s exported by this library but not directly declared
+  /// The set of [Element]s exported by this library but not directly declared
   /// in this library.
-  final Set<Element2> _exportedElements;
+  final Set<Element> _exportedElements;
 
   final String _restoredUri;
 
@@ -58,17 +58,17 @@ class Library extends ModelElement
 
     var libraryElement = resolvedLibrary.element;
 
-    var localElements = <Element2>{
+    var localElements = <Element>{
       ...libraryElement.firstFragment.getters.map((g) => g.element),
       ...libraryElement.firstFragment.setters.map((s) => s.element),
-      ...libraryElement.firstFragment.classes2.map((c) => c.element),
-      ...libraryElement.firstFragment.enums2.map((e) => e.element),
-      ...libraryElement.firstFragment.extensions2.map((e) => e.element),
-      ...libraryElement.firstFragment.extensionTypes2.map((e) => e.element),
-      ...libraryElement.firstFragment.functions2.map((f) => f.element),
-      ...libraryElement.firstFragment.mixins2.map((m) => m.element),
-      ...libraryElement.firstFragment.topLevelVariables2.map((v) => v.element),
-      ...libraryElement.firstFragment.typeAliases2.map((a) => a.element),
+      ...libraryElement.firstFragment.classes.map((c) => c.element),
+      ...libraryElement.firstFragment.enums.map((e) => e.element),
+      ...libraryElement.firstFragment.extensions.map((e) => e.element),
+      ...libraryElement.firstFragment.extensionTypes.map((e) => e.element),
+      ...libraryElement.firstFragment.functions.map((f) => f.element),
+      ...libraryElement.firstFragment.mixins.map((m) => m.element),
+      ...libraryElement.firstFragment.topLevelVariables.map((v) => v.element),
+      ...libraryElement.firstFragment.typeAliases.map((a) => a.element),
     };
     var exportedElements = {
       ...libraryElement.exportNamespace.definedNames2.values
@@ -94,14 +94,14 @@ class Library extends ModelElement
 
   @override
   CharacterLocation? get characterLocation {
-    if (element.firstFragment.nameOffset2 == null) {
+    if (element.firstFragment.nameOffset == null) {
       return CharacterLocation(1, 1);
     }
     return super.characterLocation;
   }
 
   @override
-  LibraryFragment get unitElement => element.library2.firstFragment;
+  LibraryFragment get unitElement => element.library.firstFragment;
 
   @override
 
@@ -133,11 +133,11 @@ class Library extends ModelElement
   Map<String, Set<Library>> get _prefixToLibrary {
     var prefixToLibrary = <String, Set<Library>>{};
     // It is possible to have overlapping prefixes.
-    for (var i in element.firstFragment.libraryImports2) {
-      var prefixName = i.prefix2?.element.name3;
+    for (var i in element.firstFragment.libraryImports) {
+      var prefixName = i.prefix?.element.name;
       if (prefixName == null) continue;
       // Ignore invalid imports.
-      var importedLibrary = i.importedLibrary2;
+      var importedLibrary = i.importedLibrary;
       if (importedLibrary != null) {
         prefixToLibrary
             .putIfAbsent(prefixName, () => {})
@@ -223,7 +223,7 @@ class Library extends ModelElement
 
   /// Whether a libary is anonymous, either because it has no library directive
   /// or it has a library directive without a name.
-  bool get isAnonymous => element.name3 == null || element.name3!.isEmpty;
+  bool get isAnonymous => element.name == null || element.name!.isEmpty;
 
   @override
   Kind get kind => Kind.library;
@@ -238,14 +238,14 @@ class Library extends ModelElement
       // There are inconsistencies in library naming + URIs for the Dart
       // SDK libraries; we rationalize them here.
       if (source.uri.toString().contains('/')) {
-        return element.name3!.replaceFirst('dart.', 'dart:');
+        return element.name!.replaceFirst('dart.', 'dart:');
       }
       return source.uri.toString();
-    } else if (element.name3!.isNotEmpty) {
+    } else if (element.name!.isNotEmpty) {
       // An empty name indicates that the library is "implicitly named" with the
       // empty string. That is, it either has no `library` directive, or it has
       // a `library` directive with no name.
-      return element.name3!;
+      return element.name!;
     }
     var baseName = pathContext.basename(source.fullName);
     if (baseName.endsWith('.dart')) {
@@ -298,8 +298,8 @@ class Library extends ModelElement
       packageGraph.packageMetaProvider.fromElement(element, config.sdkDir);
 
   late final List<Class> classesAndExceptions = [
-    ..._localElementsOfType<ClassElement2, Class>(),
-    ..._exportedElementsOfType<ClassElement2, Class>(),
+    ..._localElementsOfType<ClassElement, Class>(),
+    ..._exportedElementsOfType<ClassElement, Class>(),
   ];
 
   @override
@@ -314,8 +314,8 @@ class Library extends ModelElement
 
   @override
   late final List<Enum> enums = [
-    ..._localElementsOfType<EnumElement2, Enum>(),
-    ..._exportedElementsOfType<EnumElement2, Enum>(),
+    ..._localElementsOfType<EnumElement, Enum>(),
+    ..._exportedElementsOfType<EnumElement, Enum>(),
   ];
 
   @override
@@ -325,14 +325,14 @@ class Library extends ModelElement
 
   @override
   late final List<Extension> extensions = [
-    ..._localElementsOfType<ExtensionElement2, Extension>(),
-    ..._exportedElementsOfType<ExtensionElement2, Extension>(),
+    ..._localElementsOfType<ExtensionElement, Extension>(),
+    ..._exportedElementsOfType<ExtensionElement, Extension>(),
   ];
 
   @override
   late final List<ExtensionType> extensionTypes = [
-    ..._localElementsOfType<ExtensionTypeElement2, ExtensionType>(),
-    ..._exportedElementsOfType<ExtensionTypeElement2, ExtensionType>(),
+    ..._localElementsOfType<ExtensionTypeElement, ExtensionType>(),
+    ..._exportedElementsOfType<ExtensionTypeElement, ExtensionType>(),
   ];
 
   @override
@@ -343,8 +343,8 @@ class Library extends ModelElement
 
   @override
   late final List<Mixin> mixins = [
-    ..._localElementsOfType<MixinElement2, Mixin>(),
-    ..._exportedElementsOfType<MixinElement2, Mixin>(),
+    ..._localElementsOfType<MixinElement, Mixin>(),
+    ..._exportedElementsOfType<MixinElement, Mixin>(),
   ];
 
   @override
@@ -355,20 +355,20 @@ class Library extends ModelElement
 
   @override
   late final List<Typedef> typedefs = [
-    ..._localElementsOfType<TypeAliasElement2, Typedef>(),
-    ..._exportedElementsOfType<TypeAliasElement2, Typedef>(),
+    ..._localElementsOfType<TypeAliasElement, Typedef>(),
+    ..._exportedElementsOfType<TypeAliasElement, Typedef>(),
   ];
 
   Iterable<U>
-      _localElementsOfType<T extends Element2, U extends ModelElement>() =>
+      _localElementsOfType<T extends Element, U extends ModelElement>() =>
           _localElements
               .whereType<T>()
               .map((e) => packageGraph.getModelFor(e, this) as U);
 
   Iterable<U>
-      _exportedElementsOfType<T extends Element2, U extends ModelElement>() =>
+      _exportedElementsOfType<T extends Element, U extends ModelElement>() =>
           _exportedElements.whereType<T>().map((e) {
-            var library = e.library2;
+            var library = e.library;
             if (library == null) {
               throw StateError("The library of '$e' is null!");
             }
@@ -380,31 +380,31 @@ class Library extends ModelElement
 
   Iterable<TopLevelVariable> get _localVariables {
     return {
-      ..._localElements.whereType<TopLevelVariableElement2>(),
+      ..._localElements.whereType<TopLevelVariableElement>(),
       ..._localElements
-          .whereType<PropertyAccessorElement2>()
-          .map((a) => a.variable3! as TopLevelVariableElement2),
+          .whereType<PropertyAccessorElement>()
+          .map((a) => a.variable as TopLevelVariableElement),
     }.map(_topLevelVariableFor);
   }
 
   Iterable<TopLevelVariable> get _exportedVariables {
     return {
-      ..._exportedElements.whereType<TopLevelVariableElement2>(),
+      ..._exportedElements.whereType<TopLevelVariableElement>(),
       ..._exportedElements
-          .whereType<PropertyAccessorElement2>()
-          .map((a) => a.variable3! as TopLevelVariableElement2),
+          .whereType<PropertyAccessorElement>()
+          .map((a) => a.variable as TopLevelVariableElement),
     }.map(_topLevelVariableFor);
   }
 
   TopLevelVariable _topLevelVariableFor(
-      TopLevelVariableElement2 topLevelVariableElement) {
+      TopLevelVariableElement topLevelVariableElement) {
     Accessor? getter;
-    var elementGetter = topLevelVariableElement.getter2;
+    var elementGetter = topLevelVariableElement.getter;
     if (elementGetter != null) {
       getter = packageGraph.getModelFor(elementGetter, this) as Accessor;
     }
     Accessor? setter;
-    var elementSetter = topLevelVariableElement.setter2;
+    var elementSetter = topLevelVariableElement.setter;
     if (elementSetter != null) {
       setter = packageGraph.getModelFor(elementSetter, this) as Accessor;
     }
@@ -513,8 +513,8 @@ class Library extends ModelElement
         _ => null,
       };
       return getModelForPropertyInducingElement(
-        member.element as TopLevelVariableElement2,
-        getModelForElement(member.element.library2!) as Library,
+        member.element as TopLevelVariableElement,
+        getModelForElement(member.element.library!) as Library,
         getter: getter,
         setter: setter,
       ).fullyQualifiedName;

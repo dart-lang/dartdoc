@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -11,13 +11,13 @@ import 'package:dartdoc/src/model/model.dart';
 class TypeParameter extends ModelElement with HasNoPage {
 
   @override
-  final TypeParameterElement2 element;
+  final TypeParameterElement element;
 
   TypeParameter(this.element, super.library, super.packageGraph);
 
   @override
   ModelElement get enclosingElement =>
-      getModelFor(element.enclosingElement2!, library);
+      getModelFor(element.enclosingElement!, library);
 
   /// [TypeParameter]s don't have documentation pages, and don't link to the
   /// element on which they are declared.
@@ -39,13 +39,13 @@ class TypeParameter extends ModelElement with HasNoPage {
 
   @override
   String get name => element.bound != null
-      ? '${element.name3} extends ${boundType!.nameWithGenerics}'
-      : element.name3!;
+      ? '${element.name} extends ${boundType!.nameWithGenerics}'
+      : element.name!;
 
   @override
   String get linkedName => element.bound != null
-      ? '${element.name3} extends ${boundType!.linkedName}'
-      : element.name3!;
+      ? '${element.name} extends ${boundType!.linkedName}'
+      : element.name!;
 
   @override
   late final Map<String, CommentReferable> referenceChildren = () {
@@ -58,7 +58,7 @@ class TypeParameter extends ModelElement with HasNoPage {
   Iterable<CommentReferable> get referenceParents => [enclosingElement];
 
   @override
-  String get referenceName => element.name3!;
+  String get referenceName => element.name!;
 }
 
 /// A mixin for [ModelElement]s which have type parameters.

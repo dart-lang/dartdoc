@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
@@ -16,7 +16,7 @@ import 'package:meta/meta.dart';
 /// setters, operators).
 class Extension extends Container {
   @override
-  final ExtensionElement2 element;
+  final ExtensionElement element;
 
   late final ElementType extendedElement =
       getTypeFor(element.extendedType, library);
@@ -35,7 +35,7 @@ class Extension extends Container {
   /// Whether this extension could apply to [container].
   ///
   /// This makes some assumptions in its calculations. For example, all
-  /// [InheritingContainer]s represent [InterfaceElement2]s, so no care is taken
+  /// [InheritingContainer]s represent [InterfaceElement]s, so no care is taken
   /// to consider function types or record types.
   bool couldApplyTo(InheritingContainer container) {
     var extendedType = extendedElement.type;
@@ -48,13 +48,13 @@ class Extension extends Container {
     extendedType = library.element.typeSystem.promoteToNonNull(extendedType);
     var otherType = container.modelType.type;
     if (otherType is InterfaceType) {
-      otherType = library.element.typeSystem.instantiateInterfaceToBounds2(
-        element: otherType.element3,
+      otherType = library.element.typeSystem.instantiateInterfaceToBounds(
+        element: otherType.element,
         nullabilitySuffix: NullabilitySuffix.none,
       );
 
       for (var superType in [otherType, ...otherType.allSupertypes]) {
-        var isSameBaseType = superType.element3 == extendedType.element3;
+        var isSameBaseType = superType.element == extendedType.element;
         if (isSameBaseType &&
             library.element.typeSystem.isSubtypeOf(extendedType, superType)) {
           return true;
@@ -76,7 +76,7 @@ class Extension extends Container {
       instanceFields.wherePublic.toList(growable: false)..sort(byName);
 
   @override
-  late final List<Method> declaredMethods = element.methods2
+  late final List<Method> declaredMethods = element.methods
       .map((e) => getModelFor(e, library, enclosingContainer: this) as Method)
       .toList(growable: false);
 
@@ -95,17 +95,17 @@ class Extension extends Container {
   ]..sort();
 
   @override
-  String get name => element.name3 == null ? '' : super.name;
+  String get name => element.name == null ? '' : super.name;
 
   @override
-  late final List<Field> declaredFields = element.fields2.map((field) {
+  late final List<Field> declaredFields = element.fields.map((field) {
     ContainerAccessor? getter, setter;
-    final fieldGetter = field.getter2;
+    final fieldGetter = field.getter;
     if (fieldGetter != null) {
       getter = ModelElement.for_(fieldGetter, library, packageGraph,
           enclosingContainer: this) as ContainerAccessor;
     }
-    final fieldSetter = field.setter2;
+    final fieldSetter = field.setter;
     if (fieldSetter != null) {
       setter = ModelElement.for_(fieldSetter, library, packageGraph,
           enclosingContainer: this) as ContainerAccessor;
@@ -115,10 +115,10 @@ class Extension extends Container {
   }).toList(growable: false);
 
   @override
-  late final List<TypeParameter> typeParameters = element.typeParameters2
+  late final List<TypeParameter> typeParameters = element.typeParameters
       .map((typeParameter) => getModelFor(
           typeParameter,
-          getModelForElement(typeParameter.enclosingElement2!.library2!)
+          getModelForElement(typeParameter.enclosingElement!.library!)
               as Library) as TypeParameter)
       .toList(growable: false);
 

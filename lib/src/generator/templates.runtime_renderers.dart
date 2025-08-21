@@ -218,7 +218,7 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'PropertyAccessorElement2',
+                          'PropertyAccessorElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -236,7 +236,7 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['PropertyAccessorElement2']!,
+                        getters: _invisibleGetters['PropertyAccessorElement']!,
                       );
                     },
               ),
@@ -484,7 +484,7 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'ExecutableMember',
+                          'ExecutableElement',
                         ),
 
                 isNullValue: (CT_ c) => c.originalMember == null,
@@ -502,7 +502,7 @@ class _Renderer_Accessor extends RendererBase<Accessor> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['ExecutableMember']!,
+                        getters: _invisibleGetters['ExecutableElement']!,
                       );
                     },
               ),
@@ -1652,11 +1652,7 @@ class _Renderer_Category extends RendererBase<Category> {
                 getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'Element2',
-                        ),
+                        self.renderSimpleVariable(c, remainingNames, 'Element'),
 
                 isNullValue: (CT_ c) => c.element == null,
 
@@ -1673,7 +1669,7 @@ class _Renderer_Category extends RendererBase<Category> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['Element2']!,
+                        getters: _invisibleGetters['Element']!,
                       );
                     },
               ),
@@ -2366,7 +2362,7 @@ class _Renderer_Category extends RendererBase<Category> {
   }
 }
 
-String renderCategoryRedirect(CategoryTemplateData context, Template template) {
+String renderCategory(CategoryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_CategoryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -2616,7 +2612,7 @@ class _Renderer_CategoryTemplateData
   }
 }
 
-String renderCategory(CategoryTemplateData context, Template template) {
+String renderCategoryRedirect(CategoryTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_CategoryTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -2677,7 +2673,7 @@ class _Renderer_Class extends RendererBase<Class> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'ClassElement2',
+                          'ClassElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -2695,7 +2691,7 @@ class _Renderer_Class extends RendererBase<Class> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['ClassElement2']!,
+                        getters: _invisibleGetters['ClassElement']!,
                       );
                     },
               ),
@@ -3441,7 +3437,7 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'ConstructorElement2',
+                          'ConstructorElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -3459,7 +3455,7 @@ class _Renderer_Constructor extends RendererBase<Constructor> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['ConstructorElement2']!,
+                        getters: _invisibleGetters['ConstructorElement']!,
                       );
                     },
               ),
@@ -4612,11 +4608,7 @@ class _Renderer_Container extends RendererBase<Container> {
                 getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'Element2',
-                        ),
+                        self.renderSimpleVariable(c, remainingNames, 'Element'),
 
                 isNullValue: (CT_ c) => false,
 
@@ -4633,7 +4625,7 @@ class _Renderer_Container extends RendererBase<Container> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['Element2']!,
+                        getters: _invisibleGetters['Element']!,
                       );
                     },
               ),
@@ -6511,11 +6503,7 @@ class _Renderer_DocumentationComment
                 getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'Element2',
-                        ),
+                        self.renderSimpleVariable(c, remainingNames, 'Element'),
 
                 isNullValue: (CT_ c) => false,
 
@@ -6532,7 +6520,7 @@ class _Renderer_DocumentationComment
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['Element2']!,
+                        getters: _invisibleGetters['Element']!,
                       );
                     },
               ),
@@ -7128,7 +7116,7 @@ class _Renderer_Enum extends RendererBase<Enum> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'EnumElement2',
+                          'EnumElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -7146,7 +7134,7 @@ class _Renderer_Enum extends RendererBase<Enum> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['EnumElement2']!,
+                        getters: _invisibleGetters['EnumElement']!,
                       );
                     },
               ),
@@ -7654,7 +7642,7 @@ class _Renderer_Extension extends RendererBase<Extension> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'ExtensionElement2',
+                          'ExtensionElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -7672,7 +7660,7 @@ class _Renderer_Extension extends RendererBase<Extension> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['ExtensionElement2']!,
+                        getters: _invisibleGetters['ExtensionElement']!,
                       );
                     },
               ),
@@ -8371,7 +8359,7 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'ExtensionTypeElement2',
+                          'ExtensionTypeElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -8389,7 +8377,7 @@ class _Renderer_ExtensionType extends RendererBase<ExtensionType> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['ExtensionTypeElement2']!,
+                        getters: _invisibleGetters['ExtensionTypeElement']!,
                       );
                     },
               ),
@@ -9423,7 +9411,7 @@ class _Renderer_Field extends RendererBase<Field> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'FieldElement2',
+                          'FieldElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -9441,7 +9429,7 @@ class _Renderer_Field extends RendererBase<Field> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['FieldElement2']!,
+                        getters: _invisibleGetters['FieldElement']!,
                       );
                     },
               ),
@@ -11678,7 +11666,7 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'InterfaceElement2',
+                          'InterfaceElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -11696,7 +11684,7 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['InterfaceElement2']!,
+                        getters: _invisibleGetters['InterfaceElement']!,
                       );
                     },
               ),
@@ -13095,7 +13083,7 @@ class _Renderer_Library extends RendererBase<Library> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'LibraryElement2',
+                          'LibraryElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -13113,7 +13101,7 @@ class _Renderer_Library extends RendererBase<Library> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['LibraryElement2']!,
+                        getters: _invisibleGetters['LibraryElement']!,
                       );
                     },
               ),
@@ -14879,7 +14867,7 @@ class _Renderer_Method extends RendererBase<Method> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'MethodElement2',
+                          'MethodElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -14897,7 +14885,7 @@ class _Renderer_Method extends RendererBase<Method> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['MethodElement2']!,
+                        getters: _invisibleGetters['MethodElement']!,
                       );
                     },
               ),
@@ -15142,7 +15130,7 @@ class _Renderer_Method extends RendererBase<Method> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'ExecutableMember',
+                          'ExecutableElement',
                         ),
 
                 isNullValue: (CT_ c) => c.originalMember == null,
@@ -15160,7 +15148,7 @@ class _Renderer_Method extends RendererBase<Method> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['ExecutableMember']!,
+                        getters: _invisibleGetters['ExecutableElement']!,
                       );
                     },
               ),
@@ -15737,7 +15725,7 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'MixinElement2',
+                          'MixinElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -15755,7 +15743,7 @@ class _Renderer_Mixin extends RendererBase<Mixin> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['MixinElement2']!,
+                        getters: _invisibleGetters['MixinElement']!,
                       );
                     },
               ),
@@ -16486,11 +16474,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                 getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'Element2',
-                        ),
+                        self.renderSimpleVariable(c, remainingNames, 'Element'),
 
                 isNullValue: (CT_ c) => false,
 
@@ -16507,7 +16491,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['Element2']!,
+                        getters: _invisibleGetters['Element']!,
                       );
                     },
               ),
@@ -17210,7 +17194,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                 getValue: (CT_ c) => c.originalMember,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(c, remainingNames, 'Member'),
+                        self.renderSimpleVariable(c, remainingNames, 'Element'),
 
                 isNullValue: (CT_ c) => c.originalMember == null,
 
@@ -17227,7 +17211,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['Member']!,
+                        getters: _invisibleGetters['Element']!,
                       );
                     },
               ),
@@ -17749,7 +17733,7 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'FunctionTypedElement2',
+                          'FunctionTypedElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -17767,7 +17751,7 @@ class _Renderer_ModelFunctionTyped extends RendererBase<ModelFunctionTyped> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['FunctionTypedElement2']!,
+                        getters: _invisibleGetters['FunctionTypedElement']!,
                       );
                     },
               ),
@@ -19041,11 +19025,7 @@ class _Renderer_Package extends RendererBase<Package> {
                 getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'Element2',
-                        ),
+                        self.renderSimpleVariable(c, remainingNames, 'Element'),
 
                 isNullValue: (CT_ c) => c.element == null,
 
@@ -19062,7 +19042,7 @@ class _Renderer_Package extends RendererBase<Package> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['Element2']!,
+                        getters: _invisibleGetters['Element']!,
                       );
                     },
               ),
@@ -20157,13 +20137,13 @@ class _Renderer_PackageTemplateData extends RendererBase<PackageTemplateData> {
   }
 }
 
-String renderSearchPage(PackageTemplateData context, Template template) {
+String renderError(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
 }
 
-String renderError(PackageTemplateData context, Template template) {
+String renderSearchPage(PackageTemplateData context, Template template) {
   var buffer = StringBuffer();
   _render_PackageTemplateData(context, template.ast, template, buffer);
   return buffer.toString();
@@ -20491,7 +20471,7 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'ParameterMember',
+                          'FormalParameterElement',
                         ),
 
                 isNullValue: (CT_ c) => c.originalMember == null,
@@ -20509,7 +20489,7 @@ class _Renderer_Parameter extends RendererBase<Parameter> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['ParameterMember']!,
+                        getters: _invisibleGetters['FormalParameterElement']!,
                       );
                     },
               ),
@@ -23602,7 +23582,7 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'TopLevelVariableElement2',
+                          'TopLevelVariableElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -23620,7 +23600,7 @@ class _Renderer_TopLevelVariable extends RendererBase<TopLevelVariable> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['TopLevelVariableElement2']!,
+                        getters: _invisibleGetters['TopLevelVariableElement']!,
                       );
                     },
               ),
@@ -24033,7 +24013,7 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'TypeParameterElement2',
+                          'TypeParameterElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -24051,7 +24031,7 @@ class _Renderer_TypeParameter extends RendererBase<TypeParameter> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['TypeParameterElement2']!,
+                        getters: _invisibleGetters['TypeParameterElement']!,
                       );
                     },
               ),
@@ -24694,7 +24674,7 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                         self.renderSimpleVariable(
                           c,
                           remainingNames,
-                          'TypeAliasElement2',
+                          'TypeAliasElement',
                         ),
 
                 isNullValue: (CT_ c) => false,
@@ -24712,7 +24692,7 @@ class _Renderer_Typedef extends RendererBase<Typedef> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['TypeAliasElement2']!,
+                        getters: _invisibleGetters['TypeAliasElement']!,
                       );
                     },
               ),
@@ -25378,11 +25358,7 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
                 getValue: (CT_ c) => c.element,
                 renderVariable:
                     (CT_ c, Property<CT_> self, List<String> remainingNames) =>
-                        self.renderSimpleVariable(
-                          c,
-                          remainingNames,
-                          'Element2',
-                        ),
+                        self.renderSimpleVariable(c, remainingNames, 'Element'),
 
                 isNullValue: (CT_ c) => c.element == null,
 
@@ -25399,7 +25375,7 @@ class _Renderer_Warnable extends RendererBase<Warnable> {
                         r.template,
                         sink,
                         parent: r,
-                        getters: _invisibleGetters['Element2']!,
+                        getters: _invisibleGetters['Element']!,
                       );
                     },
               ),
@@ -25440,7 +25416,7 @@ const _invisibleGetters = {
     'lineNumber',
     'runtimeType',
   },
-  'ClassElement2': {
+  'ClassElement': {
     'firstFragment',
     'fragments',
     'hasNonFinalField',
@@ -25451,8 +25427,11 @@ const _invisibleGetters = {
     'isDartCoreEnum',
     'isDartCoreObject',
     'isExhaustive',
+    'isExtendableOutside',
     'isFinal',
+    'isImplementableOutside',
     'isInterface',
+    'isMixableOutside',
     'isMixinApplication',
     'isMixinClass',
     'isSealed',
@@ -25475,8 +25454,9 @@ const _invisibleGetters = {
     'hasPublicConstructors',
     'publicConstructorsSorted',
   },
-  'ConstructorElement2': {
+  'ConstructorElement': {
     'baseElement',
+    'enclosingElement',
     'enclosingElement2',
     'firstFragment',
     'fragments',
@@ -25485,10 +25465,13 @@ const _invisibleGetters = {
     'isDefaultConstructor',
     'isFactory',
     'isGenerative',
+    'name',
     'name3',
+    'redirectedConstructor',
     'redirectedConstructor2',
     'returnType',
     'runtimeType',
+    'superConstructor',
     'superConstructor2',
   },
   'ContainerModifier': {
@@ -25582,10 +25565,13 @@ const _invisibleGetters = {
     'qualifiedName',
     'sourceFileName',
   },
-  'Element2': {
+  'Element': {
     'baseElement',
+    'children',
     'children2',
     'displayName',
+    'documentationComment',
+    'enclosingElement',
     'enclosingElement2',
     'firstFragment',
     'fragments',
@@ -25595,116 +25581,59 @@ const _invisibleGetters = {
     'isPublic',
     'isSynthetic',
     'kind',
+    'library',
     'library2',
     'lookupName',
+    'metadata',
+    'name',
     'name3',
+    'nonSynthetic',
     'nonSynthetic2',
     'runtimeType',
     'session',
     'sinceSdkVersion',
   },
-  'EnumElement2': {
+  'EnumElement': {
+    'constants',
     'constants2',
     'firstFragment',
     'fragments',
     'hashCode',
     'runtimeType',
   },
-  'ExecutableMember': {
+  'ExecutableElement': {
     'baseElement',
-    'children',
-    'children2',
-    'context',
-    'declaration',
-    'displayName',
-    'documentationComment',
-    'enclosingElement2',
-    'enclosingElement3',
-    'formalParameters',
+    'firstFragment',
     'fragments',
-    'hasAlwaysThrows',
-    'hasDeprecated',
-    'hasDoNotStore',
-    'hasDoNotSubmit',
-    'hasFactory',
-    'hasImmutable',
     'hasImplicitReturnType',
-    'hasInternal',
-    'hasIsTest',
-    'hasIsTestGroup',
-    'hasJS',
-    'hasLiteral',
-    'hasMustBeConst',
-    'hasMustBeOverridden',
-    'hasMustCallSuper',
-    'hasNonVirtual',
-    'hasOptionalTypeArgs',
-    'hasOverride',
-    'hasProtected',
-    'hasRedeclare',
-    'hasReopen',
-    'hasRequired',
-    'hasSealed',
-    'hasUseResult',
-    'hasVisibleForOverriding',
-    'hasVisibleForTemplate',
-    'hasVisibleForTesting',
-    'hasVisibleOutsideTemplate',
     'hashCode',
-    'id',
     'isAbstract',
-    'isAsynchronous',
-    'isAugmentation',
     'isExtensionTypeMember',
     'isExternal',
-    'isGenerator',
-    'isOperator',
-    'isPrivate',
-    'isPublic',
-    'isSimplyBounded',
     'isStatic',
-    'isSynchronous',
-    'isSynthetic',
-    'kind',
-    'library',
-    'library2',
-    'librarySource',
-    'location',
-    'metadata',
-    'metadata2',
-    'name',
-    'nameLength',
-    'nameOffset',
-    'nonSynthetic',
-    'nonSynthetic2',
-    'parameters',
-    'returnType',
     'runtimeType',
-    'session',
-    'sinceSdkVersion',
-    'substitution',
-    'type',
-    'typeParameters',
-    'typeParameters2',
   },
-  'ExtensionElement2': {
+  'ExtensionElement': {
     'extendedType',
     'firstFragment',
     'fragments',
     'hashCode',
     'runtimeType',
   },
-  'ExtensionTypeElement2': {
+  'ExtensionTypeElement': {
     'firstFragment',
     'fragments',
     'hashCode',
+    'primaryConstructor',
     'primaryConstructor2',
+    'representation',
     'representation2',
     'runtimeType',
     'typeErasure',
   },
-  'FieldElement2': {
+  'FieldElement': {
     'baseElement',
+    'enclosingElement',
     'enclosingElement2',
     'firstFragment',
     'fragments',
@@ -25737,25 +25666,22 @@ const _invisibleGetters = {
     'isRequiredPositional',
     'isSuperFormal',
     'runtimeType',
+    'typeParameters',
     'typeParameters2',
   },
   'FunctionType': {
     'element',
+    'element3',
     'formalParameters',
     'hashCode',
     'namedParameterTypes',
     'normalParameterTypes',
     'optionalParameterTypes',
-    'parameters',
-    'positionalParameterTypes',
-    'requiredPositionalParameterCount',
     'returnType',
     'runtimeType',
-    'sortedNamedParameters',
-    'typeFormals',
     'typeParameters',
   },
-  'FunctionTypedElement2': {
+  'FunctionTypedElement': {
     'firstFragment',
     'formalParameters',
     'fragments',
@@ -25815,8 +25741,9 @@ const _invisibleGetters = {
     'overriddenDepth',
     'overriddenElement',
   },
-  'InterfaceElement2': {
+  'InterfaceElement': {
     'allSupertypes',
+    'constructors',
     'constructors2',
     'firstFragment',
     'fragments',
@@ -25829,6 +25756,7 @@ const _invisibleGetters = {
     'runtimeType',
     'supertype',
     'thisType',
+    'unnamedConstructor',
     'unnamedConstructor2',
   },
   'Iterable': {
@@ -25843,11 +25771,13 @@ const _invisibleGetters = {
     'single',
   },
   'Kind': {'hashCode', 'index', 'runtimeType'},
-  'LibraryElement2': {
+  'LibraryElement': {
     'classes',
+    'entryPoint',
     'entryPoint2',
     'enums',
     'exportNamespace',
+    'exportedLibraries',
     'exportedLibraries2',
     'extensionTypes',
     'extensions',
@@ -25861,7 +25791,9 @@ const _invisibleGetters = {
     'isDartCore',
     'isInSdk',
     'languageVersion',
+    'library',
     'library2',
+    'loadLibraryFunction',
     'loadLibraryFunction2',
     'mixins',
     'publicNamespace',
@@ -25876,20 +25808,30 @@ const _invisibleGetters = {
     'uri',
   },
   'LibraryFragment': {
+    'accessibleExtensions',
     'accessibleExtensions2',
+    'classes',
     'classes2',
     'element',
     'enclosingFragment',
+    'enums',
     'enums2',
+    'extensionTypes',
     'extensionTypes2',
+    'extensions',
     'extensions2',
+    'functions',
     'functions2',
     'getters',
     'hashCode',
+    'importedLibraries',
     'importedLibraries2',
+    'libraryExports',
     'libraryExports2',
+    'libraryImports',
     'libraryImports2',
     'lineInfo',
+    'mixins',
     'mixins2',
     'nextFragment',
     'offset',
@@ -25900,7 +25842,9 @@ const _invisibleGetters = {
     'scope',
     'setters',
     'source',
+    'topLevelVariables',
     'topLevelVariables2',
+    'typeAliases',
     'typeAliases2',
   },
   'List': {'hashCode', 'length', 'reversed', 'runtimeType'},
@@ -25922,62 +25866,7 @@ const _invisibleGetters = {
     'runtimeType',
     'values',
   },
-  'Member': {
-    'baseElement',
-    'children',
-    'context',
-    'declaration',
-    'displayName',
-    'documentationComment',
-    'enclosingElement3',
-    'hasAlwaysThrows',
-    'hasDeprecated',
-    'hasDoNotStore',
-    'hasDoNotSubmit',
-    'hasFactory',
-    'hasImmutable',
-    'hasInternal',
-    'hasIsTest',
-    'hasIsTestGroup',
-    'hasJS',
-    'hasLiteral',
-    'hasMustBeConst',
-    'hasMustBeOverridden',
-    'hasMustCallSuper',
-    'hasNonVirtual',
-    'hasOptionalTypeArgs',
-    'hasOverride',
-    'hasProtected',
-    'hasRedeclare',
-    'hasReopen',
-    'hasRequired',
-    'hasSealed',
-    'hasUseResult',
-    'hasVisibleForOverriding',
-    'hasVisibleForTemplate',
-    'hasVisibleForTesting',
-    'hasVisibleOutsideTemplate',
-    'hashCode',
-    'id',
-    'isPrivate',
-    'isPublic',
-    'isSynthetic',
-    'kind',
-    'library',
-    'librarySource',
-    'location',
-    'metadata',
-    'metadata2',
-    'name',
-    'nameLength',
-    'nameOffset',
-    'nonSynthetic',
-    'runtimeType',
-    'session',
-    'sinceSdkVersion',
-    'substitution',
-  },
-  'MethodElement2': {
+  'MethodElement': {
     'baseElement',
     'firstFragment',
     'fragments',
@@ -25985,11 +25874,12 @@ const _invisibleGetters = {
     'isOperator',
     'runtimeType',
   },
-  'MixinElement2': {
+  'MixinElement': {
     'firstFragment',
     'fragments',
     'hashCode',
     'isBase',
+    'isImplementableOutside',
     'runtimeType',
     'superclassConstraints',
   },
@@ -26049,100 +25939,16 @@ const _invisibleGetters = {
     'runtimeType',
     'version',
   },
-  'ParameterMember': {
-    'baseElement',
-    'children',
-    'children2',
-    'constantInitializer',
-    'constantInitializer2',
-    'context',
-    'declaration',
-    'defaultValueCode',
-    'displayName',
-    'documentationComment',
-    'element',
-    'enclosingElement2',
-    'enclosingElement3',
-    'firstFragment',
-    'formalParameters',
-    'fragments',
-    'hasAlwaysThrows',
-    'hasDefaultValue',
-    'hasDeprecated',
-    'hasDoNotStore',
-    'hasDoNotSubmit',
-    'hasFactory',
-    'hasImmutable',
-    'hasImplicitType',
-    'hasInternal',
-    'hasIsTest',
-    'hasIsTestGroup',
-    'hasJS',
-    'hasLiteral',
-    'hasMustBeConst',
-    'hasMustBeOverridden',
-    'hasMustCallSuper',
-    'hasNonVirtual',
-    'hasOptionalTypeArgs',
-    'hasOverride',
-    'hasProtected',
-    'hasRedeclare',
-    'hasReopen',
-    'hasRequired',
-    'hasSealed',
-    'hasUseResult',
-    'hasVisibleForOverriding',
-    'hasVisibleForTemplate',
-    'hasVisibleForTesting',
-    'hasVisibleOutsideTemplate',
-    'hashCode',
-    'id',
-    'isConst',
-    'isConstantEvaluated',
-    'isCovariant',
-    'isFinal',
-    'isInitializingFormal',
-    'isLate',
-    'isPrivate',
-    'isPublic',
-    'isStatic',
-    'isSuperFormal',
-    'isSynthetic',
-    'kind',
-    'library',
-    'library2',
-    'librarySource',
-    'location',
-    'lookupName',
-    'metadata',
-    'metadata2',
-    'name',
-    'name3',
-    'nameLength',
-    'nameOffset',
-    'nameShared',
-    'nonSynthetic',
-    'nonSynthetic2',
-    'parameterKind',
-    'parameters',
-    'runtimeType',
-    'session',
-    'sinceSdkVersion',
-    'source',
-    'substitution',
-    'type',
-    'typeParameters',
-    'typeParameters2',
-    'typeShared',
-  },
   'ParameterizedType': {'hashCode', 'runtimeType', 'typeArguments'},
-  'PropertyAccessorElement2': {
+  'PropertyAccessorElement': {
     'baseElement',
+    'enclosingElement',
     'enclosingElement2',
     'firstFragment',
     'fragments',
     'hashCode',
     'runtimeType',
+    'variable',
     'variable3',
   },
   'Scope': {'hashCode', 'runtimeType'},
@@ -26165,7 +25971,7 @@ const _invisibleGetters = {
     'isEntryPoint',
     'runtimeType',
   },
-  'TopLevelVariableElement2': {
+  'TopLevelVariableElement': {
     'baseElement',
     'firstFragment',
     'fragments',
@@ -26173,16 +25979,18 @@ const _invisibleGetters = {
     'isExternal',
     'runtimeType',
   },
-  'TypeAliasElement2': {
+  'TypeAliasElement': {
+    'aliasedElement',
     'aliasedElement2',
     'aliasedType',
+    'enclosingElement',
     'enclosingElement2',
     'firstFragment',
     'fragments',
     'hashCode',
     'runtimeType',
   },
-  'TypeParameterElement2': {
+  'TypeParameterElement': {
     'baseElement',
     'bound',
     'firstFragment',

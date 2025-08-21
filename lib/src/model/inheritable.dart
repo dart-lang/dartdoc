@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -48,7 +48,7 @@ mixin Inheritable on ContainerMember {
       ?.allCanonicalModelElements
       .firstWhereOrNull((m) =>
           m.name == name &&
-          m is PropertyAccessorElement2 == this is PropertyAccessorElement2);
+          m is PropertyAccessorElement == this is PropertyAccessorElement);
 
   @override
   Container? computeCanonicalEnclosingContainer() {
@@ -96,8 +96,8 @@ mixin Inheritable on ContainerMember {
   /// implementation.
   bool _isHiddenInterface(Container? c) =>
       c != null &&
-      c.element.name3 == 'Interceptor' &&
-      c.element.library2?.name3 == '_interceptors';
+      c.element.name == 'Interceptor' &&
+      c.element.library?.name == '_interceptors';
 
   /// All of the various supertypes of [enclosingElement], in a specific order.
   ///

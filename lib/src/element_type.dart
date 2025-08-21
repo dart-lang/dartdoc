@@ -7,7 +7,7 @@
 /// The only entrypoint for constructing these classes is [ElementType.for_].
 library;
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -67,7 +67,7 @@ abstract class ElementType with CommentReferable, Nameable {
   String toString() => '$type';
 }
 
-/// An [ElementType] that isn't pinned to an [Element2] (or one that is, but
+/// An [ElementType] that isn't pinned to an [Element] (or one that is, but
 /// whose element is irrelevant).
 class UndefinedElementType extends ElementType {
   UndefinedElementType._(super.type, super.library, super.packageGraph)
@@ -102,9 +102,9 @@ class UndefinedElementType extends ElementType {
     // We can not simply throw here because not all SDK libraries resolve
     // all types.
     if (type is InvalidType) return 'dynamic';
-    assert(const {'Never'}.contains(type.documentableElement2?.name3),
+    assert(const {'Never'}.contains(type.documentableElement2?.name),
         'Unrecognized type for UndefinedElementType: $type');
-    return type.documentableElement2!.name3!;
+    return type.documentableElement2!.name!;
   }
 
   @override
@@ -129,7 +129,7 @@ class UndefinedElementType extends ElementType {
   Iterable<CommentReferable>? get referenceGrandparentOverrides => null;
 }
 
-/// A [FunctionType] that does not have an underpinning [Element2].
+/// A [FunctionType] that does not have an underpinning [Element].
 class FunctionTypeElementType extends UndefinedElementType
     with Rendered, Callable {
   FunctionTypeElementType._(
@@ -205,10 +205,10 @@ class ParameterizedElementType extends DefinedElementType with Rendered {
 
 /// An [ElementType] whose underlying type was referred to by a type alias.
 mixin Aliased implements ElementType {
-  Element2 get typeAliasElement2 => type.alias!.element2;
+  Element get typeAliasElement2 => type.alias!.element;
 
   @override
-  String get name => typeAliasElement2.name3!;
+  String get name => typeAliasElement2.name!;
 
   @override
   bool get isTypedef => true;
@@ -253,7 +253,7 @@ class TypeParameterElementType extends DefinedElementType {
   String get nameWithGenericsPlain => '$name$nullabilitySuffix';
 }
 
-/// An [ElementType] associated with an [Element2].
+/// An [ElementType] associated with an [Element].
 abstract class DefinedElementType extends ElementType {
   final ModelElement modelElement;
 
@@ -263,7 +263,7 @@ abstract class DefinedElementType extends ElementType {
 
   factory DefinedElementType._from(DartType type, ModelElement modelElement,
       Library library, PackageGraph packageGraph) {
-    if (type is! TypeAliasElement2 && type.alias != null) {
+    if (type is! TypeAliasElement && type.alias != null) {
       // Here, `alias.element` signals that this is a type referring to an
       // alias. (`TypeAliasElement.alias.element` has different implications.
       // In that case it is an actual type alias of some kind (generic or
@@ -288,7 +288,7 @@ abstract class DefinedElementType extends ElementType {
   }
 
   @override
-  String get name => type.documentableElement2!.name3!;
+  String get name => type.documentableElement2!.name!;
 
   @override
   String get fullyQualifiedName => modelElement.fullyQualifiedName;

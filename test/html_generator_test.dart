@@ -4,6 +4,7 @@
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:analyzer_testing/utilities/extensions/resource_provider.dart';
 import 'package:dartdoc/src/dartdoc.dart' show DartdocFileWriter;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
@@ -69,8 +70,8 @@ void main() {
           HtmlGeneratorBackend(options, templates, writer, resourceProvider));
     });
 
-    File getConvertedFile(String filePath) =>
-        resourceProvider.getFile(resourceProvider.convertPath(filePath));
+    File getConvertedFile(String filePath) => resourceProvider.getFile(
+        ResourceProviderExtension(resourceProvider).convertPath(filePath));
 
     tearDown(clearPackageMetaCache);
 
@@ -126,11 +127,14 @@ const Matcher doesExist = _DoesExist();
 
 class _DoesExist extends Matcher {
   const _DoesExist();
+
   @override
   bool matches(Object? item, Map<Object?, Object?> matchState) =>
       (item as Resource).exists;
+
   @override
   Description describe(Description description) => description.add('exists');
+
   @override
   Description describeMismatch(Object? item, Description mismatchDescription,
       Map<Object?, Object?> matchState, bool verbose) {
