@@ -1,6 +1,7 @@
 // Copyright (c) 2025, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -40,7 +41,7 @@ class C {
     );
   }
 
-  void test_doc_dot_shorthand_method_invocation_success() async {
+  void test_doc_dot_shorthand_constructor_invocation_success() async {
     var library = await bootPackageWithLibrary('''
 class C {
   /// Cannot link [.c()]
@@ -55,6 +56,25 @@ class C {
     expect(
       m.documentationAsHtml,
       '<p>Cannot link <code>.c()</code></p>',
+    );
+  }
+
+  void test_doc_dot_shorthand_method_invocation_success() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  /// Cannot link [.f()]
+  void m(String p) {}
+
+
+  static C f() => C();
+}
+''');
+    var m = library.classes.named('C').instanceMethods.named('m');
+
+    expect(m.hasDocumentationComment, true);
+    expect(
+      m.documentationAsHtml,
+      '<p>Cannot link <code>.f()</code></p>',
     );
   }
 }
