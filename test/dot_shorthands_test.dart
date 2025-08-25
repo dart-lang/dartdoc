@@ -76,4 +76,42 @@ class C {
       '<p>Cannot link <code>.f()</code></p>',
     );
   }
+
+  void test_doc_dot_shorthand_default_values_success() async {
+    // For now parameter default values are not linked so this test is just to
+    // make sure we don't crash.
+    var library = await bootPackageWithLibrary('''
+enum Color {
+  red, green
+}
+
+class C {
+  void m({Color c = .red}) {}
+}
+''');
+    var m = library.classes.named('C').instanceMethods.named('m');
+
+    expect(m.hasDocumentationComment, false);
+  }
+
+  void test_doc_dot_shorthand_annotation_success() async {
+    // For now parameters in annotations are not linked so this test is just to
+    // make sure we don't crash.
+    var library = await bootPackageWithLibrary('''
+enum Color {
+  red, green
+}
+
+class C {
+  final Color c;
+  const C(this.c);
+}
+
+@C(.red)
+void m(){}
+''');
+    var m = library.functions.named('m');
+
+    expect(m.hasAnnotations, true);
+  }
 }
