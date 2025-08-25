@@ -25902,7 +25902,6 @@ const _invisibleGetters = {
     'hasFooterVersion',
     'hashCode',
     'implementers',
-    'inheritanceManager',
     'libraries',
     'libraryCount',
     'libraryExports',
