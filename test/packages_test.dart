@@ -263,6 +263,7 @@ library bar;
             .writeAsStringSync('''
 /// Documentation comment.
 library one;
+export 'some_other_lib.dart' show Exported;
 
 class One {}
 ''');
@@ -276,6 +277,10 @@ library script;
 
 class Script {}
 ''');
+        packageOneRoot
+            .getChildAssumingFolder('lib')
+            .getChildAssumingFile('some_other_lib.dart')
+            .writeAsStringSync('''class Exported {}''');
 
         packageTwoRoot =
             utils.writePackage('two', resourceProvider, packageConfigProvider);
@@ -316,6 +321,12 @@ dartdoc:
         expect(packageOne.documentedWhere, equals(DocumentLocation.remote));
         expect(classOne.href,
             equals('https://mypub.topdomain/one/0.0.1/one/One-class.html'));
+        // Validate that canonicalization takes place for remote packages.
+        var exported = libraryOne.classes.named('Exported');
+        expect(
+            exported.href,
+            equals(
+                'https://mypub.topdomain/one/0.0.1/some_other_lib/Exported-class.html'));
       });
 
       test(

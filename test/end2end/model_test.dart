@@ -1834,7 +1834,7 @@ void main() async {
 
   group('Class', () {
     late final List<Class> classes;
-    late final Class Apple, B, Cat, Dog, F, Dep, SpecialList;
+    late final Class Apple, B, Cat, Dog, F, Helper, SpecialList;
     late final Class ExtendingClass, CatString;
 
     setUpAll(() {
@@ -1844,7 +1844,7 @@ void main() async {
       Cat = classes.named('Cat');
       Dog = classes.named('Dog');
       F = classes.named('F');
-      Dep = classes.named('Deprecated');
+      Helper = classes.named('Helper');
       SpecialList = fakeLibrary.classes.named('SpecialList');
       ExtendingClass = twoExportsLib.classes.named('ExtendingClass');
       CatString = exLibrary.classes.named('CatString');
@@ -1879,7 +1879,7 @@ void main() async {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(34));
+      expect(classes, hasLength(33));
     });
 
     test('abstract', () {
@@ -1982,10 +1982,9 @@ void main() async {
     });
 
     test('exported class should have hrefs from the current library', () {
-      expect(
-          Dep.href, equals('${htmlBasePlaceholder}ex/Deprecated-class.html'));
-      expect(Dep.instanceMethods.named('toString').href,
-          equals('${htmlBasePlaceholder}ex/Deprecated/toString.html'));
+      expect(Helper.href, equals('${htmlBasePlaceholder}ex/Helper-class.html'));
+      expect(Helper.instanceMethods.named('toString').href,
+          equals('${htmlBasePlaceholder}ex/Helper/toString.html'));
     });
 
     test('F has a single instance method', () {
