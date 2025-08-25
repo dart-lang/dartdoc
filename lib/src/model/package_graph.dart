@@ -5,15 +5,11 @@
 import 'dart:collection';
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/source/source.dart';
-import 'package:analyzer/source/timestamped_data.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/ast/ast.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/element/inheritance_manager3.dart'
-    show InheritanceManager3;
+import 'package:analyzer/source/timestamped_data.dart' show TimestampedData;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk, SdkLibrary;
 import 'package:collection/collection.dart';
@@ -38,8 +34,6 @@ class PackageGraph with CommentReferable, Nameable {
 
   /// [PackageMeta] provider for building [PackageMeta]s.
   final PackageMetaProvider packageMetaProvider;
-
-  final InheritanceManager3 inheritanceManager = InheritanceManager3();
 
   final AnalysisContext _analysisContext;
 
@@ -769,12 +763,10 @@ class PackageGraph with CommentReferable, Nameable {
     } else {
       if (library != null) {
         if (e case PropertyInducingElement(:var getter, :var setter)) {
-          var getterElement = getter == null
-              ? null
-              : getModelFor(getter, library) as Accessor;
-          var setterElement = setter == null
-              ? null
-              : getModelFor(setter, library) as Accessor;
+          var getterElement =
+              getter == null ? null : getModelFor(getter, library) as Accessor;
+          var setterElement =
+              setter == null ? null : getModelFor(setter, library) as Accessor;
           canonicalModelElement = getModelForPropertyInducingElement(e, library,
               getter: getterElement, setter: setterElement);
         } else {
@@ -1020,9 +1012,9 @@ extension on Comment {
       var commentReferable = reference.expression;
       String name;
       Element? staticElement;
-      if (commentReferable case PropertyAccessImpl(:var propertyName)) {
+      if (commentReferable case PropertyAccess(:var propertyName)) {
         var target = commentReferable.target;
-        if (target is! PrefixedIdentifierImpl) continue;
+        if (target is! PrefixedIdentifier) continue;
         name = '${target.name}.${propertyName.name}';
         staticElement = propertyName.element;
       } else if (commentReferable case PrefixedIdentifier(:var identifier)) {
