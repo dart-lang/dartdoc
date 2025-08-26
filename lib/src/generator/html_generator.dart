@@ -5,7 +5,6 @@
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';
-import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart' as resources;
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
@@ -20,9 +19,9 @@ Generator initHtmlGenerator(
 }) {
   var templates = HtmlAotTemplates();
   var options = DartdocGeneratorBackendOptions.fromContext(context);
-  var backend = HtmlGeneratorBackend(
+  var generatorBackend = HtmlGeneratorBackend(
       options, templates, writer, context.resourceProvider);
-  return GeneratorFrontEnd(backend);
+  return Generator(generatorBackend);
 }
 
 /// Generator backend for HTML output.

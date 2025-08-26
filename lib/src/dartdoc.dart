@@ -9,7 +9,6 @@ import 'dart:io' show Platform, exitCode, stderr;
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
-import 'package:dartdoc/src/generator/empty_generator.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -27,10 +26,28 @@ const String programName = 'dartdoc';
 // Update when pubspec version changes by running `pub run build_runner build`
 const String dartdocVersion = packageVersion;
 
+/// Used for the generateDocs:false option.
+///
+/// Writes nothing.
+class NoFileWriter implements FileWriter {
+  @override
+  void write(String filePath, String content, {Warnable? element}) {
+    // Do nothing
+  }
+
+  @override
+  void writeBytes(String filePath, List<int> content,
+      {bool allowOverwrite = false}) {
+    // Do nothing
+  }
+
+  @override
+  Set<String> get writtenFiles => {};
+}
+
 class DartdocFileWriter implements FileWriter {
   final String _outputDir;
-  @override
-  final ResourceProvider resourceProvider;
+  final ResourceProvider _resourceProvider;
   final Map<String, Warnable?> _fileElementMap = {};
   @override
   final Set<String> writtenFiles = {};
@@ -43,7 +60,7 @@ class DartdocFileWriter implements FileWriter {
 
   DartdocFileWriter(
     this._outputDir,
-    this.resourceProvider, {
+    this._resourceProvider, {
     int maxFileCount = 0,
     int maxTotalSize = 0,
   })  : _maxFileCount = maxFileCount,
@@ -115,8 +132,8 @@ class DartdocFileWriter implements FileWriter {
   /// Returns the file at [outFile] relative to [_outputDir], creating the
   /// parent directory if necessary.
   File _getFile(String outFile) {
-    var file = resourceProvider
-        .getFile(resourceProvider.pathContext.join(_outputDir, outFile));
+    var file = _resourceProvider
+        .getFile(_resourceProvider.pathContext.join(_outputDir, outFile));
     var parent = file.parent;
     if (!parent.exists) {
       parent.create();
@@ -144,19 +161,6 @@ class Dartdoc {
   @visibleForTesting
   set generator(Generator newGenerator) => _generator = newGenerator;
 
-  /// Factory method that builds Dartdoc with an empty generator.
-  factory Dartdoc.withEmptyGenerator(
-    DartdocOptionContext config,
-    PackageBuilder packageBuilder,
-  ) {
-    return Dartdoc._(
-      config,
-      config.resourceProvider.getFolder('UNUSED'),
-      initEmptyGenerator(),
-      packageBuilder,
-    );
-  }
-
   /// Builds Dartdoc with a generator determined by [context].
   factory Dartdoc.fromContext(
     DartdocGeneratorOptionContext context,
@@ -165,12 +169,14 @@ class Dartdoc {
     var resourceProvider = context.resourceProvider;
     var outputPath = resourceProvider.pathContext.absolute(context.output);
     var outputDir = resourceProvider.getFolder(outputPath)..create();
-    var writer = DartdocFileWriter(
-      outputPath,
-      resourceProvider,
-      maxFileCount: context.maxFileCount,
-      maxTotalSize: context.maxTotalSize,
-    );
+    var writer = context.generateDocs
+        ? DartdocFileWriter(
+            outputPath,
+            resourceProvider,
+            maxFileCount: context.maxFileCount,
+            maxTotalSize: context.maxTotalSize,
+          )
+        : NoFileWriter();
     return Dartdoc._(
       context,
       outputDir,

@@ -1278,6 +1278,9 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext {
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
 
   String? get resourcesDir => optionSet['resourcesDir'].valueAt(context);
+
+  /// Whether to generate docs or perform a dry run.
+  bool get generateDocs => optionSet['generateDocs'].valueAt(context);
 }
 
 class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
@@ -1288,9 +1291,6 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
   DartdocProgramOptionContext.fromDefaultContextLocation(
       super.optionSet, super.resourceProvider)
       : super.fromDefaultContextLocation();
-
-  /// Whether to generate docs or perform a dry run.
-  bool get generateDocs => optionSet['generateDocs'].valueAt(context);
 }
 
 List<DartdocOption<bool>> createDartdocProgramOptions(
