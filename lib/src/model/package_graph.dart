@@ -552,25 +552,6 @@ class PackageGraph with CommentReferable, Nameable {
     return _libraryExports;
   }
 
-  /// A mapping from a [LibraryElement] to all of the [Library]s that export it,
-  /// which is created if it is not yet populated.
-  Map<LibraryElement, Set<Library>> get libraryExports2 {
-    // The map must be reset if we're still in the middle of adding libraries
-    // (though this shouldn't happen).
-    if (_allLibraries.keys.length != _previousSizeOfAllLibraries) {
-      assert(
-        _previousSizeOfAllLibraries == 0,
-        'Re-entered `libraryExports` while building all libraries',
-      );
-      _previousSizeOfAllLibraries = _allLibraries.keys.length;
-      _libraryExports = {};
-      for (var library in publicLibraries) {
-        _tagExportsFor(library, library.element);
-      }
-    }
-    return _libraryExports;
-  }
-
   /// A lookup index for hrefs to allow warnings to indicate where a broken
   /// link or orphaned file may have come from.
   ///
