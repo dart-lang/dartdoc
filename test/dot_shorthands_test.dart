@@ -114,4 +114,18 @@ void m(){}
 
     expect(m.hasAnnotations, true);
   }
+
+  void test_doc_dot_shorthand_const_init_success() async {
+    // Constant initializers are not linked so this test is just to make sure we
+    // don't crash.
+    var library = await bootPackageWithLibrary('''
+enum Color {
+  red, green
+}
+const Color favColor = .green;
+''');
+    var m = library.constants.named('favColor');
+
+    expect(m.hasDocumentation, false);
+  }
 }
