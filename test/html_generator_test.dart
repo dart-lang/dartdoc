@@ -9,7 +9,6 @@ import 'package:dartdoc/src/dartdoc.dart' show DartdocFileWriter;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';
-import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart';
 import 'package:dartdoc/src/generator/templates.dart';
@@ -33,7 +32,7 @@ void main() {
     late FakePackageConfigProvider packageConfigProvider;
 
     final Templates templates = HtmlAotTemplates();
-    late GeneratorFrontEnd generator;
+    late Generator generator;
 
     late Folder projectRoot;
     late String projectPath;
@@ -66,7 +65,7 @@ void main() {
       var outputPath = projectRoot.getChildAssumingFolder('doc').path;
       var writer = DartdocFileWriter(outputPath, resourceProvider);
 
-      generator = GeneratorFrontEnd(
+      generator = Generator(
           HtmlGeneratorBackend(options, templates, writer, resourceProvider));
     });
 
