@@ -37,13 +37,21 @@ abstract class FileWriter {
 }
 
 /// A generator generates documentation for a given package.
-///
-/// Generators can generate documentation in different formats: HTML, JSON, etc.
-class Generator {
+abstract class Generator {
+  Future<void> generate(PackageGraph? packageGraph);
+  Set<String> get writtenFiles;
+}
+
+/// A [DartdocModelGenerator] generates documentation for a given package
+/// analyzed in the dartdoc model.
+class DartdocModelGenerator implements Generator {
+  /// Depending on the given [GeneratorBackend] it can generate documentation
+  /// in different formats: HTML, JSON, etc.
   final GeneratorBackend _generatorBackend;
 
-  Generator(this._generatorBackend);
+  DartdocModelGenerator(this._generatorBackend);
 
+  @override
   Future<void> generate(PackageGraph? packageGraph) async {
     await _generatorBackend.generateAdditionalFiles();
 
@@ -60,6 +68,7 @@ class Generator {
     _generatorBackend.generateSearchIndex(indexElements);
   }
 
+  @override
   Set<String> get writtenFiles => _generatorBackend.writer.writtenFiles;
 
   /// Traverses the [packageGraph] and generates documentation for all contained
@@ -318,5 +327,5 @@ Generator initHtmlGenerator(
   var options = DartdocGeneratorBackendOptions.fromContext(context);
   var generatorBackend = HtmlGeneratorBackend(
       options, templates, writer, context.resourceProvider);
-  return Generator(generatorBackend);
+  return DartdocModelGenerator(generatorBackend);
 }
