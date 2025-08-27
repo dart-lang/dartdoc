@@ -9,7 +9,7 @@ import 'package:dartdoc/src/dartdoc.dart' show DartdocFileWriter;
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';
-import 'package:dartdoc/src/generator/html_generator.dart';
+import 'package:dartdoc/src/generator/html_generator_backend.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/library.dart';
