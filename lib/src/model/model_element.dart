@@ -15,7 +15,6 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/prefix.dart';
@@ -63,7 +62,6 @@ abstract class ModelElement
         Locatable,
         Nameable,
         SourceCode,
-        FeatureSet,
         DocumentationComment
     implements Comparable<ModelElement>, Documentable {
   // TODO(jcollins-g): This really wants a "member that has a type" class.

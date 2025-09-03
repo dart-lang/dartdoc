@@ -10,8 +10,8 @@ import 'dartdoc_test_base.dart';
 import 'src/utils.dart';
 
 extension on InheritingContainer {
-  String languageFeatureChips() =>
-      displayedLanguageFeatures.map((l) => l.name).join(' ');
+  String classModifierChips() =>
+      displayedClassModifiers.map((l) => l.name).join(' ');
 }
 
 void main() {
@@ -63,21 +63,21 @@ base mixin O {}
     var Mclass = library.classes.named('M');
     var Nmixin = library.mixins.named('N');
     var Omixin = library.mixins.named('O');
-    expect(Aclass.languageFeatureChips(), equals(''));
-    expect(Bclass.languageFeatureChips(), equals('base'));
-    expect(Cclass.languageFeatureChips(), equals('interface'));
-    expect(Dclass.languageFeatureChips(), equals('final'));
-    expect(Eclass.languageFeatureChips(), equals('sealed'));
-    expect(Fclass.languageFeatureChips(), equals('abstract'));
-    expect(Gclass.languageFeatureChips(), equals('abstract base'));
-    expect(Hclass.languageFeatureChips(), equals('abstract interface'));
-    expect(Iclass.languageFeatureChips(), equals('abstract final'));
-    expect(Jclass.languageFeatureChips(), equals('mixin'));
-    expect(Kclass.languageFeatureChips(), equals('base mixin'));
-    expect(Lclass.languageFeatureChips(), equals('abstract mixin'));
-    expect(Mclass.languageFeatureChips(), equals('abstract base mixin'));
-    expect(Nmixin.languageFeatureChips(), equals(''));
-    expect(Omixin.languageFeatureChips(), equals('base'));
+    expect(Aclass.classModifierChips(), equals(''));
+    expect(Bclass.classModifierChips(), equals('base'));
+    expect(Cclass.classModifierChips(), equals('interface'));
+    expect(Dclass.classModifierChips(), equals('final'));
+    expect(Eclass.classModifierChips(), equals('sealed'));
+    expect(Fclass.classModifierChips(), equals('abstract'));
+    expect(Gclass.classModifierChips(), equals('abstract base'));
+    expect(Hclass.classModifierChips(), equals('abstract interface'));
+    expect(Iclass.classModifierChips(), equals('abstract final'));
+    expect(Jclass.classModifierChips(), equals('mixin'));
+    expect(Kclass.classModifierChips(), equals('base mixin'));
+    expect(Lclass.classModifierChips(), equals('abstract mixin'));
+    expect(Mclass.classModifierChips(), equals('abstract base mixin'));
+    expect(Nmixin.classModifierChips(), equals(''));
+    expect(Omixin.classModifierChips(), equals('base'));
   }
 
   void test_abstractSealed() async {
@@ -86,8 +86,8 @@ abstract class A {}
 sealed class B extends A {}
 ''');
     var Bclass = library.classes.named('B');
-    expect(Bclass.languageFeatureChips(),
-        equals('sealed')); // *not* sealed abstract
+    expect(
+        Bclass.classModifierChips(), equals('sealed')); // *not* sealed abstract
   }
 
   void test_inferredModifiers() async {
@@ -117,14 +117,13 @@ base class M extends L {}
     var Iclass = library.classes.named('I');
     var Lclass = library.classes.named('L');
     var Mclass = library.classes.named('M');
-    expect(
-        Bclass.languageFeatureChips(), equals('sealed')); // *not* sealed base
-    expect(Cclass.languageFeatureChips(), equals('base'));
-    expect(Eclass.languageFeatureChips(), equals('sealed'));
-    expect(Fclass.languageFeatureChips(), equals('interface'));
-    expect(Hclass.languageFeatureChips(), equals('sealed'));
-    expect(Iclass.languageFeatureChips(), equals('final'));
-    expect(Lclass.languageFeatureChips(), equals('sealed'));
-    expect(Mclass.languageFeatureChips(), equals('base'));
+    expect(Bclass.classModifierChips(), equals('sealed')); // *not* sealed base
+    expect(Cclass.classModifierChips(), equals('base'));
+    expect(Eclass.classModifierChips(), equals('sealed'));
+    expect(Fclass.classModifierChips(), equals('interface'));
+    expect(Hclass.classModifierChips(), equals('sealed'));
+    expect(Iclass.classModifierChips(), equals('final'));
+    expect(Lclass.classModifierChips(), equals('sealed'));
+    expect(Mclass.classModifierChips(), equals('base'));
   }
 }

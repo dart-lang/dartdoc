@@ -6,7 +6,7 @@
       data-above-sidebar="{{ aboveSidebarPath }}"
       data-below-sidebar="{{ belowSidebarPath }}">
     {{ #self }}
-      <div>{{ >source_link }}<h1><span class="kind-top-level-property">{{{ name }}}</span> {{ kind }} {{ >feature_set }} {{ >categorization }}</h1></div>
+      <div>{{ >source_link }}<h1><span class="kind-top-level-property">{{{ name }}}</span> {{ kind }} {{ >categorization }}</h1></div>
 
       {{ ^hasGetterOrSetter }}
         <section class="multi-line-signature">

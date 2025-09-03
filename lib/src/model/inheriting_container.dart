@@ -89,9 +89,19 @@ abstract class InheritingContainer extends Container {
     if (isMixinClass) ContainerModifier.mixin,
   ]..sort();
 
-  @override
-  late final List<LanguageFeature> displayedLanguageFeatures =
-      containerModifiers.asLanguageFeatureSet.toList();
+  /// A list of class modifiers that both apply to this [InheritingContainer]
+  /// and make sense to display in context.
+  late final List<LanguageFeature> displayedClassModifiers = containerModifiers
+      .where((m) => classModifierDescriptions[m.name] != null)
+      .where((m) => !m.hideIfPresent.any(containerModifiers.contains))
+      .map((m) => LanguageFeature(
+            m.name,
+            classModifierDescriptions[m.name],
+            classModifierUrls[m.name],
+          ))
+      .toList();
+
+  bool get hasDisplayedClassModifiers => displayedClassModifiers.isNotEmpty;
 
   late final List<ModelElement> _allModelElements = [
     ...super.allModelElements,
@@ -532,8 +542,7 @@ abstract class InheritingContainer extends Container {
       [FieldElement? field]) {
     // Return a [ContainerAccessor] with `isInherited = true` if [element] is
     // in [inheritedAccessors].
-    ContainerAccessor? containerAccessorFrom(
-        PropertyAccessorElement? element) {
+    ContainerAccessor? containerAccessorFrom(PropertyAccessorElement? element) {
       if (element == null) return null;
       final enclosingContainer =
           inheritedAccessors.contains(element) ? this : null;

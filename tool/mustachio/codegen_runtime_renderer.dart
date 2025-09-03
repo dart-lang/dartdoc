@@ -94,7 +94,6 @@ import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';

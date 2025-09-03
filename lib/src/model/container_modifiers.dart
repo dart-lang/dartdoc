@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/model/language_feature.dart';
-
 /// Represents a single modifier applicable to containers.
 class ContainerModifier implements Comparable<ContainerModifier> {
   final String name;
@@ -42,10 +40,22 @@ class ContainerModifier implements Comparable<ContainerModifier> {
   static const ContainerModifier mixin = ContainerModifier._('mixin', order: 4);
 }
 
-extension BuildLanguageFeatureSet on Iterable<ContainerModifier> {
-  /// Transforms [ContainerModifier]s into a series of [LanguageFeature] objects
-  /// suitable for rendering as chips.   Assumes iterable is sorted.
-  Iterable<LanguageFeature> get asLanguageFeatureSet =>
-      where((m) => !m.hideIfPresent.any(contains))
-          .map((m) => LanguageFeature(m.name));
-}
+const Map<String, String> classModifierDescriptions = {
+  'sealed':
+      'The direct subtypes of this class will be checked for exhaustiveness in switches.',
+  'abstract': 'This type can not be directly constructed.',
+  'base':
+      'This class or mixin can only be extended (not implemented or mixed in).',
+  'interface': 'This class can only be implemented (not extended or mixed in).',
+  'final': 'This class can neither be extended, implemented, nor mixed in.',
+  'mixin': 'This class can be used as a class and a mixin.',
+};
+
+const Map<String, String> classModifierUrls = {
+  'sealed': 'https://dart.dev/language/class-modifiers#sealed',
+  'abstract': 'https://dart.dev/language/class-modifiers#abstract',
+  'base': 'https://dart.dev/language/class-modifiers#base',
+  'interface': 'https://dart.dev/language/class-modifiers#interface',
+  'final': 'https://dart.dev/language/class-modifiers#final',
+  'mixin': 'https://dart.dev/language/mixins#class-mixin-or-mixin-class',
+};
