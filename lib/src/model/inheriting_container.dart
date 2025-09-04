@@ -8,8 +8,8 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/container_modifiers.dart';
-import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/tag.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:meta/meta.dart';
 
@@ -89,19 +89,13 @@ abstract class InheritingContainer extends Container {
     if (isMixinClass) ContainerModifier.mixin,
   ]..sort();
 
-  /// A list of class modifiers that both apply to this [InheritingContainer]
-  /// and make sense to display in context.
-  late final List<LanguageFeature> displayedClassModifiers = containerModifiers
-      .where((m) => classModifierDescriptions[m.name] != null)
+  /// A list of class modifiers for this [InheritingContainer] to dipslay as
+  /// tags.
+  @override
+  late final List<Tag> tags = containerModifiers
       .where((m) => !m.hideIfPresent.any(containerModifiers.contains))
-      .map((m) => LanguageFeature(
-            m.name,
-            classModifierDescriptions[m.name],
-            classModifierUrls[m.name],
-          ))
+      .map((m) => Tag(m.name, m.description, m.url))
       .toList();
-
-  bool get hasDisplayedClassModifiers => displayedClassModifiers.isNotEmpty;
 
   late final List<ModelElement> _allModelElements = [
     ...super.allModelElements,

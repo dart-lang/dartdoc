@@ -10,8 +10,7 @@ import 'dartdoc_test_base.dart';
 import 'src/utils.dart';
 
 extension on InheritingContainer {
-  String classModifierChips() =>
-      displayedClassModifiers.map((l) => l.name).join(' ');
+  String classModifierChips() => tags.map((l) => l.name).join(' ');
 }
 
 void main() {

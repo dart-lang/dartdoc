@@ -6,7 +6,7 @@
     data-above-sidebar="{{ aboveSidebarPath }}"
     data-below-sidebar="{{ belowSidebarPath }}">
   {{ #self }}
-    <div>{{ >source_link }}<h1><span class="kind-method">{{{ nameWithGenerics }}}</span> {{ fullkind }}</h1></div>
+    <div>{{ >source_link }}<h1><span class="kind-method">{{{ nameWithGenerics }}}</span> {{ fullkind }} {{ >tags }}</h1></div>
   {{ /self }}
 
   {{ #method }}
