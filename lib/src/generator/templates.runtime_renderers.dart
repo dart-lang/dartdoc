@@ -12084,14 +12084,7 @@ class _Renderer_InheritingContainer extends RendererBase<InheritingContainer> {
                       StringSink sink,
                     ) {
                       return c.tags.map(
-                        (e) => renderSimple(
-                          e,
-                          ast,
-                          r.template,
-                          sink,
-                          parent: r,
-                          getters: _invisibleGetters['Tag']!,
-                        ),
+                        (e) => _render_Tag(e, ast, r.template, sink, parent: r),
                       );
                     },
               ),
@@ -17196,14 +17189,7 @@ class _Renderer_ModelElement extends RendererBase<ModelElement> {
                       StringSink sink,
                     ) {
                       return c.tags.map(
-                        (e) => renderSimple(
-                          e,
-                          ast,
-                          r.template,
-                          sink,
-                          parent: r,
-                          getters: _invisibleGetters['Tag']!,
-                        ),
+                        (e) => _render_Tag(e, ast, r.template, sink, parent: r),
                       );
                     },
               ),
@@ -21203,6 +21189,167 @@ class _Renderer_String extends RendererBase<String> {
   Property<String>? getProperty(String key) {
     if (propertyMap<String>().containsKey(key)) {
       return propertyMap<String>()[key];
+    } else {
+      return null;
+    }
+  }
+}
+
+void _render_Tag(
+  Tag context,
+  List<MustachioNode> ast,
+  Template template,
+  StringSink sink, {
+  RendererBase<Object>? parent,
+}) {
+  var renderer = _Renderer_Tag(context, parent, template, sink);
+  renderer.renderBlock(ast);
+}
+
+class _Renderer_Tag extends RendererBase<Tag> {
+  static final Map<Type, Object> _propertyMapCache = {};
+  static Map<String, Property<CT_>> propertyMap<CT_ extends Tag>() =>
+      _propertyMapCache.putIfAbsent(
+            CT_,
+            () => {
+              ..._Renderer_Object.propertyMap<CT_>(),
+              'description': Property(
+                getValue: (CT_ c) => c.description,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                      if (remainingNames.isEmpty) {
+                        return self.getValue(c).toString();
+                      }
+                      var name = remainingNames.first;
+                      var nextProperty = _Renderer_String.propertyMap()
+                          .getValue(name);
+                      return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)],
+                      );
+                    },
+
+                isNullValue: (CT_ c) => c.description == null,
+
+                renderValue:
+                    (
+                      CT_ c,
+                      RendererBase<CT_> r,
+                      List<MustachioNode> ast,
+                      StringSink sink,
+                    ) {
+                      _render_String(
+                        c.description!,
+                        ast,
+                        r.template,
+                        sink,
+                        parent: r,
+                      );
+                    },
+              ),
+              'label': Property(
+                getValue: (CT_ c) => c.label,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                      if (remainingNames.isEmpty) {
+                        return self.getValue(c).toString();
+                      }
+                      var name = remainingNames.first;
+                      var nextProperty = _Renderer_String.propertyMap()
+                          .getValue(name);
+                      return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)],
+                      );
+                    },
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue:
+                    (
+                      CT_ c,
+                      RendererBase<CT_> r,
+                      List<MustachioNode> ast,
+                      StringSink sink,
+                    ) {
+                      _render_String(c.label, ast, r.template, sink, parent: r);
+                    },
+              ),
+              'name': Property(
+                getValue: (CT_ c) => c.name,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                      if (remainingNames.isEmpty) {
+                        return self.getValue(c).toString();
+                      }
+                      var name = remainingNames.first;
+                      var nextProperty = _Renderer_String.propertyMap()
+                          .getValue(name);
+                      return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)],
+                      );
+                    },
+
+                isNullValue: (CT_ c) => false,
+
+                renderValue:
+                    (
+                      CT_ c,
+                      RendererBase<CT_> r,
+                      List<MustachioNode> ast,
+                      StringSink sink,
+                    ) {
+                      _render_String(c.name, ast, r.template, sink, parent: r);
+                    },
+              ),
+              'url': Property(
+                getValue: (CT_ c) => c.url,
+                renderVariable:
+                    (CT_ c, Property<CT_> self, List<String> remainingNames) {
+                      if (remainingNames.isEmpty) {
+                        return self.getValue(c).toString();
+                      }
+                      var name = remainingNames.first;
+                      var nextProperty = _Renderer_String.propertyMap()
+                          .getValue(name);
+                      return nextProperty.renderVariable(
+                        self.getValue(c) as String,
+                        nextProperty,
+                        [...remainingNames.skip(1)],
+                      );
+                    },
+
+                isNullValue: (CT_ c) => c.url == null,
+
+                renderValue:
+                    (
+                      CT_ c,
+                      RendererBase<CT_> r,
+                      List<MustachioNode> ast,
+                      StringSink sink,
+                    ) {
+                      _render_String(c.url!, ast, r.template, sink, parent: r);
+                    },
+              ),
+            },
+          )
+          as Map<String, Property<CT_>>;
+
+  _Renderer_Tag(
+    Tag context,
+    RendererBase<Object>? parent,
+    Template template,
+    StringSink sink,
+  ) : super(context, parent, template, sink);
+
+  @override
+  Property<Tag>? getProperty(String key) {
+    if (propertyMap<Tag>().containsKey(key)) {
+      return propertyMap<Tag>()[key];
     } else {
       return null;
     }
@@ -25687,7 +25834,6 @@ const _invisibleGetters = {
     'variable3',
   },
   'Scope': {'hashCode', 'runtimeType'},
-  'Tag': {'description', 'hashCode', 'label', 'name', 'runtimeType', 'url'},
   'TemplateOptions': {
     'customFooterContent',
     'customHeaderContent',

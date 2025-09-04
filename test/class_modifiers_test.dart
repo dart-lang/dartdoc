@@ -2,16 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/tag.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
 import 'dartdoc_test_base.dart';
 import 'src/utils.dart';
-
-extension on InheritingContainer {
-  String classModifierChips() => tags.map((l) => l.name).join(' ');
-}
 
 void main() {
   defineReflectiveSuite(() {
@@ -62,21 +58,21 @@ base mixin O {}
     var Mclass = library.classes.named('M');
     var Nmixin = library.mixins.named('N');
     var Omixin = library.mixins.named('O');
-    expect(Aclass.classModifierChips(), equals(''));
-    expect(Bclass.classModifierChips(), equals('base'));
-    expect(Cclass.classModifierChips(), equals('interface'));
-    expect(Dclass.classModifierChips(), equals('final'));
-    expect(Eclass.classModifierChips(), equals('sealed'));
-    expect(Fclass.classModifierChips(), equals('abstract'));
-    expect(Gclass.classModifierChips(), equals('abstract base'));
-    expect(Hclass.classModifierChips(), equals('abstract interface'));
-    expect(Iclass.classModifierChips(), equals('abstract final'));
-    expect(Jclass.classModifierChips(), equals('mixin'));
-    expect(Kclass.classModifierChips(), equals('base mixin'));
-    expect(Lclass.classModifierChips(), equals('abstract mixin'));
-    expect(Mclass.classModifierChips(), equals('abstract base mixin'));
-    expect(Nmixin.classModifierChips(), equals(''));
-    expect(Omixin.classModifierChips(), equals('base'));
+    expect(Aclass.tags, <Tag>[]);
+    expect(Bclass.tags.map((m) => m.name), ['base']);
+    expect(Cclass.tags.map((m) => m.name), ['interface']);
+    expect(Dclass.tags.map((m) => m.name), ['final']);
+    expect(Eclass.tags.map((m) => m.name), ['sealed']);
+    expect(Fclass.tags.map((m) => m.name), ['abstract']);
+    expect(Gclass.tags.map((m) => m.name), ['abstract', 'base']);
+    expect(Hclass.tags.map((m) => m.name), ['abstract', 'interface']);
+    expect(Iclass.tags.map((m) => m.name), ['abstract', 'final']);
+    expect(Jclass.tags.map((m) => m.name), ['mixin']);
+    expect(Kclass.tags.map((m) => m.name), ['base', 'mixin']);
+    expect(Lclass.tags.map((m) => m.name), ['abstract', 'mixin']);
+    expect(Mclass.tags.map((m) => m.name), ['abstract', 'base', 'mixin']);
+    expect(Nmixin.tags.map((m) => m.name), <Tag>[]);
+    expect(Omixin.tags.map((m) => m.name), ['base']);
   }
 
   void test_abstractSealed() async {
@@ -85,8 +81,7 @@ abstract class A {}
 sealed class B extends A {}
 ''');
     var Bclass = library.classes.named('B');
-    expect(
-        Bclass.classModifierChips(), equals('sealed')); // *not* sealed abstract
+    expect(Bclass.tags.map((m) => m.name), ['sealed']); // *not* sealed abstract
   }
 
   void test_inferredModifiers() async {
@@ -116,13 +111,13 @@ base class M extends L {}
     var Iclass = library.classes.named('I');
     var Lclass = library.classes.named('L');
     var Mclass = library.classes.named('M');
-    expect(Bclass.classModifierChips(), equals('sealed')); // *not* sealed base
-    expect(Cclass.classModifierChips(), equals('base'));
-    expect(Eclass.classModifierChips(), equals('sealed'));
-    expect(Fclass.classModifierChips(), equals('interface'));
-    expect(Hclass.classModifierChips(), equals('sealed'));
-    expect(Iclass.classModifierChips(), equals('final'));
-    expect(Lclass.classModifierChips(), equals('sealed'));
-    expect(Mclass.classModifierChips(), equals('base'));
+    expect(Bclass.tags.map((m) => m.name), ['sealed']); // *not* sealed base
+    expect(Cclass.tags.map((m) => m.name), ['base']);
+    expect(Eclass.tags.map((m) => m.name), ['sealed']);
+    expect(Fclass.tags.map((m) => m.name), ['interface']);
+    expect(Hclass.tags.map((m) => m.name), ['sealed']);
+    expect(Iclass.tags.map((m) => m.name), ['final']);
+    expect(Lclass.tags.map((m) => m.name), ['sealed']);
+    expect(Mclass.tags.map((m) => m.name), ['base']);
   }
 }
