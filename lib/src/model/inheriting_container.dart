@@ -8,8 +8,8 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/container_modifiers.dart';
-import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/tag.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:meta/meta.dart';
 
@@ -89,9 +89,13 @@ abstract class InheritingContainer extends Container {
     if (isMixinClass) ContainerModifier.mixin,
   ]..sort();
 
+  /// A list of class modifiers for this [InheritingContainer] to dipslay as
+  /// tags.
   @override
-  late final List<LanguageFeature> displayedLanguageFeatures =
-      containerModifiers.asLanguageFeatureSet.toList();
+  late final List<Tag> tags = containerModifiers
+      .where((m) => !m.hideIfPresent.any(containerModifiers.contains))
+      .map((m) => Tag(m.name, m.description, m.url))
+      .toList();
 
   late final List<ModelElement> _allModelElements = [
     ...super.allModelElements,
@@ -532,8 +536,7 @@ abstract class InheritingContainer extends Container {
       [FieldElement? field]) {
     // Return a [ContainerAccessor] with `isInherited = true` if [element] is
     // in [inheritedAccessors].
-    ContainerAccessor? containerAccessorFrom(
-        PropertyAccessorElement? element) {
+    ContainerAccessor? containerAccessorFrom(PropertyAccessorElement? element) {
       if (element == null) return null;
       final enclosingContainer =
           inheritedAccessors.contains(element) ? this : null;

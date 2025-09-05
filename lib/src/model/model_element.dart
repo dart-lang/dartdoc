@@ -15,10 +15,10 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/prefix.dart';
+import 'package:dartdoc/src/model/tag.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
@@ -63,7 +63,6 @@ abstract class ModelElement
         Locatable,
         Nameable,
         SourceCode,
-        FeatureSet,
         DocumentationComment
     implements Comparable<ModelElement>, Documentable {
   // TODO(jcollins-g): This really wants a "member that has a type" class.
@@ -457,6 +456,12 @@ abstract class ModelElement
             '<span class="${f.cssClassName}">${f.linkedNameWithParameters}</span>')
         .join();
   }
+
+  /// A list of tags that both apply to this [ModelElement] and make sense to
+  /// display in context.
+  List<Tag> get tags => const [];
+
+  bool get hasTags => tags.isNotEmpty;
 
   /// Whether this is a function, or if it is an type alias to a function.
   bool get isCallable =>

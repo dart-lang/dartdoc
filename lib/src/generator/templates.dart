@@ -49,9 +49,8 @@ import 'package:dartdoc/src/generator/templates.aot_renderers_for_html.dart'
 import 'package:dartdoc/src/generator/templates.runtime_renderers.dart'
     as runtime_renderers;
 import 'package:dartdoc/src/model/annotation.dart';
-import 'package:dartdoc/src/model/feature_set.dart';
-import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/tag.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
 
@@ -73,10 +72,9 @@ const _visibleTypes = {
   Extension,
   ExtensionType,
   ExternalItem,
-  FeatureSet,
   FunctionTypeElementType,
   InheritingContainer,
-  LanguageFeature,
+  Tag,
   Library,
   LibraryContainer,
   Method,

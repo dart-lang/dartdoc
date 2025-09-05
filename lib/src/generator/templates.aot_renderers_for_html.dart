@@ -291,7 +291,7 @@ String renderClass(ClassTemplateData context0) {
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
-  buffer.write(_renderClass_partial_feature_set_2(context1));
+  buffer.write(_renderClass_partial_tags_2(context1));
   buffer.write(' ');
   buffer.write(
     __renderCategory_partial_container_3_partial_categorization_0(context1),
@@ -393,7 +393,7 @@ String renderConstructor(ConstructorTemplateData context0) {
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
-  buffer.write(_renderConstructor_partial_feature_set_2(context1));
+  buffer.write(_renderConstructor_partial_tags_2(context1));
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.constructor;
@@ -469,7 +469,7 @@ String renderEnum(EnumTemplateData context0) {
         ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
-  buffer.write(_renderEnum_partial_feature_set_2(context1));
+  buffer.write(_renderEnum_partial_tags_2(context1));
   buffer.write(' ');
   buffer.write(
     __renderCategory_partial_container_3_partial_categorization_0(context1),
@@ -624,7 +624,7 @@ String renderExtension<T extends Extension>(ExtensionTemplateData<T> context0) {
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
-  buffer.write(_renderExtension_partial_feature_set_2(context1));
+  buffer.write(_renderExtension_partial_tags_2(context1));
   buffer.write(' ');
   buffer.write(
     __renderCategory_partial_container_3_partial_categorization_0(context1),
@@ -712,7 +712,7 @@ String renderExtensionType<T extends ExtensionType>(
       ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
-  buffer.write(_renderExtensionType_partial_feature_set_2(context1));
+  buffer.write(_renderExtensionType_partial_tags_2(context1));
   buffer.write(' ');
   buffer.write(
     __renderCategory_partial_container_3_partial_categorization_0(context1),
@@ -820,7 +820,7 @@ String renderFunction(FunctionTemplateData context0) {
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
-  buffer.write(_renderFunction_partial_feature_set_2(context1));
+  buffer.write(_renderFunction_partial_tags_2(context1));
   buffer.write(' ');
   buffer.write(
     __renderCategory_partial_callable_8_partial_categorization_0(context1),
@@ -990,7 +990,7 @@ String renderLibrary(LibraryTemplateData context0) {
         ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
-  buffer.write(_renderLibrary_partial_feature_set_2(context1));
+  buffer.write(_renderLibrary_partial_tags_2(context1));
   buffer.write(' ');
   buffer.write(
     __renderCategory_partial_library_2_partial_categorization_0(context1),
@@ -1259,7 +1259,7 @@ String renderMethod(MethodTemplateData context0) {
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.fullkind);
   buffer.write(' ');
-  buffer.write(_renderMethod_partial_feature_set_2(context1));
+  buffer.write(_renderMethod_partial_tags_2(context1));
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.method;
@@ -1337,7 +1337,7 @@ String renderMixin(MixinTemplateData context0) {
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
-  buffer.write(_renderMixin_partial_feature_set_2(context1));
+  buffer.write(_renderMixin_partial_tags_2(context1));
   buffer.write(' ');
   buffer.write(
     __renderCategory_partial_container_3_partial_categorization_0(context1),
@@ -1451,7 +1451,7 @@ String renderProperty(PropertyTemplateData context0) {
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
-  buffer.write(_renderProperty_partial_feature_set_2(context1));
+  buffer.write(_renderProperty_partial_tags_2(context1));
   buffer.write('''</h1></div>''');
   buffer.writeln();
   var context2 = context0.self;
@@ -1922,7 +1922,7 @@ String renderTopLevelProperty(TopLevelPropertyTemplateData context0) {
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
-  buffer.write(_renderTopLevelProperty_partial_feature_set_2(context1));
+  buffer.write(_renderTopLevelProperty_partial_tags_2(context1));
   buffer.write(' ');
   buffer.write(
     __renderCategory_partial_constant_6_partial_categorization_0(context1),
@@ -2003,7 +2003,7 @@ String renderTypedef(TypedefTemplateData context0) {
   buffer.write('''</span> ''');
   buffer.writeEscaped(context1.kind.toString());
   buffer.write(' ');
-  buffer.write(_renderTypedef_partial_feature_set_2(context1));
+  buffer.write(_renderTypedef_partial_tags_2(context1));
   buffer.write(' ');
   buffer.write(
     ___renderCategory_partial_typedef_10_partial_type_2_partial_categorization_0(
@@ -2350,20 +2350,6 @@ String _deduplicated__documentation(Warnable context0) {
     buffer.write(context0.documentationAsHtml);
     buffer.writeln();
     buffer.write('''</section>''');
-  }
-  buffer.writeln();
-
-  return buffer.toString();
-}
-
-String _deduplicated__feature_set(ModelElement context0) {
-  final buffer = StringBuffer();
-  if (context0.hasFeatureSet) {
-    var context1 = context0.displayedLanguageFeatures;
-    for (var context2 in context1) {
-      buffer.write('\n    ');
-      buffer.write(context2.featureLabel);
-    }
   }
   buffer.writeln();
 
@@ -2927,6 +2913,20 @@ String _deduplicated__super_chain(InheritingContainer context0) {
   return buffer.toString();
 }
 
+String _deduplicated__tags(ModelElement context0) {
+  final buffer = StringBuffer();
+  if (context0.hasTags) {
+    var context1 = context0.tags;
+    for (var context2 in context1) {
+      buffer.write('\n    ');
+      buffer.write(context2.label);
+    }
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
 String _renderCategory_partial_callable_8(ModelFunctionTyped context2) {
   final buffer = StringBuffer();
   buffer.write('''<dt id="''');
@@ -3394,9 +3394,6 @@ String _renderClass_partial_container_annotations_9(Class context1) =>
 String _renderClass_partial_documentation_4(Class context1) =>
     _deduplicated__documentation(context1);
 
-String _renderClass_partial_feature_set_2(Class context1) =>
-    _deduplicated__feature_set(context1);
-
 String _renderClass_partial_footer_18(ClassTemplateData context0) =>
     _deduplicated__footer(context0);
 
@@ -3457,14 +3454,14 @@ String _renderClass_partial_static_properties_14(Class context1) =>
 String _renderClass_partial_super_chain_5(Class context1) =>
     _deduplicated__super_chain(context1);
 
+String _renderClass_partial_tags_2(Class context1) =>
+    _deduplicated__tags(context1);
+
 String _renderConstructor_partial_annotations_3(Constructor context1) =>
     _deduplicated__annotations(context1);
 
 String _renderConstructor_partial_documentation_4(Constructor context1) =>
     _deduplicated__documentation(context1);
-
-String _renderConstructor_partial_feature_set_2(Constructor context1) =>
-    _deduplicated__feature_set(context1);
 
 String _renderConstructor_partial_footer_7(ConstructorTemplateData context0) =>
     _deduplicated__footer(context0);
@@ -3482,6 +3479,9 @@ String _renderConstructor_partial_source_code_5(Constructor context1) =>
 String _renderConstructor_partial_source_link_1(Constructor context1) =>
     _deduplicated__source_link(context1);
 
+String _renderConstructor_partial_tags_2(Constructor context1) =>
+    _deduplicated__tags(context1);
+
 String _renderEnum_partial_available_extensions_8(Enum context1) =>
     _deduplicated__available_extensions(context1);
 
@@ -3490,9 +3490,6 @@ String _renderEnum_partial_container_annotations_9(Enum context1) =>
 
 String _renderEnum_partial_documentation_4(Enum context1) =>
     _deduplicated__documentation(context1);
-
-String _renderEnum_partial_feature_set_2(Enum context1) =>
-    _deduplicated__feature_set(context1);
 
 String _renderEnum_partial_footer_18(EnumTemplateData context0) =>
     _deduplicated__footer(context0);
@@ -3554,6 +3551,9 @@ String _renderEnum_partial_static_properties_14(Enum context1) =>
 String _renderEnum_partial_super_chain_5(Enum context1) =>
     _deduplicated__super_chain(context1);
 
+String _renderEnum_partial_tags_2(Enum context1) =>
+    _deduplicated__tags(context1);
+
 String _renderError_partial_footer_3(PackageTemplateData context0) =>
     _deduplicated__footer(context0);
 
@@ -3579,9 +3579,6 @@ String _renderExtensionType_partial_container_annotations_7(
 
 String _renderExtensionType_partial_documentation_4(ExtensionType context1) =>
     _deduplicated__documentation(context1);
-
-String _renderExtensionType_partial_feature_set_2(ExtensionType context1) =>
-    _deduplicated__feature_set(context1);
 
 String _renderExtensionType_partial_footer_16<T extends ExtensionType>(
   ExtensionTypeTemplateData<T> context0,
@@ -3623,14 +3620,14 @@ String _renderExtensionType_partial_static_properties_12(
   ExtensionType context1,
 ) => _deduplicated__static_properties(context1);
 
+String _renderExtensionType_partial_tags_2(ExtensionType context1) =>
+    _deduplicated__tags(context1);
+
 String _renderExtension_partial_container_annotations_5(Extension context1) =>
     _deduplicated__container_annotations(context1);
 
 String _renderExtension_partial_documentation_4(Extension context1) =>
     _deduplicated__documentation(context1);
-
-String _renderExtension_partial_feature_set_2(Extension context1) =>
-    _deduplicated__feature_set(context1);
 
 String _renderExtension_partial_footer_13<T extends Extension>(
   ExtensionTemplateData<T> context0,
@@ -3665,6 +3662,9 @@ String _renderExtension_partial_static_methods_10(Extension context1) =>
 String _renderExtension_partial_static_properties_9(Extension context1) =>
     _deduplicated__static_properties(context1);
 
+String _renderExtension_partial_tags_2(Extension context1) =>
+    _deduplicated__tags(context1);
+
 String _renderFunction_partial_callable_multiline_4(ModelFunction context1) {
   final buffer = StringBuffer();
   buffer.write(
@@ -3696,9 +3696,6 @@ String _renderFunction_partial_callable_multiline_4(ModelFunction context1) {
 String _renderFunction_partial_documentation_6(ModelFunction context1) =>
     _deduplicated__documentation(context1);
 
-String _renderFunction_partial_feature_set_2(ModelFunction context1) =>
-    _deduplicated__feature_set(context1);
-
 String _renderFunction_partial_footer_9(FunctionTemplateData context0) =>
     _deduplicated__footer(context0);
 
@@ -3714,6 +3711,9 @@ String _renderFunction_partial_source_code_7(ModelFunction context1) =>
 
 String _renderFunction_partial_source_link_1(ModelFunction context1) =>
     _deduplicated__source_link(context1);
+
+String _renderFunction_partial_tags_2(ModelFunction context1) =>
+    _deduplicated__tags(context1);
 
 String _renderIndex_partial_documentation_1(Package context1) =>
     _deduplicated__documentation(context1);
@@ -3748,9 +3748,6 @@ String _renderLibrary_partial_extension_type_8(ExtensionType context3) {
   return buffer.toString();
 }
 
-String _renderLibrary_partial_feature_set_2(Library context1) =>
-    _deduplicated__feature_set(context1);
-
 String _renderLibrary_partial_footer_17(LibraryTemplateData context0) =>
     _deduplicated__footer(context0);
 
@@ -3765,6 +3762,9 @@ String _renderLibrary_partial_search_sidebar_15(LibraryTemplateData context0) =>
 
 String _renderLibrary_partial_source_link_1(Library context1) =>
     _deduplicated__source_link(context1);
+
+String _renderLibrary_partial_tags_2(Library context1) =>
+    _deduplicated__tags(context1);
 
 String _renderMethod_partial_callable_multiline_3(Method context1) {
   final buffer = StringBuffer();
@@ -3795,9 +3795,6 @@ String _renderMethod_partial_callable_multiline_3(Method context1) {
 String _renderMethod_partial_documentation_5(Method context1) =>
     _deduplicated__documentation(context1);
 
-String _renderMethod_partial_feature_set_2(Method context1) =>
-    _deduplicated__feature_set(context1);
-
 String _renderMethod_partial_footer_8(MethodTemplateData context0) =>
     _deduplicated__footer(context0);
 
@@ -3813,6 +3810,9 @@ String _renderMethod_partial_source_code_6(Method context1) =>
 String _renderMethod_partial_source_link_1(Method context1) =>
     _deduplicated__source_link(context1);
 
+String _renderMethod_partial_tags_2(Method context1) =>
+    _deduplicated__tags(context1);
+
 String _renderMixin_partial_annotations_8(Mixin context1) =>
     _deduplicated__annotations(context1);
 
@@ -3821,9 +3821,6 @@ String _renderMixin_partial_available_extensions_7(Mixin context1) =>
 
 String _renderMixin_partial_documentation_4(Mixin context1) =>
     _deduplicated__documentation(context1);
-
-String _renderMixin_partial_feature_set_2(Mixin context1) =>
-    _deduplicated__feature_set(context1);
 
 String _renderMixin_partial_footer_16(MixinTemplateData context0) =>
     _deduplicated__footer(context0);
@@ -3861,6 +3858,9 @@ String _renderMixin_partial_static_properties_12(Mixin context1) =>
 String _renderMixin_partial_super_chain_5(Mixin context1) =>
     _deduplicated__super_chain(context1);
 
+String _renderMixin_partial_tags_2(Mixin context1) =>
+    _deduplicated__tags(context1);
+
 String _renderProperty_partial_accessor_getter_8(Field context1) =>
     _deduplicated__accessor_getter(context1);
 
@@ -3872,9 +3872,6 @@ String _renderProperty_partial_annotations_3(Field context1) =>
 
 String _renderProperty_partial_documentation_6(Field context1) =>
     _deduplicated__documentation(context1);
-
-String _renderProperty_partial_feature_set_2(Field context1) =>
-    _deduplicated__feature_set(context1);
 
 String _renderProperty_partial_footer_11(PropertyTemplateData context0) =>
     _deduplicated__footer(context0);
@@ -3894,6 +3891,9 @@ String _renderProperty_partial_source_code_7(Field context1) =>
 
 String _renderProperty_partial_source_link_1(Field context1) =>
     _deduplicated__source_link(context1);
+
+String _renderProperty_partial_tags_2(Field context1) =>
+    _deduplicated__tags(context1);
 
 String _renderSidebarForContainer_partial_container_sidebar_item_0(
   Field context2,
@@ -3967,10 +3967,6 @@ String _renderTopLevelProperty_partial_documentation_7(
   TopLevelVariable context1,
 ) => _deduplicated__documentation(context1);
 
-String _renderTopLevelProperty_partial_feature_set_2(
-  TopLevelVariable context1,
-) => _deduplicated__feature_set(context1);
-
 String _renderTopLevelProperty_partial_footer_12(
   TopLevelPropertyTemplateData context0,
 ) => _deduplicated__footer(context0);
@@ -3995,11 +3991,11 @@ String _renderTopLevelProperty_partial_source_link_1(
   TopLevelVariable context1,
 ) => _deduplicated__source_link(context1);
 
+String _renderTopLevelProperty_partial_tags_2(TopLevelVariable context1) =>
+    _deduplicated__tags(context1);
+
 String _renderTypedef_partial_documentation_5(Typedef context1) =>
     _deduplicated__documentation(context1);
-
-String _renderTypedef_partial_feature_set_2(Typedef context1) =>
-    _deduplicated__feature_set(context1);
 
 String _renderTypedef_partial_footer_8(TypedefTemplateData context0) =>
     _deduplicated__footer(context0);
@@ -4015,6 +4011,9 @@ String _renderTypedef_partial_source_code_6(Typedef context1) =>
 
 String _renderTypedef_partial_source_link_1(Typedef context1) =>
     _deduplicated__source_link(context1);
+
+String _renderTypedef_partial_tags_2(Typedef context1) =>
+    _deduplicated__tags(context1);
 
 String _renderTypedef_partial_typedef_multiline_4(Typedef context1) {
   final buffer = StringBuffer();
