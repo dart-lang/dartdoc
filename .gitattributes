@@ -15,5 +15,4 @@ lib/resources/docs.dart.js.map merge=theirs
 lib/resources/styles.css merge=theirs
 lib/src/generator/templates.aot_renderers_for_html.dart merge=theirs
 lib/src/generator/templates.aot_renderers_for_md.dart merge=theirs
-lib/src/generator/templates.runtime_renderers.dart merge=theirs
 web/sig.txt merge=theirs
