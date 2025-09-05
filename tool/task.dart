@@ -13,7 +13,6 @@ import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:sass/sass.dart' as sass;
 import 'package:yaml/yaml.dart' as yaml;
-import 'package:yaml/yaml.dart';
 
 import 'src/flutter_repo.dart';
 import 'src/io_utils.dart' as io_utils;
@@ -816,12 +815,6 @@ Future<void> validateBuild() async {
   await buildAll();
 
   for (var relPath in _generatedFilesList) {
-    if (relPath.contains('runtime_renderers') && !_analyzerInUseIsTarget) {
-      // The content of these files is very specific to the version of the
-      // analyzer package in use. So we only validate if we are working on that
-      // exact version.
-      continue;
-    }
     var newVersion = File(path.join('lib', relPath));
     if (!newVersion.existsSync()) {
       print('${newVersion.path} does not exist\n');
@@ -866,27 +859,11 @@ Rebuild them with "dart tool/task.dart build" and check the results in.
   ]);
 }
 
-/// Whether the analyzer in use (as found in `pubspec.lock`) is the target
-/// version of analyzer, against which we verify the runtime renderer files.
-bool get _analyzerInUseIsTarget {
-  // TODO(srawlins): Add validation that this number falls within the
-  // constraints of the analyzer package which are set in `pubspec.yaml`.
-  const analyzerTarget = '7.2.0';
-
-  var lockfilePath = path.join(Directory.current.path, 'pubspec.lock');
-  var lockfile = loadYaml(File(lockfilePath).readAsStringSync()) as YamlMap;
-  var packages = lockfile['packages'] as YamlMap;
-  var analyzer = packages['analyzer'] as YamlMap;
-  var analyzerInUse = analyzer['version'] as String;
-  return analyzerInUse == analyzerTarget;
-}
-
 /// Paths in this list are relative to lib/.
 final _generatedFilesList = [
   '../dartdoc_options.yaml',
   'src/generator/html_resources.g.dart',
   'src/generator/templates.aot_renderers_for_html.dart',
-  'src/generator/templates.runtime_renderers.dart',
   'src/version.dart',
   '../test/mustachio/foo.dart',
 ].map((s) => path.joinAll(path.posix.split(s)));

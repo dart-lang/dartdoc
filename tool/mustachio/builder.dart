@@ -14,20 +14,17 @@ import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:path/path.dart' as path;
 
 import 'codegen_aot_compiler.dart';
-import 'codegen_runtime_renderer.dart';
 
 void main() async {
   await build(path.join('lib', 'src', 'generator', 'templates.dart'));
   await build(
     path.join('test', 'mustachio', 'foo.dart'),
-    rendererClassesArePublic: true,
   );
 }
 
 Future<void> build(
   String sourcePath, {
   String? root,
-  bool rendererClassesArePublic = false,
 }) async {
   root ??= Directory.current.path;
   var contextCollection = AnalysisContextCollectionImpl(
@@ -55,17 +52,7 @@ Future<void> build(
     rendererSpecs.add(_buildRendererSpec(renderer));
   }
 
-  var runtimeRenderersContents = buildRuntimeRenderers(
-    rendererSpecs,
-    Uri.parse(sourcePath),
-    typeProvider,
-    typeSystem,
-    rendererClassesArePublic: rendererClassesArePublic,
-  );
   var basePath = path.withoutExtension(sourcePath);
-  await File(path.join(root, '$basePath.runtime_renderers.dart'))
-      .writeAsString(runtimeRenderersContents);
-
   var aotRenderersContents = await compileTemplatesToRenderers(
     rendererSpecs,
     typeProvider,
