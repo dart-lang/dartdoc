@@ -6,6 +6,7 @@
 * Refactor 404 error page to use div instead of p for search form.
 * Require analyzer 8.1.1 APIs.
 * Many internal migrations for analyzer APIs.
+* Remove deprecated public API exports
 
 ## 8.3.4
 * The URL for category pages now uses _category name_ instead of
