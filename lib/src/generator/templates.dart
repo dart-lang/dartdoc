@@ -6,7 +6,6 @@
 // functions. These are generated into:
 //
 // * templates.aot_renderers_for_html.dart
-// * templates.runtime_renderers.dart
 //
 // See tool/mustachio/README.md for details.
 
@@ -46,8 +45,6 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.aot_renderers_for_html.dart'
     as aot_renderers_for_html;
-import 'package:dartdoc/src/generator/templates.runtime_renderers.dart'
-    as runtime_renderers;
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/tag.dart';
@@ -195,132 +192,4 @@ class HtmlAotTemplates implements Templates {
   @override
   String renderTypedef(TypedefTemplateData context) =>
       aot_renderers_for_html.renderTypedef(context);
-}
-
-/// The collection of [Template] objects parsed at runtime.
-// TODO(srawlins): Remove this class, and `templates.runtime_renderers.dart`, as
-// runtime templates are no longer supported.
-class RuntimeTemplates implements Templates {
-  @override
-  String renderCategory(CategoryTemplateData context) =>
-      runtime_renderers.renderCategory(context, _categoryTemplate);
-
-  @override
-  String renderCategoryRedirect(CategoryTemplateData context) =>
-      runtime_renderers.renderCategoryRedirect(context, _categoryTemplate);
-
-  @override
-  String renderClass<T extends Class>(ClassTemplateData context) =>
-      runtime_renderers.renderClass(context, _classTemplate);
-
-  @override
-  String renderConstructor(ConstructorTemplateData context) =>
-      runtime_renderers.renderConstructor(context, _constructorTemplate);
-
-  @override
-  String renderEnum(EnumTemplateData context) =>
-      runtime_renderers.renderEnum(context, _enumTemplate);
-
-  @override
-  String renderError(PackageTemplateData context) =>
-      runtime_renderers.renderError(context, _errorTemplate);
-
-  @override
-  String renderExtension(ExtensionTemplateData context) =>
-      runtime_renderers.renderExtension(context, _extensionTemplate);
-
-  @override
-  String renderExtensionType(ExtensionTypeTemplateData context) =>
-      runtime_renderers.renderExtensionType(context, _extensionTemplate);
-
-  @override
-  String renderFunction(FunctionTemplateData context) =>
-      runtime_renderers.renderFunction(context, _functionTemplate);
-
-  @override
-  String renderIndex(PackageTemplateData context) =>
-      runtime_renderers.renderIndex(context, _indexTemplate);
-
-  @override
-  String renderLibrary(LibraryTemplateData context) =>
-      runtime_renderers.renderLibrary(context, _libraryTemplate);
-
-  @override
-  String renderLibraryRedirect(LibraryTemplateData context) =>
-      runtime_renderers.renderLibraryRedirect(context, _libraryTemplate);
-
-  @override
-  String renderMethod(MethodTemplateData context) =>
-      runtime_renderers.renderMethod(context, _methodTemplate);
-
-  @override
-  String renderMixin(MixinTemplateData context) =>
-      runtime_renderers.renderMixin(context, _mixinTemplate);
-
-  @override
-  String renderProperty(PropertyTemplateData context) =>
-      runtime_renderers.renderProperty(context, _propertyTemplate);
-
-  @override
-  String renderSearchPage(PackageTemplateData context) =>
-      runtime_renderers.renderSearchPage(context, _searchPageTemplate);
-
-  @override
-  String renderSidebarForContainer(
-          TemplateDataWithContainer<Documentable> context) =>
-      runtime_renderers.renderSidebarForContainer(
-          context, _sidebarContainerTemplate);
-
-  @override
-  String renderSidebarForLibrary(
-          TemplateDataWithLibrary<Documentable> context) =>
-      runtime_renderers.renderSidebarForLibrary(
-          context, _sidebarLibraryTemplate);
-
-  @override
-  String renderTopLevelProperty(TopLevelPropertyTemplateData context) =>
-      runtime_renderers.renderTopLevelProperty(
-          context, _topLevelPropertyTemplate);
-
-  @override
-  String renderTypedef(TypedefTemplateData context) =>
-      runtime_renderers.renderTypedef(context, _typedefTemplate);
-
-  final Template _categoryTemplate;
-  final Template _classTemplate;
-  final Template _constructorTemplate;
-  final Template _enumTemplate;
-  final Template _errorTemplate;
-  final Template _extensionTemplate;
-  final Template _functionTemplate;
-  final Template _indexTemplate;
-  final Template _libraryTemplate;
-  final Template _methodTemplate;
-  final Template _mixinTemplate;
-  final Template _propertyTemplate;
-  final Template _searchPageTemplate;
-  final Template _sidebarContainerTemplate;
-  final Template _sidebarLibraryTemplate;
-  final Template _topLevelPropertyTemplate;
-  final Template _typedefTemplate;
-
-  RuntimeTemplates._(
-    this._categoryTemplate,
-    this._libraryTemplate,
-    this._classTemplate,
-    this._constructorTemplate,
-    this._enumTemplate,
-    this._errorTemplate,
-    this._extensionTemplate,
-    this._functionTemplate,
-    this._indexTemplate,
-    this._methodTemplate,
-    this._mixinTemplate,
-    this._propertyTemplate,
-    this._searchPageTemplate,
-    this._sidebarContainerTemplate,
-    this._sidebarLibraryTemplate,
-    this._topLevelPropertyTemplate,
-    this._typedefTemplate,
-  );
 }
