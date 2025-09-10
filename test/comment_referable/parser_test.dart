@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 
 void main() {
   void expectParseEquivalent(String codeRef, List<String> parts,
-      {bool constructorHint = false, bool callableHint = false}) {
+      {bool callableHint = false}) {
     var result = CommentReferenceParser(codeRef).parse();
     var hasCallableHint =
         result.isNotEmpty && result.last is CallableHintEndNode;
