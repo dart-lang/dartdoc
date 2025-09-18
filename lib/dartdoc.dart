@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// A documentation generator for Dart.
-@Deprecated('Will be removed in a later version of DartDoc.')
 library;
 
 export 'package:dartdoc/src/dartdoc.dart';
