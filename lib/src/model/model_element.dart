@@ -634,19 +634,18 @@ abstract class ModelElement
   bool get isConst => false;
 
   bool get isDeprecated {
-    // If element.metadata is empty, it might be because this is a property
-    // where the metadata belongs to the individual getter/setter
-    if (element.annotations.isEmpty && element is PropertyInducingElement) {
-      var pie = element as PropertyInducingElement;
-
-      // The getter or the setter might be null – so the stored value may be
-      // `true`, `false`, or `null`
-      var getterDeprecated = pie.getter?.metadata.hasDeprecated;
-      var setterDeprecated = pie.setter?.metadata.hasDeprecated;
+    // If `element.annotations` is empty, it might be because this is a property
+    // where the annotations belongs to the individual getter/setter.
+    if (element case PropertyInducingElement element
+        when element.annotations.isEmpty) {
+      // The getter or the setter might be `null` – so the stored value may be
+      // `true`, `false`, or `null`.
+      var getterDeprecated = element.getter?.isDeprecatedWithKind('use');
+      var setterDeprecated = element.setter?.isDeprecatedWithKind('use');
 
       var deprecatedValues = [getterDeprecated, setterDeprecated].nonNulls;
 
-      // At least one of these should be non-null. Otherwise things are weird
+      // At least one of these should be non-null. Otherwise things are weird.
       assert(deprecatedValues.isNotEmpty);
 
       // If there are both a setter and getter, only show the property as
@@ -654,7 +653,7 @@ abstract class ModelElement
       return deprecatedValues.every((d) => d);
     }
 
-    return element.metadata.hasDeprecated;
+    return element.isDeprecatedWithKind('use');
   }
 
   @override
@@ -829,5 +828,32 @@ extension on ElementAnnotation {
 extension on Element {
   List<ElementAnnotation> get annotations {
     return metadata.annotations;
+  }
+}
+
+// Copied from analyzer's `lib/src/dart/element/extensions.dart`. Re-use that
+// extension if it becomes public.
+extension on Element {
+  /// Whether this Element is annotated with a `Deprecated` annotation with a
+  /// `_DeprecationKind` of [kind].
+  bool isDeprecatedWithKind(String kind) => metadata.annotations
+      .where((e) => e.isDeprecated)
+      .any((e) => e.deprecationKind == kind);
+}
+
+// Copied from analyzer's `lib/src/dart/element/extensions.dart`. Re-use that
+// extension if it becomes public.
+extension ElementAnnotationExtension on ElementAnnotation {
+  /// The kind of deprecation, if this annotation is a `Deprecated` annotation.
+  ///
+  /// `null` is returned if this is not a `Deprecated` annotation.
+  String? get deprecationKind {
+    if (!isDeprecated) return null;
+    return computeConstantValue()
+            ?.getField('_kind')
+            ?.getField('_name')
+            ?.toStringValue() ??
+        // For SDKs where the `Deprecated` class does not have a deprecation kind.
+        'use';
   }
 }
