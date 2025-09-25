@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io' as io;
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
@@ -16,7 +17,7 @@ import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/sdk/sdk.dart'
-    show EmbedderSdk, FolderBasedDartSdk;
+    show EmbedderSdk, FolderBasedDartSdk, languageVersionFromSdkVersion;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/engine.dart' show AnalysisOptionsImpl;
 // ignore: implementation_imports
@@ -137,7 +138,8 @@ class PubPackageBuilder implements PackageBuilder {
   EmbedderSdk? get _embedderSdk {
     if (__embedderSdk == null && !_config.topLevelPackageMeta.isSdk) {
       __embedderSdk = EmbedderSdk(
-          _resourceProvider, EmbedderYamlLocator(_packageMap).embedderYamls);
+          _resourceProvider, EmbedderYamlLocator(_packageMap).embedderYamls,
+          languageVersion: languageVersionFromSdkVersion(io.Platform.version));
     }
     return __embedderSdk;
   }
