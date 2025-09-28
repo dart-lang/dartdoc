@@ -32,7 +32,7 @@ dev_dependencies:
   test: ^1.24.2
   test_descriptor: ^2.0.1
   test_process: ^2.0.3
-  test_reflective_loader: ^0.2.2
+  test_reflective_loader: ">=0.2.2 <0.5.0"
   web: ^1.1.0
 
 executables:
