@@ -935,7 +935,7 @@ extension on StringBuffer {
       if (bound == null) {
         write(typeParameter.name);
       } else {
-        var boundElement = bound.documentableElement2!;
+        var boundElement = bound.documentableElement!;
         referencedElements.add(boundElement);
         write('${typeParameter.name} extends ${boundElement.name!}');
       }

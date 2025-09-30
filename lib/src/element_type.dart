@@ -34,7 +34,7 @@ abstract class ElementType with CommentReferable, Nameable {
   factory ElementType.for_(
       DartType type, Library library, PackageGraph packageGraph) {
     runtimeStats.incrementAccumulator('elementTypeInstantiation');
-    var fElement = type.documentableElement2;
+    var fElement = type.documentableElement;
     if (fElement == null ||
         fElement.kind == ElementKind.DYNAMIC ||
         fElement.kind == ElementKind.NEVER) {
@@ -102,9 +102,9 @@ class UndefinedElementType extends ElementType {
     // We can not simply throw here because not all SDK libraries resolve
     // all types.
     if (type is InvalidType) return 'dynamic';
-    assert(const {'Never'}.contains(type.documentableElement2?.name),
+    assert(const {'Never'}.contains(type.documentableElement?.name),
         'Unrecognized type for UndefinedElementType: $type');
-    return type.documentableElement2!.name!;
+    return type.documentableElement!.name!;
   }
 
   @override
@@ -288,7 +288,7 @@ abstract class DefinedElementType extends ElementType {
   }
 
   @override
-  String get name => type.documentableElement2!.name!;
+  String get name => type.documentableElement!.name!;
 
   @override
   String get fullyQualifiedName => modelElement.fullyQualifiedName;

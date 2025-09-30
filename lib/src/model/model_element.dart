@@ -295,7 +295,7 @@ abstract class ModelElement
       TypeAliasElement(aliasedType: FunctionType()) =>
         FunctionTypedef(e, library, packageGraph),
       TypeAliasElement()
-          when e.aliasedType.documentableElement2 is InterfaceElement =>
+          when e.aliasedType.documentableElement is InterfaceElement =>
         ClassTypedef(e, library, packageGraph),
       TypeAliasElement() => GeneralizedTypedef(e, library, packageGraph),
       MethodElement(isOperator: true) when enclosingContainer == null =>
