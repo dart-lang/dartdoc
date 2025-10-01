@@ -46,7 +46,7 @@ jobs:
         run: echo "name=today::$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
         shell: bash
       - name: Cache clean flutter
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         if: matrix.job == 'flutter'
         env:
           # Increment version to invalidate bad/obsolete caches.
@@ -55,7 +55,7 @@ jobs:
           path: ~/.dartdoc_grinder
           key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ steps.date.outputs.today }}
       - name: Cache .pub-cache
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         if: matrix.job == 'flutter'
         env:
           # Increment version to invalidate bad/obsolete caches.
