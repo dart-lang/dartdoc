@@ -92,8 +92,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
   @override
   Kind get kind => Kind.constructor;
 
-  late final Callable modelType =
-      getTypeFor(element.type, library) as Callable;
+  late final Callable modelType = getTypeFor(element.type, library) as Callable;
 
   @override
   String get name =>
@@ -101,6 +100,11 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
       // [name] around the conventions used in referenceChildren and replace
       // code there and elsewhere with simple references to the name.
       '${enclosingElement.name}.${element.name}';
+
+  @override
+  String get displayName => isUnnamedConstructor
+      ? enclosingElement.name
+      : '${enclosingElement.name}.${element.name}';
 
   @override
   String get nameWithGenerics {

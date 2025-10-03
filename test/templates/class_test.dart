@@ -218,7 +218,7 @@ class C {
 
     htmlLines.expectMainContentContainsAllInOrder([
       matches('<h2>Constructors</h2>'),
-      matches('<a href="../lib/C/C.html">C.new</a>'),
+      matches('<a href="../lib/C/C.html">C</a>'),
       matches('An unnamed constructor.'),
     ]);
   }
