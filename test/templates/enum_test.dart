@@ -180,7 +180,7 @@ extension Ext<T> on E<T> {}
         matches('<dt>Annotations</dt>'),
         matches('<ul class="annotation-list eNum-relationships">'),
         matches(
-            r'<li>@<a href="../lib/C-class.html">C</a>\(&#39;message&#39;\)</li>'),
+            r'<li>@<a href="../lib/C/C.html">C</a>&lt;dynamic&gt;\(&#39;message&#39;\)</li>'),
         matches('</ul>'),
       ]);
     });

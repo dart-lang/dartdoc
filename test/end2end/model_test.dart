@@ -190,7 +190,9 @@ void main() async {
     test('Verify type arguments on annotations renders, including parameters',
         () {
       var ab0 =
-          '@<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/A-class.html">A</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/B.html">B</a></span>&gt;</span>(0)';
+          '@<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/A/A.html">A</a>'
+          '&lt;<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/B.html">B</a>&gt;'
+          '(0)';
 
       expect(genericMetadata.annotations.first.linkedNameWithParameters,
           equals(ab0));

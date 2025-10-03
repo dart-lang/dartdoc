@@ -207,7 +207,7 @@ enum E { one, two, three }
     expect(eEnum.hasAnnotations, true);
     expect(eEnum.annotations, hasLength(1));
     expect(eEnum.annotations.single.linkedName,
-        '<a href="$linkPrefix/C-class.html">C</a>');
+        '<a href="$linkPrefix/C/C.html">C</a>');
   }
 
   void test_hasDocComment() async {
