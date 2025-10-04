@@ -5,8 +5,7 @@
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/element/member.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/class.dart';
@@ -54,24 +53,25 @@ final class Annotation extends Attribute {
   /// The linked type argument text, with `<` and `>`, if there are any type
   /// arguments.
   String get _linkedTypeArguments {
-    var element = _annotation.element;
-    if (element is! SubstitutedConstructorElementImpl) {
+    if (_annotation.element is PropertyAccessorElement) {
+      return '';
+    }
+
+    var type = _modelType.type;
+    if (type is! InterfaceType) {
+      return '';
+    }
+
+    var typeArguments = type.typeArguments;
+    if (typeArguments.isEmpty) {
       return '';
     }
 
     var buffer = StringBuffer();
     buffer.write('&lt;');
-    var container = element.baseElement.enclosingElement;
-    for (var p in container.typeParameters) {
-      var type = element.substitution.map[p];
-      assert(type != null);
-      if (type == null) {
-        // Abandon this type arguments string, as something is wrong with the
-        // user's code.
-        return '';
-      }
-      buffer.write(_packageGraph.getTypeFor(type, _library).linkedName);
-      if (p != container.typeParameters.last) {
+    for (var t in typeArguments) {
+      buffer.write(_packageGraph.getTypeFor(t, _library).linkedName);
+      if (t != typeArguments.last) {
         buffer.write(', ');
       }
     }
