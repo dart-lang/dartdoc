@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/class.dart';
@@ -36,14 +37,47 @@ final class Annotation extends Attribute {
     var parameterText =
         source.substring(startIndex == -1 ? source.length : startIndex);
 
-    return '@$linkedName${const HtmlEscape().convert(parameterText)}';
+    var escapedParameterText = const HtmlEscape().convert(parameterText);
+    return '@$linkedName$_linkedTypeArguments$escapedParameterText';
   }
 
   @override
-  String get linkedName => _annotation.element is PropertyAccessorElement
-      ? _packageGraph.getModelForElement(_annotation.element!).linkedName
-      // TODO(jcollins-g): consider linking to constructor instead of type?
-      : _modelType.linkedName;
+  String get linkedName => switch (_annotation.element) {
+        PropertyAccessorElement element =>
+          _packageGraph.getModelForElement(element).linkedName,
+        ConstructorElement element =>
+          _packageGraph.getModelForElement(element).linkedName,
+        _ => _modelType.linkedName
+      };
+
+  /// The linked type argument text, with `<` and `>`, if there are any type
+  /// arguments.
+  String get _linkedTypeArguments {
+    if (_annotation.element is PropertyAccessorElement) {
+      return '';
+    }
+
+    var type = _modelType.type;
+    if (type is! InterfaceType) {
+      return '';
+    }
+
+    var typeArguments = type.typeArguments;
+    if (typeArguments.isEmpty) {
+      return '';
+    }
+
+    var buffer = StringBuffer();
+    buffer.write('&lt;');
+    for (var t in typeArguments) {
+      buffer.write(_packageGraph.getTypeFor(t, _library).linkedName);
+      if (t != typeArguments.last) {
+        buffer.write(', ');
+      }
+    }
+    buffer.write('&gt;');
+    return buffer.toString();
+  }
 
   late final ElementType _modelType = switch (_annotation.element) {
     ConstructorElement(:var returnType) =>

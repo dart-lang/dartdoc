@@ -48,11 +48,11 @@ int value = 0;
     var annotation = valueVariable.annotations.single;
     expect(
       annotation.linkedName,
-      '<a href="$dartCoreUrlPrefix/Deprecated-class.html">Deprecated</a>',
+      '<a href="$dartCoreUrlPrefix/Deprecated/Deprecated.html">Deprecated</a>',
     );
     expect(
       annotation.linkedNameWithParameters,
-      '@<a href="$dartCoreUrlPrefix/Deprecated-class.html">Deprecated</a>'
+      '@<a href="$dartCoreUrlPrefix/Deprecated/Deprecated.html">Deprecated</a>'
       '(&#39;text&#39;)',
     );
   }
@@ -97,13 +97,37 @@ int value = 0;
     var annotation = valueVariable.annotations.single;
     expect(
       annotation.linkedName,
-      '<a href="${htmlBasePlaceholder}annotations/MyAnnotation-class.html">'
+      '<a href="${htmlBasePlaceholder}annotations/MyAnnotation/MyAnnotation.html">'
       'MyAnnotation</a>',
     );
     expect(
       annotation.linkedNameWithParameters,
-      '@<a href="${htmlBasePlaceholder}annotations/MyAnnotation-class.html">'
+      '@<a href="${htmlBasePlaceholder}annotations/MyAnnotation/MyAnnotation.html">'
       'MyAnnotation</a>(true)',
+    );
+  }
+
+  void test_locallyDeclaredConstructorCall_named() async {
+    var library = await bootPackageWithLibrary('''
+class MyAnnotation {
+  const MyAnnotation.named(bool b);
+}
+
+@MyAnnotation.named(true)
+int value = 0;
+''');
+    var valueVariable = library.properties.named('value');
+    expect(valueVariable.hasAnnotations, true);
+    var annotation = valueVariable.annotations.single;
+    expect(
+      annotation.linkedName,
+      '<a href="${htmlBasePlaceholder}annotations/MyAnnotation/MyAnnotation.named.html">'
+      'MyAnnotation.named</a>',
+    );
+    expect(
+      annotation.linkedNameWithParameters,
+      '@<a href="${htmlBasePlaceholder}annotations/MyAnnotation/MyAnnotation.named.html">'
+      'MyAnnotation.named</a>(true)',
     );
   }
 
@@ -122,15 +146,13 @@ int value = 0;
     var annotation = valueVariable.annotations.single;
     expect(
       annotation.linkedName,
-      '<a href="${htmlBasePlaceholder}annotations/Ann-class.html">Ann</a>'
-      '<span class="signature">&lt;<wbr><span class="type-parameter">'
-      '<a href="$dartCoreUrlPrefix/bool-class.html">bool</a></span>&gt;</span>',
+      '<a href="${htmlBasePlaceholder}annotations/Ann/Ann.html">Ann</a>',
     );
     expect(
       annotation.linkedNameWithParameters,
-      '@<a href="${htmlBasePlaceholder}annotations/Ann-class.html">Ann</a>'
-      '<span class="signature">&lt;<wbr><span class="type-parameter">'
-      '<a href="$dartCoreUrlPrefix/bool-class.html">bool</a></span>&gt;</span>(true)',
+      '@<a href="${htmlBasePlaceholder}annotations/Ann/Ann.html">Ann</a>'
+      '&lt;<a href="$dartCoreUrlPrefix/bool-class.html">bool</a>&gt;'
+      '(true)',
     );
   }
 }
