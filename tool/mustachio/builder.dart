@@ -14,20 +14,17 @@ import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:path/path.dart' as path;
 
 import 'codegen_aot_compiler.dart';
-import 'codegen_runtime_renderer.dart';
 
 void main() async {
   await build(path.join('lib', 'src', 'generator', 'templates.dart'));
   await build(
     path.join('test', 'mustachio', 'foo.dart'),
-    rendererClassesArePublic: true,
   );
 }
 
 Future<void> build(
   String sourcePath, {
   String? root,
-  bool rendererClassesArePublic = false,
 }) async {
   root ??= Directory.current.path;
   var contextCollection = AnalysisContextCollectionImpl(
@@ -46,26 +43,16 @@ Future<void> build(
         '${libraryResult.runtimeType}');
   }
 
-  var library = libraryResult.element2;
+  var library = libraryResult.element;
   var typeProvider = library.typeProvider;
   var typeSystem = library.typeSystem;
   var rendererSpecs = <RendererSpec>{};
-  for (var renderer in library.metadata2.annotations
-      .where((e) => e.element2!.enclosingElement2!.name3 == 'Renderer')) {
+  for (var renderer in library.metadata.annotations
+      .where((e) => e.element!.enclosingElement!.name == 'Renderer')) {
     rendererSpecs.add(_buildRendererSpec(renderer));
   }
 
-  var runtimeRenderersContents = buildRuntimeRenderers(
-    rendererSpecs,
-    Uri.parse(sourcePath),
-    typeProvider,
-    typeSystem,
-    rendererClassesArePublic: rendererClassesArePublic,
-  );
   var basePath = path.withoutExtension(sourcePath);
-  await File(path.join(root, '$basePath.runtime_renderers.dart'))
-      .writeAsString(runtimeRenderersContents);
-
   var aotRenderersContents = await compileTemplatesToRenderers(
     rendererSpecs,
     typeProvider,

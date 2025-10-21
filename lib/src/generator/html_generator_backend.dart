@@ -2,28 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';
-import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart' as resources;
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
-import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
-
-/// Creates a [Generator] with an [HtmlGeneratorBackend] backend.
-Generator initHtmlGenerator(
-  DartdocGeneratorOptionContext context, {
-  required FileWriter writer,
-}) {
-  var templates = HtmlAotTemplates();
-  var options = DartdocGeneratorBackendOptions.fromContext(context);
-  var backend = HtmlGeneratorBackend(
-      options, templates, writer, context.resourceProvider);
-  return GeneratorFrontEnd(backend);
-}
 
 /// Generator backend for HTML output.
 class HtmlGeneratorBackend extends GeneratorBackend {

@@ -4,7 +4,7 @@
 
 import 'dart:io';
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
@@ -213,22 +213,22 @@ Future<String> _redirectingMethod(
   var buffer = StringBuffer()..write('String ${compiler._rendererName}');
 
   buffer.writeTypeParameters(compiler._usedContextStack
-      .expand((c) => c.type.element3.typeParameters2));
+      .expand((c) => c.type.element.typeParameters));
   buffer.write('(');
 
   for (var context in compiler._usedContextStack) {
-    var contextElement = context.type.element3;
+    var contextElement = context.type.element;
     buffer.write(contextElement.displayName);
-    if (contextElement.typeParameters2.isNotEmpty) {
+    if (contextElement.typeParameters.isNotEmpty) {
       buffer.write('<');
     }
-    for (var tp in contextElement.typeParameters2) {
-      buffer.write(tp.name3);
-      if (tp != contextElement.typeParameters2.last) {
+    for (var tp in contextElement.typeParameters) {
+      buffer.write(tp.name);
+      if (tp != contextElement.typeParameters.last) {
         buffer.write(', ');
       }
     }
-    if (contextElement.typeParameters2.isNotEmpty) {
+    if (contextElement.typeParameters.isNotEmpty) {
       buffer.write('>');
     }
     buffer.write(' ${context.name}');
@@ -368,7 +368,7 @@ class _AotCompiler {
     // this should be perfectly possible.
 
     var referenceElements = buffer.writeTypeParameters(
-      _usedContexts.expand((c) => c.type.element3.typeParameters2),
+      _usedContexts.expand((c) => c.type.element.typeParameters),
     );
     for (var element in referenceElements) {
       referenceUris.add(_elementUri(element));
@@ -376,19 +376,19 @@ class _AotCompiler {
     buffer.write('(');
 
     for (var context in _usedContexts) {
-      var contextElement = context.type.element3;
+      var contextElement = context.type.element;
       referenceUris.add(_elementUri(contextElement));
       buffer.write(contextElement.displayName);
-      if (contextElement.typeParameters2.isNotEmpty) {
+      if (contextElement.typeParameters.isNotEmpty) {
         buffer.write('<');
       }
-      for (var tp in contextElement.typeParameters2) {
-        buffer.write(tp.name3);
-        if (tp != contextElement.typeParameters2.last) {
+      for (var tp in contextElement.typeParameters) {
+        buffer.write(tp.name);
+        if (tp != contextElement.typeParameters.last) {
           buffer.write(', ');
         }
       }
-      if (contextElement.typeParameters2.isNotEmpty) {
+      if (contextElement.typeParameters.isNotEmpty) {
         buffer.write('>');
       }
       buffer.write(' ${context.name}');
@@ -406,8 +406,8 @@ class _AotCompiler {
   }
 
   /// Returns the URI of [element] for use in generated import directives.
-  String _elementUri(Element2 element) {
-    var libraryElement = element.library2!;
+  String _elementUri(Element element) {
+    var libraryElement = element.library!;
     var libraryUri = libraryElement.firstFragment.source.uri;
     if (libraryUri.scheme == 'file') {
       return path.relative(libraryUri.path,
@@ -577,8 +577,8 @@ class _BlockCompiler {
       // for [Iterable], and then use [DartType.asInstanceOf] to ultimately
       // determine that the inner type of the loop is, for example,
       // `Future<int>`.
-      var iterableElement = typeProvider.iterableElement2;
-      var iterableType = variableLookup.type.asInstanceOf2(iterableElement)!;
+      var iterableElement = typeProvider.iterableElement;
+      var iterableType = variableLookup.type.asInstanceOf(iterableElement)!;
       var innerContextType = iterableType.typeArguments.first as InterfaceType;
       var innerContext = _VariableLookup(innerContextType, newContextName);
       _contextStack.push(innerContext);
@@ -636,7 +636,7 @@ class _BlockCompiler {
     late _VariableLookup context;
     GetterElement? getter;
     for (var c in _contextStack) {
-      getter = c.type.lookUpGetter3(primaryName, contextType.element3.library2);
+      getter = c.type.lookUpGetter(primaryName, contextType.element.library);
       if (getter != null) {
         context = c;
         _usedContextTypes.add(c);
@@ -661,7 +661,7 @@ class _BlockCompiler {
         : '${context.name}.$primaryName';
     var remainingNames = [...key.skip(1)];
     for (var secondaryKey in remainingNames) {
-      getter = type.lookUpGetter3(secondaryKey, type.element3.library2);
+      getter = type.lookUpGetter(secondaryKey, type.element.library);
       if (getter == null) {
         throw MustachioResolutionException(node.keySpan.message(
             "Failed to resolve '$secondaryKey' on ${context.type} while "
@@ -919,9 +919,9 @@ extension<T> on List<T> {
 }
 
 extension on StringBuffer {
-  Set<Element2> writeTypeParameters(
-      Iterable<TypeParameterElement2> typeParameters) {
-    var referencedElements = <Element2>{};
+  Set<Element> writeTypeParameters(
+      Iterable<TypeParameterElement> typeParameters) {
+    var referencedElements = <Element>{};
     var hasTypeParameters = false;
     for (var typeParameter in typeParameters) {
       if (!hasTypeParameters) {
@@ -933,11 +933,11 @@ extension on StringBuffer {
 
       var bound = typeParameter.bound;
       if (bound == null) {
-        write(typeParameter.name3);
+        write(typeParameter.name);
       } else {
-        var boundElement = bound.documentableElement2!;
+        var boundElement = bound.documentableElement!;
         referencedElements.add(boundElement);
-        write('${typeParameter.name3} extends ${boundElement.name3!}');
+        write('${typeParameter.name} extends ${boundElement.name!}');
       }
     }
     if (hasTypeParameters) {

@@ -110,9 +110,6 @@ class CommentReferenceParser {
     if (prefixResult.type == _PrefixResultType.endOfFile) {
       return [];
     }
-    if (prefixResult.type == _PrefixResultType.parsedConstructorHint) {
-      children.add(prefixResult.node!);
-    }
     // [_PrefixResultType.junk] and [_PrefixResultType.missing] we can skip.
 
     // <commentReference>
@@ -370,7 +367,6 @@ enum _PrefixResultType {
   endOfFile, // Found end of file instead of a prefix.
   junk, // Found some recognized junk that can be ignored.
   missing, // There is no prefix here.
-  parsedConstructorHint, // Parsed a [ConstructorHintStartNode].
 }
 
 /// The result of attempting to parse a prefix to a comment reference.

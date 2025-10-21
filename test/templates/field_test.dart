@@ -54,7 +54,7 @@ class A {
         matches('<ol class="annotation-list">'),
         matches('<li>@deprecated</li>'),
         matches(
-            r'<li>@<a href="../../lib/A-class.html">A</a>\(&#39;message&#39;\)</li>'),
+            r'<li>@<a href="../../lib/A/A.html">A</a>\(&#39;message&#39;\)</li>'),
         matches('</ol>'),
       ],
     );

@@ -6,11 +6,10 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/ast/ast.dart'
     show Expression, InstanceCreationExpression;
-import 'package:analyzer/dart/element/element2.dart' show Annotatable;
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/element.dart'
-    show ConstVariableElement;
+    show VariableFragmentImpl;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/accessor.dart';
 import 'package:dartdoc/src/model/annotation.dart';
@@ -78,7 +77,7 @@ mixin GetterSetterCombo on ModelElement {
   bool get hasConstantValueForDisplay => false;
 
   late final Expression? _constantInitializer =
-      (element.firstFragment as ConstVariableElement).constantInitializer;
+      (element.firstFragment as VariableFragmentImpl).constantInitializer;
 
   String linkifyConstantValue(String original) {
     if (_constantInitializer is! InstanceCreationExpression) return original;
@@ -213,13 +212,13 @@ mixin GetterSetterCombo on ModelElement {
   @override
   late final String documentationComment =
       _getterSetterDocumentationComment.isEmpty
-          ? (element as Annotatable).documentationComment ?? ''
+          ? element.documentationComment ?? ''
           : _getterSetterDocumentationComment;
 
   @override
   bool get hasDocumentationComment =>
       _getterSetterDocumentationComment.isNotEmpty ||
-      (element as Annotatable).documentationComment != null;
+      element.documentationComment != null;
 
   /// Derives a documentation comment for the combo by copying documentation
   /// from the [getter] and/or [setter].

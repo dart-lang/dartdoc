@@ -1,9 +1,11 @@
-## 9.0.0-wip
+## 9.0.0
 * Remove the deprecated `missingCodeBlockLanguage` warning.
 * Remove the deprecated `templates-dir` option.
 * Remove the deprecated `nodoc` option.
 * Remove the deprecated `include-external` option.
 * Refactor 404 error page to use div instead of p for search form.
+* Require analyzer 8.1.1 APIs.
+* Many internal migrations for analyzer APIs.
 
 ## 8.3.4
 * The URL for category pages now uses _category name_ instead of

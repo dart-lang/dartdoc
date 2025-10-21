@@ -105,7 +105,6 @@ extension Ext<T> on E<T> {}
         path.join(packagePath, 'doc'),
         '--sdk-dir',
         packageMetaProvider.defaultSdkDir.path,
-        '--no-link-to-remote',
       ], packageMetaProvider);
 
       var packageConfigProvider =
@@ -181,7 +180,7 @@ extension Ext<T> on E<T> {}
         matches('<dt>Annotations</dt>'),
         matches('<ul class="annotation-list eNum-relationships">'),
         matches(
-            r'<li>@<a href="../lib/C-class.html">C</a>\(&#39;message&#39;\)</li>'),
+            r'<li>@<a href="../lib/C/C.html">C</a>&lt;dynamic&gt;\(&#39;message&#39;\)</li>'),
         matches('</ul>'),
       ]);
     });
@@ -241,7 +240,7 @@ extension Ext<T> on E<T> {}
           eLines,
           containsAllInOrder([
             matches('<h2>Properties</h2>'),
-            matches('<a href="../lib/C/hashCode.html">hashCode</a>'),
+            matches('<a href=".*/dart-core/Object/hashCode.html">hashCode</a>'),
           ]));
     });
 
@@ -250,7 +249,7 @@ extension Ext<T> on E<T> {}
           eLines,
           containsAllInOrder([
             matches('<h2>Properties</h2>'),
-            matches('<a href="../lib/E/index.html">index</a>'),
+            matches('<a href=".*/dart-core/Enum/index.html">index</a>'),
             matches('The integer index of this enum value.'),
           ]));
     });
@@ -363,7 +362,7 @@ extension Ext<T> on E<T> {}
         containsAllInOrder([
           matches('<a href="lib/E.html#instance-properties">Properties</a>'),
           matches('<a href="lib/E/f1.html">f1</a>'),
-          matches('<a href="lib/E/index.html">index</a>'),
+          matches('<a href=".*/dart-core/Enum/index.html">index</a>'),
         ]),
       );
     });

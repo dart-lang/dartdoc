@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
@@ -79,7 +79,7 @@ $sourceLibraryContent
       root: path.join(d.sandbox, 'foo_package'));
 }
 
-Future<LibraryElement2> resolveGeneratedLibrary2(String libraryPath) async {
+Future<LibraryElement> resolveGeneratedLibrary2(String libraryPath) async {
   var contextCollection = AnalysisContextCollectionImpl(
     includedPaths: [d.sandbox],
     // TODO(jcollins-g): should we pass excluded directories here instead of
@@ -96,5 +96,5 @@ Future<LibraryElement2> resolveGeneratedLibrary2(String libraryPath) async {
         '${libraryResult.runtimeType}');
   }
 
-  return libraryResult.element2;
+  return libraryResult.element;
 }

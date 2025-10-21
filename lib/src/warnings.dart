@@ -5,7 +5,7 @@
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
@@ -95,7 +95,7 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
 /// Something that package warnings can be reported on. Optionally associated
 /// with an analyzer [element].
 mixin Warnable implements CommentReferable, Documentable, Locatable {
-  Element2? get element;
+  Element? get element;
 
   void warn(
     PackageWarning kind, {
@@ -462,7 +462,7 @@ class PackageWarningOptions {
 }
 
 class PackageWarningCounter {
-  final Map<Element2?, Map<PackageWarning, Set<String>>> _countedWarnings = {};
+  final Map<Element?, Map<PackageWarning, Set<String>>> _countedWarnings = {};
   final _items = <Jsonable>[];
   final _displayedWarningCounts = <PackageWarning, int>{};
   final PackageGraph packageGraph;
@@ -479,7 +479,7 @@ class PackageWarningCounter {
 
   /// An unmodifiable map view of all counted warnings related by their element,
   /// warning type, and message.
-  UnmodifiableMapView<Element2?, Map<PackageWarning, Set<String>>>
+  UnmodifiableMapView<Element?, Map<PackageWarning, Set<String>>>
       get countedWarnings => UnmodifiableMapView(_countedWarnings);
 
   PackageWarningCounter(this.packageGraph);

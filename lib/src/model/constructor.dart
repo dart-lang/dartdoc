@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -12,7 +12,7 @@ import 'package:dartdoc/src/model_utils.dart';
 
 class Constructor extends ModelElement with ContainerMember, TypeParameters {
   @override
-  final ConstructorElement2 element;
+  final ConstructorElement element;
 
   Constructor(this.element, super.library, super.packageGraph);
 
@@ -25,7 +25,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
       return enclosingElement.characterLocation;
     }
     final lineInfo = unitElement.lineInfo;
-    var offset = element.firstFragment.nameOffset2 ??
+    var offset = element.firstFragment.nameOffset ??
         element.firstFragment.typeNameOffset;
     if (offset != null && offset >= 0) {
       return lineInfo.getLocation(offset);
@@ -37,10 +37,10 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
   bool get isPublic {
     if (!super.isPublic) return false;
     if (element.hasPrivateName) return false;
-    var class_ = element.enclosingElement2;
+    var class_ = element.enclosingElement;
     // Enums cannot be explicitly constructed or extended.
-    if (class_ is EnumElement2) return false;
-    if (class_ is ClassElement2) {
+    if (class_ is EnumElement) return false;
+    if (class_ is ClassElement) {
       if (element.isFactory) return true;
       if (class_.isSealed ||
           (class_.isAbstract && class_.isFinal) ||
@@ -60,7 +60,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
 
   @override
   Container get enclosingElement =>
-      getModelFor(element.enclosingElement2, library) as Container;
+      getModelFor(element.enclosingElement, library) as Container;
 
   @override
   String get fileName =>
@@ -85,26 +85,30 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
   @override
   bool get isConst => element.isConst;
 
-  bool get isUnnamedConstructor => element.name3 == 'new';
+  bool get isUnnamedConstructor => element.name == 'new';
 
   bool get isFactory => element.isFactory;
 
   @override
   Kind get kind => Kind.constructor;
 
-  late final Callable modelType =
-      getTypeFor(element.type, library) as Callable;
+  late final Callable modelType = getTypeFor(element.type, library) as Callable;
 
   @override
   String get name =>
       // TODO(jcollins-g): After the old lookup code is retired, rationalize
       // [name] around the conventions used in referenceChildren and replace
       // code there and elsewhere with simple references to the name.
-      '${enclosingElement.name}.${element.name3}';
+      '${enclosingElement.name}.${element.name}';
+
+  @override
+  String get displayName => isUnnamedConstructor
+      ? enclosingElement.name
+      : '${enclosingElement.name}.${element.name}';
 
   @override
   String get nameWithGenerics {
-    var constructorName = element.name3!;
+    var constructorName = element.name!;
     if (constructorName == 'new') {
       return '${enclosingElement.name}$genericParameters';
     }
@@ -113,7 +117,7 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
 
   String? get shortName {
     if (name.contains('.')) {
-      return name.substring(element.enclosingElement2.name3!.length + 1);
+      return name.substring(element.enclosingElement.name!.length + 1);
     } else {
       return name;
     }
@@ -122,11 +126,11 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
   @override
   late final Map<String, CommentReferable> referenceChildren = () {
     // Find the element that [parameter] is _really_ referring to.
-    Element2? dereferenceParameter(FormalParameterElement? parameter) =>
+    Element? dereferenceParameter(FormalParameterElement? parameter) =>
         switch (parameter) {
-          FieldFormalParameterElement2() => parameter.field2,
-          SuperFormalParameterElement2() =>
-            dereferenceParameter(parameter.superConstructorParameter2),
+          FieldFormalParameterElement() => parameter.field,
+          SuperFormalParameterElement() =>
+            dereferenceParameter(parameter.superConstructorParameter),
           _ => parameter
         };
 
@@ -142,5 +146,5 @@ class Constructor extends ModelElement with ContainerMember, TypeParameters {
 
   @override
   String get referenceName =>
-      isUnnamedConstructor ? enclosingElement.name : element.name3!;
+      isUnnamedConstructor ? enclosingElement.name : element.name!;
 }

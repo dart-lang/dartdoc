@@ -4,7 +4,7 @@
 
 import 'dart:io' show Platform;
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:glob/glob.dart';
@@ -52,9 +52,9 @@ Iterable<T> filterHasCanonical<T extends ModelElement>(
   return maybeHasCanonicalItems.where((me) => me.canonicalModelElement != null);
 }
 
-extension ElementExtension on Element2 {
+extension ElementExtension on Element {
   bool get hasPrivateName {
-    final name = name3;
+    final name = this.name;
     if (name == null) return false;
 
     if (name.startsWith('_')) {
@@ -65,8 +65,8 @@ extension ElementExtension on Element2 {
 
     // GenericFunctionTypeElements have the name we care about in the enclosing
     // element.
-    if (self is GenericFunctionTypeElement2) {
-      var enclosingElementName = self.enclosingElement2?.name3;
+    if (self is GenericFunctionTypeElement) {
+      var enclosingElementName = self.enclosingElement?.name;
       if (enclosingElementName != null &&
           enclosingElementName.startsWith('_')) {
         return true;

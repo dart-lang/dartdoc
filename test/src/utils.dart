@@ -9,6 +9,7 @@ import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
+import 'package:analyzer_testing/utilities/extensions/resource_provider.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/generator.dart';
@@ -136,8 +137,8 @@ FakePackageConfigProvider getTestPackageConfigProvider(String sdkPath) {
 PackageMetaProvider get testPackageMetaProvider {
   var resourceProvider = MemoryResourceProvider();
   final sdkRoot = resourceProvider.getFolder(
-    resourceProvider.pathContext
-        .canonicalize(resourceProvider.convertPath('/sdk')),
+    resourceProvider.pathContext.canonicalize(
+        ResourceProviderExtension(resourceProvider).convertPath('/sdk')),
   );
   createMockSdk(
     resourceProvider: resourceProvider,
@@ -190,8 +191,8 @@ version: 0.0.1
 homepage: https://github.com/dart-lang
 ''';
   var pathContext = resourceProvider.pathContext;
-  var projectsFolder = resourceProvider.getFolder(
-      pathContext.canonicalize(resourceProvider.convertPath('/projects')));
+  var projectsFolder = resourceProvider.getFolder(pathContext.canonicalize(
+      ResourceProviderExtension(resourceProvider).convertPath('/projects')));
   var projectFolder = projectsFolder.getChildAssumingFolder(packageName)
     ..create();
   var projectRoot = projectFolder.path;

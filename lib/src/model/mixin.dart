@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -12,9 +12,8 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:meta/meta.dart';
 
 class Mixin extends InheritingContainer {
-
   @override
-  final MixinElement2 element;
+  final MixinElement element;
 
   late final List<ParameterizedElementType> superclassConstraints = [
     ...element.superclassConstraints.where((e) => !e.isDartCoreObject).map(
@@ -27,19 +26,6 @@ class Mixin extends InheritingContainer {
   @override
   String get sidebarPath =>
       '${canonicalLibraryOrThrow.dirName}/$name-mixin-sidebar.html';
-
-  @override
-  late final List<InheritingContainer> inheritanceChain = [
-    this,
-    ...superclassConstraints.modelElements.expandInheritanceChain,
-
-    for (var container in superChain.modelElements)
-      ...container.inheritanceChain,
-
-    // Interfaces need to come last, because classes in the `superChain` might
-    // implement them even when they aren't mentioned.
-    ...interfaceElements.expandInheritanceChain,
-  ];
 
   Mixin(this.element, super.library, super.packageGraph);
 

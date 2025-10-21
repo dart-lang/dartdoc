@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -15,9 +15,7 @@ import 'package:dartdoc/src/model/model.dart';
 /// **inherited**: Filtered getters giving only inherited children.
 class Class extends InheritingContainer with Constructable, MixedInTypes {
   @override
-
-  @override
-  final ClassElement2 element;
+  final ClassElement element;
 
   @override
   late final List<ModelElement> allModelElements = [
@@ -29,26 +27,10 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   String get sidebarPath =>
       '${canonicalLibraryOrThrow.dirName}/$name-class-sidebar.html';
 
-  @override
-  late final List<InheritingContainer> inheritanceChain = [
-    this,
-
-    // Caching should make this recursion a little less painful.
-    for (var container in mixedInTypes.modelElements.reversed)
-      ...container.inheritanceChain,
-
-    for (var container in superChain.modelElements)
-      ...container.inheritanceChain,
-
-    // Interfaces need to come last, because classes in the superChain might
-    // implement them even when they aren't mentioned.
-    ...interfaceElements.expandInheritanceChain,
-  ];
-
   Class(this.element, Library library, PackageGraph packageGraph)
       : super(library, packageGraph) {
-    if (element.name3 == 'Object' &&
-        library.element.name3 == 'dart.core' &&
+    if (element.name == 'Object' &&
+        library.element.name == 'dart.core' &&
         package.name == 'Dart') {
       packageGraph.objectClass = this;
     }
@@ -64,19 +46,18 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
   bool get isBase => element.isBase && !element.isSealed;
 
   bool get isErrorOrException {
-    bool isError(InterfaceElement2 e) =>
-        e.library2.isDartCore && (e.name3 == 'Exception' || e.name3 == 'Error');
+    bool isError(InterfaceElement e) =>
+        e.library.isDartCore && (e.name == 'Exception' || e.name == 'Error');
 
     if (isError(element)) return true;
-    return element.allSupertypes.map((t) => t.element3).any(isError);
+    return element.allSupertypes.map((t) => t.element).any(isError);
   }
 
   @override
   bool get isFinal => element.isFinal && !element.isSealed;
 
   @override
-  bool get isImplementableInterface =>
-      element.isInterface && !element.isSealed;
+  bool get isImplementableInterface => element.isInterface && !element.isSealed;
 
   @override
   bool get isMixinClass => element.isMixinClass;

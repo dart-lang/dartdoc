@@ -2,10 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/model/attribute.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 /// Mixin for subclasses of [ModelElement] representing elements that can be
@@ -49,7 +48,7 @@ mixin Inheritable on ContainerMember {
       ?.allCanonicalModelElements
       .firstWhereOrNull((m) =>
           m.name == name &&
-          m is PropertyAccessorElement2 == this is PropertyAccessorElement2);
+          m is PropertyAccessorElement == this is PropertyAccessorElement);
 
   @override
   Container? computeCanonicalEnclosingContainer() {
@@ -60,38 +59,20 @@ mixin Inheritable on ContainerMember {
     var searchElement = element.baseElement;
     // TODO(jcollins-g): generate warning if an inherited element's definition
     // is in an intermediate non-canonical class in the inheritance chain?
-    var reverseInheritance = _inheritance.reversed.toList();
-    for (var i = 0; i < reverseInheritance.length; i++) {
-      var container = reverseInheritance[i];
+    var candidates = _enclosingSuperTypes;
+    for (var i = 0; i < candidates.length; i++) {
+      var container = candidates[i];
       if (container.containsElement(searchElement)) {
-        var previousIsHiddenAndNotDefining = i > 0 &&
-            _isHiddenInterface(reverseInheritance[i - 1]) &&
-            container != definingEnclosingContainer;
         var thisIsHiddenAndDefining = _isHiddenInterface(container) &&
             container == definingEnclosingContainer;
-        // If the previous container in the search is one of the "hidden"
-        // interfaces, and it's not this member's defining container, OR if this
-        // container in the search is one of the "hidden" interfaces, and it is
-        // also this member's defining container, then we can immediately return
-        // the canonical enclosing container of the overridden member in the
-        // previous, non-hidden container in the inheritance.
-        if (previousIsHiddenAndNotDefining || thisIsHiddenAndDefining) {
-          var previousVisible = reverseInheritance
-              .take(i)
-              .lastWhere((e) => !_isHiddenInterface(e));
-          var membersInPreviousVisible = previousVisible.allModelElements
-              .where((e) => e.name == name)
-              .whereType<Inheritable>()
-              .whereNotType<Field>();
-          assert(
-              membersInPreviousVisible.length == 1,
-              'found multiple members named "$name" in '
-              '"${previousVisible.name}": '
-              '${membersInPreviousVisible.toList()}');
-          return membersInPreviousVisible.first.canonicalEnclosingContainer;
+
+        if (thisIsHiddenAndDefining) {
+          return container.supertype?.modelElement.canonicalModelElement
+              as Container?;
         }
         var canonicalContainer =
             packageGraph.findCanonicalModelElementFor(container) as Container?;
+
         // TODO(jcollins-g): invert this lookup so traversal is recursive
         // starting from the ModelElement.
         if (canonicalContainer != null) {
@@ -115,37 +96,60 @@ mixin Inheritable on ContainerMember {
   /// implementation.
   bool _isHiddenInterface(Container? c) =>
       c != null &&
-      c.element.name3 == 'Interceptor' &&
-      c.element.library2?.name3 == '_interceptors';
+      c.element.name == 'Interceptor' &&
+      c.element.library?.name == '_interceptors';
 
-  /// A roughly ordered list of this element's enclosing container's inheritance
-  /// chain.
+  /// All of the various supertypes of [enclosingElement], in a specific order.
   ///
-  /// See [InheritingContainer.inheritanceChain] for details.
-  List<InheritingContainer> get _inheritance {
-    var inheritance = [
-      ...(enclosingElement as InheritingContainer).inheritanceChain,
-    ];
+  /// The first types are the interfaces, supertypes, and mixed-in types of
+  /// [enclosingElement]'s supertype. Next is [enclosingElement]'s supertype
+  /// itself. Next are the interfaces, supertypes, and mixed-in types of each
+  /// directly mixed-in type, followed by each directly mixed-in type. Next are
+  /// the interfaces, supertypes, and mixed-in types of each direct interface,
+  /// followed by each direct interface. Last is [enclosingElement].
+  List<InheritingContainer> get _enclosingSuperTypes {
+    var result = <InheritingContainer>{};
+    var processed = <InheritingContainer>{};
 
-    assert(
-        definingEnclosingContainer.isDartCoreObject ||
-            inheritance.contains(definingEnclosingContainer), () {
-      var inheritanceDescriptions = inheritance
-          .map((e) =>
-              "'$e' (hashCode: ${e.hashCode}, in library '${e.library}')")
-          .toList();
-      return "Given '$this', on '$enclosingElement' in library '$library', "
-          "the defining enclosing container, '$definingEnclosingContainer' "
-          '(hashCode: ${definingEnclosingContainer.hashCode}, '
-          "in library '${definingEnclosingContainer.library}'), should have "
-          'been Object or contained in: $inheritanceDescriptions';
-    }());
-    // Unless the code explicitly extends dart:core's Object, we won't get
-    // an entry here.  So add it.
-    if (!inheritance.last.isDartCoreObject) {
-      inheritance.add(packageGraph.objectClass);
+    void addSupertype(InheritingContainer container) {
+      if (processed.contains(container)) return;
+      processed.add(container);
+      for (var interface in container.interfaceElements) {
+        addSupertype(interface);
+        result.add(interface);
+      }
+      var supertype = container.supertype?.modelElement;
+      if (supertype is InheritingContainer) {
+        addSupertype(supertype);
+        result.add(supertype);
+      }
+      if (container case Class(:var mixedInTypes) || Enum(:var mixedInTypes)) {
+        for (var mixedIn in mixedInTypes.modelElements.reversed) {
+          addSupertype(mixedIn);
+          result.add(mixedIn);
+        }
+      }
+      result.add(container);
     }
-    return inheritance;
+
+    var enclosingElement = this.enclosingElement as InheritingContainer;
+    if (enclosingElement.supertype?.modelElement
+        case InheritingContainer supertype) {
+      addSupertype(supertype);
+    }
+    if (enclosingElement
+        case Class(:var mixedInTypes) || Enum(:var mixedInTypes)) {
+      for (var mixedIn in mixedInTypes.modelElements.reversed) {
+        addSupertype(mixedIn);
+        result.add(mixedIn);
+      }
+    }
+    for (var interface in enclosingElement.interfaceElements) {
+      addSupertype(interface);
+    }
+    result.add(enclosingElement);
+
+    return result.toList();
   }
 
   Inheritable? get overriddenElement;

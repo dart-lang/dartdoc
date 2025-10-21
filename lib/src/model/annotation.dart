@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/class.dart';
@@ -22,7 +23,7 @@ final class Annotation extends Attribute {
   final PackageGraph _packageGraph;
 
   Annotation(this._annotation, this._library, this._packageGraph)
-      : super(_annotation.element2!.name3!);
+      : super(_annotation.element!.name!);
 
   @override
   String get linkedNameWithParameters {
@@ -36,23 +37,56 @@ final class Annotation extends Attribute {
     var parameterText =
         source.substring(startIndex == -1 ? source.length : startIndex);
 
-    return '@$linkedName${const HtmlEscape().convert(parameterText)}';
+    var escapedParameterText = const HtmlEscape().convert(parameterText);
+    return '@$linkedName$_linkedTypeArguments$escapedParameterText';
   }
 
   @override
-  String get linkedName => _annotation.element2 is PropertyAccessorElement2
-      ? _packageGraph.getModelForElement(_annotation.element2!).linkedName
-      // TODO(jcollins-g): consider linking to constructor instead of type?
-      : _modelType.linkedName;
+  String get linkedName => switch (_annotation.element) {
+        PropertyAccessorElement element =>
+          _packageGraph.getModelForElement(element).linkedName,
+        ConstructorElement element =>
+          _packageGraph.getModelForElement(element).linkedName,
+        _ => _modelType.linkedName
+      };
 
-  late final ElementType _modelType = switch (_annotation.element2) {
-    ConstructorElement2(:var returnType) =>
+  /// The linked type argument text, with `<` and `>`, if there are any type
+  /// arguments.
+  String get _linkedTypeArguments {
+    if (_annotation.element is PropertyAccessorElement) {
+      return '';
+    }
+
+    var type = _modelType.type;
+    if (type is! InterfaceType) {
+      return '';
+    }
+
+    var typeArguments = type.typeArguments;
+    if (typeArguments.isEmpty) {
+      return '';
+    }
+
+    var buffer = StringBuffer();
+    buffer.write('&lt;');
+    for (var t in typeArguments) {
+      buffer.write(_packageGraph.getTypeFor(t, _library).linkedName);
+      if (t != typeArguments.last) {
+        buffer.write(', ');
+      }
+    }
+    buffer.write('&gt;');
+    return buffer.toString();
+  }
+
+  late final ElementType _modelType = switch (_annotation.element) {
+    ConstructorElement(:var returnType) =>
       _packageGraph.getTypeFor(returnType, _library),
-    PropertyAccessorElement2(:var variable3?) =>
-      (_packageGraph.getModelForElement(variable3) as GetterSetterCombo)
+    PropertyAccessorElement(:var variable) =>
+      (_packageGraph.getModelForElement(variable) as GetterSetterCombo)
           .modelType,
     _ => throw StateError(
-        'non-callable element used as annotation?: ${_annotation.element2}')
+        'non-callable element used as annotation?: ${_annotation.element}')
   };
 
   bool get isPublic {

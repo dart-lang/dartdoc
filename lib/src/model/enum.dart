@@ -3,14 +3,14 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
 
 class Enum extends InheritingContainer with Constructable, MixedInTypes {
   @override
-  final EnumElement2 element;
+  final EnumElement element;
 
   Enum(this.element, super.library, super.packageGraph);
 
@@ -18,16 +18,6 @@ class Enum extends InheritingContainer with Constructable, MixedInTypes {
   late final List<ModelElement> allModelElements = [
     ...super.allModelElements,
     ...constructors,
-  ];
-
-  @override
-  late final List<InheritingContainer> inheritanceChain = [
-    this,
-    for (var container in mixedInTypes.modelElements.reversed)
-      ...container.inheritanceChain,
-    for (var container in superChain.modelElements)
-      ...container.inheritanceChain,
-    ...interfaceElements.expandInheritanceChain,
   ];
 
   @override
@@ -50,9 +40,9 @@ class Enum extends InheritingContainer with Constructable, MixedInTypes {
 
   @override
   late final List<Field> publicEnumValues = [
-    for (var value in element.constants2)
+    for (var value in element.constants)
       getModelForPropertyInducingElement(value, library,
-          getter: getModelFor(value.getter2!, library) as ContainerAccessor,
+          getter: getModelFor(value.getter!, library) as ContainerAccessor,
           setter: null) as Field
   ];
 
@@ -79,7 +69,7 @@ class Enum extends InheritingContainer with Constructable, MixedInTypes {
 class EnumField extends Field {
   final int index;
 
-  EnumField.forConstant(this.index, FieldElement2 element, Library library,
+  EnumField.forConstant(this.index, FieldElement element, Library library,
       PackageGraph packageGraph, Accessor? getter)
       : super(
             element, library, packageGraph, getter as ContainerAccessor?, null);
@@ -89,9 +79,9 @@ class EnumField extends Field {
 
   @override
   bool get hasConstantValueForDisplay {
-    final enum_ = element.enclosingElement2 as EnumElement2;
+    final enum_ = element.enclosingElement as EnumElement;
     final enumHasDefaultConstructor =
-        enum_.constructors2.any((c) => c.isDefaultConstructor);
+        enum_.constructors.any((c) => c.isDefaultConstructor);
     // If this enum does not have any explicit constructors (and so only has a
     // default constructor), then there is no meaningful constant initializer to
     // display.
@@ -100,7 +90,7 @@ class EnumField extends Field {
 
   @override
   String get constantValueBase =>
-      element.library2.featureSet.isEnabled(Feature.enhanced_enums)
+      element.library.featureSet.isEnabled(Feature.enhanced_enums)
           ? super.constantValueBase
           : renderedName;
 

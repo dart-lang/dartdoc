@@ -4,10 +4,8 @@
 
 import 'dart:convert';
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/dart/element/member.dart' show ExecutableMember;
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -20,7 +18,7 @@ import 'package:dartdoc/src/warnings.dart';
 class Accessor extends ModelElement {
 
   @override
-  final PropertyAccessorElement2 element;
+  final PropertyAccessorElement element;
 
   /// The combo ([Field] or [TopLevelVariable]) containing this accessor.
   ///
@@ -31,7 +29,7 @@ class Accessor extends ModelElement {
   late final GetterSetterCombo enclosingCombo;
 
   Accessor(this.element, super.library, super.packageGraph,
-      {ExecutableMember? super.originalMember});
+      {ExecutableElement? super.originalElement});
 
   @override
   CharacterLocation? get characterLocation => element.isSynthetic
@@ -39,8 +37,8 @@ class Accessor extends ModelElement {
       : super.characterLocation;
 
   @override
-  ExecutableMember? get originalMember =>
-      super.originalMember as ExecutableMember?;
+  ExecutableElement? get originalMember =>
+      super.originalMember as ExecutableElement?;
 
   late final Callable modelType =
       getTypeFor((originalMember ?? element).type, library) as Callable;
@@ -49,7 +47,7 @@ class Accessor extends ModelElement {
 
   /// The [enclosingCombo] where this element was defined.
   late final GetterSetterCombo definingCombo =
-      getModelForElement(element.variable3!) as GetterSetterCombo;
+      getModelForElement(element.variable) as GetterSetterCombo;
 
   String get _sourceCode {
     if (!isSynthetic) {
@@ -117,10 +115,10 @@ class Accessor extends ModelElement {
   }
 
   @override
-  ModelElement get enclosingElement => switch (element.enclosingElement2) {
+  ModelElement get enclosingElement => switch (element.enclosingElement) {
         LibraryFragment enclosingCompilationUnit =>
           getModelForElement(enclosingCompilationUnit.element),
-        _ => getModelFor(element.enclosingElement2, library)
+        _ => getModelFor(element.enclosingElement, library)
       };
 
   @override
@@ -182,7 +180,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
 
   ContainerAccessor.inherited(
       super.element, super.library, super.packageGraph, this._enclosingElement,
-      {super.originalMember})
+      {super.originalElement})
       : isInherited = true;
 
   /// The index and values fields are never declared, and must be special cased.
@@ -207,8 +205,8 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
   @override
   ContainerAccessor? get overriddenElement {
     assert(packageGraph.allLibrariesAdded);
-    final parent = element.enclosingElement2;
-    if (parent is! InterfaceElement2) {
+    final parent = element.enclosingElement;
+    if (parent is! InterfaceElement) {
       return null;
     }
     for (final supertype in parent.allSupertypes) {
@@ -223,12 +221,12 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
         continue;
       }
       final parentContainer =
-          getModelForElement(supertype.element3) as InheritingContainer;
+          getModelForElement(supertype.element) as InheritingContainer;
       final possibleFields =
           parentContainer.declaredFields.where((f) => !f.isStatic);
       final fieldName = accessor.lookupName?.replaceFirst('=', '');
       final foundField =
-          possibleFields.firstWhereOrNull((f) => f.element.name3 == fieldName);
+          possibleFields.firstWhereOrNull((f) => f.element.name == fieldName);
       if (foundField == null) {
         continue;
       }

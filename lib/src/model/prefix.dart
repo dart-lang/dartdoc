@@ -2,22 +2,22 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-/// Represents a [PrefixElement2] for dartdoc.
+/// Represents a [PrefixElement] for dartdoc.
 ///
 /// Like [Parameter], it doesn't have doc pages, but participates in lookups.
 /// Forwards to its referenced library if referred to directly.
 class Prefix extends ModelElement with HasNoPage {
   @override
-  final PrefixElement2 element;
+  final PrefixElement element;
 
   /// [library] is the library the prefix is defined in, not the [Library]
-  /// referred to by the [PrefixElement2].
+  /// referred to by the [PrefixElement].
   Prefix(this.element, super.library, super.packageGraph);
 
   @override
@@ -28,13 +28,13 @@ class Prefix extends ModelElement with HasNoPage {
   late final Library associatedLibrary =
       getModelForElement(_importedLibraryElement) as Library;
 
-  LibraryElement2 get _importedLibraryElement {
+  LibraryElement get _importedLibraryElement {
     final importLists =
-        library.element.fragments.map((fragment) => fragment.libraryImports2);
+        library.element.fragments.map((fragment) => fragment.libraryImports);
     var libraryImport = importLists
         .expand((import) => import)
-        .firstWhere((i) => i.prefix2?.element == element);
-    var importedLibrary = libraryImport.importedLibrary2;
+        .firstWhere((i) => i.prefix?.element == element);
+    var importedLibrary = libraryImport.importedLibrary;
     if (importedLibrary == null) {
       var message = 'Unexpected null LibraryElement2 for imported library at '
           '${library.element.firstFragment.source.uri}, at offset '

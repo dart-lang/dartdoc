@@ -4,7 +4,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:async/async.dart';
@@ -179,9 +179,9 @@ void main() async {
         'Verify annotations and their type arguments render on type parameters '
         'for typedefs',
         skip: 'dart-lang/sdk#46064', () {
-      expect((F.aliasedType as FunctionType).typeParameters.first.metadata2,
+      expect((F.aliasedType as FunctionType).typeParameters.first.metadata,
           isNotEmpty);
-      expect((F.aliasedType as FunctionType).typeParameters.first.metadata2,
+      expect((F.aliasedType as FunctionType).typeParameters.first.metadata,
           isNotEmpty);
       // TODO(jcollins-g): add rendering verification once we have data from
       // analyzer.
@@ -190,7 +190,9 @@ void main() async {
     test('Verify type arguments on annotations renders, including parameters',
         () {
       var ab0 =
-          '@<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/A-class.html">A</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/B.html">B</a></span>&gt;</span>(0)';
+          '@<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/A/A.html">A</a>'
+          '&lt;<a href="%%__HTMLBASE_dartdoc_internal__%%generic_metadata/B.html">B</a>&gt;'
+          '(0)';
 
       expect(genericMetadata.annotations.first.linkedNameWithParameters,
           equals(ab0));
@@ -232,7 +234,7 @@ void main() async {
     void expectTypedefs(Typedef t, String modelTypeToString,
         Iterable<String> genericParameters) {
       expect(t.modelType.toString(), equals(modelTypeToString));
-      expect(t.element.typeParameters2.map((p) => p.toString()),
+      expect(t.element.typeParameters.map((p) => p.toString()),
           orderedEquals(genericParameters));
     }
 
@@ -913,21 +915,21 @@ void main() async {
 
     test('can import other libraries with unusual URIs', () {
       final importLists = fakeLibrary.element.fragments
-          .map((fragment) => fragment.libraryImports2);
+          .map((fragment) => fragment.libraryImports);
       final exportLists = fakeLibrary.element.fragments
-          .map((fragment) => fragment.libraryExports2);
+          .map((fragment) => fragment.libraryExports);
       final fakeLibraryImportedExported = <Library>{
-        for (final l in <LibraryElement2>{
+        for (final l in <LibraryElement>{
           ...importLists
               .expand((imports) => imports)
               .map((import) => import.uri)
               .whereType<DirectiveUriWithLibrary>()
-              .map((uri) => uri.library2),
+              .map((uri) => uri.library),
           ...exportLists
               .expand((exports) => exports)
               .map((export) => export.uri)
               .whereType<DirectiveUriWithLibrary>()
-              .map((uri) => uri.library2)
+              .map((uri) => uri.library)
         })
           packageGraph.getModelForElement(l) as Library
       };
@@ -3449,7 +3451,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('inheritance of docs from SDK works for getter/setter combos', () {
       expect(
           ExtraSpecialListLength
-              .getter!.documentationFrom.first.element.library2!.name3,
+              .getter!.documentationFrom.first.element.library!.name,
           equals('dart.core'));
       expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
     });
