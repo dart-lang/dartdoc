@@ -16,7 +16,6 @@ import 'package:dartdoc/src/warnings.dart';
 
 /// Getters and setters.
 class Accessor extends ModelElement {
-
   @override
   final PropertyAccessorElement element;
 
@@ -105,7 +104,7 @@ class Accessor extends ModelElement {
   void warn(
     PackageWarning kind, {
     String? message,
-    Iterable<Locatable> referredFrom = const [],
+    Iterable<HasLocation> referredFrom = const [],
     Iterable<String> extendedDebug = const [],
   }) {
     enclosingCombo.warn(kind,

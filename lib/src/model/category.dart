@@ -16,7 +16,6 @@ class Category
         Nameable,
         Warnable,
         CommentReferable,
-        Locatable,
         MarkdownFileDocumentation,
         LibraryContainer,
         TopLevelContainer
@@ -96,7 +95,7 @@ class Category
   PackageGraph get packageGraph => package.packageGraph;
 
   @override
-  List<Locatable> get documentationFrom => [this];
+  List<HasLocation> get documentationFrom => [this];
 
   @override
   DocumentLocation get documentedWhere => package.documentedWhere;

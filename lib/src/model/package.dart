@@ -30,7 +30,7 @@ const String htmlBasePlaceholder = r'%%__HTMLBASE_dartdoc_internal__%%';
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
 class Package extends LibraryContainer
-    with Nameable, Locatable, Warnable, CommentReferable {
+    with Nameable, Warnable, CommentReferable {
   @override
   final String name;
 
@@ -101,7 +101,7 @@ class Package extends LibraryContainer
   String? get belowSidebarPath => null;
 
   @override
-  List<Locatable> get documentationFrom => [this];
+  List<HasLocation> get documentationFrom => [this];
 
   /// Return true if the code has defined non-default categories for libraries
   /// in this package.

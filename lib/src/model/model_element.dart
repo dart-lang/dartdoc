@@ -57,14 +57,8 @@ import 'package:path/path.dart' as p show Context;
 /// ModelElement will reference itself as part of the "wrong" [Library] from the
 /// public interface perspective.
 abstract class ModelElement
-    with
-        CommentReferable,
-        Warnable,
-        Locatable,
-        Nameable,
-        SourceCode,
-        DocumentationComment
-    implements Comparable<ModelElement>, Documentable {
+    with CommentReferable, Warnable, Nameable, SourceCode, DocumentationComment
+    implements Comparable<ModelElement>, Documentable, HasLocation {
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Element? _originalMember;
   final Library _library;

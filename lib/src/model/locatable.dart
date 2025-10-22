@@ -5,7 +5,7 @@
 import 'package:dartdoc/src/model/model.dart';
 
 /// Something that can be located for warning purposes.
-mixin Locatable {
+abstract interface class HasLocation {
   /// The [Locatable](s) from which we will get documentation.
   ///
   /// Can be more than one if this is a [Field] composing documentation from
@@ -13,11 +13,7 @@ mixin Locatable {
   ///
   /// This will walk up the inheritance hierarchy to find docs, if the current
   /// class doesn't have docs for this element.
-  List<Locatable> get documentationFrom;
-
-  /// Whether [documentationFrom] contains only one item, `this`.
-  bool get documentationIsLocal =>
-      documentationFrom.length == 1 && identical(documentationFrom.first, this);
+  List<HasLocation> get documentationFrom;
 
   String get fullyQualifiedName;
 
@@ -36,7 +32,7 @@ mixin Locatable {
   bool get isCanonical;
 }
 
-extension NullableLocatable on Locatable? {
+extension NullableHasLocation on HasLocation? {
   String get safeWarnableName =>
       this?.fullyQualifiedName.replaceFirst(':', '-') ?? '<unknown>';
 }

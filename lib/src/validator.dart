@@ -236,7 +236,7 @@ class Validator {
     String origin, {
     String? referredFrom,
   }) {
-    final referredFromElements = <Locatable>{};
+    final referredFromElements = <HasLocation>{};
 
     // Make all paths relative to origin.
     if (path.isWithin(origin, warnOn)) {
