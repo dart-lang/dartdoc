@@ -827,16 +827,6 @@ extension on Element {
 
 // Copied from analyzer's `lib/src/dart/element/extensions.dart`. Re-use that
 // extension if it becomes public.
-extension on Element {
-  /// Whether this Element is annotated with a `Deprecated` annotation with a
-  /// `_DeprecationKind` of [kind].
-  bool isDeprecatedWithKind(String kind) => metadata.annotations
-      .where((e) => e.isDeprecated)
-      .any((e) => e.deprecationKind == kind);
-}
-
-// Copied from analyzer's `lib/src/dart/element/extensions.dart`. Re-use that
-// extension if it becomes public.
 extension ElementAnnotationExtension on ElementAnnotation {
   /// The kind of deprecation, if this annotation is a `Deprecated` annotation.
   ///
