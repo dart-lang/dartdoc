@@ -94,13 +94,13 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
 
 /// Something that package warnings can be reported on. Optionally associated
 /// with an analyzer [element].
-mixin Warnable implements CommentReferable, Documentable, Locatable {
+mixin Warnable implements CommentReferable, Documentable, HasLocation {
   Element? get element;
 
   void warn(
     PackageWarning kind, {
     String? message,
-    Iterable<Locatable> referredFrom = const [],
+    Iterable<HasLocation> referredFrom = const [],
     Iterable<String> extendedDebug = const [],
   }) {
     packageGraph.warnOnElement(this, kind,
@@ -108,6 +108,10 @@ mixin Warnable implements CommentReferable, Documentable, Locatable {
         referredFrom: referredFrom,
         extendedDebug: extendedDebug);
   }
+
+  /// Whether [documentationFrom] contains only one item, `this`.
+  bool get documentationIsLocal =>
+      documentationFrom.length == 1 && identical(documentationFrom.first, this);
 }
 
 /// The kinds of warnings that can be displayed when documenting a package.
@@ -326,7 +330,7 @@ enum PackageWarning implements Comparable<PackageWarning> {
   String messageForWarnable(Warnable warnable) =>
       '$_warnablePrefix ${warnable.safeWarnableName}: ${warnable.location}';
 
-  String messageForReferral(Locatable referral) =>
+  String messageForReferral(HasLocation referral) =>
       '$_referredFromPrefix ${referral.safeWarnableName}: ${referral.location}';
 }
 

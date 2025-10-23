@@ -203,7 +203,7 @@ final class _Canonicalization {
   }
 }
 
-/// A pattern that can split [Locatable.location] strings.
+/// A pattern that can split [HasLocation.location] strings.
 final _locationSplitter = RegExp(r'(package:|[\\/;.])');
 
 /// This class represents the score for a particular element; how likely
