@@ -277,8 +277,9 @@ library script;
 class Script {}
 ''');
 
-        packageTwoRoot =
-            utils.writePackage('two', resourceProvider, packageConfigProvider);
+        packageTwoRoot = utils.writePackage(
+            'two', resourceProvider, packageConfigProvider,
+            dependencies: ['one']);
         packageConfigProvider.addPackageToConfigFor(
             packageTwoRoot.path, 'one', Uri.file('${packageOneRoot.path}/'));
         packageTwoRoot
@@ -454,6 +455,64 @@ int x;
 
         expect(packageGraph.localPackages.first.hasCategories, isFalse);
         expect(packageGraph.localPackages.first.categories, isEmpty);
+      });
+    });
+
+    group('ordering', () {
+      late Folder defaultRoot;
+
+      Folder bootBasicPackages(List<String> names) {
+        var defaultPackageRoot = utils.writePackage(
+            'default', resourceProvider, packageConfigProvider,
+            dependencies: names);
+
+        for (var name in names) {
+          var root =
+              utils.writePackage(name, resourceProvider, packageConfigProvider);
+          root
+              .getChildAssumingFolder('lib')
+              .getChildAssumingFile('$name.dart')
+              .writeAsStringSync('var a = 1;');
+          packageConfigProvider.addPackageToConfigFor(
+              defaultPackageRoot.path, name, Uri.file('${root.path}/'));
+          defaultPackageRoot
+              .getChildAssumingFolder('lib')
+              .getChildAssumingFile('$name.dart')
+              .writeAsStringSync('''
+import 'package:$name/$name.dart';
+var b = a;
+''');
+        }
+
+        return defaultPackageRoot;
+      }
+
+      test('default package precedes SDK which precedes dependencies',
+          () async {
+        defaultRoot = bootBasicPackages(['bbb', 'aaa']);
+        var packageGraph = await utils.bootBasicPackage(
+            defaultRoot.path, packageMetaProvider, packageConfigProvider,
+            additionalArguments: [
+              '--auto-include-dependencies',
+            ]);
+
+        var sortedPackages = [...packageGraph.localPackages]..sort();
+        expect(sortedPackages.map((c) => c.name),
+            orderedEquals(['default', 'Dart', 'aaa', 'bbb']));
+      });
+
+      test('packages named in --package-order option come first', () async {
+        defaultRoot = bootBasicPackages(['aaa', 'bbb', 'ccc']);
+        var packageGraph = await utils.bootBasicPackage(
+            defaultRoot.path, packageMetaProvider, packageConfigProvider,
+            additionalArguments: [
+              '--auto-include-dependencies',
+              '--package-order=bbb,aaa',
+            ]);
+
+        var sortedPackages = [...packageGraph.localPackages]..sort();
+        expect(sortedPackages.map((c) => c.name),
+            orderedEquals(['bbb', 'aaa', 'default', 'Dart', 'ccc']));
       });
     });
   });

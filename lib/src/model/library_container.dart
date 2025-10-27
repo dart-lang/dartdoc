@@ -5,12 +5,13 @@
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
+import 'package:meta/meta.dart';
 
 /// A set of libraries, initialized after construction by accessing [libraries].
 ///
 /// Do not cache return values of any methods or members excepting [libraries]
 /// and [name] before finishing initialization of a [LibraryContainer].
-abstract mixin class LibraryContainer
+abstract base class LibraryContainer
     implements Nameable, Comparable<LibraryContainer>, Documentable {
   final List<Library> libraries = [];
 
@@ -19,31 +20,40 @@ abstract mixin class LibraryContainer
 
   bool get hasPublicLibraries => libraries.any((e) => e.isPublic);
 
+  LibraryContainer({required this.isSdk, required String enclosingName})
+      : _enclosingName = enclosingName;
+
   /// The name of the container or object that this LibraryContainer is a part
-  /// of.  Used for sorting in [containerOrder].
-  String get enclosingName;
+  /// of.
+  ///
+  /// Used for sorting in [containerOrder].
+  final String _enclosingName;
 
   /// Order by which this container should be sorted.
+  @visibleForOverriding
   List<String> get containerOrder;
 
-  /// Sorting key.  [containerOrder] should contain these.
+  /// Sorting key.
+  ///
+  /// [containerOrder] should contain these.
   String get sortKey => name;
 
-  /// Does this container represent the SDK?  This can be false for containers
-  /// that only represent a part of the SDK.
-  bool get isSdk => false;
+  /// Whether this container represents the Dart SDK.
+  ///
+  /// This can be false for containers that only represent a part of the SDK.
+  final bool isSdk;
 
   /// Returns:
   /// * -1 if this container is listed in [containerOrder].
-  /// * 0 if this container is named the same as the [enclosingName].
+  /// * 0 if this container is named the same as the [_enclosingName].
   /// * 1 if this container represents the SDK.
-  /// * 2 if this group has a name that contains the name [enclosingName].
+  /// * 2 if this group has a name that contains the name [_enclosingName].
   /// * 3 otherwise.
   int get _group {
     if (containerOrder.contains(sortKey)) return -1;
-    if (equalsIgnoreAsciiCase(sortKey, enclosingName)) return 0;
+    if (equalsIgnoreAsciiCase(sortKey, _enclosingName)) return 0;
     if (isSdk) return 1;
-    if (sortKey.toLowerCase().contains(enclosingName.toLowerCase())) return 2;
+    if (sortKey.toLowerCase().contains(_enclosingName.toLowerCase())) return 2;
     return 3;
   }
 
