@@ -25,6 +25,8 @@ class FakePackageConfigProvider implements PackageConfigProvider {
   /// A mapping of package config search locations to configured packages.
   final _packageConfigData = <String, List<package_config.Package>>{};
 
+  /// Adds the package named [name] at [root] to the package config for
+  /// [location].
   void addPackageToConfigFor(String location, String name, Uri root) {
     _packageConfigData
         .putIfAbsent(location, () => [])

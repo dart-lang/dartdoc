@@ -9,7 +9,6 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:async/async.dart';
 import 'package:collection/src/iterable_extensions.dart';
-import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/attribute.dart';
@@ -35,66 +34,6 @@ Future<PackageGraph> get testPackageGraph async =>
         pubPackageMetaProvider, PhysicalPackageConfigProvider(),
         excludeLibraries: ['css', 'code_in_comments'],
         additionalArguments: ['--no-link-to-remote']));
-
-/// For testing sort behavior.
-class TestLibraryContainer extends LibraryContainer with Nameable {
-  @override
-  final List<String> containerOrder;
-  @override
-  String enclosingName;
-  @override
-  final String name;
-
-  @override
-  bool get isSdk => false;
-  @override
-  PackageGraph get packageGraph => throw UnimplementedError();
-
-  @override
-  Package get package => throw UnimplementedError();
-
-  TestLibraryContainer(
-      this.name, this.containerOrder, LibraryContainer? enclosingContainer)
-      : enclosingName = enclosingContainer?.name ?? '';
-
-  @override
-  DartdocOptionContext get config => throw UnimplementedError();
-
-  @override
-  String? get documentation => throw UnimplementedError();
-
-  @override
-  String get documentationAsHtml => throw UnimplementedError();
-
-  @override
-  bool get hasDocumentation => throw UnimplementedError();
-
-  @override
-  String? get href => throw UnimplementedError();
-
-  @override
-  bool get isDocumented => throw UnimplementedError();
-
-  @override
-  Kind get kind => throw UnimplementedError();
-
-  @override
-  String get oneLineDoc => throw UnimplementedError();
-
-  @override
-  String? get aboveSidebarPath => null;
-
-  @override
-  String? get belowSidebarPath => null;
-}
-
-class TestLibraryContainerSdk extends TestLibraryContainer {
-  TestLibraryContainerSdk(super.name, super.containerOrder,
-      LibraryContainer super.enclosingContainer);
-
-  @override
-  bool get isSdk => true;
-}
 
 void main() async {
   final packageGraph = await testPackageGraph;
@@ -735,64 +674,6 @@ void main() async {
   test('Verify redirectFilePath set', () {
     var category = packageGraph.publicPackages.first.categories.first;
     expect(category.redirectFilePath, 'topics/Superb-topic.html');
-  });
-
-  group('LibraryContainer', () {
-    late final TestLibraryContainer topLevel;
-    var sortOrderBasic = ['theFirst', 'second', 'fruit'];
-    var containerNames = [
-      'moo',
-      'woot',
-      'theFirst',
-      'topLevel Things',
-      'toplevel',
-      'fruit'
-    ];
-
-    setUpAll(() {
-      topLevel = TestLibraryContainer('topLevel', [], null);
-    });
-
-    test('multiple containers with specified sort order', () {
-      var containers = <LibraryContainer>[];
-      for (var i = 0; i < containerNames.length; i++) {
-        var name = containerNames[i];
-        containers.add(TestLibraryContainer(name, sortOrderBasic, topLevel));
-      }
-      containers.add(TestLibraryContainerSdk('SDK', sortOrderBasic, topLevel));
-      containers.sort();
-      expect(
-          containers.map((c) => c.name),
-          orderedEquals([
-            'theFirst',
-            'fruit',
-            'toplevel',
-            'SDK',
-            'topLevel Things',
-            'moo',
-            'woot'
-          ]));
-    });
-
-    test('multiple containers, no specified sort order', () {
-      var containers = <LibraryContainer>[];
-      for (var name in containerNames) {
-        containers.add(TestLibraryContainer(name, [], topLevel));
-      }
-      containers.add(TestLibraryContainerSdk('SDK', [], topLevel));
-      containers.sort();
-      expect(
-          containers.map((c) => c.name),
-          orderedEquals([
-            'toplevel',
-            'SDK',
-            'topLevel Things',
-            'fruit',
-            'moo',
-            'theFirst',
-            'woot'
-          ]));
-    });
   });
 
   group('Library', () {

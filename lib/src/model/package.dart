@@ -29,7 +29,7 @@ const String htmlBasePlaceholder = r'%%__HTMLBASE_dartdoc_internal__%%';
 
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
-class Package extends LibraryContainer
+final class Package extends LibraryContainer
     with Nameable, Warnable, CommentReferable {
   @override
   final String name;
@@ -70,7 +70,10 @@ class Package extends LibraryContainer
           packageGraph.config,
           packageGraph.resourceProvider.getFolder(packagePath),
           packageGraph.resourceProvider,
-        );
+        ),
+        super(
+            isSdk: packageMeta.isSdk,
+            enclosingName: packageGraph.defaultPackageName);
 
   @override
   bool get isCanonical => true;
@@ -182,9 +185,6 @@ class Package extends LibraryContainer
     }
     return DocumentLocation.missing;
   }();
-
-  @override
-  String get enclosingName => packageGraph.defaultPackageName;
 
   String get filePath => 'index.html';
 
@@ -363,9 +363,6 @@ class Package extends LibraryContainer
   bool get isFirstPackage =>
       packageGraph.localPackages.isNotEmpty &&
       identical(packageGraph.localPackages.first, this);
-
-  @override
-  bool get isSdk => packageMeta.isSdk;
 
   final String packagePath;
 

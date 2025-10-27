@@ -11,13 +11,12 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 /// A subcategory of a package, containing elements tagged with `{@category}`.
-class Category
+final class Category extends LibraryContainer
     with
         Nameable,
         Warnable,
         CommentReferable,
         MarkdownFileDocumentation,
-        LibraryContainer,
         TopLevelContainer
     implements Documentable {
   /// The package in which this category is contained.
@@ -64,7 +63,8 @@ class Category
   Category(this._name, this.package, this.config)
       : _categoryDefinition =
             config.categories.categoryDefinitions[_name.orDefault] ??
-                CategoryDefinition(_name, null, null);
+                CategoryDefinition(_name, null, null),
+        super(isSdk: false, enclosingName: package.name);
 
   Iterable<ExternalItem> get externalItems => _categoryDefinition.externalItems;
 
@@ -87,9 +87,6 @@ class Category
 
   @override
   List<String> get containerOrder => config.categoryOrder;
-
-  @override
-  String get enclosingName => package.name;
 
   @override
   PackageGraph get packageGraph => package.packageGraph;
