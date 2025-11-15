@@ -33,6 +33,7 @@ Future<void> build(
     // handling it ourselves?
     resourceProvider: PhysicalResourceProvider.INSTANCE,
     sdkPath: sdkPath,
+    withFineDependencies: true,
   );
   var analysisContext = contextCollection.contextFor(root);
   final libraryResult = await analysisContext.currentSession

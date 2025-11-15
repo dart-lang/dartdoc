@@ -65,6 +65,7 @@ class PubPackageBuilder implements PackageBuilder {
           analysisOptions
             ..warning = false
             ..lint = false,
+      withFineDependencies: true,
     );
     return PubPackageBuilder._(
       config,

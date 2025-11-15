@@ -86,6 +86,7 @@ Future<LibraryElement> resolveGeneratedLibrary2(String libraryPath) async {
     // handling it ourselves?
     resourceProvider: PhysicalResourceProvider.INSTANCE,
     sdkPath: sdkPath,
+    withFineDependencies: true,
   );
   var analysisContext = contextCollection.contextFor(d.sandbox);
   final libraryResult =
