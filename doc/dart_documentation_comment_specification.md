@@ -9,8 +9,6 @@ Version: 1.0.0
 
 The purpose of this document is to provide a single specification for documentation comments in the Dart programming language. Its goal is to ensure that documentation is parsed consistently by all tools and to serve as a definitive standard for developers and tool authors.
 
-###
-
 ### **1.2. Scope**
 
 **In Scope**
@@ -22,17 +20,14 @@ This specification covers the following topics:
 * The mechanism for *resolving* references between elements.
 * The logic for *associating* documentation with code elements.
 
-###
-
 **Out of Scope**
 
 This document does not cover:
 
-* The implementation details of specific documentation tools (e.g., `dartdoc`).
+* The implementation details of specific documentation tools (e.g., `dartdoc`, `analysis server`).
 * The syntax and behavior of tool-specific directives (e.g., `@template`, `@canonicalFor`).
 * Any details related to the visual styling or HTML layout of generated documentation.
 * Best practices or style guides for writing effective documentation content.
-
 
 ### **1.3. Terminology**
 
@@ -48,8 +43,6 @@ This document does not cover:
 
 * Starts with `///`.
 * All consecutive lines starting with `///` are treated as part of the same comment block.
-
-###
 
 ### **2.2. Block-Based Doc Comments (Historic, not recommended)**
 
@@ -67,8 +60,6 @@ This document does not cover:
  */
 ```
 
-###
-
 ### **2.3. Content Format (Markdown)**
 
 The text within a documentation comment block is parsed as Markdown, allowing for rich text formatting. This includes headings, lists, code blocks, and emphasis, which are converted for instance to HTML in the generated documentation.
@@ -79,8 +70,6 @@ A reference is a special directive within the Markdown content that creates a hy
 
 Conceptually, these behave like [reference-style links](https://www.markdownguide.org/basic-syntax/#reference-style-links) in Markdown. The documentation generator resolves the name against the available source code to create the link's destination. See [Section 5](#5.-reference-lookup-and-resolution) for detailed resolution rules.
 
-##
-
 ## **3\. Placement of Documentation Comments**
 
 Doc comments are associated with the declaration that immediately follows them. They are only considered valid when placed directly before the following types of declarations:
@@ -88,8 +77,6 @@ Doc comments are associated with the declaration that immediately follows them. 
 ### **3.1. Directives**
 
 * `library` directives.
-
-###
 
 ### **3.2. Top-Level Declarations**
 
@@ -111,8 +98,6 @@ Doc comments are associated with the declaration that immediately follows them. 
 * Fields (instance, static)
 * Getters or setters (Not both, prefer getter)
 
-###
-
 ### **3.4. Enum Constants**
 
 * A doc comment can be placed before an individual enum value.
@@ -121,13 +106,9 @@ Doc comments are associated with the declaration that immediately follows them. 
 
 While not strictly disallowed by the language, any other placement of a comment with the /// syntax, is not considered a doc comment, and hence should be ignored by documentation tools.
 
-##
-
 ## **4\. Referenceable Elements**
 
 A reference in a doc comment (e.g., `[name]`) can link to any Dart element that is visible from the Dart scope of the documented element. See [Section 5](#5.-reference-lookup-and-resolution) for more details about scoping.   This includes:
-
-###
 
 ### **4.1. Types**
 
@@ -137,8 +118,6 @@ A reference in a doc comment (e.g., `[name]`) can link to any Dart element that 
 * Named extensions (e.g., `[MyExtension]`)
 * Extension types (e.g., `[MyExtensionType]`)
 * Type aliases (Typedefs) (e.g., `[MyTypedef]`)
-
-###
 
 ### **4.2. Top-Level Declarations:**
 
@@ -153,12 +132,10 @@ A reference in a doc comment (e.g., `[name]`) can link to any Dart element that 
 * Constructors (e.g., `[MyClass.new]`, `[MyClass.named]`, `[MyClass.named()]`)
 * Enum constants (e.g., `[MyEnum.value]`)
 
-**4.4. Local Scope Parameters (within a member's doc comment):**
+### **4.4. Local Scope Parameters (within a member's doc comment):**
 
 * Parameters of the documented method/function (e.g., `[parameterName]`)
 * Type parameters of the documented element (e.g., `[T]`)
-
-##
 
 ## **5\. Reference Lookup and Resolution**
 
@@ -174,7 +151,7 @@ When a name is enclosed in square brackets (e.g., `[MyClass.myMethod]`), documen
 
 ### **5.2. Scope Precedence Hierarchy**
 
-The resolution process for a reference \[name\] follows the standard Dart scope of the documented element with the extension of the doc imported scope at the end. Search is done in a specific order of precedence from the narrowest (most local) scope to the broadest (globally available).
+The resolution process for a reference `[name]` follows the standard Dart scope of the documented element with the extension of the doc imported scope at the end. Search is done in a specific order of precedence from the narrowest (most local) scope to the broadest (globally available).
 
 The hierarchy is searched from the inside out. Below is an example for an instance method:
 ```
@@ -201,8 +178,6 @@ The hierarchy is searched from the inside out. Below is an example for an instan
 +--------------------------------------------------------------------------+
 
 ```
-###
-
 ### **5.3. Detailed Lookup Process**
 
 The lookup process begins at a specific "starting scope"  determined by the context of the doc comment and then follows the scope hierarchy.
@@ -252,7 +227,6 @@ class MyClass<T> {
 }
 
 ```
-####
 
 #### **5.3.2. Instance Fields**
 
@@ -266,15 +240,11 @@ A top-level function operates like a method but without any enclosing class-like
 
 * **Starting Scope**:  Formal Parameter Scope
 
-####
-
 #### **5.3.4. Top-Level Variables**
 
 For top-level variables, the search has no local context and must begin at the file's library scope.
 
 * **Starting Scope**: Library Scope
-
-####
 
 #### **5.3.5. Top-Level Declarations**
 
@@ -321,7 +291,6 @@ class MyClass<T> {
 }
 
 ```
-####
 
 #### **5.3.6. Typedefs**
 
@@ -333,7 +302,6 @@ The starting scope for a typedef doc comment depends on what it is an alias for.
 | Record Type | Record fields scope |
 | All Other Types | Typedef type parameter scope |
 
-####
 **Example**
 
 ```
@@ -373,16 +341,11 @@ typedef void MyTypedef<T>(int p);
 typedef F<T> = void Function(void Function<S>(void Function(T p)) fun);
 ```
 
-
-####
-
 **Note on Nested Scopes:** The lookup only applies to the *immediate* parameters or fields of the typedef. It does not extend into parameters of nested function types.
 
 ### **5.4. Resolving Qualified Names**
 
 When a reference contains a qualified name (e.g., `[prefix.ClassName.member]`), the resolution process is an iterative, left-to-right evaluation of each Identifier.
-
-####
 
 #### **1\. Resolve the First Identifier**
 
@@ -394,8 +357,6 @@ Once an identifier is resolved, the element it resolves to establishes a new **"
 
 The namespace available depends on the type of element the previous identifier resolved to. Below are the primary cases.
 
-###
-
 **Namespace-Providing Elements**
 
 If an Identifier resolves to one of the following elements, it establishes a new namespace for resolving the next identifier in the chain.
@@ -405,8 +366,6 @@ If an Identifier resolves to one of the following elements, it establishes a new
 * **Namespace:** The export scope of the imported library, as filtered by any show or hide combinators on the import directive.
 * **Example:** In `[math.pi]`, the identifier `math` resolves to an import prefix (e.g., from `import dart:math' as math;`). The tool then searches the public namespace of dart:math for the identifier pi.
 * **Combinator Example:** If the import was import 'dart:math' as math show sin;, the namespace for math would *only* contain sin. A reference to `[math.pi]` would fail to resolve, as `pi` was not included in the show list.
-
-###
 
 *Case 2: Class-like top-level declaration*
 
@@ -423,13 +382,9 @@ If an Identifier resolves to one of the following elements, it establishes a new
   * The identifier BoolList resolves to a class element within the collection library's public namespace.
   * The identifier empty resolves to a named constructor element within the BoolList class's member namespace.
 
-###
-
 **Leaf Elements (Empty Namespace)**
 
 The following elements are "leaf" nodes. If an Identifier resolves to one of these, it provides no further namespace, and the chain of resolution must end.
-
-###
 
 *Case 3: Function, or Method*
 
@@ -444,8 +399,6 @@ The following elements are "leaf" nodes. If an Identifier resolves to one of the
 * **Namespace:** Empty.
 * **Explanation:** These elements are also "leaf" nodes. They represent values and do not have their own member namespaces.
 * **Example**: If `myField` is a class field, a Reference like `[myField.something]` is invalid. Similarly, if `param` is a method parameter, `[param.something]` is also invalid.
-
-###
 
 *Case 5: Type Parameter*
 
