@@ -32,9 +32,10 @@ This document does not cover:
 ### **1.3. Terminology**
 
 * **Doc Comment:** A comment intended to be processed by documentation generation tools, like  dartdoc.
-* **Element**: A specific, declared element in the Dart code, such as a class, method, function, variable, or type parameter.
-* **Identifier:** An individual name in the code (e.g., `MyClass`, myMethod, prefix).
+* **Element**: Dart declarations or directives that can have documentation or be referenced in a doc comment: library directives, top-level, or member declarations such as class, menthod, or variable.
+* **Identifier:** An individual name in the code (e.g., `MyClass`, `myMethod`, `prefix`).
 * **Qualified Name:** A name composed of two or more *identifiers* separated by dots, used to access an element within a specific namespace (e.g., MyClass.myMethod, prefix.MyClass).
+* **Name:** A name is either a single *identifier* or a *qualified name*.
 * **Reference:** A string enclosed in square brackets within a doc comment (e.g., `[MyClass]` or `[MyClass.myMethod]`) that links to an element. The text inside the brackets is either a single *identifier* or a *qualified name*.
 
 ## **2\. Syntax of Documentation Comments**
@@ -62,11 +63,11 @@ This document does not cover:
 
 ### **2.3. Content Format (Markdown)**
 
-The text within a documentation comment block is parsed as Markdown, allowing for rich text formatting. This includes headings, lists, code blocks, and emphasis, which are converted for instance to HTML in the generated documentation.
+The text within a documentation comment block is parsed as CommonMark markdown, allowing for rich text formatting. This includes headings, lists, code blocks, and emphasis, which are converted for instance to HTML in the generated documentation.
 
 ### **2.4. References**
 
-A reference is a special directive within the Markdown content that creates a hyperlink to a Dart element. It is written by enclosing a Dart identifier in square brackets (e.g., `[foo]`).  See [Section 4](#4.-referenceable-elements) for detailed information about which elements can be referenced.
+A reference is a special directive within the Markdown content that creates a hyperlink to a Dart element. It is written by enclosing a name in square brackets (e.g., `[foo]`).  See [Section 4](#4.-referenceable-elements) for detailed information about which elements can be referenced.
 
 Conceptually, these behave like [reference-style links](https://www.markdownguide.org/basic-syntax/#reference-style-links) in Markdown. The documentation generator resolves the name against the available source code to create the link's destination. See [Section 5](#5.-reference-lookup-and-resolution) for detailed resolution rules.
 
@@ -96,7 +97,7 @@ Doc comments are associated with the declaration that immediately follows them. 
 * Methods (instance, static)
 * Operators
 * Fields (instance, static)
-* Getters or setters (Not both, prefer getter)
+* Getters or setters (See [Section 6.2.2](#6.2.2.-getters-and-setters) for details)
 
 ### **3.4. Enum Constants**
 
@@ -126,16 +127,16 @@ A reference in a doc comment (e.g., `[name]`) can link to any Dart element that 
 
 ### **4.3. Members**
 
-* Methods (e.g., `[myMethod]`, `[MyClass.myMethod]`,` `[MyClass.myMethod()]`)
+* Methods (e.g., `[myMethod]`, `[MyClass.myMethod]`)
 * Fields (constants and variables) (e.g., `[myField]`, `[MyClass.myField]`)
 * Getters and Setters  (See [Section 6.2.2](#6.2.2.-getters-and-setters) for full details)
-* Constructors (e.g., `[MyClass.new]`, `[MyClass.named]`, `[MyClass.named()]`)
+* Constructors (e.g., `[MyClass.new]`, `[MyClass.named]`)
 * Enum constants (e.g., `[MyEnum.value]`)
 
 ### **4.4. Local Scope Parameters (within a member's doc comment):**
 
 * Parameters of the documented method/function (e.g., `[parameterName]`)
-* Type parameters of the documented element (e.g., `[T]`)
+* Type parameters of the documented element and the enclosing element (e.g., `[T]`)
 
 ## **5\. Reference Lookup and Resolution**
 
@@ -151,7 +152,7 @@ When a name is enclosed in square brackets (e.g., `[MyClass.myMethod]`), documen
 
 ### **5.2. Scope Precedence Hierarchy**
 
-The resolution process for a reference `[name]` follows the standard Dart scope of the documented element with the extension of the doc imported scope at the end. Search is done in a specific order of precedence from the narrowest (most local) scope to the broadest (globally available).
+The resolution process for a reference `[name]` follows the standard Dart scope of the documented element with the extension of the doc imported scope at the end. The resolution starts with the first *identifier* of a name. Search is done in a specific order of precedence from the narrowest (most local) scope to the broadest (globally available).
 
 The hierarchy is searched from the inside out. Below is an example for an instance method:
 ```
@@ -180,7 +181,7 @@ The hierarchy is searched from the inside out. Below is an example for an instan
 ```
 ### **5.3. Detailed Lookup Process**
 
-The lookup process begins at a specific "starting scope"  determined by the context of the doc comment and then follows the scope hierarchy.
+The lookup process begins at a specific "starting scope" determined by the context of the doc comment and then follows the scope hierarchy.
 
 The following sections detail the starting scope for each type of declaration.
 
@@ -210,7 +211,9 @@ class MyClass<T> {
   /// * [R]: Resolves to the method type parameter (Method Type Parameter Scope).
   /// * [value]: Resolves to the class member (Class Member Scope).
   /// * [myStaticMethod]: Resolves to the static class member (Class Member Scope).
+  /// * [myMethod]: Resolves to this method itself (Class Member Scope).
   /// * [T]: Resolves to the class type parameter (Class Type Parameter Scope).
+  /// * [MyClass]: Resolves to the parent class (Library Scope).
   /// * [AnotherClass]: Resolves to the library member (Library Scope).
   /// * [List]: Resolves from 'dart:core' (Imported Scopes).
   /// * [JsonCodec]: Resolves from 'dart:convert' (Imported Scope).
@@ -262,6 +265,7 @@ For doc comments placed directly on classes, enums, mixins, extensions, extensio
 /// * [input]: Resolves to the parameter (Formal Parameter Scope).
 /// * [R]: Resolves to the function type parameter (Function Type Parameter Scope).
 /// * [globalConstant]: Resolves to the library member (Library Scope).
+/// * [topLevelFunction]: Resolves to the function itself (Library Scope).
 /// * [String]: Resolves from 'dart:core'(Imported Scope).
 R topLevelFunction<R>(String input) {
   // ...
@@ -271,6 +275,7 @@ R topLevelFunction<R>(String input) {
 ///
 /// Lookup examples:
 /// * [topLevelFunction]: Resolves to the library member (Library Scope).
+/// * [globalConstant]: Resolves to the variable itself (Library Scope).
 /// * [Duration]: Resolves from 'dart:core' (Imported Scope).
 /// * [Random]: Resolves from 'dart:math' (Doc Imported Scope).
 const int globalConstant = 10;
@@ -281,6 +286,7 @@ const int globalConstant = 10;
 /// * [myMethod]: Resolves to the class member (Class Member Scope).
 /// * [T]: Resolves to the class type parameter (Class Type Parameter Scope).
 /// * [topLevelFunction]: Resolves to the library member (Library Scope).
+/// * [MyClass]: Resolves to the class itself (Library Scope).
 /// * [List]: Resolves from 'dart:core' (Imported Scopes).
 /// * [Random]: Resolves from 'dart:math' (Doc Imported Scope).
 class MyClass<T> {
@@ -312,7 +318,8 @@ class AnotherClass {}
 /// A typedef for a Map.
 ///
 /// Lookup examples:
-/// * [T]: Resolves to the typedef type parameter (typedef type parameter scope).
+/// * [T]: Resolves to the typedef type parameter (Typedef Type Parameter Scope).
+/// * [JsonMap]: Resolves to the typedef itself (Library Scope).
 /// * [AnotherClass]: Resolves to the library member (Library Scope).
 /// * [Map]: Resolves from 'dart:core' (Imported Scope).
 /// * [String]: Resolves from 'dart:core' (Imported Scope).
@@ -364,23 +371,23 @@ If an Identifier resolves to one of the following elements, it establishes a new
 *Case 1: Import Prefix*
 
 * **Namespace:** The export scope of the imported library, as filtered by any show or hide combinators on the import directive.
-* **Example:** In `[math.pi]`, the identifier `math` resolves to an import prefix (e.g., from `import dart:math' as math;`). The tool then searches the public namespace of dart:math for the identifier pi.
-* **Combinator Example:** If the import was import 'dart:math' as math show sin;, the namespace for math would *only* contain sin. A reference to `[math.pi]` would fail to resolve, as `pi` was not included in the show list.
+* **Example:** In `[math.pi]`, the identifier `math` resolves to an import prefix (e.g., from `import 'dart:math' as math;`). The tool then searches the public namespace of dart:math for the identifier pi.
+* **Combinator Example:** If the import was `import 'dart:math' as math show sin;`, the namespace for `math` would *only* contain `sin`. A reference to `[math.pi]` would fail to resolve, as `pi` was not included in the show list.
 
 *Case 2: Class-like top-level declaration*
 
-* **Namespace:** The set of all members declared within that element, including:
-  * Instance Members (fields, methods, etc.)
+* **Namespace:** The set of all members accesible on that element, including:
+  * Instance Members (fields, methods, etc.), including those inherited from supertypes.
   * Static Members
   * Constructors
 
 * **Notes on Generics:**
-  * The namespace does not include the element's own type parameters. For a class `MyClass<T>`, a reference like `[MyClass.T]` is invalid because T is not a member of `MyClass`'s namespace.
+  * The namespace does not include the element's own type parameters. For a class `MyClass<T>`, a reference like `[MyClass.T]` is invalid because `T` is not a member of `MyClass`'s namespace.
   * References are also made to the generic declaration, not a specific instantiation (e.g., write `[List.filled]`, not `[List<int>.filled]`).
 * **Example:** To resolve the reference `[collection.BoolList.empty]`:
-  * The identifier collection resolves to an import prefix.
-  * The identifier BoolList resolves to a class element within the collection library's public namespace.
-  * The identifier empty resolves to a named constructor element within the BoolList class's member namespace.
+  * The identifier `collection` resolves to an import prefix.
+  * The identifier `BoolList` resolves to a class element within the `collection` library's public namespace.
+  * The identifier `empty` resolves to a named constructor element within the `BoolList` class's member namespace.
 
 **Leaf Elements (Empty Namespace)**
 
@@ -423,12 +430,12 @@ class A {
 
   /// An instance method.
   void foo() {}
-}
 
 /// Usage in documentation:
 /// * [foo]   -> Resolves to the method foo().
 /// * [A.foo] -> Resolves to the constructor A.foo().
 
+}
 ```
 
 * **Getters and Setters:** A reference to a property name (e.g., `[value]`) resolves to the *conceptual property* rather than the individual getter or setter. See full discussion in [Section 6.2.2](#6.2.2.-getters-and-setters).
@@ -453,9 +460,9 @@ When a member overrides an ancestor, its documentation is determined by a set of
 
 * **Explicit Documentation:** If an overriding member does have its own doc comment, that comment takes full precedence. The documentation from any base members is ignored.
 
-* **Unambiguous Documentation Inheritance** If a member overrides a member from an ancestor and does not have its own doc comment, it inherits the documentation from the base member. This rule applies when the source of the documentation is unambiguous (e.g., overriding a single concrete method).  Documentation tools should display this inherited comment, ideally noting its origin (e.g., "Copied from BaseClass").
+* **Unambiguous Documentation Inheritance:** If a member overrides a member from an ancestor and does not have its own doc comment, it inherits the documentation from the base member. This rule applies when the source of the documentation is unambiguous (e.g., overriding a single method).  Documentation tools should display this inherited comment, ideally noting its origin (e.g., "Copied from BaseClass").
 
-* **Ambiguous Documentation from Multiple Ancestors** The behavior for resolving documentation when a member inherits conflicting documentation from multiple ancestors is *reserved for future standardization*. Currently, tools may handle this case at their discretion, or ignore inherited documentation in ambiguous scenarios. It is recommended that tools *issue a warning* when this scenario is encountered, prompting the user to provide explicit documentation to resolve the ambiguity.
+* **Ambiguous Documentation from Multiple Ancestors:** The behavior for resolving documentation when a member inherits conflicting documentation from multiple ancestors is *reserved for future standardization*. Currently, tools may handle this case at their discretion, or ignore inherited documentation in ambiguous scenarios. It is recommended that tools *issue a warning* when this scenario is encountered, prompting the user to provide explicit documentation to resolve the ambiguity.
 
 #### **6.2.2. Getters and Setters**
 
@@ -469,10 +476,10 @@ Documentation tools should handle this property with the following rules:
   * The tooling should *issue a warning* if both a getter and its corresponding setter have unique doc comments.
   * The only situation the documentation of the setter is considered is in the case of no getter existing.
 * **Reference:** A reference to a property name (e.g., `[value]`) resolves to the conceptual property rather than the individual getter or setter. This applies in all cases where a getter and setter share the same name, including:
-  * When an explicit getter (get value) and setter (set value(...)) are declared.
+  * When an explicit getter (`get value`) and setter (s`et value(...)`) are declared.
   * When a final field (which acts as an implicit getter) is paired with an explicit setter of the same name.
   * When a getter and setter for the same property are brought into scope, even if they are imported from different libraries.
 
 #### **6.2.3. Parameters**
 
-Parameters of functions, methods, and constructors do not have their own preceding doc comments. They are documented within the doc comment of their enclosing element using square brackets `[p]`.
+Parameters of functions, methods, and constructors do not have their own preceding doc comments. They are documented within the doc comment of their enclosing element and referenced using an element reference `[p]`.
