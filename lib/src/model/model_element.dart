@@ -588,8 +588,11 @@ abstract class ModelElement
     final lineInfo = unitElement.lineInfo;
 
     final nameOffset = element.firstFragment.nameOffset;
-    assert(nameOffset != null && nameOffset >= 0,
-        'Invalid location data, $nameOffset, for element: $fullyQualifiedName');
+    // TODO(scheglov): For extension types, or with primary constructors
+    // and declaring formal parameters, the field has no declaration, so
+    // no name offset.
+    // assert(nameOffset != null && nameOffset >= 0,
+    //     'Invalid location data, $nameOffset, for element: $fullyQualifiedName');
     if (nameOffset != null && nameOffset >= 0) {
       return lineInfo.getLocation(nameOffset);
     }
