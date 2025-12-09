@@ -32,7 +32,7 @@ This document does not cover:
 ### **1.3. Terminology**
 
 * **Doc Comment:** A comment intended to be processed by documentation generation tools, like  dartdoc.
-* **Element**: Dart declarations or directives that can have documentation or be referenced in a doc comment: library directives, top-level, or member declarations such as class, menthod, or variable.
+* **Element**: Dart declarations or directives that can have documentation or be referenced in a doc comment: library directives, import prefixes, top-level, or member declarations such as class, menthod, or variable, parameters such as type parameters, method parameters, record fields.
 * **Identifier:** An individual name in the code (e.g., `MyClass`, `myMethod`, `prefix`).
 * **Qualified Name:** A name composed of two or more *identifiers* separated by dots, used to access an element within a specific namespace (e.g., MyClass.myMethod, prefix.MyClass).
 * **Name:** A name is either a single *identifier* or a *qualified name*.
@@ -42,15 +42,56 @@ This document does not cover:
 
 ### **2.1. Line-Based Doc Comments (Recommended standard)**
 
-* Starts with `///`.
-* All consecutive lines starting with `///` are treated as part of the same comment block.
+A line-based doc comment is a comment that starts with `///`. One or more consecutive lines that begin with `///` form a doc comment block.
+
+The block continues even if interrupted by single-line non-doc comments (lines starting with `//`) or by blank lines. The interrupting lines are ignored when extracting documentation text.
+
+For each line that begins with `///`, the parser removes the three slashes and all leading whitespace to produce the documentation text. Exception: inside fenced code blocks (```), whitespace after the leading `///` is preserved to maintain code formatting.
+
+**Example**
+
+```dart
+///   This line has leading whitespace after the slashes.
+// This regular comment is ignored.
+///
+/// The line above is a rendered blank line (created by a `///` alone).
+void myFunction() {}
+```
+
+The extracted documentation text from the example above would be:
+
+```
+This line has leading whitespace after the slashes.
+
+This line above is a rendered blank line (created by a `///` alone).
+```
+
+**Example (preserving whitespace in fenced code blocks)**
+
+```
+/// ```dart
+///   void main() {
+///     print('Hello, World!');
+///   }
+/// ```
+void anotherFunction() {}
+```
+
+The extracted documentation text from the example above would be:
+
+```
+  void main() {
+    print('Hello, World!');
+  }
+```
 
 ### **2.2. Block-Based Doc Comments (Historic, not recommended)**
 
-* Starts with `/**` and ends with the matching `*/`.
-* Block comments can be nested (e.g., `\*\* \* inner */ */`). Documentation tools must respect this, ensuring that the comment block only ends at the closing  \*/ that matches the opening delimiter.
-* The content within the delimiters is treated as the documentation.
-* Leading whitespace followed by a single asterisk and a single following space on subsequent lines are considered stylistic and are stripped by doc generators.
+A block-based doc comment is a comment that starts with `/**` and ends with the matching `*/`.
+
+Block comments may contain nested comment sequences (for example: `/** outer /* inner */ outer */`). Documentation tools must respect nesting and ensure that the comment block only ends at the closing `*/` that matches the opening delimiter.
+
+The content within the delimiters is treated as the documentation. On each line after the opening `/**`, any leading whitespace followed by a single asterisk (`*`) is considered stylistic and is stripped by doc generators. Any whitespace immediately following the asterisk is also stripped, if present.
 
 **Example**
 
@@ -63,13 +104,22 @@ This document does not cover:
 
 ### **2.3. Content Format (Markdown)**
 
-The text within a documentation comment block is parsed as CommonMark markdown, allowing for rich text formatting. This includes headings, lists, code blocks, and emphasis, which are converted for instance to HTML in the generated documentation.
+  The text within a documentation comment block is parsed as [GitHub Flavored Markdown (GFM)](https://github.github.com/gfm/), an extension of CommonMark, allowing for rich text formatting. This includes headings, lists, code blocks, tables, and emphasis, which are converted for instance to HTML in the generated documentation.
 
 ### **2.4. References**
 
 A reference is a special directive within the Markdown content that creates a hyperlink to a Dart element. It is written by enclosing a name in square brackets (e.g., `[foo]`).  See [Section 4](#4.-referenceable-elements) for detailed information about which elements can be referenced.
 
 Conceptually, these behave like [reference-style links](https://www.markdownguide.org/basic-syntax/#reference-style-links) in Markdown. The documentation generator resolves the name against the available source code to create the link's destination. See [Section 5](#5.-reference-lookup-and-resolution) for detailed resolution rules.
+
+It is important to distinguish references from other link syntaxes in GFM. Documentation comment references use the shorthand reference link syntax (`[name]`) for their own purpose. Other forms of Markdown links are not treated as references and are parsed as standard Markdown. This includes:
+
+* Inline links: `[A link](https://www.example.com)`
+* Image links: `![An image](https://www.example.com/image.png)`
+* Full reference links: `[A link][id]` (where `id` is a defined link reference `[id]:https://www.example.com "title"`)
+* Footnotes: `[^1]`
+
+Only a standalone `[name]` that does not correspond to a defined link reference in the Markdown document is treated as a reference to a Dart element.
 
 ## **3\. Placement of Documentation Comments**
 
@@ -107,11 +157,21 @@ Doc comments are associated with the declaration that immediately follows them. 
 
 While not strictly disallowed by the language, any other placement of a comment with the /// syntax, is not considered a doc comment, and hence should be ignored by documentation tools.
 
+**Note on Metadata Annotations:** Doc comments can be placed either before or after metadata annotations (e.g., `@override`, `@deprecated`). If doc comments appear in both locations, the doc comment closest to the declaration (after the annotation) takes precedence. The comment before the annotations is ignored, and documentation tools should issue a warning. For example:
+
+```dart
+/// This doc comment is ignored because there is another one after the
+/// annotation.
+@override
+/// This doc comment takes precedence because it is closer to the declaration.
+void foo(int s) {}
+```
+
 ## **4\. Referenceable Elements**
 
-A reference in a doc comment (e.g., `[name]`) can link to any Dart element that is visible from the Dart scope of the documented element. See [Section 5](#5.-reference-lookup-and-resolution) for more details about scoping.   This includes:
+A reference in a doc comment (e.g., `[name]`) can link to any Dart element that is visible from the Dart scope of the documented element. See [Section 5](#5.-reference-lookup-and-resolution) for more details about scoping. This includes:
 
-### **4.1. Types**
+### **4.1. Top-Level Declarations:**
 
 * Classes (e.g., `[MyClass]`)
 * Mixins (e.g., `[MyMixin]`)
@@ -119,24 +179,24 @@ A reference in a doc comment (e.g., `[name]`) can link to any Dart element that 
 * Named extensions (e.g., `[MyExtension]`)
 * Extension types (e.g., `[MyExtensionType]`)
 * Type aliases (Typedefs) (e.g., `[MyTypedef]`)
-
-### **4.2. Top-Level Declarations:**
-
 * Functions (e.g., `[myTopLevelFunction]`)
 * Variables and constants (e.g., `[myTopLevelVar]`)
+* Getters and Setters  (See [Section 6.2.2](#6.2.2.-getters-and-setters) for full details)
 
-### **4.3. Members**
+### **4.2. Members:**
 
-* Methods (e.g., `[myMethod]`, `[MyClass.myMethod]`)
-* Fields (constants and variables) (e.g., `[myField]`, `[MyClass.myField]`)
+* Methods (instance and static) (e.g., `[myMethod]`, `[MyClass.myMethod]`)
+* Fields (instance and static) (e.g., `[myField]`, `[MyClass.myField]`)
 * Getters and Setters  (See [Section 6.2.2](#6.2.2.-getters-and-setters) for full details)
 * Constructors (e.g., `[MyClass.new]`, `[MyClass.named]`)
 * Enum constants (e.g., `[MyEnum.value]`)
 
-### **4.4. Local Scope Parameters (within a member's doc comment):**
+### **4.3. Parameters:**
 
-* Parameters of the documented method/function (e.g., `[parameterName]`)
+* Formal parameters of the documented method/function (e.g., `[parameterName]`)
 * Type parameters of the documented element and the enclosing element (e.g., `[T]`)
+* Fields of record typedefs (e.g., `[field]`)
+* Parameters in function type typedefs (e.g., `[param]`)
 
 ## **5\. Reference Lookup and Resolution**
 
@@ -148,7 +208,7 @@ When a name is enclosed in square brackets (e.g., `[MyClass.myMethod]`), documen
 
 * **Disambiguation via Qualification:** To prevent ambiguity or to reference an element from a distant scope, a reference should be qualified. This is done by prefixing the name with a class name (e.g., `[ClassName.memberName]`) or an import prefix (e.g., `[prefix.elementName]`).
 
-* **Handling Ambiguity:** If a reference could resolve to multiple declarations within the same scope, or if no resolution is found after checking all scopes, documentation tools should issue a warning.
+* **Handling Ambiguity:** If a reference could resolve to multiple declarations within the same scope, it should not resolve to any element. If no resolution is found after checking all scopes, documentation tools should issue a warning.
 
 ### **5.2. Scope Precedence Hierarchy**
 
@@ -161,7 +221,7 @@ The hierarchy is searched from the inside out. Below is an example for an instan
 | +----------------------------------------------------------------------+ |
 | | 6. Imported Scopes (all 'import' directives + implicit 'dart:core')  | |
 | | +------------------------------------------------------------------+ | |
-| | | 5. Library Scope (all other declarations in the file)            | | |
+| | | 5. Library Scope (all declarations incl. prefixes in the file).  | | |
 | | | +--------------------------------------------------------------+ | | |
 | | | | 4. Class Type Parameter Scope (e.g., <T>)                    | | | |
 | | | | +----------------------------------------------------------+ | | | |
@@ -192,7 +252,7 @@ This applies to doc comments on methods, constructors, and operators within a cl
 * **Starting Scope**: Formal Parameter Scope
 
 **Example**
-```
+```dart
 /// @docImport 'dart:math';
 
 import 'dart:convert';
@@ -201,8 +261,6 @@ class AnotherClass {}
 
 class MyClass<T> {
   T? value;
-
-  MyClass.named();
 
   /// A method.
   ///
@@ -223,6 +281,14 @@ class MyClass<T> {
     // ...
   }
 
+  /// A non-redirecting generative constructor.
+  ///
+  /// Lookup examples:
+  /// * [value]: Resolves to the parameter (Formal Parameter Scope).
+  /// * [param]: Resolves to the parameter (Formal Parameter Scope).
+  /// * [named]: Resolves to this constructor itself (Class Member Scope).
+  MyClass.named(this.value, int param);
+
   static void myStaticMethod() {
     // ...
   }
@@ -231,7 +297,7 @@ class MyClass<T> {
 
 ```
 
-#### **5.3.2. Instance Fields**
+#### **5.3.2. Fields**
 
 This applies to doc comments on fields within a class, enum, or mixin. Since fields have no parameters, the search starts at the member level, but otherwise follows the same route as instance methods.
 
@@ -249,7 +315,7 @@ For top-level variables, the search has no local context and must begin at the f
 
 * **Starting Scope**: Library Scope
 
-#### **5.3.5. Top-Level Declarations**
+#### **5.3.5. Class-like Top-Level Declarations**
 
 For doc comments placed directly on classes, enums, mixins, extensions, extension types.
 
@@ -295,7 +361,6 @@ class MyClass<T> {
   void myMethod() {}
 
 }
-
 ```
 
 #### **5.3.6. Typedefs**
@@ -352,7 +417,7 @@ typedef F<T> = void Function(void Function<S>(void Function(T p)) fun);
 
 ### **5.4. Resolving Qualified Names**
 
-When a reference contains a qualified name (e.g., `[prefix.ClassName.member]`), the resolution process is an iterative, left-to-right evaluation of each Identifier.
+When a reference contains a qualified name (e.g., `[prefix.ClassName.member]`), the resolution process is an iterative, left-to-right evaluation of each identifier.
 
 #### **1\. Resolve the First Identifier**
 
@@ -371,7 +436,7 @@ If an Identifier resolves to one of the following elements, it establishes a new
 *Case 1: Import Prefix*
 
 * **Namespace:** The export scope of the imported library, as filtered by any show or hide combinators on the import directive.
-* **Example:** In `[math.pi]`, the identifier `math` resolves to an import prefix (e.g., from `import 'dart:math' as math;`). The tool then searches the public namespace of dart:math for the identifier pi.
+* **Example:** In `[math.pi]`, the identifier `math` resolves to an import prefix (e.g., from `import 'dart:math' as math;`). The tool then searches the prefixed import namespace  for the identifier `pi`.
 * **Combinator Example:** If the import was `import 'dart:math' as math show sin;`, the namespace for `math` would *only* contain `sin`. A reference to `[math.pi]` would fail to resolve, as `pi` was not included in the show list.
 
 *Case 2: Class-like top-level declaration*
@@ -470,7 +535,7 @@ A getter and a setter that share the same name are treated as a single *conceptu
 
 Documentation tools should handle this property with the following rules:
 
-* **Display:** The getter and setter should be presented as a single item in the final documentation.
+* **Display:** The getter and setter should be presented as a single item in the API reference.
 * **Precedence:**
   * Documentation for the property should only be placed on the getter.
   * The tooling should *issue a warning* if both a getter and its corresponding setter have unique doc comments.
