@@ -36,7 +36,7 @@ This document does not cover:
 * **Identifier:** An individual name in the code (e.g., `MyClass`, `myMethod`, `prefix`).
 * **Qualified Name:** A name composed of two or more *identifiers* separated by dots, used to access an element within a specific namespace (e.g., MyClass.myMethod, prefix.MyClass).
 * **Name:** A name is either a single *identifier* or a *qualified name*.
-* **Reference:** A string enclosed in square brackets within a doc comment (e.g., `[MyClass]` or `[MyClass.myMethod]`) that links to an element. The text inside the brackets is either a single *identifier* or a *qualified name*.
+* **Reference:** A name enclosed in square brackets within a doc comment (e.g., `[MyClass]` or `[MyClass.myMethod]`) that links to an element.
 
 ## **2\. Syntax of Documentation Comments**
 
@@ -66,7 +66,7 @@ This line has leading whitespace after the slashes.
 This line above is a rendered blank line (created by a `///` alone).
 ```
 
-**Example (preserving whitespace in fenced code blocks)**
+**Example**
 
 ```
 /// ```dart
