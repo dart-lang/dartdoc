@@ -80,7 +80,7 @@ More text.'''));
 
 /// And more.
 ''');
-    expect(libraryModel.documentation, equals('''
+    expectDocComment(equals('''
 Text.
 More text.
 And more text.
@@ -95,7 +95,7 @@ And more.'''));
 /////More text.
 ///And more.
 ''');
-    expect(libraryModel.documentation, equals('''
+    expectDocComment(equals('''
 / Text.
 //More text.
 And more.'''));
@@ -112,7 +112,7 @@ And more.'''));
 /// }
 /// ```
 ''');
-    expect(libraryModel.documentation, equals('''
+    expectDocComment(equals('''
 ```
 void main() {
   /// This line prints "Hello, world!"
@@ -132,7 +132,7 @@ void main() {
 /// }
 /// ~~~
 ''');
-    expect(libraryModel.documentation, equals('''
+    expectDocComment(equals('''
 ~~~
 void main() {
   /// This line prints "Hello, world!"
@@ -155,7 +155,7 @@ void main() {
 /// }
 /// `
 ''');
-    expect(libraryModel.documentation, equals('''
+    expectDocComment(equals('''
 `
 void main() {
 /// This line prints "Hello, world!"
