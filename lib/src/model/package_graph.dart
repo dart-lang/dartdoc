@@ -388,7 +388,7 @@ class PackageGraph with CommentReferable, Nameable {
 
   void warnOnElement(Warnable? warnable, PackageWarning kind,
       {String? message,
-      Iterable<HasLocation> referredFrom = const [],
+      Iterable<Warnable> referredFrom = const [],
       Iterable<String> extendedDebug = const []}) {
     var newEntry = (warnable?.element, kind, message);
     if (_warnAlreadySeen.contains(newEntry)) {
@@ -406,7 +406,7 @@ class PackageGraph with CommentReferable, Nameable {
 
   void _warnOnElement(Warnable? warnable, PackageWarning kind,
       {required String message,
-      Iterable<HasLocation> referredFrom = const [],
+      Iterable<Warnable> referredFrom = const [],
       Iterable<String> extendedDebug = const []}) {
     if (warnable is ModelElement && kind == PackageWarning.ambiguousReexport) {
       // This sort of warning is only applicable to top level elements.
@@ -468,7 +468,7 @@ class PackageGraph with CommentReferable, Nameable {
       warningMessage,
       if (warnable != null) kind.messageForWarnable(warnable),
       for (var referral in referredFrom)
-        if (referral != warnable) kind.messageForReferral(referral),
+        if (referral != warnable) kind.messageForWarnable(referral),
       if (config.verboseWarnings) ...extendedDebug.map((s) => '    $s')
     ].join('\n    ');
 

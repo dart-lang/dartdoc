@@ -104,7 +104,7 @@ class Accessor extends ModelElement {
   void warn(
     PackageWarning kind, {
     String? message,
-    Iterable<HasLocation> referredFrom = const [],
+    Iterable<Warnable> referredFrom = const [],
     Iterable<String> extendedDebug = const [],
   }) {
     enclosingCombo.warn(kind,
