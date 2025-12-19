@@ -14,6 +14,7 @@
 /// inside fenced code blocks (` ``` `), whitespace after the leading `///` is
 /// preserved to maintain code formatting.
 /// @author sgrekhov22@gmail.com
+library;
 
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
