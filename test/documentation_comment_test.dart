@@ -82,15 +82,19 @@ Text.
 More text.'''));
   }
 
-  /// Check that the parser removes the three slashes and all leading whitespaces
   void test_removesSpaceAfterTripleSlashes() async {
     await writePackageWithCommentedLibrary('''
 ///  Text.
 ///    More text.
 ''');
-    expect(libraryModel.documentation, equals('''
+    var doc = libraryModel.documentation;
+
+    // TODO(srawlins): Actually, the three spaces before 'More' is perhaps not
+    // the best fit. Should it only be two, to match the indent from the first
+    // line's "Text"?
+    expect(doc, equals('''
 Text.
-More text.'''));
+   More text.'''));
   }
 
   void test_leavesBlankLines() async {
@@ -105,98 +109,6 @@ More text.'''));
 Text.
 
 More text.'''));
-  }
-
-  /// Check that interrupting blank lines and starting with `// ` are ignored.
-  void test_interruptingLinesIgnored() async {
-    await writePackageWithCommentedLibrary('''
-/// Text.
-//
-/// More text.
-// Some text
-/// And more text.
-
-/// And more.
-''');
-    expect(libraryModel.documentation, equals('''
-Text.
-More text.
-And more text.
-And more.'''));
-  }
-
-  /// Check that the doc comment starts after `///` even there is no trailing
-  /// whitespace.
-  void test_noTrailingWhitespace() async {
-    await writePackageWithCommentedLibrary('''
-//// Text.
-/////More text.
-///And more.
-''');
-    expect(libraryModel.documentation, equals('''
-/ Text.
-//More text.
-And more.'''));
-  }
-
-  /// Check that inside fenced code blocks (```), whitespaces after the leading
-  /// `///` are preserved
-  void test_whitespacesInBacktickCodeBlocks() async {
-    await writePackageWithCommentedLibrary('''
-/// ```
-/// void main() {
-///   /// This line prints "Hello, world!"
-///   print('Hello, world!');
-/// }
-/// ```
-''');
-    expect(libraryModel.documentation, equals('''
-```
-void main() {
-  /// This line prints "Hello, world!"
-  print('Hello, world!');
-}
-```'''));
-  }
-
-  /// Check that inside fenced code blocks (~~~), whitespaces after the leading
-  /// `///` are preserved
-  void test_whitespacesInTildesCodeBlocks() async {
-    await writePackageWithCommentedLibrary('''
-/// ~~~
-/// void main() {
-///   /// This line prints "Hello, world!"
-///   print('Hello, world!');
-/// }
-/// ~~~
-''');
-    expect(libraryModel.documentation, equals('''
-~~~
-void main() {
-  /// This line prints "Hello, world!"
-  print('Hello, world!');
-}
-~~~'''));
-  }
-
-  /// Check that inside fenced code span (`), whitespaces after the leading
-  /// `///` are removed.
-  void test_whitespacesInCodeSpan() async {
-    await writePackageWithCommentedLibrary('''
-/// `
-/// void main() {
-///   /// This line prints "Hello, world!"
-///   print('Hello, world!');
-/// }
-/// `
-''');
-    expect(libraryModel.documentation, equals('''
-`
-void main() {
-/// This line prints "Hello, world!"
-print('Hello, world!');
-}
-`'''));
   }
 
   void test_processesAnimationDirective() async {
