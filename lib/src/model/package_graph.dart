@@ -468,7 +468,7 @@ class PackageGraph with CommentReferable, Nameable {
       warningMessage,
       if (warnable != null) kind.messageForWarnable(warnable),
       for (var referral in referredFrom)
-        if (referral != warnable) kind.messageForWarnable(referral),
+        if (referral != warnable) kind.messageForReferral(referral),
       if (config.verboseWarnings) ...extendedDebug.map((s) => '    $s')
     ].join('\n    ');
 
