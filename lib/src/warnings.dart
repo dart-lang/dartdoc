@@ -14,6 +14,7 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/utils.dart';
+import 'package:meta/meta.dart';
 
 const _namePlaceholder = '@@name@@';
 
@@ -94,13 +95,13 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
 
 /// Something that package warnings can be reported on. Optionally associated
 /// with an analyzer [element].
-mixin Warnable implements CommentReferable, Documentable, HasLocation {
+mixin Warnable implements CommentReferable, Documentable {
   Element? get element;
 
   void warn(
     PackageWarning kind, {
     String? message,
-    Iterable<HasLocation> referredFrom = const [],
+    Iterable<Warnable> referredFrom = const [],
     Iterable<String> extendedDebug = const [],
   }) {
     packageGraph.warnOnElement(this, kind,
@@ -112,6 +113,28 @@ mixin Warnable implements CommentReferable, Documentable, HasLocation {
   /// Whether [documentationFrom] contains only one item, `this`.
   bool get documentationIsLocal =>
       documentationFrom.length == 1 && identical(documentationFrom.first, this);
+
+  /// The [Warnable]s from which we will get documentation.
+  ///
+  /// Can be more than one if this is a [Field] composing documentation from
+  /// multiple [Accessor]s.
+  ///
+  /// This will walk up the inheritance hierarchy to find docs, if the current
+  /// class doesn't have docs for this element.
+  List<Warnable> get documentationFrom;
+
+  /// The URI of this [Warnable].
+  @visibleForOverriding
+  String get location;
+
+  /// Whether this is the "canonical" copy of an element.
+  ///
+  /// Generally, a canonical element must be public, along with possibly other
+  /// requirements.
+  ///
+  /// In order for an element to be documented, it must be canonical, and have
+  /// documentation.
+  bool get isCanonical;
 }
 
 /// The kinds of warnings that can be displayed when documenting a package.
@@ -330,7 +353,7 @@ enum PackageWarning implements Comparable<PackageWarning> {
   String messageForWarnable(Warnable warnable) =>
       '$_warnablePrefix ${warnable.safeWarnableName}: ${warnable.location}';
 
-  String messageForReferral(HasLocation referral) =>
+  String messageForReferral(Warnable referral) =>
       '$_referredFromPrefix ${referral.safeWarnableName}: ${referral.location}';
 }
 
@@ -658,4 +681,9 @@ extension on Map<PackageWarning, int> {
       return this[kind]!;
     }
   }
+}
+
+extension NullableWarnableExtension on Warnable? {
+  String get safeWarnableName =>
+      this?.fullyQualifiedName.replaceFirst(':', '-') ?? '<unknown>';
 }
