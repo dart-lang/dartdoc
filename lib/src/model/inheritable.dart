@@ -37,6 +37,17 @@ mixin Inheritable on ContainerMember {
       };
 
   @override
+  List<DocumentationComment> get documentationFrom {
+    if (!hasDocumentationComment && overriddenElement != null) {
+      return overriddenElement!.documentationFrom;
+    } else if (isInherited) {
+      return packageGraph.getModelForElement(element).documentationFrom;
+    } else {
+      return super.documentationFrom;
+    }
+  }
+
+  @override
   Library? get canonicalLibrary =>
       canonicalEnclosingContainer?.canonicalLibrary;
 

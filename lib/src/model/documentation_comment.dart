@@ -10,7 +10,6 @@ import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/documentation.dart';
-import 'package:dartdoc/src/model/inheritable.dart';
 import 'package:dartdoc/src/model/locatable.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/source_code_mixin.dart';
@@ -43,23 +42,8 @@ mixin DocumentationComment
   @override
   Element get element;
 
-  List<DocumentationComment>? _documentationFrom;
-
   @override
-  List<DocumentationComment> get documentationFrom =>
-      _documentationFrom ??= () {
-        final self = this;
-        if (self is! Inheritable) {
-          return [this];
-        }
-        if (!hasDocumentationComment && self.overriddenElement != null) {
-          return self.overriddenElement!.documentationFrom;
-        } else if (self.isInherited) {
-          return packageGraph.getModelForElement(element).documentationFrom;
-        } else {
-          return [this];
-        }
-      }();
+  List<DocumentationComment> get documentationFrom => [this];
 
   @override
   late final String documentationAsHtml =
