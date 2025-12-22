@@ -10,6 +10,7 @@ import 'package:analyzer/dart/element/type_provider.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:dartdoc/src/mustachio/parser.dart';
 import 'package:dartdoc/src/mustachio/renderer_base.dart';
@@ -32,7 +33,8 @@ Future<String> compileTemplatesToRenderers(
 }) async {
   var buildData = _BuildData(typeProvider, typeSystem, sourcePath, root);
   var referenceUris = <String>{};
-  print('Compiling ${specs.length} renderer specs into renderer functions...');
+  logInfo(
+      'Compiling ${specs.length} renderer specs into renderer functions...');
   for (var spec in specs) {
     var templatePath = spec.standardHtmlTemplate;
     var compiler = await _AotCompiler._readAndParse(
@@ -113,7 +115,7 @@ Future<void> _deduplicateRenderers(
 ) async {
   var initialRendererCount = rendererCache.rendererCount;
   if (initialRendererCount < 2) return;
-  print('Deduplicating the initial set of $initialRendererCount partial '
+  logInfo('Deduplicating the initial set of $initialRendererCount partial '
       'renderer functions...');
 
   var partialsCompilersToRemove = <_AotCompiler>{};
@@ -176,7 +178,7 @@ Future<void> _deduplicateRenderers(
       if (names.length > 5) {
         names = [...names.take(5), '... (${names.length - 5} more)'];
       }
-      print("Could not deduplicate '$templatePath' with context types: "
+      logInfo("Could not deduplicate '$templatePath' with context types: "
           '$contextStackTypes, from ${names.join(', ')}');
       // Any partials generated before the exception was thrown are not needed.
       markCompilerForRemoval(lubCompiler);
@@ -202,7 +204,7 @@ Future<void> _deduplicateRenderers(
     rendererCache.remove(compiler._templatePath, compiler._usedContextStack);
   }
 
-  print('Deduplicated down to ${rendererCache.rendererCount} '
+  logInfo('Deduplicated down to ${rendererCache.rendererCount} '
       'partial renderer functions.');
 }
 
@@ -212,8 +214,8 @@ Future<String> _redirectingMethod(
     _AotCompiler compiler, _AotCompiler lubCompiler) async {
   var buffer = StringBuffer()..write('String ${compiler._rendererName}');
 
-  buffer.writeTypeParameters(compiler._usedContextStack
-      .expand((c) => c.type.element.typeParameters));
+  buffer.writeTypeParameters(
+      compiler._usedContextStack.expand((c) => c.type.element.typeParameters));
   buffer.write('(');
 
   for (var context in compiler._usedContextStack) {
