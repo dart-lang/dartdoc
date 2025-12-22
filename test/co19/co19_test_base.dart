@@ -63,7 +63,7 @@ class Co19TestBase extends DartdocTestBase {
       writePackageWithCommentedLibraries([('a.dart', comment)],
           additionalArguments: additionalArguments);
 
-  void expectDocComment(matcher) {
+  void expectDocComment(dynamic matcher) {
     expect(libraryModel.documentation, matcher);
   }
 }

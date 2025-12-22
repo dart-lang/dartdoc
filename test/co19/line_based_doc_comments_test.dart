@@ -30,7 +30,7 @@ void main() {
 @reflectiveTest
 class LineBasedDocCommentsTest extends Co19TestBase {
   /// Check that the parser removes the three slashes and all leading
-  /// whitespaces
+  /// whitespace
   void test_removesTripleSlashes() async {
     await writePackageWithCommentedLibrary('''
 /// Text.
@@ -55,11 +55,12 @@ More text.'''));
   }
 
   /// Check that the parser removes the three slashes and all leading
-  /// whitespaces
+  /// whitespace
   void test_removesSpaceAfterTripleSlashes() async {
     markTestSkipped('Skipping until issue '
         'https://github.com/dart-lang/dartdoc/issues/4137 is resolved.');
     return;
+/*
     await writePackageWithCommentedLibrary('''
 ///  Text.
 ///    More text.
@@ -67,6 +68,7 @@ More text.'''));
     expectDocComment(equals('''
 Text.
 More text.'''));
+*/
   }
 
   /// Check that interrupting blank lines and starting with `// ` are ignored.
@@ -101,9 +103,9 @@ And more.'''));
 And more.'''));
   }
 
-  /// Check that inside fenced code blocks (```), whitespaces after the leading
+  /// Check that inside fenced code blocks (```), whitespace after the leading
   /// `///` are preserved
-  void test_whitespacesInBacktickCodeBlocks() async {
+  void test_whitespaceInBacktickCodeBlocks() async {
     await writePackageWithCommentedLibrary('''
 /// ```
 /// void main() {
@@ -121,9 +123,9 @@ void main() {
 ```'''));
   }
 
-  /// Check that inside fenced code blocks (~~~), whitespaces after the leading
+  /// Check that inside fenced code blocks (~~~), whitespace after the leading
   /// `///` are preserved
-  void test_whitespacesInTildesCodeBlocks() async {
+  void test_whitespaceInTildesCodeBlocks() async {
     await writePackageWithCommentedLibrary('''
 /// ~~~
 /// void main() {
@@ -141,12 +143,13 @@ void main() {
 ~~~'''));
   }
 
-  /// Check that inside fenced code span (`), whitespaces after the leading
+  /// Check that inside fenced code span (`), whitespace after the leading
   /// `///` are removed.
-  void test_whitespacesInCodeSpan() async {
+  void test_whitespaceInCodeSpan() async {
     markTestSkipped('Skipping until issue '
         'https://github.com/dart-lang/dartdoc/issues/4138 is resolved.');
     return;
+/*
     await writePackageWithCommentedLibrary('''
 /// `
 /// void main() {
@@ -162,5 +165,6 @@ void main() {
 print('Hello, world!');
 }
 `'''));
+*/
   }
 }
