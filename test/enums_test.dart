@@ -232,7 +232,7 @@ class C {}
     expect(
       cClass.documentationAsHtml,
       '<p>Reference to '
-      '<a href="https://api.dart.dev/stable/3.2.0/dart-core/Enum/index.html">E.index</a>.</p>',
+      '<a href="$dartSdkUrlPrefix/dart-core/Enum/index.html">E.index</a>.</p>',
     );
   }
 
@@ -243,7 +243,7 @@ class C {}
     expect(eEnum.instanceFields.map((f) => f.name), contains('index'));
     expect(
       eEnum.instanceFields.named('index').linkedName,
-      '<a href="https://api.dart.dev/stable/3.2.0/dart-core/Enum/index.html">index</a>',
+      '<a href="$dartSdkUrlPrefix/dart-core/Enum/index.html">index</a>',
     );
   }
 
