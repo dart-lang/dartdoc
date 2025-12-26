@@ -380,45 +380,21 @@ abstract class ModelElement
 
   @override
   late final bool isPublic = () {
-    if (name.isEmpty) {
-      return false;
-    }
-    if (this is! Library) {
+    if (name.isEmpty) return false;
+
+    if (library == Library.sentinel) return false;
+    if (!library.isPublic) {
       final canonicalLibrary = this.canonicalLibrary;
-      var isLibraryOrCanonicalLibraryPrivate = !library.isPublic &&
-          (canonicalLibrary == null || !canonicalLibrary.isPublic);
-      if (library == Library.sentinel || isLibraryOrCanonicalLibraryPrivate) {
-        return false;
-      }
+      if (canonicalLibrary == null || !canonicalLibrary.isPublic) return false;
     }
-    if (enclosingElement is Class && !(enclosingElement as Class).isPublic) {
-      return false;
-    }
+
+    if (enclosingElement case Class(isPublic: false)) return false;
+
     // TODO(srawlins): Er, mixin? enum?
-    if (enclosingElement is Extension &&
-        !(enclosingElement as Extension).isPublic) {
-      return false;
-    }
+    if (enclosingElement case Extension(isPublic: false)) return false;
 
-    if (element case LibraryElement(:var uri, :var firstFragment)) {
-      final url = uri.toString();
-      // Private Dart SDK libraries are not public.
-      if (url.startsWith('dart:_') ||
-          url.startsWith('dart:nativewrappers/') ||
-          url == 'dart:nativewrappers') {
-        return false;
-      }
-      // Package-private libraries are not public.
-      var elementUri = firstFragment.source.uri;
-      if (elementUri.scheme == 'package' &&
-          elementUri.pathSegments[1] == 'src') {
-        return false;
-      }
-    }
+    if (element.nonSynthetic.metadata.hasInternal) return false;
 
-    if (element.nonSynthetic.metadata.hasInternal) {
-      return false;
-    }
     return !element.hasPrivateName && !hasNodoc;
   }();
 
