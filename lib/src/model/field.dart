@@ -11,7 +11,6 @@ import 'package:dartdoc/src/model/model.dart';
 
 class Field extends ModelElement
     with GetterSetterCombo, ContainerMember, Inheritable {
- 
   @override
   final FieldElement element;
 
@@ -33,8 +32,7 @@ class Field extends ModelElement
     super.packageGraph,
     this.getter,
     this.setter,
-  )   :
-        isInherited = false,
+  )   : isInherited = false,
         enclosingElement =
             ModelElement.for_(element.enclosingElement, library, packageGraph)
                 as Container,
@@ -50,8 +48,7 @@ class Field extends ModelElement
     super.packageGraph,
     this.getter,
     this.setter,
-  )   :
-        isInherited = false,
+  )   : isInherited = false,
         assert(getter != null || setter != null) {
     getter?.enclosingCombo = this;
     setter?.enclosingCombo = this;
@@ -64,34 +61,13 @@ class Field extends ModelElement
     super.packageGraph,
     this.getter,
     this.setter,
-  )   : 
-        isInherited = true,
+  )   : isInherited = true,
         assert(getter != null || setter != null) {
     // Can't set `isInherited` to true if this is the defining element, because
     // that would mean it isn't inherited.
     assert(enclosingElement != definingEnclosingContainer);
     getter?.enclosingCombo = this;
     setter?.enclosingCombo = this;
-  }
-
-  @override
-  String get documentation {
-    if (enclosingElement is Enum) {
-      if (name == 'values') {
-        return 'A constant List of the values in this enum, in order of their declaration.';
-      } else if (name == 'index') {
-        return 'The integer index of this enum value.';
-      }
-    }
-
-    // Verify that [hasSetter] and [hasGetthasPublicGetterNoSettererNoSetter]
-    // are mutually exclusive, to prevent displaying more or less than one
-    // summary.
-    if (isPublic) {
-      assert((hasPublicSetter && !hasPublicGetterNoSetter) ||
-          (!hasPublicSetter && hasPublicGetterNoSetter));
-    }
-    return super.documentation;
   }
 
   @override
@@ -142,20 +118,21 @@ class Field extends ModelElement
     // Combo attributes can indicate 'inherited' and 'override' if either the
     // getter or setter has one of those properties, but that's not really
     // specific enough for [Field]s that have public getter/setters.
-    if (hasPublicGetter && hasPublicSetter) {
-      if (getter!.isInherited && setter!.isInherited) {
+    if ((getter, setter) case (var getter?, var setter?)
+        when getter.isPublic && setter.isPublic) {
+      if (getter.isInherited && setter.isInherited) {
         allAttributes.add(Attribute.inherited);
       } else {
         allAttributes.remove(Attribute.inherited);
-        if (getter!.isInherited) allAttributes.add(Attribute.inheritedGetter);
-        if (setter!.isInherited) allAttributes.add(Attribute.inheritedSetter);
+        if (getter.isInherited) allAttributes.add(Attribute.inheritedGetter);
+        if (setter.isInherited) allAttributes.add(Attribute.inheritedSetter);
       }
-      if (getter!.isOverride && setter!.isOverride) {
+      if (getter.isOverride && setter.isOverride) {
         allAttributes.add(Attribute.override_);
       } else {
         allAttributes.remove(Attribute.override_);
-        if (getter!.isOverride) allAttributes.add(Attribute.overrideGetter);
-        if (setter!.isOverride) allAttributes.add(Attribute.overrideSetter);
+        if (getter.isOverride) allAttributes.add(Attribute.overrideGetter);
+        if (setter.isOverride) allAttributes.add(Attribute.overrideSetter);
       }
     } else {
       if (isInherited) allAttributes.add(Attribute.inherited);
