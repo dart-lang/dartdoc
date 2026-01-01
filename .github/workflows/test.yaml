@@ -46,7 +46,7 @@ jobs:
         run: echo "name=today::$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
         shell: bash
       - name: Cache clean flutter
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb
         if: matrix.job == 'flutter'
         env:
           # Increment version to invalidate bad/obsolete caches.
@@ -55,7 +55,7 @@ jobs:
           path: ~/.dartdoc_grinder
           key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ steps.date.outputs.today }}
       - name: Cache .pub-cache
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb
         if: matrix.job == 'flutter'
         env:
           # Increment version to invalidate bad/obsolete caches.
@@ -66,7 +66,7 @@ jobs:
       - name: Configure git
         if: runner.os == 'Windows'
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
       - uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c
         with:
           sdk: ${{ matrix.sdk }}
