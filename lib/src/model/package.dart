@@ -104,7 +104,7 @@ final class Package extends LibraryContainer
   String? get belowSidebarPath => null;
 
   @override
-  List<HasLocation> get documentationFrom => [this];
+  List<Warnable> get documentationFrom => [this];
 
   /// Return true if the code has defined non-default categories for libraries
   /// in this package.
