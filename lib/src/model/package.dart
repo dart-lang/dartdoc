@@ -133,8 +133,8 @@ final class Package extends LibraryContainer
   bool get isDocumented =>
       isFirstPackage || documentedWhere != DocumentLocation.missing;
 
-  /// If we have public libraries, this is the default package, or we are
-  /// auto-including dependencies, this package is public.
+  /// If we have public libraries, this is the default package, or if we are
+  /// auto-including dependencies, then this package is public.
   @override
   bool get isPublic =>
       _isLocalPublicByDefault || libraries.any((l) => l.isPublic);

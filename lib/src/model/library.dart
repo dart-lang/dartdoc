@@ -9,6 +9,7 @@ import 'package:analyzer/source/line_info.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/warnings.dart';
 
@@ -111,9 +112,25 @@ class Library extends ModelElement
   /// * is found in a package's top-level 'lib' directory, and
   ///   not found in it's 'lib/src' directory, and it is not excluded.
   bool get isPublic {
-    if (!super.isPublic) return false;
-    final sdkLib =
-        packageGraph.sdkLibrarySources[element.firstFragment.source];
+    // Package-private libraries are not public.
+    var elementUri = element.firstFragment.source.uri;
+    if (elementUri.scheme == 'package' && elementUri.pathSegments[1] == 'src') {
+      return false;
+    }
+
+    final url = element.uri.toString();
+    // Private Dart SDK libraries are not public.
+    if (url.startsWith('dart:_') ||
+        url.startsWith('dart:nativewrappers/') ||
+        url == 'dart:nativewrappers') {
+      return false;
+    }
+
+    if (name.isEmpty) return false;
+    if (element.nonSynthetic.metadata.hasInternal) return false;
+    if (element.hasPrivateName || hasNodoc) return false;
+
+    final sdkLib = packageGraph.sdkLibrarySources[element.firstFragment.source];
     if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
       return false;
     }
