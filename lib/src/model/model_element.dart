@@ -58,7 +58,7 @@ import 'package:path/path.dart' as p show Context;
 /// public interface perspective.
 abstract class ModelElement
     with CommentReferable, Warnable, Nameable, SourceCode, DocumentationComment
-    implements Comparable<ModelElement>, Documentable, HasLocation {
+    implements Comparable<ModelElement>, Documentable {
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Element? _originalMember;
   final Library _library;
