@@ -49,8 +49,12 @@ mixin GetterSetterCombo on ModelElement {
 
   @protected
   Set<Attribute> get comboAttributes => {
-        if (hasExplicitGetter && hasPublicGetter) ...getter!.attributes,
-        if (hasExplicitSetter && hasPublicSetter) ...setter!.attributes,
+        if (getter
+            case Accessor(isPublic: true, isSynthetic: false, :var attributes))
+          ...attributes,
+        if (setter
+            case Accessor(isPublic: true, isSynthetic: false, :var attributes))
+          ...attributes,
         if (readOnly && !isFinal && !isConst) Attribute.noSetter,
         if (writeOnly) Attribute.noGetter,
         if (readWrite && !isLate) Attribute.getterSetterPair,
@@ -170,10 +174,10 @@ mixin GetterSetterCombo on ModelElement {
   @override
   late final List<DocumentationComment> documentationFrom = () {
     var comments = [
-      if (hasPublicGetter)
-        ...getter!.documentationFrom
-      else if (hasPublicSetter)
-        ...setter!.documentationFrom,
+      if (getter case Accessor(isPublic: true, :var documentationFrom))
+        ...documentationFrom
+      else if (setter case Accessor(isPublic: true, :var documentationFrom))
+        ...documentationFrom,
     ];
     return (comments.isEmpty ||
             comments.every((e) => e.documentationComment == ''))
@@ -192,22 +196,20 @@ mixin GetterSetterCombo on ModelElement {
       setter!.hasDocumentation;
 
   @override
-  late final String oneLineDoc = () {
+  String get oneLineDoc {
     if (!hasAccessorsWithDocs) {
       return super.oneLineDoc;
     } else {
-      var buffer = StringBuffer();
-      if (hasPublicGetter && getter!.oneLineDoc.isNotEmpty) {
-        buffer.write(getter!.oneLineDoc);
-      }
-      if (hasPublicSetter &&
-          setter!.oneLineDoc.isNotEmpty &&
-          !getterSetterBothAvailable) {
-        buffer.write(setter!.oneLineDoc);
-      }
-      return buffer.toString();
+      return [
+        if (getter case Accessor(isPublic: true, :var oneLineDoc)
+            when oneLineDoc.isNotEmpty)
+          oneLineDoc,
+        if (setter case Accessor(isPublic: true, :var oneLineDoc)
+            when oneLineDoc.isNotEmpty && !getterSetterBothAvailable)
+          oneLineDoc,
+      ].join();
     }
-  }();
+  }
 
   @override
   late final String documentationComment =
@@ -254,6 +256,20 @@ mixin GetterSetterCombo on ModelElement {
     }
   }();
 
+  @override
+  String get documentation {
+    if (enclosingElement is Enum) {
+      if (name == 'values') {
+        return 'A constant List of the values in this enum, in order of their '
+            'declaration.';
+      } else if (name == 'index') {
+        return 'The integer index of this enum value.';
+      }
+    }
+
+    return super.documentation;
+  }
+
   ElementType get modelType {
     if (hasGetter) return getter!.modelType.returnType;
     return setter!.parameters.first.modelType;
@@ -280,8 +296,6 @@ mixin GetterSetterCombo on ModelElement {
   bool get hasGetterOrSetter => hasExplicitGetter || hasExplicitSetter;
 
   bool get hasSetter => setter != null;
-
-  bool get hasPublicGetterNoSetter => hasPublicGetter && !hasPublicSetter;
 
   String get arrow {
     // →
