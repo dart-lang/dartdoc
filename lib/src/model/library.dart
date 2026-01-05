@@ -13,12 +13,6 @@ import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/warnings.dart';
 
-class _LibrarySentinel implements Library {
-  @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      throw UnimplementedError('No members on Library.sentinel are accessible');
-}
-
 class Library extends ModelElement
     with Categorization, TopLevelContainer, CanonicalFor {
   @override
@@ -36,39 +30,28 @@ class Library extends ModelElement
   @override
   final Package package;
 
-  /// A [Library] value used as a sentinel in three cases:
-  ///
-  /// * the library for `dynamic` and `Never`
-  /// * the library for type parameters
-  /// * the library passed up to [ModelElement.library] when constructing a
-  /// `Library`, via the super constructor.
-  ///
-  /// TODO(srawlins): I think this last case demonstrates that
-  /// [ModelElement.library] should not be a field, and instead should be an
-  /// abstract getter.
-  static final Library sentinel = _LibrarySentinel();
-
   Library._(this.element, PackageGraph packageGraph, this.package,
       this._restoredUri, this._localElements, this._exportedElements)
-      : super(sentinel, packageGraph);
+      : super(null, packageGraph);
 
   factory Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, Package package) {
     packageGraph.gatherModelNodes(resolvedLibrary);
 
     var libraryElement = resolvedLibrary.element;
+    var firstLibraryFragment = libraryElement.firstFragment;
 
     var localElements = <Element>{
-      ...libraryElement.firstFragment.getters.map((g) => g.element),
-      ...libraryElement.firstFragment.setters.map((s) => s.element),
-      ...libraryElement.firstFragment.classes.map((c) => c.element),
-      ...libraryElement.firstFragment.enums.map((e) => e.element),
-      ...libraryElement.firstFragment.extensions.map((e) => e.element),
-      ...libraryElement.firstFragment.extensionTypes.map((e) => e.element),
-      ...libraryElement.firstFragment.functions.map((f) => f.element),
-      ...libraryElement.firstFragment.mixins.map((m) => m.element),
-      ...libraryElement.firstFragment.topLevelVariables.map((v) => v.element),
-      ...libraryElement.firstFragment.typeAliases.map((a) => a.element),
+      for (var g in firstLibraryFragment.getters) g.element,
+      for (var s in firstLibraryFragment.setters) s.element,
+      for (var c in firstLibraryFragment.classes) c.element,
+      for (var e in firstLibraryFragment.enums) e.element,
+      for (var e in firstLibraryFragment.extensions) e.element,
+      for (var e in firstLibraryFragment.extensionTypes) e.element,
+      for (var f in firstLibraryFragment.functions) f.element,
+      for (var m in firstLibraryFragment.mixins) m.element,
+      for (var v in firstLibraryFragment.topLevelVariables) v.element,
+      for (var a in firstLibraryFragment.typeAliases) a.element,
     };
     var exportedElements = {
       ...libraryElement.exportNamespace.definedNames2.values
@@ -114,19 +97,23 @@ class Library extends ModelElement
   bool get isPublic {
     // Package-private libraries are not public.
     var elementUri = element.firstFragment.source.uri;
-    if (elementUri.scheme == 'package' && elementUri.pathSegments[1] == 'src') {
-      return false;
+    if (elementUri.isScheme('package')) {
+      var segments = elementUri.pathSegments;
+      if (segments.length > 1 && segments[1] == 'src') {
+        return false;
+      }
     }
 
-    final url = element.uri.toString();
     // Private Dart SDK libraries are not public.
-    if (url.startsWith('dart:_') ||
-        url.startsWith('dart:nativewrappers/') ||
-        url == 'dart:nativewrappers') {
-      return false;
+    if (elementUri.isScheme('dart')) {
+      var segments = elementUri.pathSegments;
+      if (segments case [var firstSegment, ...]
+          when firstSegment.startsWith('_') ||
+              firstSegment == 'nativewrappers') {
+        return false;
+      }
     }
 
-    if (name.isEmpty) return false;
     if (element.nonSynthetic.metadata.hasInternal) return false;
     if (element.hasPrivateName || hasNodoc) return false;
 
@@ -505,7 +492,7 @@ class Library extends ModelElement
   late final Set<String> _allOriginalModelElementNames = () {
     // Instead of using `allModelElements`, which includes deeper elements like
     // methods on classes, gather up only the library's immediate members.
-    var libraryMembers = [
+    var libraryMembers = <ModelElement>[
       ...library.extensions,
       ...library.extensionTypes,
       ...library.classesAndExceptions,

@@ -97,7 +97,7 @@ int _packageRank(List<String> packageOrder, ModelElement element) {
   var index = packageOrder.indexOf(packageName);
   if (index == -1) return packageOrder.length * 10;
   if (packageName == 'Dart' &&
-      !_dartCoreLibraries.contains(element.library.name)) {
+      !_dartCoreLibraries.contains(element.library!.name)) {
     // Non-"core" Dart SDK libraries should be ranked slightly lower than "core"
     // Dart SDK libraries. The "core" Dart SDK libraries are the ones labeled as
     // such at <https://api.dart.dev>, which can be used in both VM and Web
@@ -149,7 +149,9 @@ extension on Nameable {
     if (self is Library) return name;
     if (self is ModelElement) {
       var library = self.canonicalLibrary ?? self.library;
-      return '${library.name}.${self.qualifiedName}';
+      if (library != null) {
+        return '${library.name}.${self.qualifiedName}';
+      }
     }
     return name;
   }

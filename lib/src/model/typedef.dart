@@ -10,12 +10,11 @@ import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 abstract class Typedef extends ModelElement
-    with TypeParameters, Categorization {
-
+    with TypeParameters, Categorization, HasLibrary {
   @override
   final TypeAliasElement element;
 
-  Typedef(this.element, super.library, super.packageGraph);
+  Typedef(this.element, Library super.library, super.packageGraph);
 
   DartType get aliasedType => element.aliasedType;
 

@@ -11,8 +11,10 @@ const int _separatorChar = 0x3B;
 /// Searches [PackageGraph.libraryExports] for a public, documented library
 /// which exports this [ModelElement], ideally in its library's package.
 Library? canonicalLibraryCandidate(ModelElement modelElement) {
+  var library = modelElement.library;
+  if (library == null) return null;
   var thisAndExported =
-      modelElement.packageGraph.libraryExports[modelElement.library.element];
+      modelElement.packageGraph.libraryExports[library.element];
   if (thisAndExported == null) {
     return null;
   }

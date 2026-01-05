@@ -56,21 +56,14 @@ extension ElementExtension on Element {
   bool get hasPrivateName {
     final name = this.name;
     if (name == null) return false;
-
-    if (name.startsWith('_')) {
-      return true;
-    }
-
-    var self = this;
+    if (name.startsWith('_')) return true;
 
     // GenericFunctionTypeElements have the name we care about in the enclosing
     // element.
-    if (self is GenericFunctionTypeElement) {
-      var enclosingElementName = self.enclosingElement?.name;
-      if (enclosingElementName != null &&
-          enclosingElementName.startsWith('_')) {
-        return true;
-      }
+    if (this case GenericFunctionTypeElement self) {
+      final enclosingElementName = self.enclosingElement?.name;
+      return enclosingElementName != null &&
+          enclosingElementName.startsWith('_');
     }
     return false;
   }

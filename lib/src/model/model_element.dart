@@ -58,15 +58,29 @@ import 'package:path/path.dart' as p show Context;
 /// public interface perspective.
 abstract class ModelElement
     with CommentReferable, Warnable, Nameable, SourceCode, DocumentationComment
-    implements Comparable<ModelElement>, Documentable {
+    implements Comparable<ModelElement>, Documentable, HasLocation {
+  /// The [Library] of a model can be `null` in three cases:
+  ///
+  /// * the library for `dynamic` and `Never`.
+  /// * the library for type parameters. <!-- Is this true? -->
+  /// * the library passed up to [ModelElement.library] when constructing a
+  /// `Library`, via the super constructor.
+  ///
+  /// TODO(srawlins): I think this last case demonstrates that
+  /// [ModelElement.library] should not be a field, and instead should be an
+  /// abstract getter.
+  @override
+  final Library? library;
+
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Element? _originalMember;
-  final Library _library;
 
   final PackageGraph _packageGraph;
 
-  ModelElement(this._library, this._packageGraph, {Element? originalElement})
-      : _originalMember = originalElement;
+  ModelElement(this.library, this._packageGraph, {Element? originalElement})
+      : _originalMember = originalElement {
+    assert(!(this is HasLibrary && library == null));
+  }
 
   /// Returns a [ModelElement] for an [Element], which can be a
   /// property-inducing element or not.
@@ -79,7 +93,7 @@ abstract class ModelElement
       // conflicting element and move on.
       e = e.conflictingElements.first;
     }
-    var library = p.findButDoNotCreateLibraryFor(e) ?? Library.sentinel;
+    var library = p.findButDoNotCreateLibraryFor(e);
 
     if (e is PropertyInducingElement) {
       var elementGetter = e.getter;
@@ -91,7 +105,7 @@ abstract class ModelElement
           ? ModelElement.for_(elementSetter, library, p) as Accessor
           : null;
 
-      return ModelElement.forPropertyInducingElement(e, library, p,
+      return ModelElement.forPropertyInducingElement(e, library!, p,
           getter: getter, setter: setter);
     }
     return ModelElement.for_(e, library, p);
@@ -196,9 +210,9 @@ abstract class ModelElement
   // TODO(jcollins-g): Enforce construction restraint.
   // TODO(jcollins-g): Allow e to be null and drop extraneous null checks.
   factory ModelElement.for_(
-      Element e, Library library, PackageGraph packageGraph,
+      Element e, Library? library, PackageGraph packageGraph,
       {Container? enclosingContainer}) {
-    assert(library != Library.sentinel ||
+    assert(library != null ||
         e is FormalParameterElement ||
         e is TypeParameterElement ||
         e is GenericFunctionTypeElement ||
@@ -249,13 +263,13 @@ abstract class ModelElement
   /// Caches a newly-created [ModelElement] from [ModelElement.for_] or
   /// [ModelElement.forPropertyInducingElement].
   static void _cacheNewModelElement(
-      Element e, ModelElement newModelElement, Library library,
+      Element e, ModelElement newModelElement, Library? library,
       {Container? enclosingContainer}) {
     // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
     //                   is fixed?
     assert(enclosingContainer == null || enclosingContainer.library == library,
         '$enclosingContainer.library != $library');
-    if (library != Library.sentinel && newModelElement is! Parameter) {
+    if (library != null && newModelElement is! Parameter) {
       runtimeStats.incrementAccumulator('modelElementCacheInsertion');
       var key = ConstructedModelElementsKey(e, enclosingContainer);
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
@@ -269,52 +283,52 @@ abstract class ModelElement
 
   static ModelElement _constructFromElementDeclaration(
     Element e,
-    Library library,
+    Library? library,
     PackageGraph packageGraph, {
     Container? enclosingContainer,
     Element? originalMember,
   }) {
     return switch (e) {
       LibraryElement() => packageGraph.findButDoNotCreateLibraryFor(e)!,
-      PrefixElement() => Prefix(e, library, packageGraph),
-      EnumElement() => Enum(e, library, packageGraph),
-      MixinElement() => Mixin(e, library, packageGraph),
-      ClassElement() => Class(e, library, packageGraph),
-      ExtensionElement() => Extension(e, library, packageGraph),
-      ExtensionTypeElement() => ExtensionType(e, library, packageGraph),
-      TopLevelFunctionElement() => ModelFunction(e, library, packageGraph),
-      ConstructorElement() => Constructor(e, library, packageGraph),
+      PrefixElement() => Prefix(e, library!, packageGraph),
+      EnumElement() => Enum(e, library!, packageGraph),
+      MixinElement() => Mixin(e, library!, packageGraph),
+      ClassElement() => Class(e, library!, packageGraph),
+      ExtensionElement() => Extension(e, library!, packageGraph),
+      ExtensionTypeElement() => ExtensionType(e, library!, packageGraph),
+      TopLevelFunctionElement() => ModelFunction(e, library!, packageGraph),
+      ConstructorElement() => Constructor(e, library!, packageGraph),
       GenericFunctionTypeElement() =>
-        ModelFunctionTypedef(e as FunctionTypedElement, library, packageGraph),
+        ModelFunctionTypedef(e as FunctionTypedElement, library!, packageGraph),
       TypeAliasElement(aliasedType: FunctionType()) =>
-        FunctionTypedef(e, library, packageGraph),
+        FunctionTypedef(e, library!, packageGraph),
       TypeAliasElement()
           when e.aliasedType.documentableElement is InterfaceElement =>
-        ClassTypedef(e, library, packageGraph),
-      TypeAliasElement() => GeneralizedTypedef(e, library, packageGraph),
+        ClassTypedef(e, library!, packageGraph),
+      TypeAliasElement() => GeneralizedTypedef(e, library!, packageGraph),
       MethodElement(isOperator: true) when enclosingContainer == null =>
-        Operator(e, library, packageGraph),
+        Operator(e, library!, packageGraph),
       MethodElement(isOperator: true)
           when e.enclosingElement is ExtensionElement =>
         Operator.providedByExtension(
-            e, enclosingContainer, library, packageGraph),
+            e, enclosingContainer, library!, packageGraph),
       MethodElement(isOperator: true) => Operator.inherited(
-          e, enclosingContainer, library, packageGraph,
+          e, enclosingContainer, library!, packageGraph,
           originalMember: originalMember),
       MethodElement(isOperator: false) when enclosingContainer == null =>
-        Method(e, library, packageGraph),
+        Method(e, library!, packageGraph),
       MethodElement(isOperator: false)
           when e.enclosingElement is ExtensionElement =>
         Method.providedByExtension(
-            e, enclosingContainer, library, packageGraph),
+            e, enclosingContainer, library!, packageGraph),
       MethodElement(isOperator: false) => Method.inherited(
-          e, enclosingContainer, library, packageGraph,
+          e, enclosingContainer, library!, packageGraph,
           originalElement: originalMember as ExecutableElement?),
       FormalParameterElement() => Parameter(e, library, packageGraph,
           originalElement: originalMember as FormalParameterElement?),
       PropertyAccessorElement() => _constructFromPropertyAccessor(
           e,
-          library,
+          library!,
           packageGraph,
           enclosingContainer: enclosingContainer,
           originalMember: originalMember,
@@ -373,25 +387,39 @@ abstract class ModelElement
   /// supposed to be invisible (like `@pragma`). While `null` elements indicate
   /// invalid code from analyzer's perspective, some are present in `sky_engine`
   /// (`@Native`) so we don't want to crash here.
-  late final List<Annotation> annotations = element.annotations
-      .where((m) => m.isVisibleAnnotation)
-      .map((m) => Annotation(m, library, packageGraph))
-      .toList(growable: false);
+  late final List<Annotation> annotations = List.unmodifiable([
+    if (library case var library?)
+      for (var m in element.annotations)
+        if (m.isVisibleAnnotation) Annotation(m, library, packageGraph)
+  ]);
 
   @override
   late final bool isPublic = () {
-    if (name.isEmpty) return false;
-
-    if (library == Library.sentinel) return false;
-    if (!library.isPublic) {
-      final canonicalLibrary = this.canonicalLibrary;
-      if (canonicalLibrary == null || !canonicalLibrary.isPublic) return false;
+    if (name.isEmpty) {
+      return false;
     }
 
-    if (enclosingElement case Class(isPublic: false)) return false;
+    var library = this.library;
+    if (library == null) return false;
+    assert(this is! Library);
+    final canonicalLibrary = this.canonicalLibrary;
+    var isLibraryAndCanonicalLibraryPrivate = !library.isPublic &&
+        (canonicalLibrary == null || !canonicalLibrary.isPublic);
+    if (isLibraryAndCanonicalLibraryPrivate) {
+      // Both library and canonical-library (if they differ) are private
+      // libraries.
+      return false;
+    }
 
-    // TODO(srawlins): Er, mixin? enum?
-    if (enclosingElement case Extension(isPublic: false)) return false;
+    switch (enclosingElement) {
+      // Remember to add new scope-constructs here.
+      case Class(:final isPublic):
+      case Extension(:final isPublic):
+      case Mixin(:final isPublic):
+      case ExtensionType(:final isPublic):
+      case Enum(:final isPublic):
+        if (!isPublic) return false;
+    }
 
     if (element.nonSynthetic.metadata.hasInternal) return false;
 
@@ -401,7 +429,7 @@ abstract class ModelElement
   @override
   late final DartdocOptionContext config =
       DartdocOptionContext.fromContextElement(
-          packageGraph.config, library.element, packageGraph.resourceProvider);
+          packageGraph.config, library!.element, packageGraph.resourceProvider);
 
   bool get hasAttributes => attributes.isNotEmpty;
 
@@ -541,8 +569,11 @@ abstract class ModelElement
   String get filePath => '${canonicalLibraryOrThrow.dirName}/$fileName';
 
   @override
-  String get fullyQualifiedName =>
-      this is Library ? name : '${library.name}.$qualifiedName';
+  String get fullyQualifiedName {
+    var library = this.library;
+    if (library == null || this is Library) return name;
+    return '${library.name}.$qualifiedName';
+  }
 
   @override
   late final String qualifiedName = () {
@@ -643,9 +674,6 @@ abstract class ModelElement
   @override
   Kind get kind;
 
-  @override
-  Library get library => _library;
-
   /// The name of this element, wrapped in an HTML link (an `<a>` tag) if [href]
   /// is non-`null`.
   late final String linkedName = () {
@@ -711,7 +739,7 @@ abstract class ModelElement
   PackageGraph get packageGraph => _packageGraph;
 
   @override
-  Package get package => library.package;
+  Package get package => library!.package;
 
   bool get isPublicAndPackageDocumented => isPublic && package.isDocumented;
 
@@ -751,11 +779,9 @@ abstract class ModelElement
       return const <Parameter>[];
     }
 
-    return List.of(
-      params
-          .map((p) => ModelElement.for_(p, library, packageGraph) as Parameter),
-      growable: false,
-    );
+    return params
+        .map((p) => ModelElement.for_(p, library, packageGraph) as Parameter)
+        .toList(growable: false);
   }();
 
   @override
@@ -819,4 +845,10 @@ extension ElementAnnotationExtension on ElementAnnotation {
         // For SDKs where the `Deprecated` class does not have a deprecation kind.
         'use';
   }
+}
+
+/// Mixin for [ModelElement]s with a non-`null` [ModelElement.library].
+mixin HasLibrary on ModelElement {
+  @override
+  Library get library => super.library!;
 }

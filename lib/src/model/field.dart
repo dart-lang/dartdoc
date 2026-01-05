@@ -10,7 +10,7 @@ import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Field extends ModelElement
-    with GetterSetterCombo, ContainerMember, Inheritable {
+    with GetterSetterCombo, ContainerMember, Inheritable, HasLibrary {
   @override
   final FieldElement element;
 
@@ -28,7 +28,7 @@ class Field extends ModelElement
 
   Field(
     this.element,
-    super.library,
+    Library super.library,
     super.packageGraph,
     this.getter,
     this.setter,
@@ -44,7 +44,7 @@ class Field extends ModelElement
   Field.providedByExtension(
     this.element,
     this.enclosingElement,
-    super.library,
+    Library super.library,
     super.packageGraph,
     this.getter,
     this.setter,
@@ -57,7 +57,7 @@ class Field extends ModelElement
   Field.inherited(
     this.element,
     this.enclosingElement,
-    super.library,
+    Library super.library,
     super.packageGraph,
     this.getter,
     this.setter,
