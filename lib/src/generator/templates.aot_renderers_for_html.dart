@@ -25,7 +25,6 @@ import 'package:dartdoc/src/model/enum.dart';
 import 'package:dartdoc/src/model/extension.dart';
 import 'package:dartdoc/src/model/extension_type.dart';
 import 'package:dartdoc/src/model/field.dart';
-import 'package:dartdoc/src/model/getter_setter_combo.dart';
 import 'package:dartdoc/src/model/inheriting_container.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/method.dart';
@@ -2046,111 +2045,6 @@ String renderTypedef(TypedefTemplateData context0) {
   return buffer.toString();
 }
 
-String _deduplicated__accessor_getter(GetterSetterCombo context0) {
-  final buffer = StringBuffer();
-  var context1 = context0.getter;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''  <section id="getter">
-    <section class="multi-line-signature">
-      ''');
-    buffer.write(
-      __renderTopLevelProperty_partial_accessor_getter_9_partial_annotations_0(
-        context1,
-      ),
-    );
-    buffer.writeln();
-    buffer.write('''      <span class="returntype">''');
-    buffer.write(context1.modelType.returnType.linkedName);
-    buffer.write('''</span>
-      get
-      ''');
-    buffer.write(
-      __renderTopLevelProperty_partial_accessor_getter_9_partial_name_summary_1(
-        context1,
-      ),
-    );
-    buffer.write('\n      ');
-    buffer.write(
-      __renderTopLevelProperty_partial_accessor_getter_9_partial_attributes_2(
-        context1,
-      ),
-    );
-    buffer.writeln();
-    buffer.write('''    </section>
-    ''');
-    buffer.write(
-      __renderTopLevelProperty_partial_accessor_getter_9_partial_documentation_3(
-        context1,
-      ),
-    );
-    buffer.write('\n    ');
-    buffer.write(
-      __renderTopLevelProperty_partial_accessor_getter_9_partial_source_code_4(
-        context1,
-      ),
-    );
-    buffer.writeln();
-    buffer.write('''  </section>''');
-  }
-  buffer.writeln();
-
-  return buffer.toString();
-}
-
-String _deduplicated__accessor_setter(GetterSetterCombo context0) {
-  final buffer = StringBuffer();
-  var context1 = context0.setter;
-  if (context1 != null) {
-    buffer.writeln();
-    buffer.write('''  <section id="setter">
-    <section class="multi-line-signature">
-      ''');
-    buffer.write(
-      __renderTopLevelProperty_partial_accessor_getter_9_partial_annotations_0(
-        context1,
-      ),
-    );
-    buffer.writeln();
-    buffer.write('''      set
-      <span class="name ''');
-    if (context1.isDeprecated) {
-      buffer.write('''deprecated''');
-    }
-    buffer.write('''">''');
-    buffer.writeEscaped(context1.definingCombo.name);
-    buffer.write('''</span>
-      <span class="signature">(<wbr>''');
-    buffer.write(context1.linkedParamsNoMetadata);
-    buffer.write(''')</span>
-      ''');
-    buffer.write(
-      __renderTopLevelProperty_partial_accessor_getter_9_partial_attributes_2(
-        context1,
-      ),
-    );
-    buffer.writeln();
-    buffer.write('''    </section>
-    ''');
-    buffer.write(
-      __renderTopLevelProperty_partial_accessor_getter_9_partial_documentation_3(
-        context1,
-      ),
-    );
-    buffer.write('\n    ');
-    buffer.write(
-      __renderTopLevelProperty_partial_accessor_getter_9_partial_source_code_4(
-        context1,
-      ),
-    );
-    buffer.writeln();
-    buffer.write('''  </section>''');
-  }
-  buffer.writeln();
-
-  return buffer.toString();
-}
-
 String _deduplicated__annotations(ModelElement context0) {
   final buffer = StringBuffer();
   if (context0.hasAnnotations) {
@@ -2172,7 +2066,7 @@ String _deduplicated__annotations(ModelElement context0) {
   return buffer.toString();
 }
 
-String _deduplicated__attributes(ModelElement context0) {
+String _deduplicated__attributes(HasLibrary context0) {
   final buffer = StringBuffer();
   if (context0.hasAttributes) {
     buffer.write('''<div class="features">''');
@@ -2214,59 +2108,6 @@ String _deduplicated__categorization(ModelElement context0) {
     }
   }
   buffer.writeln();
-
-  return buffer.toString();
-}
-
-String _deduplicated__constant(GetterSetterCombo context0) {
-  final buffer = StringBuffer();
-  buffer.write('''<dt id="''');
-  buffer.writeEscaped(context0.htmlId);
-  buffer.write('''" class="constant">''');
-  if (context0.isEnumValue) {
-    buffer.writeln();
-    buffer.write('''    <span class="name ''');
-    if (context0.isDeprecated) {
-      buffer.write('''deprecated''');
-    }
-    buffer.write('''">''');
-    buffer.write(context0.name);
-    buffer.write('''</span>''');
-  }
-  if (!context0.isEnumValue) {
-    buffer.writeln();
-    buffer.write('''    <span class="name ''');
-    if (context0.isDeprecated) {
-      buffer.write('''deprecated''');
-    }
-    buffer.write('''">''');
-    buffer.write(context0.linkedName);
-    buffer.write('''</span>''');
-  }
-  buffer.writeln();
-  buffer.write('''  <span class="signature">&#8594; const ''');
-  buffer.write(context0.modelType.linkedName);
-  buffer.write('''</span>
-  ''');
-  buffer.write(_deduplicated__categorization(context0));
-  buffer.writeln();
-  buffer.write('''</dt>
-<dd>
-  ''');
-  buffer.write(context0.oneLineDoc);
-  buffer.write('\n  ');
-  buffer.write(_deduplicated__attributes(context0));
-  if (context0.hasConstantValueForDisplay) {
-    buffer.writeln();
-    buffer.write('''    <div>
-      <span class="signature"><code>''');
-    buffer.write(context0.constantValueTruncated);
-    buffer.write('''</code></span>
-    </div>''');
-  }
-  buffer.writeln();
-  buffer.write('''</dd>
-''');
 
   return buffer.toString();
 }
@@ -2987,8 +2828,62 @@ String _renderCategory_partial_callable_8(ModelFunctionTyped context2) {
   return buffer.toString();
 }
 
-String _renderCategory_partial_constant_6(TopLevelVariable context2) =>
-    _deduplicated__constant(context2);
+String _renderCategory_partial_constant_6(TopLevelVariable context2) {
+  final buffer = StringBuffer();
+  buffer.write('''<dt id="''');
+  buffer.writeEscaped(context2.htmlId);
+  buffer.write('''" class="constant">''');
+  if (context2.isEnumValue) {
+    buffer.writeln();
+    buffer.write('''    <span class="name ''');
+    if (context2.isDeprecated) {
+      buffer.write('''deprecated''');
+    }
+    buffer.write('''">''');
+    buffer.write(context2.name);
+    buffer.write('''</span>''');
+  }
+  if (!context2.isEnumValue) {
+    buffer.writeln();
+    buffer.write('''    <span class="name ''');
+    if (context2.isDeprecated) {
+      buffer.write('''deprecated''');
+    }
+    buffer.write('''">''');
+    buffer.write(context2.linkedName);
+    buffer.write('''</span>''');
+  }
+  buffer.writeln();
+  buffer.write('''  <span class="signature">&#8594; const ''');
+  buffer.write(context2.modelType.linkedName);
+  buffer.write('''</span>
+  ''');
+  buffer.write(
+    __renderCategory_partial_constant_6_partial_categorization_0(context2),
+  );
+  buffer.writeln();
+  buffer.write('''</dt>
+<dd>
+  ''');
+  buffer.write(context2.oneLineDoc);
+  buffer.write('\n  ');
+  buffer.write(
+    __renderCategory_partial_constant_6_partial_attributes_1(context2),
+  );
+  if (context2.hasConstantValueForDisplay) {
+    buffer.writeln();
+    buffer.write('''    <div>
+      <span class="signature"><code>''');
+    buffer.write(context2.constantValueTruncated);
+    buffer.write('''</code></span>
+    </div>''');
+  }
+  buffer.writeln();
+  buffer.write('''</dd>
+''');
+
+  return buffer.toString();
+}
 
 String _renderCategory_partial_container_3(Container context2) {
   final buffer = StringBuffer();
@@ -3861,11 +3756,106 @@ String _renderMixin_partial_super_chain_5(Mixin context1) =>
 String _renderMixin_partial_tags_2(Mixin context1) =>
     _deduplicated__tags(context1);
 
-String _renderProperty_partial_accessor_getter_8(Field context1) =>
-    _deduplicated__accessor_getter(context1);
+String _renderProperty_partial_accessor_getter_8(Field context1) {
+  final buffer = StringBuffer();
+  var context2 = context1.getter;
+  if (context2 != null) {
+    buffer.writeln();
+    buffer.write('''  <section id="getter">
+    <section class="multi-line-signature">
+      ''');
+    buffer.write(
+      __renderProperty_partial_accessor_getter_8_partial_annotations_0(
+        context2,
+      ),
+    );
+    buffer.writeln();
+    buffer.write('''      <span class="returntype">''');
+    buffer.write(context2.modelType.returnType.linkedName);
+    buffer.write('''</span>
+      get
+      ''');
+    buffer.write(
+      __renderProperty_partial_accessor_getter_8_partial_name_summary_1(
+        context2,
+      ),
+    );
+    buffer.write('\n      ');
+    buffer.write(
+      __renderProperty_partial_accessor_getter_8_partial_attributes_2(context2),
+    );
+    buffer.writeln();
+    buffer.write('''    </section>
+    ''');
+    buffer.write(
+      __renderProperty_partial_accessor_getter_8_partial_documentation_3(
+        context2,
+      ),
+    );
+    buffer.write('\n    ');
+    buffer.write(
+      __renderProperty_partial_accessor_getter_8_partial_source_code_4(
+        context2,
+      ),
+    );
+    buffer.writeln();
+    buffer.write('''  </section>''');
+  }
+  buffer.writeln();
 
-String _renderProperty_partial_accessor_setter_9(Field context1) =>
-    _deduplicated__accessor_setter(context1);
+  return buffer.toString();
+}
+
+String _renderProperty_partial_accessor_setter_9(Field context1) {
+  final buffer = StringBuffer();
+  var context2 = context1.setter;
+  if (context2 != null) {
+    buffer.writeln();
+    buffer.write('''  <section id="setter">
+    <section class="multi-line-signature">
+      ''');
+    buffer.write(
+      __renderProperty_partial_accessor_getter_8_partial_annotations_0(
+        context2,
+      ),
+    );
+    buffer.writeln();
+    buffer.write('''      set
+      <span class="name ''');
+    if (context2.isDeprecated) {
+      buffer.write('''deprecated''');
+    }
+    buffer.write('''">''');
+    buffer.writeEscaped(context2.definingCombo.name);
+    buffer.write('''</span>
+      <span class="signature">(<wbr>''');
+    buffer.write(context2.linkedParamsNoMetadata);
+    buffer.write(''')</span>
+      ''');
+    buffer.write(
+      __renderProperty_partial_accessor_getter_8_partial_attributes_2(context2),
+    );
+    buffer.writeln();
+    buffer.write('''    </section>
+    ''');
+    buffer.write(
+      __renderProperty_partial_accessor_getter_8_partial_documentation_3(
+        context2,
+      ),
+    );
+    buffer.write('\n    ');
+    buffer.write(
+      __renderProperty_partial_accessor_getter_8_partial_source_code_4(
+        context2,
+      ),
+    );
+    buffer.writeln();
+    buffer.write('''  </section>''');
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
 
 String _renderProperty_partial_annotations_3(Field context1) =>
     _deduplicated__annotations(context1);
@@ -3953,11 +3943,112 @@ String _renderSidebarForContainer_partial_container_sidebar_item_1(
 
 String _renderTopLevelProperty_partial_accessor_getter_9(
   TopLevelVariable context1,
-) => _deduplicated__accessor_getter(context1);
+) {
+  final buffer = StringBuffer();
+  var context2 = context1.getter;
+  if (context2 != null) {
+    buffer.writeln();
+    buffer.write('''  <section id="getter">
+    <section class="multi-line-signature">
+      ''');
+    buffer.write(
+      __renderTopLevelProperty_partial_accessor_getter_9_partial_annotations_0(
+        context2,
+      ),
+    );
+    buffer.writeln();
+    buffer.write('''      <span class="returntype">''');
+    buffer.write(context2.modelType.returnType.linkedName);
+    buffer.write('''</span>
+      get
+      ''');
+    buffer.write(
+      __renderTopLevelProperty_partial_accessor_getter_9_partial_name_summary_1(
+        context2,
+      ),
+    );
+    buffer.write('\n      ');
+    buffer.write(
+      __renderTopLevelProperty_partial_accessor_getter_9_partial_attributes_2(
+        context2,
+      ),
+    );
+    buffer.writeln();
+    buffer.write('''    </section>
+    ''');
+    buffer.write(
+      __renderTopLevelProperty_partial_accessor_getter_9_partial_documentation_3(
+        context2,
+      ),
+    );
+    buffer.write('\n    ');
+    buffer.write(
+      __renderTopLevelProperty_partial_accessor_getter_9_partial_source_code_4(
+        context2,
+      ),
+    );
+    buffer.writeln();
+    buffer.write('''  </section>''');
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
 
 String _renderTopLevelProperty_partial_accessor_setter_10(
   TopLevelVariable context1,
-) => _deduplicated__accessor_setter(context1);
+) {
+  final buffer = StringBuffer();
+  var context2 = context1.setter;
+  if (context2 != null) {
+    buffer.writeln();
+    buffer.write('''  <section id="setter">
+    <section class="multi-line-signature">
+      ''');
+    buffer.write(
+      __renderTopLevelProperty_partial_accessor_getter_9_partial_annotations_0(
+        context2,
+      ),
+    );
+    buffer.writeln();
+    buffer.write('''      set
+      <span class="name ''');
+    if (context2.isDeprecated) {
+      buffer.write('''deprecated''');
+    }
+    buffer.write('''">''');
+    buffer.writeEscaped(context2.definingCombo.name);
+    buffer.write('''</span>
+      <span class="signature">(<wbr>''');
+    buffer.write(context2.linkedParamsNoMetadata);
+    buffer.write(''')</span>
+      ''');
+    buffer.write(
+      __renderTopLevelProperty_partial_accessor_getter_9_partial_attributes_2(
+        context2,
+      ),
+    );
+    buffer.writeln();
+    buffer.write('''    </section>
+    ''');
+    buffer.write(
+      __renderTopLevelProperty_partial_accessor_getter_9_partial_documentation_3(
+        context2,
+      ),
+    );
+    buffer.write('\n    ');
+    buffer.write(
+      __renderTopLevelProperty_partial_accessor_getter_9_partial_source_code_4(
+        context2,
+      ),
+    );
+    buffer.writeln();
+    buffer.write('''  </section>''');
+  }
+  buffer.writeln();
+
+  return buffer.toString();
+}
 
 String _renderTopLevelProperty_partial_annotations_4(
   TopLevelVariable context1,
@@ -4272,7 +4363,66 @@ String __renderClass_partial_instance_methods_12_partial_callable_0(
 
 String __renderClass_partial_static_constants_16_partial_constant_0(
   Field context2,
-) => _deduplicated__constant(context2);
+) {
+  final buffer = StringBuffer();
+  buffer.write('''<dt id="''');
+  buffer.writeEscaped(context2.htmlId);
+  buffer.write('''" class="constant">''');
+  if (context2.isEnumValue) {
+    buffer.writeln();
+    buffer.write('''    <span class="name ''');
+    if (context2.isDeprecated) {
+      buffer.write('''deprecated''');
+    }
+    buffer.write('''">''');
+    buffer.write(context2.name);
+    buffer.write('''</span>''');
+  }
+  if (!context2.isEnumValue) {
+    buffer.writeln();
+    buffer.write('''    <span class="name ''');
+    if (context2.isDeprecated) {
+      buffer.write('''deprecated''');
+    }
+    buffer.write('''">''');
+    buffer.write(context2.linkedName);
+    buffer.write('''</span>''');
+  }
+  buffer.writeln();
+  buffer.write('''  <span class="signature">&#8594; const ''');
+  buffer.write(context2.modelType.linkedName);
+  buffer.write('''</span>
+  ''');
+  buffer.write(
+    ___renderClass_partial_instance_fields_11_partial_property_0_partial_categorization_0(
+      context2,
+    ),
+  );
+  buffer.writeln();
+  buffer.write('''</dt>
+<dd>
+  ''');
+  buffer.write(context2.oneLineDoc);
+  buffer.write('\n  ');
+  buffer.write(
+    ___renderClass_partial_instance_fields_11_partial_property_0_partial_attributes_1(
+      context2,
+    ),
+  );
+  if (context2.hasConstantValueForDisplay) {
+    buffer.writeln();
+    buffer.write('''    <div>
+      <span class="signature"><code>''');
+    buffer.write(context2.constantValueTruncated);
+    buffer.write('''</code></span>
+    </div>''');
+  }
+  buffer.writeln();
+  buffer.write('''</dd>
+''');
+
+  return buffer.toString();
+}
 
 String __renderFunction_partial_callable_multiline_4_partial_annotations_0(
   ModelFunction context1,
@@ -4301,6 +4451,10 @@ String __renderProperty_partial_accessor_getter_8_partial_attributes_2(
 String __renderProperty_partial_accessor_getter_8_partial_documentation_3(
   ContainerAccessor context2,
 ) => _deduplicated__documentation(context2);
+
+String __renderProperty_partial_accessor_getter_8_partial_name_summary_1(
+  ContainerAccessor context2,
+) => _deduplicated__name_summary(context2);
 
 String __renderProperty_partial_accessor_getter_8_partial_source_code_4(
   ContainerAccessor context2,
