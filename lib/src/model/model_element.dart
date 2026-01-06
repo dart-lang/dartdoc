@@ -58,7 +58,7 @@ import 'package:path/path.dart' as p show Context;
 /// public interface perspective.
 abstract class ModelElement
     with CommentReferable, Warnable, Nameable, SourceCode, DocumentationComment
-    implements Comparable<ModelElement>, Documentable, HasLocation {
+    implements Comparable<ModelElement>, Documentable {
   /// The [Library] of a model can be `null` in three cases:
   ///
   /// * the library for `dynamic` and `Never`.
