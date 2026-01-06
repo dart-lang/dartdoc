@@ -5,12 +5,11 @@
 import 'dart:io' show Platform;
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/charcode.dart' show $a, $z;
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:glob/glob.dart';
 import 'package:path/path.dart' as path;
-
-final _driveLetterMatcher = RegExp(r'^\w:\\');
 
 /// This will handle matching globs, including on Windows.
 ///
@@ -19,32 +18,40 @@ final _driveLetterMatcher = RegExp(r'^\w:\\');
 /// also is assumed to have a drive letter.
 bool matchGlobs(List<String> globs, String fullName, {bool? isWindows}) {
   var windows = isWindows ?? Platform.isWindows;
-  var filteredGlobs = <String>[];
-
   if (windows) {
+    // Drive letter (lower-cased).
+    var driveChar = _windowsDriveLetterOf(fullName);
     // TODO(jcollins-g): port this special casing to the glob package.
-    var fullNameDriveLetter = _driveLetterMatcher.stringMatch(fullName);
-    if (fullNameDriveLetter == null) {
+    if (driveChar < 0) {
       throw DartdocFailure(
           'Unable to recognize drive letter on Windows in:  $fullName');
     }
-    // Build a matcher from the [fullName]'s drive letter to filter the globs.
-    var driveGlob = RegExp(fullNameDriveLetter.replaceFirst(r'\', r'\\'),
-        caseSensitive: false);
-    fullName = fullName.replaceFirst(_driveLetterMatcher, r'\');
-    for (var glob in globs) {
-      // Globs don't match if they aren't for the same drive.
-      if (!driveGlob.hasMatch(glob)) continue;
-      // `C:\` => `\` for rejoining via posix.
-      glob = glob.replaceFirst(_driveLetterMatcher, r'/');
-      filteredGlobs.add(path.posix.joinAll(path.windows.split(glob)));
-    }
-  } else {
-    filteredGlobs.addAll(globs);
+    // Remove drive letter and colon.
+    fullName = fullName.substring(2);
+    // Remove same drive letter and colon from globs,
+    // discard any with different or no drive letter.
+    var filteredGlobs = <String>[
+      for (var glob in globs)
+        // Starts with same drive letter.
+        if (driveChar == _windowsDriveLetterOf(glob))
+          // Remove leading drive letter and colon, change `\` to `/`.
+          path.posix.joinAll(path.windows.split(glob.substring(2)))
+    ];
+    globs = filteredGlobs;
   }
 
-  return filteredGlobs.any((g) =>
+  return globs.any((g) =>
       Glob(g, context: windows ? path.windows : path.posix).matches(fullName));
+}
+
+// The lower-case ASCII code of the drive letter of path, or -1 if none.
+int _windowsDriveLetterOf(String path) {
+  if (path.length >= 3 && path.startsWith(r':\', 1)) {
+    // Drive letter, lower-cased.
+    var charCode = path.codeUnitAt(0) | 0x20;
+    if (charCode >= $a && charCode <= $z) return charCode;
+  }
+  return -1;
 }
 
 Iterable<T> filterHasCanonical<T extends ModelElement>(

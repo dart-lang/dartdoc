@@ -11,6 +11,7 @@ import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart' show FunctionType;
 import 'package:analyzer/source/line_info.dart';
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
@@ -787,14 +788,9 @@ abstract class ModelElement
   @override
   late final String sourceCode = const HtmlEscape().convert(super.sourceCode);
 
+  // TODO(lrn): Consider using `compareAsciiLowerCaseNatural`.
   @override
-  int compareTo(Object other) {
-    if (other is ModelElement) {
-      return name.toLowerCase().compareTo(other.name.toLowerCase());
-    } else {
-      return 0;
-    }
-  }
+  int compareTo(ModelElement other) => compareAsciiLowerCase(name, other.name);
 
   @override
   String toString() => '$runtimeType $name';
