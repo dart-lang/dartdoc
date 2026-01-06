@@ -89,7 +89,7 @@ And more text.
 And more.'''));
   }
 
-  /// Check that the doc comment starts after `///` even there is no trailing
+  /// Check that the doc comment starts after `///` even if there is no trailing
   /// whitespace.
   void test_noTrailingWhitespace() async {
     await writePackageWithCommentedLibrary('''
@@ -104,7 +104,7 @@ And more.'''));
   }
 
   /// Check that inside fenced code blocks (```), whitespace after the leading
-  /// `///` are preserved
+  /// `///` is preserved
   void test_whitespaceInBacktickCodeBlocks() async {
     await writePackageWithCommentedLibrary('''
 /// ```
@@ -124,7 +124,7 @@ void main() {
   }
 
   /// Check that inside fenced code blocks (~~~), whitespace after the leading
-  /// `///` are preserved
+  /// `///` is preserved
   void test_whitespaceInTildesCodeBlocks() async {
     await writePackageWithCommentedLibrary('''
 /// ~~~
@@ -144,7 +144,7 @@ void main() {
   }
 
   /// Check that inside fenced code span (`), whitespace after the leading
-  /// `///` are removed.
+  /// `///` is removed.
   void test_whitespaceInCodeSpan() async {
     markTestSkipped('Skipping until issue '
         'https://github.com/dart-lang/dartdoc/issues/4138 is resolved.');
@@ -166,5 +166,16 @@ print('Hello, world!');
 }
 `'''));
 */
+  }
+
+  /// Check that the parser removes leading whitespace before the three slashes
+  void test_whitespaceBeforeTripleSlashes() async {
+    await writePackageWithCommentedLibrary('''
+/// Text.
+   /// More text.
+''');
+    expectDocComment(equals('''
+Text.
+More text.'''));
   }
 }
