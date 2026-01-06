@@ -542,7 +542,7 @@ abstract class ModelElement
     return self.enclosingElement == self.canonicalEnclosingContainer;
   }
 
-  /// The documentaion, stripped of its comment syntax, like `///` characters.
+  /// The documentation, stripped of its comment syntax, like `///` characters.
   @override
   String get documentation => injectMacros(
       documentationFrom.map((e) => e.documentationLocal).join('<p>'));

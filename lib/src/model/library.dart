@@ -114,6 +114,7 @@ class Library extends ModelElement
       }
     }
 
+    if (name.isEmpty) return false; // Not how library privacy is determined!
     if (element.nonSynthetic.metadata.hasInternal) return false;
     if (element.hasPrivateName || hasNodoc) return false;
 
