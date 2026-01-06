@@ -685,10 +685,12 @@ abstract class ModelElement
   ({String tag, String text, String endTag}) get linkedNameParts {
     // If `name` is empty, we probably have the wrong Element association or
     // there's an analyzer issue.
-    assert(name.isNotEmpty ||
-        element.kind == ElementKind.DYNAMIC ||
-        element.kind == ElementKind.NEVER ||
-        this is ModelFunction);
+    assert(
+        name.isNotEmpty ||
+            element.kind == ElementKind.DYNAMIC ||
+            element.kind == ElementKind.NEVER ||
+            this is ModelFunction,
+        'in $this.linkedNameParts(kind: ${element.kind}, name: "$name")');
 
     final href = this.href;
     if (href == null) {
