@@ -2,7 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/charcode.dart' show $z, $a, $dollar, $A;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -77,6 +79,27 @@ class Parameter extends ModelElement with HasNoPage {
 
   @override
   Kind get kind => Kind.parameter;
+
+  @override
+  String get name {
+    var name = element.lookupName;
+    // For private named parameters, use the corresponding public name
+    // for documentation.
+    // (TODO: Also do that even if the parameter isn't named, if the name isn't
+    // conflicted.)
+    if (element.isNamed &&
+        name != null &&
+        Identifier.isPrivateName(name) &&
+        name.length > 1) {
+      // Check if the remainder is a valid non-private identifier.
+      var nextChar = name.codeUnitAt(1);
+      var nextCharLower = nextChar | ($a ^ $A);
+      if (nextCharLower >= $a && nextCharLower <= $z || nextChar == $dollar) {
+        name = name.substring(1);
+      }
+    }
+    return name ?? '';
+  }
 
   @override
   late final Map<String, CommentReferable> referenceChildren = {

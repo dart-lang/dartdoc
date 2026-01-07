@@ -1,3 +1,6 @@
+## 9.1.0-dev
+* Show the corresponding public name for private named parameters.
+
 ## 9.0.0
 * Remove the deprecated `missingCodeBlockLanguage` warning.
 * Remove the deprecated `templates-dir` option.

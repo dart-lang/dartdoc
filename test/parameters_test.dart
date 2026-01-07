@@ -157,6 +157,27 @@ class A {
       '''));
   }
 
+  void test_formalParameter_named_private() async {
+    var library = await bootPackageWithLibrary('''
+class A {
+  int? _f;
+  A.privateNamed({this._f});
+}
+''');
+    var privateNamed = library.constructor('A.privateNamed');
+
+    expect(privateNamed.linkedParams, matchesCompressed(r'''
+        \{
+        <span class="parameter" id="privateNamed-param-f">
+          <span class="type-annotation">
+            <a href=".*/dart-core/int-class\.html">int</a>\?
+          </span>
+          <span class="parameter-name">f</span>
+        </span>
+        \}
+      '''));
+  }
+
   void test_formalParameter_named_required() async {
     var library = await bootPackageWithLibrary('''
 class A {
