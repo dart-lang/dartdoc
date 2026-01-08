@@ -98,6 +98,68 @@ int value = 0;
     expect(valueVariable.hasAnnotations, false);
   }
 
+  void test_locallyDeclaredStaticConstant() async {
+    var library = await bootPackageWithLibrary('''
+class MyAnnotation {
+  const MyAnnotation();
+}
+
+class C {
+  static const myAnnotation = MyAnnotation();
+}
+
+@C.myAnnotation
+int value = 0;
+''');
+    var valueVariable = library.properties.named('value');
+    expect(valueVariable.hasAnnotations, true);
+    var annotation = valueVariable.annotations.single;
+    expect(
+      annotation.linkedName,
+      '<a href="${htmlBasePlaceholder}annotations/C/myAnnotation-constant.html">'
+      'myAnnotation</a>',
+    );
+    expect(
+      annotation.linkedNameWithParameters,
+      '@<a href="${htmlBasePlaceholder}annotations/C/myAnnotation-constant.html">'
+      'myAnnotation</a>',
+    );
+  }
+
+  void test_locallyDeclaredStaticConstant_private() async {
+    var library = await bootPackageWithLibrary('''
+class MyAnnotation {
+  const MyAnnotation();
+}
+
+class C {
+  static const _myAnnotation = MyAnnotation();
+}
+
+@C._myAnnotation
+int value = 0;
+''');
+    var valueVariable = library.properties.named('value');
+    expect(valueVariable.hasAnnotations, false);
+  }
+
+  void test_locallyDeclaredStaticConstant_privateClass() async {
+    var library = await bootPackageWithLibrary('''
+class MyAnnotation {
+  const MyAnnotation();
+}
+
+class _C {
+  static const myAnnotation = MyAnnotation();
+}
+
+@_C.myAnnotation
+int value = 0;
+''');
+    var valueVariable = library.properties.named('value');
+    expect(valueVariable.hasAnnotations, false);
+  }
+
   void test_locallyDeclaredConstructorCall() async {
     var library = await bootPackageWithLibrary('''
 class MyAnnotation {

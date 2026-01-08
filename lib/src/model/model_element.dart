@@ -813,6 +813,7 @@ extension on ElementAnnotation {
   bool get isVisibleAnnotation => switch (element) {
         null => false,
         Element(isPrivate: true) => false,
+        GetterElement(:var enclosingElement) => !enclosingElement.isPrivate,
         ConstructorElement(:var enclosingElement) =>
           !enclosingElement.isPrivate &&
               !(enclosingElement.name == 'pragma' &&
