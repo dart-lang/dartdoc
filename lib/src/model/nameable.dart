@@ -55,7 +55,7 @@ mixin Nameable {
   /// A convenience method for [ModelElement.for_], see its documentation.
   ModelElement getModelFor(
     Element element,
-    Library library, {
+    Library? library, {
     Container? enclosingContainer,
   }) =>
       ModelElement.for_(
@@ -96,7 +96,7 @@ mixin Nameable {
       );
 
   /// Returns the [ElementType] for [type], instantiating it if needed.
-  ElementType getTypeFor(DartType type, Library library) =>
+  ElementType getTypeFor(DartType type, Library? library) =>
       ElementType.for_(type, library, packageGraph);
 }
 

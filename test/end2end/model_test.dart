@@ -1978,7 +1978,7 @@ void main() async {
         () {
       expect(
           ExtendingClass.superChain.last.name, equals('WithGetterAndSetter'));
-      expect(ExtendingClass.superChain.last.modelElement.library.name,
+      expect(ExtendingClass.superChain.last.modelElement.library!.name,
           equals('fake'));
     });
   });
@@ -4219,7 +4219,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('param exported in library', () {
       var param = paramFromExportLib.parameters[0];
       expect(param.name, equals('helper'));
-      expect(param.library.name, equals('ex'));
+      expect(param.library!.name, equals('ex'));
     });
 
     test('typedef param is linked and does not include types', () {

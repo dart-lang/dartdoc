@@ -11,8 +11,7 @@ import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Method extends ModelElement
-    with ContainerMember, Inheritable, TypeParameters {
-
+    with ContainerMember, HasLibrary, Inheritable, TypeParameters {
   @override
   final MethodElement element;
 
@@ -23,13 +22,13 @@ class Method extends ModelElement
   @override
   late final List<TypeParameter> typeParameters;
 
-  Method(this.element, super.library, super.packageGraph)
+  Method(this.element, Library super.library, super.packageGraph)
       : _isInherited = false {
     _calcTypeParameters();
   }
 
-  Method.inherited(this.element, this._enclosingContainer, super.library,
-      super.packageGraph,
+  Method.inherited(this.element, this._enclosingContainer,
+      Library super.library, super.packageGraph,
       {ExecutableElement? super.originalElement})
       : _isInherited = true {
     _calcTypeParameters();
@@ -38,9 +37,9 @@ class Method extends ModelElement
   Method.providedByExtension(
     this.element,
     this._enclosingContainer,
-    super.library,
+    Library super.library,
     super.packageGraph, {
-        ExecutableElement? super.originalElement,
+    ExecutableElement? super.originalElement,
   }) : _isInherited = false {
     _calcTypeParameters();
   }

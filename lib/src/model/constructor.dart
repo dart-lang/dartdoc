@@ -10,11 +10,12 @@ import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 
-class Constructor extends ModelElement with ContainerMember, TypeParameters {
+class Constructor extends ModelElement
+    with ContainerMember, HasLibrary, TypeParameters {
   @override
   final ConstructorElement element;
 
-  Constructor(this.element, super.library, super.packageGraph);
+  Constructor(this.element, Library super.library, super.packageGraph);
 
   @override
   CharacterLocation? get characterLocation {

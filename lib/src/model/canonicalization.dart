@@ -11,8 +11,10 @@ const int _separatorChar = 0x3B;
 /// Searches [PackageGraph.libraryExports] for a public, documented library
 /// which exports this [ModelElement], ideally in its library's package.
 Library? canonicalLibraryCandidate(ModelElement modelElement) {
+  var library = modelElement.library;
+  if (library == null) return null;
   var thisAndExported =
-      modelElement.packageGraph.libraryExports[modelElement.library.element];
+      modelElement.packageGraph.libraryExports[library.element];
   if (thisAndExported == null) {
     return null;
   }
@@ -203,7 +205,7 @@ final class _Canonicalization {
   }
 }
 
-/// A pattern that can split [HasLocation.location] strings.
+/// A pattern that can split [Warnable.location] strings.
 final _locationSplitter = RegExp(r'(package:|[\\/;.])');
 
 /// This class represents the score for a particular element; how likely

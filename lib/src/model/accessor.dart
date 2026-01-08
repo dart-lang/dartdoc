@@ -15,7 +15,7 @@ import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 /// Getters and setters.
-class Accessor extends ModelElement {
+class Accessor extends ModelElement with HasLibrary {
   @override
   final PropertyAccessorElement element;
 
@@ -27,7 +27,7 @@ class Accessor extends ModelElement {
   // initialized by code inside this library.
   late final GetterSetterCombo enclosingCombo;
 
-  Accessor(this.element, super.library, super.packageGraph,
+  Accessor(this.element, Library super.library, super.packageGraph,
       {ExecutableElement? super.originalElement});
 
   @override

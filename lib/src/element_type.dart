@@ -24,15 +24,15 @@ abstract class ElementType with CommentReferable, Nameable {
   @override
   final PackageGraph packageGraph;
   @override
-  final Library library;
+  final Library? library;
 
   final String nullabilitySuffix;
 
   ElementType._(this.type, this.library, this.packageGraph)
-      : nullabilitySuffix = type.nullabilitySuffixWithin(library);
+      : nullabilitySuffix = type.nullabilitySuffixWithin;
 
   factory ElementType.for_(
-      DartType type, Library library, PackageGraph packageGraph) {
+      DartType type, Library? library, PackageGraph packageGraph) {
     runtimeStats.incrementAccumulator('elementTypeInstantiation');
     var fElement = type.documentableElement;
     if (fElement == null ||
@@ -74,7 +74,7 @@ class UndefinedElementType extends ElementType {
       : super._();
 
   factory UndefinedElementType._from(
-      DartType type, Library library, PackageGraph packageGraph) {
+      DartType type, Library? library, PackageGraph packageGraph) {
     // [UndefinedElementType]s.
     if (type.alias != null) {
       if (type is FunctionType) {
@@ -262,7 +262,7 @@ abstract class DefinedElementType extends ElementType {
       : super._();
 
   factory DefinedElementType._from(DartType type, ModelElement modelElement,
-      Library library, PackageGraph packageGraph) {
+      Library? library, PackageGraph packageGraph) {
     if (type is! TypeAliasElement && type.alias != null) {
       // Here, `alias.element` signals that this is a type referring to an
       // alias. (`TypeAliasElement.alias.element` has different implications.
@@ -360,7 +360,7 @@ mixin Rendered implements ElementType {
 
 extension on DartType {
   /// The dartdoc nullability suffix for this type in [library].
-  String nullabilitySuffixWithin(Library library) {
+  String get nullabilitySuffixWithin {
     if (this is! VoidType && !isBottom) {
       /// If a legacy type appears inside the public interface of a Null
       /// safety library, we pretend it is nullable for the purpose of

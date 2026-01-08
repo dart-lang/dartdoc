@@ -9,12 +9,10 @@ import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Dynamic extends ModelElement with HasNoPage {
- 
-   @override
-   final Element element;
+  @override
+  final Element element;
 
-  Dynamic(this.element, PackageGraph packageGraph)
-      : super(Library.sentinel, packageGraph);
+  Dynamic(this.element, PackageGraph packageGraph) : super(null, packageGraph);
 
   UndefinedElementType get modelType =>
       throw UnimplementedError('(${element.runtimeType}) $element');

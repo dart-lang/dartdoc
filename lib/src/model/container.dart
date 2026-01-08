@@ -28,8 +28,8 @@ import 'package:meta/meta.dart';
 /// * **has** : boolean getters indicating whether the underlying collections
 ///   are empty.  These are available mostly for the templating system.
 abstract class Container extends ModelElement
-    with Categorization, TypeParameters {
-  Container(super.library, super.packageGraph);
+    with Categorization, HasLibrary, TypeParameters {
+  Container(Library super.library, super.packageGraph);
 
   @override
   Element get element;
