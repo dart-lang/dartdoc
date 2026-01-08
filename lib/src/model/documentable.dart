@@ -10,9 +10,9 @@ import 'package:dartdoc/src/warnings.dart';
 
 import 'model.dart';
 
-/// Bridges the gap between model elements and packages,
-/// both of which have documentation.
-abstract class Documentable with Nameable {
+/// An interface that bridges the gap between [ModelElement]s, [Category]s, and
+/// [Package]s, all of which have documentation, but in different forms.
+abstract interface class Documentable with Nameable {
   String? get documentation;
 
   String get documentationAsHtml;

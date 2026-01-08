@@ -11,7 +11,7 @@ import 'package:dartdoc/src/model_utils.dart' as model_utils;
 ///
 /// Do not call any methods or members excepting [name] and the private Lists
 /// below before finishing initialization of a [TopLevelContainer].
-mixin TopLevelContainer implements Nameable {
+mixin TopLevelContainer {
   /// All top-level classes except those that subtype [Error] or [Exception].
   Iterable<Class> get classes;
 

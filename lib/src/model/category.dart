@@ -17,8 +17,7 @@ final class Category extends LibraryContainer
         Warnable,
         CommentReferable,
         MarkdownFileDocumentation,
-        TopLevelContainer
-    implements Documentable {
+        TopLevelContainer {
   /// The package in which this category is contained.
   ///
   /// All libraries in [libraries] must come from [package].

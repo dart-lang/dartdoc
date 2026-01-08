@@ -10,9 +10,8 @@ import 'package:meta/meta.dart';
 /// A set of libraries, initialized after construction by accessing [libraries].
 ///
 /// Do not cache return values of any methods or members excepting [libraries]
-/// and [name] before finishing initialization of a [LibraryContainer].
-abstract base class LibraryContainer
-    implements Nameable, Comparable<LibraryContainer>, Documentable {
+/// before finishing initialization of a [LibraryContainer].
+abstract base class LibraryContainer implements Comparable<LibraryContainer> {
   final List<Library> libraries = [];
 
   late final List<Library> publicLibrariesSorted =
@@ -36,7 +35,8 @@ abstract base class LibraryContainer
   /// Sorting key.
   ///
   /// [containerOrder] should contain these.
-  String get sortKey => name;
+  @visibleForOverriding
+  String get sortKey;
 
   /// Whether this container represents the Dart SDK.
   ///
