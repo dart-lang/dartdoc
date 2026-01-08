@@ -83,6 +83,21 @@ int value = 0;
     );
   }
 
+  void test_locallyDeclaredConstant_private() async {
+    var library = await bootPackageWithLibrary('''
+class MyAnnotation {
+  const MyAnnotation();
+}
+
+const _myAnnotation = MyAnnotation();
+
+@_myAnnotation
+int value = 0;
+''');
+    var valueVariable = library.properties.named('value');
+    expect(valueVariable.hasAnnotations, false);
+  }
+
   void test_locallyDeclaredConstructorCall() async {
     var library = await bootPackageWithLibrary('''
 class MyAnnotation {
@@ -107,6 +122,19 @@ int value = 0;
     );
   }
 
+  void test_locallyDeclaredConstructorCall_private() async {
+    var library = await bootPackageWithLibrary('''
+class _MyAnnotation {
+  const _MyAnnotation(bool b);
+}
+
+@_MyAnnotation(true)
+int value = 0;
+''');
+    var valueVariable = library.properties.named('value');
+    expect(valueVariable.hasAnnotations, false);
+  }
+
   void test_locallyDeclaredConstructorCall_named() async {
     var library = await bootPackageWithLibrary('''
 class MyAnnotation {
@@ -129,6 +157,19 @@ int value = 0;
       '@<a href="${htmlBasePlaceholder}annotations/MyAnnotation/MyAnnotation.named.html">'
       'MyAnnotation.named</a>(true)',
     );
+  }
+
+  void test_locallyDeclaredConstructorCall_named_private() async {
+    var library = await bootPackageWithLibrary('''
+class MyAnnotation {
+  const MyAnnotation._named(bool b);
+}
+
+@MyAnnotation._named(true)
+int value = 0;
+''');
+    var valueVariable = library.properties.named('value');
+    expect(valueVariable.hasAnnotations, false);
   }
 
   void test_genericConstructorCall() async {

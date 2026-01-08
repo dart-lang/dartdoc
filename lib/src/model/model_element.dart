@@ -390,7 +390,7 @@ abstract class ModelElement
   /// (`@Native`) so we don't want to crash here.
   late final List<Annotation> annotations = List.unmodifiable([
     if (library case var library?)
-      for (var m in element.annotations)
+      for (var m in element.metadata.annotations)
         if (m.isVisibleAnnotation) Annotation(m, library, packageGraph)
   ]);
 
@@ -642,7 +642,7 @@ abstract class ModelElement
     // If `element.annotations` is empty, it might be because this is a property
     // where the annotations belongs to the individual getter/setter.
     if (element case PropertyInducingElement element
-        when element.annotations.isEmpty) {
+        when element.metadata.annotations.isEmpty) {
       // The getter or the setter might be `null` – so the stored value may be
       // `true`, `false`, or `null`.
       var getterDeprecated = element.getter?.isDeprecatedWithKind('use');
@@ -810,22 +810,15 @@ extension on ElementAnnotation {
   /// Whether this annotation should be displayed in documentation.
   ///
   /// At the moment, `pragma` is the only invisible annotation.
-  bool get isVisibleAnnotation {
-    if (element == null) return false;
-
-    if (element case ConstructorElement(:var enclosingElement)) {
-      return !(enclosingElement.name == 'pragma' &&
-          enclosingElement.library.name == 'dart.core');
-    }
-
-    return true;
-  }
-}
-
-extension on Element {
-  List<ElementAnnotation> get annotations {
-    return metadata.annotations;
-  }
+  bool get isVisibleAnnotation => switch (element) {
+        null => false,
+        Element(isPrivate: true) => false,
+        ConstructorElement(:var enclosingElement) =>
+          !enclosingElement.isPrivate &&
+              !(enclosingElement.name == 'pragma' &&
+                  enclosingElement.library.name == 'dart.core'),
+        _ => true,
+      };
 }
 
 // Copied from analyzer's `lib/src/dart/element/extensions.dart`. Re-use that
