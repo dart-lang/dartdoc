@@ -377,6 +377,9 @@ final class Package extends LibraryContainer
   List<String> get containerOrder => config.packageOrder;
 
   @override
+  String get sortKey => name;
+
+  @override
   late final Map<String, CommentReferable> referenceChildren = {
     // Do not override any preexisting data, and insert based on the public
     // library sort order.
