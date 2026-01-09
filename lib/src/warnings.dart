@@ -281,6 +281,9 @@ enum PackageWarning implements Comparable<PackageWarning> {
         'Use of <> in a comment for type parameters is being treated as HTML '
         'by Markdown',
     defaultWarningMode: PackageWarningMode.ignore,
+    // This warning is replaced by the unintended_html_in_doc_comment lint rule.
+    // https://dart.dev/tools/linter-rules/unintended_html_in_doc_comment
+    isDeprecated: true,
   ),
   invalidParameter(
     'invalid-parameter',
