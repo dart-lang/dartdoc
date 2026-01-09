@@ -8,7 +8,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/attribute.dart';
-import 'package:dartdoc/src/model/class.dart';
 import 'package:dartdoc/src/model/getter_setter_combo.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
@@ -89,19 +88,9 @@ final class Annotation extends Attribute {
         'non-callable element used as annotation?: ${_annotation.element}')
   };
 
-  bool get isPublic {
-    final modelType = _modelType;
-    if (!modelType.isPublic) {
-      return false;
-    }
-    if (modelType is! DefinedElementType) {
-      return false;
-    }
-
-    var modelElement = modelType.modelElement;
-    return modelElement is Class &&
-        _packageGraph.isAnnotationVisible(modelElement);
-  }
+  // We only construct Annotations which are public, as per
+  // [ModelElement.annotations].
+  bool get isPublic => true;
 
   @override
   bool operator ==(Object other) =>

@@ -672,10 +672,6 @@ class PackageGraph with CommentReferable, Nameable {
           ?.linkedName ??
       'Object';
 
-  bool isAnnotationVisible(Class class_) =>
-      class_.element.name == 'pragma' &&
-      class_.element.library.name == 'dart.core';
-
   @override
   String toString() {
     const divider = '=========================================================';
