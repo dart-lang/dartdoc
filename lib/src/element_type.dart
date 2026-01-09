@@ -10,7 +10,6 @@ library;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
@@ -19,7 +18,7 @@ import 'package:meta/meta.dart';
 
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
-abstract class ElementType with CommentReferable, Nameable {
+abstract class ElementType with Nameable {
   final DartType type;
   @override
   final PackageGraph packageGraph;
@@ -120,13 +119,13 @@ class UndefinedElementType extends ElementType {
   Iterable<ElementType> get typeArguments => const [];
 
   @override
-  Map<String, CommentReferable> get referenceChildren => const {};
+  Map<String, Nameable> get referenceChildren => const {};
 
   @override
-  Iterable<CommentReferable> get referenceParents => const [];
+  Iterable<Nameable> get referenceParents => const [];
 
   @override
-  Iterable<CommentReferable>? get referenceGrandparentOverrides => null;
+  Iterable<Nameable>? get referenceGrandparentOverrides => null;
 }
 
 /// A [FunctionType] that does not have an underpinning [Element].
@@ -308,20 +307,18 @@ abstract class DefinedElementType extends ElementType {
   Iterable<ElementType> get typeArguments => [];
 
   @override
-  Map<String, CommentReferable> get referenceChildren =>
-      modelElement.referenceChildren;
+  Map<String, Nameable> get referenceChildren => modelElement.referenceChildren;
 
   @override
-  Iterable<CommentReferable> get referenceParents =>
-      modelElement.referenceParents;
+  Iterable<Nameable> get referenceParents => modelElement.referenceParents;
 
   @override
-  Iterable<CommentReferable>? get referenceGrandparentOverrides =>
+  Iterable<Nameable>? get referenceGrandparentOverrides =>
       modelElement.referenceGrandparentOverrides;
 
   @internal
   @override
-  CommentReferable get definingCommentReferable =>
+  Nameable get definingNameable =>
       ModelElement.forElement(modelElement.element, packageGraph);
 }
 

@@ -5,19 +5,13 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 /// A subcategory of a package, containing elements tagged with `{@category}`.
 final class Category extends LibraryContainer
-    with
-        Nameable,
-        Warnable,
-        CommentReferable,
-        MarkdownFileDocumentation,
-        TopLevelContainer {
+    with Nameable, Warnable, MarkdownFileDocumentation, TopLevelContainer {
   /// The package in which this category is contained.
   ///
   /// All libraries in [libraries] must come from [package].
@@ -180,10 +174,10 @@ final class Category extends LibraryContainer
   Iterable<Class> get exceptions => _exceptions;
 
   @override
-  Map<String, CommentReferable> get referenceChildren => const {};
+  Map<String, Nameable> get referenceChildren => const {};
 
   @override
-  Iterable<CommentReferable> get referenceParents => const [];
+  Iterable<Nameable> get referenceParents => const [];
 }
 
 extension on String? {

@@ -10,7 +10,6 @@ import 'dart:math';
 
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -142,24 +141,24 @@ final List<md.BlockSyntax> _markdownBlockSyntaxes = [
 // Remove these schemas from the display text for hyperlinks.
 final RegExp _hideSchemas = RegExp('^(http|https)://');
 
-/// Returns false if [referable] is an unnamed [Constructor], or if it is
+/// Returns false if [nameable] is an unnamed [Constructor], or if it is
 /// shadowing another type of element, or is a parameter of one of the above.
-bool _rejectUnnamedAndShadowingConstructors(CommentReferable? referable) {
-  if (referable is Constructor) {
-    if (referable.isUnnamedConstructor) return false;
-    if (referable.enclosingElement
-        .referenceChildren[referable.name.split('.').last] is! Constructor) {
+bool _rejectUnnamedAndShadowingConstructors(Nameable? nameable) {
+  if (nameable is Constructor) {
+    if (nameable.isUnnamedConstructor) return false;
+    if (nameable.enclosingElement
+        .referenceChildren[nameable.name.split('.').last] is! Constructor) {
       return false;
     }
   }
   return true;
 }
 
-/// Returns false unless [referable] represents a callable object.
+/// Returns false unless [nameable] represents a callable object.
 ///
 /// Allows constructors but does not require them.
-bool _requireCallable(CommentReferable? referable) =>
-    referable is ModelElement && referable.isCallable;
+bool _requireCallable(Nameable? nameable) =>
+    nameable is ModelElement && nameable.isCallable;
 
 MatchingLinkResult _getMatchingLinkElement(
     String referenceText, Warnable element) {
@@ -186,7 +185,7 @@ MatchingLinkResult getMatchingLinkElement(
     String referenceText, Warnable element) {
   var result = _getMatchingLinkElement(referenceText, element);
   runtimeStats.totalReferences++;
-  if (result.commentReferable != null) {
+  if (result.nameable != null) {
     runtimeStats.resolvedReferences++;
   }
   return result;
@@ -312,7 +311,7 @@ class MarkdownDocument extends md.Document {
     }
     var result = getMatchingLinkElement(referenceText, element);
     var textContent = _htmlEscape.convert(referenceText);
-    var linkedElement = result.commentReferable;
+    var linkedElement = result.nameable;
     if (linkedElement != null) {
       // If the element has a separate name to use in documentation, prefer it.
       if (linkedElement.documentedName case var name?) {

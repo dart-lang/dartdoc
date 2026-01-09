@@ -10,7 +10,6 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -95,7 +94,7 @@ List<DartdocOption<Object?>> createPackageWarningOptions(
 
 /// Something that package warnings can be reported on. Optionally associated
 /// with an analyzer [element].
-mixin Warnable implements CommentReferable, Documentable {
+mixin Warnable implements Documentable {
   Element? get element;
 
   void warn(

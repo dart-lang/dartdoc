@@ -4,7 +4,6 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -93,7 +92,7 @@ class Parameter extends ModelElement with HasNoPage {
   Kind get kind => Kind.parameter;
 
   @override
-  late final Map<String, CommentReferable> referenceChildren = {
+  late final Map<String, Nameable> referenceChildren = {
     if (modelType is Callable)
       ...(modelType as Callable)
           .returnType
@@ -105,7 +104,7 @@ class Parameter extends ModelElement with HasNoPage {
   };
 
   @override
-  Iterable<CommentReferable> get referenceParents {
+  Iterable<Nameable> get referenceParents {
     final enclosingElement = this.enclosingElement;
     return [if (enclosingElement != null) enclosingElement];
   }

@@ -4,7 +4,6 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:meta/meta.dart';
@@ -190,11 +189,11 @@ abstract class Container extends ModelElement with HasLibrary, TypeParameters {
   /// For subclasses to add items after the main pass but before the
   /// parameter-global.
   @visibleForOverriding
-  Map<String, CommentReferable> get extraReferenceChildren;
+  Map<String, Nameable> get extraReferenceChildren;
 
   @override
   @mustCallSuper
-  late final Map<String, CommentReferable> referenceChildren = {
+  late final Map<String, Nameable> referenceChildren = {
     for (var modelElement in allModelElements)
       // Don't complain about references to parameter names, but prefer
       // referring to anything else.
@@ -209,7 +208,7 @@ abstract class Container extends ModelElement with HasLibrary, TypeParameters {
   };
 
   @override
-  Iterable<CommentReferable> get referenceParents => [library];
+  Iterable<Nameable> get referenceParents => [library];
 
   /// The full path of this element's sidebar file.
   String get sidebarPath;

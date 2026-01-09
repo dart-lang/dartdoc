@@ -16,7 +16,6 @@ import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/logging.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/package_meta.dart'
@@ -26,7 +25,7 @@ import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 
-class PackageGraph with CommentReferable, Nameable {
+class PackageGraph with Nameable {
   /// Dartdoc's configuration flags.
   final DartdocOptionContext config;
 
@@ -911,7 +910,7 @@ class PackageGraph with CommentReferable, Nameable {
   }
 
   @override
-  late final Map<String, CommentReferable> referenceChildren = () {
+  late final Map<String, Nameable> referenceChildren = () {
     // We have to use a stable order or otherwise references depending on
     // ambiguous resolution (see below) will change where they resolve based on
     // internal implementation details.
@@ -951,7 +950,7 @@ class PackageGraph with CommentReferable, Nameable {
   }();
 
   @override
-  Iterable<CommentReferable> get referenceParents => const [];
+  Iterable<Nameable> get referenceParents => const [];
 }
 
 class ConstructedModelElementsKey {
@@ -991,20 +990,20 @@ extension on Comment {
 
     var referencesData = <String, CommentReferenceData>{};
     for (var reference in references) {
-      var commentReferable = reference.expression;
+      var nameable = reference.expression;
       String name;
       Element? staticElement;
-      if (commentReferable case PropertyAccess(:var propertyName)) {
-        var target = commentReferable.target;
+      if (nameable case PropertyAccess(:var propertyName)) {
+        var target = nameable.target;
         if (target is! PrefixedIdentifier) continue;
         name = '${target.name}.${propertyName.name}';
         staticElement = propertyName.element;
-      } else if (commentReferable case PrefixedIdentifier(:var identifier)) {
-        name = commentReferable.name;
+      } else if (nameable case PrefixedIdentifier(:var identifier)) {
+        name = nameable.name;
         staticElement = identifier.element;
-      } else if (commentReferable case SimpleIdentifier()) {
-        name = commentReferable.name;
-        staticElement = commentReferable.element;
+      } else if (nameable case SimpleIdentifier()) {
+        name = nameable.name;
+        staticElement = nameable.element;
       } else {
         continue;
       }
@@ -1013,8 +1012,8 @@ extension on Comment {
         referencesData[name] = CommentReferenceData(
           staticElement,
           name,
-          commentReferable.offset,
-          commentReferable.length,
+          nameable.offset,
+          nameable.length,
         );
       }
     }

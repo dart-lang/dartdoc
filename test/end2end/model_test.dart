@@ -2352,8 +2352,8 @@ void main() async {
 
       test('Referring to a renamed library directly works', () {
         expect(
-            (referenceLookup(aFunctionUsingRenamedLib, 'renamedLib')
-                    .commentReferable as ModelElement)
+            (referenceLookup(aFunctionUsingRenamedLib, 'renamedLib').nameable
+                    as ModelElement)
                 .canonicalModelElement,
             equals(mylibpub));
       });
@@ -4248,6 +4248,12 @@ class StringName with Nameable {
 
   @override
   String toString() => name;
+
+  @override
+  Map<String, Nameable> get referenceChildren => throw UnimplementedError();
+
+  @override
+  Iterable<Nameable> get referenceParents => throw UnimplementedError();
 }
 
 class StringNameHashCode with Nameable {
@@ -4268,6 +4274,12 @@ class StringNameHashCode with Nameable {
   @override
   // ignore: unnecessary_overrides
   bool operator ==(Object other) => super == other;
+
+  @override
+  Map<String, Nameable> get referenceChildren => throw UnimplementedError();
+
+  @override
+  Iterable<Nameable> get referenceParents => throw UnimplementedError();
 }
 
 extension on Library {

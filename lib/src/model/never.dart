@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -33,8 +32,8 @@ class NeverType extends ModelElement with HasNoPage {
   String get linkedName => 'Never';
 
   @override
-  Map<String, CommentReferable> get referenceChildren => const {};
+  Map<String, Nameable> get referenceChildren => const {};
 
   @override
-  Iterable<CommentReferable> get referenceParents => const [];
+  Iterable<Nameable> get referenceParents => const [];
 }

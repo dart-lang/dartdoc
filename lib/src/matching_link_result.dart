@@ -2,22 +2,22 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/model/comment_referable.dart';
+import 'package:dartdoc/src/model/nameable.dart';
 
 class MatchingLinkResult {
-  final CommentReferable? commentReferable;
+  final Nameable? nameable;
 
-  MatchingLinkResult(this.commentReferable);
+  MatchingLinkResult(this.nameable);
 
   @override
   bool operator ==(Object other) =>
-      other is MatchingLinkResult && commentReferable == other.commentReferable;
+      other is MatchingLinkResult && nameable == other.nameable;
 
   @override
-  int get hashCode => commentReferable.hashCode;
+  int get hashCode => nameable.hashCode;
 
   @override
   String toString() {
-    return 'element: [${commentReferable?.fullyQualifiedName}]';
+    return 'element: [${nameable?.fullyQualifiedName}]';
   }
 }

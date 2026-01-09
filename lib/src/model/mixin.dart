@@ -5,7 +5,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
@@ -31,7 +30,7 @@ class Mixin extends InheritingContainer {
 
   @override
   @visibleForOverriding
-  Map<String, CommentReferable> get extraReferenceChildren => const {};
+  Map<String, Nameable> get extraReferenceChildren => const {};
 
   @override
   bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;

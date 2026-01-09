@@ -36,8 +36,6 @@ abstract interface class Documentable with Nameable {
   /// A human-friendly name for the kind of element this is.
   Kind get kind;
 
-  String? get href;
-
   /// The full path of the sidebar for elements "above" this element.
   ///
   /// A `null` value indicates no content is displayed in the "above" sidebar.
