@@ -60,15 +60,13 @@ More text.'''));
     markTestSkipped('Skipping until issue '
         'https://github.com/dart-lang/dartdoc/issues/4137 is resolved.');
     return;
-/*
-    await writePackageWithCommentedLibrary('''
-///  Text.
-///    More text.
-''');
-    expectDocComment(equals('''
-Text.
-More text.'''));
-*/
+//     await writePackageWithCommentedLibrary('''
+// ///  Text.
+// ///    More text.
+// ''');
+//     expectDocComment(equals('''
+// Text.
+// More text.'''));
   }
 
   /// Check that interrupting blank lines and starting with `// ` are ignored.
@@ -149,23 +147,21 @@ void main() {
     markTestSkipped('Skipping until issue '
         'https://github.com/dart-lang/dartdoc/issues/4138 is resolved.');
     return;
-/*
-    await writePackageWithCommentedLibrary('''
-/// `
-/// void main() {
-///   /// This line prints "Hello, world!"
-///   print('Hello, world!');
-/// }
-/// `
-''');
-    expectDocComment(equals('''
-`
-void main() {
-/// This line prints "Hello, world!"
-print('Hello, world!');
-}
-`'''));
-*/
+//     await writePackageWithCommentedLibrary('''
+// /// `
+// /// void main() {
+// ///   /// This line prints "Hello, world!"
+// ///   print('Hello, world!');
+// /// }
+// /// `
+// ''');
+//     expectDocComment(equals('''
+// `
+// void main() {
+// /// This line prints "Hello, world!"
+// print('Hello, world!');
+// }
+// `'''));
   }
 
   /// Check that the parser removes leading whitespace before the three slashes
