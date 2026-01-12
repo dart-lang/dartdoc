@@ -1,3 +1,8 @@
+## 9.0.1
+* Deprecate the `typeAsHtml` warning
+* Require analyzer 9.0.0 APIs.
+* Use logging infrastructure in AOT compiler.
+
 ## 9.0.0
 * Remove the deprecated `missingCodeBlockLanguage` warning.
 * Remove the deprecated `templates-dir` option.
