@@ -17,11 +17,12 @@ import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/sdk/sdk.dart'
-    show EmbedderSdk, FolderBasedDartSdk, languageVersionFromSdkVersion;
+    show EmbedderSdk, languageVersionFromSdkVersion, FolderBasedDartSdk;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/engine.dart' show AnalysisOptionsImpl;
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk;
+import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart' hide Package;
@@ -47,6 +48,10 @@ class PubPackageBuilder implements PackageBuilder {
   final AnalysisContextCollectionImpl _contextCollection;
   final AnalysisContext _analysisContext;
 
+  final DartSdk _sdk;
+
+  final List<String> _embedderSdkFiles;
+
   factory PubPackageBuilder(
     DartdocOptionContext config,
     PackageMetaProvider packageMetaProvider,
@@ -67,11 +72,20 @@ class PubPackageBuilder implements PackageBuilder {
             ..lint = false,
       withFineDependencies: true,
     );
+    var resourceProvider = packageMetaProvider.resourceProvider;
+    var sdk = packageMetaProvider.defaultSdk ??
+        FolderBasedDartSdk(
+            resourceProvider, resourceProvider.getFolder(config.sdkDir));
+    var embedderSdkFiles =
+        _findEmbedderSdkFiles(packageConfigProvider, config, resourceProvider);
+
     return PubPackageBuilder._(
       config,
       packageMetaProvider,
       packageConfigProvider,
       contextCollection,
+      sdk: sdk,
+      embedderSdkFiles: embedderSdkFiles,
       analysisContext: contextCollection.contextFor(config.inputDir),
       skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
     );
@@ -82,10 +96,45 @@ class PubPackageBuilder implements PackageBuilder {
     this._packageMetaProvider,
     this._packageConfigProvider,
     this._contextCollection, {
+    required DartSdk sdk,
+    required List<String> embedderSdkFiles,
     required AnalysisContext analysisContext,
     required bool skipUnreachableSdkLibraries,
-  })  : _analysisContext = analysisContext,
+  })  : _sdk = sdk,
+        _embedderSdkFiles = embedderSdkFiles,
+        _analysisContext = analysisContext,
         _skipUnreachableSdkLibraries = skipUnreachableSdkLibraries;
+
+  static List<String> _findEmbedderSdkFiles(
+      PackageConfigProvider packageConfigProvider,
+      DartdocOptionContext config,
+      ResourceProvider resourceProvider) {
+    if (config.topLevelPackageMeta.isSdk) return const [];
+
+    var cwd = resourceProvider.getResource(config.inputDir) as Folder;
+    var info = packageConfigProvider
+        .findPackageConfig(resourceProvider.getFolder(cwd.path));
+    if (info == null) return const [];
+
+    var skyEngine =
+        info.packages.firstWhereOrNull((p) => p.name == 'sky_engine');
+    if (skyEngine == null) return const [];
+
+    var packagePath = resourceProvider.pathContext.normalize(
+        resourceProvider.pathContext.fromUri(skyEngine.packageUriRoot));
+    var skyEngineLibFolder =
+        resourceProvider.getResource(packagePath) as Folder;
+    var embedderSdk = EmbedderSdk(resourceProvider,
+        EmbedderYamlLocator.forLibFolder(skyEngineLibFolder).embedderYamls,
+        languageVersion: languageVersionFromSdkVersion(io.Platform.version));
+
+    return [
+      for (var dartUri in embedderSdk.urlMappings.keys)
+        resourceProvider.pathContext.absolute(resourceProvider
+            .getFile(embedderSdk.mapDartUri(dartUri)!.fullName)
+            .path),
+    ];
+  }
 
   @override
   Future<PackageGraph> buildPackageGraph() async {
@@ -94,15 +143,11 @@ class PubPackageBuilder implements PackageBuilder {
       'modelElementCacheInsertion',
     ]);
 
-    runtimeStats.startPerfTask('_calculatePackageMap');
-    await _calculatePackageMap();
-    runtimeStats.endPerfTask();
-
     runtimeStats.startPerfTask('getLibraries');
     var newGraph = PackageGraph.uninitialized(
       _config,
       _sdk,
-      _embedderSdkUris.isNotEmpty,
+      _embedderSdkFiles.isNotEmpty,
       _packageMetaProvider,
       _analysisContext,
     );
@@ -126,49 +171,13 @@ class PubPackageBuilder implements PackageBuilder {
   }
 
   Future<void> _dispose() async {
-    // Shutdown macro support.
     await _contextCollection.dispose();
-  }
-
-  late final DartSdk _sdk = _packageMetaProvider.defaultSdk ??
-      FolderBasedDartSdk(
-          _resourceProvider, _resourceProvider.getFolder(_config.sdkDir));
-
-  EmbedderSdk? __embedderSdk;
-
-  EmbedderSdk? get _embedderSdk {
-    if (__embedderSdk == null && !_config.topLevelPackageMeta.isSdk) {
-      __embedderSdk = EmbedderSdk(
-          _resourceProvider, EmbedderYamlLocator(_packageMap).embedderYamls,
-          languageVersion: languageVersionFromSdkVersion(io.Platform.version));
-    }
-    return __embedderSdk;
   }
 
   ResourceProvider get _resourceProvider =>
       _packageMetaProvider.resourceProvider;
 
   p.Context get _pathContext => _resourceProvider.pathContext;
-
-  /// Do not call more than once for a given PackageBuilder.
-  Future<void> _calculatePackageMap() async {
-    _packageMap = <String, List<Folder>>{};
-    var cwd = _resourceProvider.getResource(_config.inputDir) as Folder;
-    var info = await _packageConfigProvider
-        .findPackageConfig(_resourceProvider.getFolder(cwd.path));
-    if (info == null) return;
-
-    for (var package in info.packages) {
-      var packagePath =
-          _pathContext.normalize(_pathContext.fromUri(package.packageUriRoot));
-      var resource = _resourceProvider.getResource(packagePath);
-      if (resource is Folder) {
-        _packageMap[package.name] = [resource];
-      }
-    }
-  }
-
-  late final Map<String, List<Folder>> _packageMap;
 
   List<String> get _sdkFilesToDocument => [
         for (var sdkLib in _sdk.sdkLibraries)
@@ -406,8 +415,8 @@ class PubPackageBuilder implements PackageBuilder {
       return {basePackageRoot};
     }
 
-    var packageConfig = (await _packageConfigProvider
-        .findPackageConfig(_resourceProvider.getFolder(basePackageRoot)))!;
+    var packageConfig = _packageConfigProvider
+        .findPackageConfig(_resourceProvider.getFolder(basePackageRoot))!;
     return {
       basePackageRoot,
       for (var package in packageConfig.packages)
@@ -415,19 +424,6 @@ class PubPackageBuilder implements PackageBuilder {
           _pathContext.dirname(_pathContext
               .fromUri(packageConfig[package.name]!.packageUriRoot)),
     };
-  }
-
-  Iterable<String> get _embedderSdkFiles => [
-        for (var dartUri in _embedderSdkUris)
-          _pathContext.absolute(_resourceProvider
-              .getFile(_embedderSdk!.mapDartUri(dartUri)!.fullName)
-              .path),
-      ];
-
-  Iterable<String> get _embedderSdkUris {
-    if (_config.topLevelPackageMeta.isSdk) return const [];
-
-    return _embedderSdk?.urlMappings.keys ?? const [];
   }
 
   /// Adds all libraries with documentable elements to
