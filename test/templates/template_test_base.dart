@@ -30,8 +30,6 @@ environment:
       resourceProvider: resourceProvider,
     );
     await writeDartdocResources(resourceProvider);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, packageName, Uri.file('$packagePath/'));
 
     await buildDartdoc().generateDocs();
   }

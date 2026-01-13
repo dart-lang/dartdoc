@@ -35,11 +35,7 @@ void foo(C c) {}
 '''),
     ]).createInMemory(resourceProvider, packagePath);
 
-    var packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
+    var packageGraph = await bootBasicPackage(packagePath, packageMetaProvider);
     var library = packageGraph.libraries.named(libraryName);
     var fooFunction = library.functions.named('foo');
     expect(

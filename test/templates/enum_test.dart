@@ -107,14 +107,9 @@ extension Ext<T> on E<T> {}
         packageMetaProvider.defaultSdkDir.path,
       ], packageMetaProvider);
 
-      var packageConfigProvider =
-          getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-      packageConfigProvider.addPackageToConfigFor(
-          packagePath, packageName, Uri.file('$packagePath/'));
       final packageBuilder = PubPackageBuilder(
         context,
         packageMetaProvider,
-        packageConfigProvider,
         skipUnreachableSdkLibraries: true,
       );
       await Dartdoc.fromContext(context, packageBuilder).generateDocs();

@@ -14,7 +14,6 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:html/parser.dart' as html;
 import 'package:test/test.dart';
@@ -25,18 +24,14 @@ import '../src/utils.dart';
 final _testPackageGraphGinormousMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphGinormous =>
     _testPackageGraphGinormousMemo.runOnce(() => utils.bootBasicPackage(
-            'testing/test_package',
-            pubPackageMetaProvider,
-            PhysicalPackageConfigProvider(),
-            excludeLibraries: [
-              'css',
-              'code_in_commnets',
-              'excluded'
-            ],
-            additionalArguments: [
-              '--auto-include-dependencies',
-              '--no-link-to-remote'
-            ]));
+          'testing/test_package',
+          pubPackageMetaProvider,
+          excludeLibraries: ['css', 'code_in_commnets', 'excluded'],
+          additionalArguments: [
+            '--auto-include-dependencies',
+            '--no-link-to-remote'
+          ],
+        ));
 
 final _testPackageGraphSdkMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get _testPackageGraphSdk =>
@@ -44,12 +39,11 @@ Future<PackageGraph> get _testPackageGraphSdk =>
 
 Future<PackageGraph> _bootSdkPackage() async {
   return PubPackageBuilder(
-          await utils.contextFromArgv(
-              ['--input', pubPackageMetaProvider.defaultSdkDir.path],
-              pubPackageMetaProvider),
-          pubPackageMetaProvider,
-          PhysicalPackageConfigProvider())
-      .buildPackageGraph();
+    await utils.contextFromArgv(
+        ['--input', pubPackageMetaProvider.defaultSdkDir.path],
+        pubPackageMetaProvider),
+    pubPackageMetaProvider,
+  ).buildPackageGraph();
 }
 
 void main() {
@@ -195,7 +189,6 @@ void main() {
       packageGraph = await utils.bootBasicPackage(
         'testing/test_package_sanitize_html',
         pubPackageMetaProvider,
-        PhysicalPackageConfigProvider(),
         excludeLibraries: ['css', 'code_in_comments', 'excluded'],
         additionalArguments: ['--sanitize-html'],
       );
@@ -259,9 +252,7 @@ void main() {
 
     setUpAll(() async {
       injectionPackageGraph = await utils.bootBasicPackage(
-          'testing/test_package',
-          pubPackageMetaProvider,
-          PhysicalPackageConfigProvider(),
+          'testing/test_package', pubPackageMetaProvider,
           excludeLibraries: ['css', 'code_in_comments', 'excluded'],
           additionalArguments: ['--inject-html']);
 

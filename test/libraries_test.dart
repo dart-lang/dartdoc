@@ -36,16 +36,9 @@ library name.and.dots;
       resourceProvider:
           packageMetaProvider.resourceProvider as MemoryResourceProvider,
     );
-    final packageConfigProvider =
-        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, 'library_test', Uri.file('$packagePath/'));
 
-    final packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
+    final packageGraph =
+        await bootBasicPackage(packagePath, packageMetaProvider);
     final library = packageGraph.libraries.named('name.and.dots');
     expect(library.name, 'name.and.dots');
     expect(library.fullyQualifiedName, 'name.and.dots');
@@ -77,16 +70,9 @@ library;
       resourceProvider:
           packageMetaProvider.resourceProvider as MemoryResourceProvider,
     );
-    final packageConfigProvider =
-        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, 'library_test', Uri.file('$packagePath/'));
 
-    final packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
+    final packageGraph =
+        await bootBasicPackage(packagePath, packageMetaProvider);
     final library = packageGraph.libraries.named('lib');
     expect(library.name, 'lib');
     expect(library.fullyQualifiedName, 'lib');
@@ -121,16 +107,9 @@ A doc comment.
       ],
       resourceProvider: resourceProvider,
     );
-    final packageConfigProvider =
-        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, 'library_test', Uri.file('$packagePath/'));
 
-    final packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
+    final packageGraph =
+        await bootBasicPackage(packagePath, packageMetaProvider);
     final daName =
         ResourceProviderExtension(resourceProvider).convertPath('d/a');
     final eaName =
@@ -160,10 +139,9 @@ A doc comment.
       () async {
     var packageMetaProvider = testPackageMetaProvider;
     var sdkFolder = packageMetaProvider.defaultSdkDir;
-    var packageConfigProvider = getTestPackageConfigProvider(sdkFolder.path);
 
     var packageGraph = await bootBasicPackage(
-        sdkFolder.path, packageMetaProvider, packageConfigProvider,
+        sdkFolder.path, packageMetaProvider,
         additionalArguments: [
           '--input',
           packageMetaProvider.defaultSdkDir.path,
@@ -248,25 +226,25 @@ class LibrariesInAdditionalPackageTest extends DartdocTestBase {
   /// Boots up a package with an additional dependency package inside.
   ///
   /// This emulates the Flutter SDK layout (or the fake layout created by
-  /// Flutter's `create_api_docs.dart` script), so that we have library's whose
+  /// Flutter's `create_api_docs.dart` script), so that we have libraries whose
   /// `dirName` contains long text based on the package URI, something like
   /// 'package-two_lib2'.
   Future<PackageGraph> bootPackageWithInnerPackageLibrary(
     d.FileDescriptor libraryFile,
   ) {
-    packageConfigProvider.addPackageToConfigFor(
-        '$packagePath/vendor/two', 'two', Uri.file('$packagePath/vendor/two/'));
-
     return bootPackageFromFiles(
       [
         d.file('lib/lib1.dart', "import 'package:two/lib2.dart';"),
-        d.dir(ResourceProviderExtension(resourceProvider).convertPath('vendor/two'), [
-          d.file('pubspec.yaml', '''
+        d.dir(
+          ResourceProviderExtension(resourceProvider).convertPath('vendor/two'),
+          [
+            d.file('pubspec.yaml', '''
 name: two
 version: 0.0.1
 '''),
-          libraryFile,
-        ]),
+            libraryFile,
+          ],
+        ),
       ],
       additionalArguments: [
         '--auto-include-dependencies',

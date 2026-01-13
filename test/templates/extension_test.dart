@@ -32,14 +32,9 @@ void main() async {
       '--no-link-to-remote',
     ], packageMetaProvider);
 
-    var packageConfigProvider =
-        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, packageName, Uri.file('$packagePath/'));
     var packageBuilder = PubPackageBuilder(
       context,
       packageMetaProvider,
-      packageConfigProvider,
       skipUnreachableSdkLibraries: true,
     );
     return Dartdoc.fromContext(context, packageBuilder);
