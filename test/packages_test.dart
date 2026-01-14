@@ -8,7 +8,6 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/class.dart';
 import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/kind.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
@@ -26,7 +25,6 @@ void main() {
 
   late MemoryResourceProvider resourceProvider;
   late PackageMetaProvider packageMetaProvider;
-  late FakePackageConfigProvider packageConfigProvider;
   late DartdocOptionSet optionSet;
   late Folder sdkFolder;
 
@@ -51,7 +49,6 @@ void main() {
 
     optionSet = DartdocOptionRoot.fromOptionGenerators(
         'dartdoc', [createDartdocOptions], packageMetaProvider);
-    packageConfigProvider = utils.getTestPackageConfigProvider(sdkFolder.path);
   });
 
   tearDown(clearPackageMetaCache);
@@ -62,8 +59,7 @@ void main() {
     group('typical package', () {
       setUp(() {
         optionSet.parseArguments([]);
-        projectRoot = utils.writePackage(
-            packageName, resourceProvider, packageConfigProvider);
+        projectRoot = utils.writePackage(packageName, resourceProvider);
         projectPath = projectRoot.path;
         projectRoot
             .getChildAssumingFolder('lib')
@@ -76,11 +72,10 @@ int x;
 
       test('with no deps has 2 local packages, including SDK', () async {
         var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider,
-            additionalArguments: [
-              '--auto-include-dependencies',
-              '--no-link-to-remote'
-            ]);
+            projectPath, packageMetaProvider, additionalArguments: [
+          '--auto-include-dependencies',
+          '--no-link-to-remote'
+        ]);
 
         var localPackages = packageGraph.localPackages;
         expect(localPackages, hasLength(2));
@@ -90,7 +85,7 @@ int x;
 
       test('with no deps has 1 local package, excluding SDK', () async {
         var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider,
+            projectPath, packageMetaProvider,
             additionalArguments: ['--no-link-to-remote']);
 
         var localPackages = packageGraph.localPackages;
@@ -99,8 +94,8 @@ int x;
       });
 
       test('has proper name and kind', () async {
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
 
         var package = packageGraph.defaultPackage;
         expect(package.name, equals('my_package'));
@@ -108,8 +103,8 @@ int x;
       });
 
       test('has public libraries', () async {
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
 
         expect(packageGraph.localPublicLibraries, hasLength(1));
         var library = packageGraph.libraries.named('a');
@@ -117,16 +112,16 @@ int x;
       });
 
       test('has private libraries', () async {
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
         var interceptorsLib = packageGraph.libraries.named('dart:_internal');
 
         expect(interceptorsLib.isPublic, isFalse);
       });
 
       test('has a homepage', () async {
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
 
         expect(packageGraph.defaultPackage.hasHomepage, isTrue);
         expect(packageGraph.defaultPackage.homepage,
@@ -138,16 +133,16 @@ int x;
 /// Documentation comment.
 int x;
 ''');
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
         expect(packageGraph.libraries.where((lib) => lib.name == 'b'),
             hasLength(1));
       });
 
       test('has documentation via Markdown README', () async {
         writeToJoinedPath(['README.md'], 'Readme text.');
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
         expect(packageGraph.defaultPackage.packageMeta.getReadmeContents(),
             isNotNull);
         expect(packageGraph.defaultPackage.hasDocumentation, true);
@@ -155,8 +150,8 @@ int x;
 
       test('has documentation via text README', () async {
         writeToJoinedPath(['README'], 'Readme text.');
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
         expect(packageGraph.defaultPackage.packageMeta.getReadmeContents(),
             isNotNull);
         expect(packageGraph.defaultPackage.hasDocumentation, true);
@@ -164,16 +159,16 @@ int x;
 
       test('has documentation content', () async {
         writeToJoinedPath(['README.md'], 'Readme text.');
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
         expect(
             packageGraph.defaultPackage.documentation, equals('Readme text.'));
       });
 
       test('has documentation content rendered as HTML', () async {
         writeToJoinedPath(['README.md'], 'Readme text.');
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
         expect(packageGraph.defaultPackage.documentationAsHtml,
             equals('<p>Readme text.</p>'));
       });
@@ -181,8 +176,7 @@ int x;
 
     test('documents single explicitly included library', () async {
       optionSet.parseArguments([]);
-      projectRoot = utils.writePackage(
-          packageName, resourceProvider, packageConfigProvider);
+      projectRoot = utils.writePackage(packageName, resourceProvider);
       projectPath = projectRoot.path;
       writeToJoinedPath(['lib', 'foo.dart'], '''
 /// Documentation comment.
@@ -193,7 +187,7 @@ library foo;
 library bar;
 ''');
       var packageGraph = await utils.bootBasicPackage(
-          projectPath, packageMetaProvider, packageConfigProvider,
+          projectPath, packageMetaProvider,
           additionalArguments: ['--include', 'foo']);
 
       expect(packageGraph.localPublicLibraries, hasLength(1));
@@ -202,8 +196,7 @@ library bar;
 
     test('documents multiple explicitly included libraries', () async {
       optionSet.parseArguments(['--include', 'foo', '--include', 'bar']);
-      projectRoot = utils.writePackage(
-          packageName, resourceProvider, packageConfigProvider);
+      projectRoot = utils.writePackage(packageName, resourceProvider);
       projectPath = projectRoot.path;
       writeToJoinedPath(['lib', 'foo.dart'], '''
 /// Documentation comment.
@@ -218,7 +211,7 @@ library bar;
 library baz;
 ''');
       var packageGraph = await utils.bootBasicPackage(
-          projectPath, packageMetaProvider, packageConfigProvider,
+          projectPath, packageMetaProvider,
           additionalArguments: ['--include', 'foo', '--include', 'bar']);
 
       var documentedLibraries = packageGraph.localPublicLibraries;
@@ -230,8 +223,7 @@ library baz;
 
     test('excludes single explicitly excluded library', () async {
       optionSet.parseArguments([]);
-      projectRoot = utils.writePackage(
-          packageName, resourceProvider, packageConfigProvider);
+      projectRoot = utils.writePackage(packageName, resourceProvider);
       projectPath = projectRoot.path;
       writeToJoinedPath(['lib', 'foo.dart'], '''
 /// Documentation comment.
@@ -242,7 +234,7 @@ library foo;
 library bar;
 ''');
       var packageGraph = await utils.bootBasicPackage(
-          projectPath, packageMetaProvider, packageConfigProvider,
+          projectPath, packageMetaProvider,
           additionalArguments: ['--exclude', 'foo']);
 
       expect(packageGraph.localPublicLibraries, hasLength(1));
@@ -255,8 +247,7 @@ library bar;
 
       setUp(() {
         optionSet.parseArguments(['--link-to-remote']);
-        packageOneRoot =
-            utils.writePackage('one', resourceProvider, packageConfigProvider);
+        packageOneRoot = utils.writePackage('one', resourceProvider);
         packageOneRoot
             .getChildAssumingFolder('lib')
             .getChildAssumingFile('one.dart')
@@ -277,11 +268,8 @@ library script;
 class Script {}
 ''');
 
-        packageTwoRoot = utils.writePackage(
-            'two', resourceProvider, packageConfigProvider,
-            dependencies: ['one']);
-        packageConfigProvider.addPackageToConfigFor(
-            packageTwoRoot.path, 'one', Uri.file('${packageOneRoot.path}/'));
+        packageTwoRoot = utils.writePackage('two', resourceProvider,
+            dependencies: {'one': packageOneRoot.path});
         packageTwoRoot
             .getChildAssumingFolder('lib')
             .getChildAssumingFile('two.dart')
@@ -304,7 +292,7 @@ dartdoc:
     url: 'https://mypub.topdomain/%n%/%v%'
 ''');
         var packageGraph = await utils.bootBasicPackage(
-            packageTwoRoot.path, packageMetaProvider, packageConfigProvider,
+            packageTwoRoot.path, packageMetaProvider,
             additionalArguments: ['--link-to-remote']);
 
         expect(packageGraph.packages, hasLength(3));
@@ -323,7 +311,7 @@ dartdoc:
           'does not include remote elements when linkTo -> url is not specified',
           () async {
         var packageGraph = await utils.bootBasicPackage(
-            packageTwoRoot.path, packageMetaProvider, packageConfigProvider,
+            packageTwoRoot.path, packageMetaProvider,
             additionalArguments: ['--link-to-remote']);
 
         expect(packageGraph.packages, hasLength(3));
@@ -340,7 +328,7 @@ dartdoc:
 
       test('has proper name and kind', () async {
         var packageGraph = await utils.bootBasicPackage(
-            sdkFolder.path, packageMetaProvider, packageConfigProvider,
+            sdkFolder.path, packageMetaProvider,
             additionalArguments: [
               '--input',
               packageMetaProvider.defaultSdkDir.path,
@@ -353,7 +341,7 @@ dartdoc:
 
       test('has a homepage', () async {
         var packageGraph = await utils.bootBasicPackage(
-            sdkFolder.path, packageMetaProvider, packageConfigProvider,
+            sdkFolder.path, packageMetaProvider,
             additionalArguments: [
               '--input',
               packageMetaProvider.defaultSdkDir.path,
@@ -366,7 +354,7 @@ dartdoc:
 
       test('has a version', () async {
         var packageGraph = await utils.bootBasicPackage(
-            sdkFolder.path, packageMetaProvider, packageConfigProvider,
+            sdkFolder.path, packageMetaProvider,
             additionalArguments: [
               '--input',
               packageMetaProvider.defaultSdkDir.path,
@@ -378,7 +366,7 @@ dartdoc:
 
       test('has a description', () async {
         var packageGraph = await utils.bootBasicPackage(
-            sdkFolder.path, packageMetaProvider, packageConfigProvider,
+            sdkFolder.path, packageMetaProvider,
             additionalArguments: [
               '--input',
               packageMetaProvider.defaultSdkDir.path,
@@ -395,28 +383,26 @@ dartdoc:
       });
 
       test('package with no version has a default version', () async {
-        projectRoot = utils.writePackage(
-            packageName, resourceProvider, packageConfigProvider,
-            pubspecContent: '''
+        projectRoot = utils
+            .writePackage(packageName, resourceProvider, pubspecContent: '''
 name: $packageName
 ''');
         projectPath = projectRoot.path;
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
 
         expect(packageGraph.defaultPackage.version, equals('0.0.0-unknown'));
       });
 
       test('package with no doc comments has no docs', () async {
-        projectRoot = utils.writePackage(
-            packageName, resourceProvider, packageConfigProvider);
+        projectRoot = utils.writePackage(packageName, resourceProvider);
         projectPath = projectRoot.path;
         writeToJoinedPath(['lib', 'a.dart'], '''
 // No documentation comment.
 int x;
 ''');
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
 
         expect(packageGraph.defaultPackage.hasDocumentation, isFalse);
         expect(packageGraph.defaultPackage.packageMeta.getReadmeContents(),
@@ -425,9 +411,8 @@ int x;
       });
 
       test('package with no homepage in the pubspec has no homepage', () async {
-        projectRoot = utils.writePackage(
-            packageName, resourceProvider, packageConfigProvider,
-            pubspecContent: '''
+        projectRoot = utils
+            .writePackage(packageName, resourceProvider, pubspecContent: '''
 name: $packageName
 version: 0.0.1
 ''');
@@ -436,22 +421,21 @@ version: 0.0.1
 /// Documentation comment.
 int x;
 ''');
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
 
         expect(packageGraph.defaultPackage.hasHomepage, isFalse);
       });
 
       test('package with no doc comments has no categories', () async {
-        projectRoot = utils.writePackage(
-            packageName, resourceProvider, packageConfigProvider);
+        projectRoot = utils.writePackage(packageName, resourceProvider);
         projectPath = projectRoot.path;
         writeToJoinedPath(['lib', 'a.dart'], '''
 // No documentation comment.
 int x;
 ''');
-        var packageGraph = await utils.bootBasicPackage(
-            projectPath, packageMetaProvider, packageConfigProvider);
+        var packageGraph =
+            await utils.bootBasicPackage(projectPath, packageMetaProvider);
 
         expect(packageGraph.localPackages.first.hasCategories, isFalse);
         expect(packageGraph.localPackages.first.categories, isEmpty);
@@ -462,19 +446,16 @@ int x;
       late Folder defaultRoot;
 
       Folder bootBasicPackages(List<String> names) {
-        var defaultPackageRoot = utils.writePackage(
-            'default', resourceProvider, packageConfigProvider,
-            dependencies: names);
+        var dependencies = {for (var name in names) name: '../../$name'};
+        var defaultPackageRoot = utils.writePackage('default', resourceProvider,
+            dependencies: dependencies);
 
         for (var name in names) {
-          var root =
-              utils.writePackage(name, resourceProvider, packageConfigProvider);
+          var root = utils.writePackage(name, resourceProvider);
           root
               .getChildAssumingFolder('lib')
               .getChildAssumingFile('$name.dart')
               .writeAsStringSync('var a = 1;');
-          packageConfigProvider.addPackageToConfigFor(
-              defaultPackageRoot.path, name, Uri.file('${root.path}/'));
           defaultPackageRoot
               .getChildAssumingFolder('lib')
               .getChildAssumingFile('$name.dart')
@@ -491,7 +472,7 @@ var b = a;
           () async {
         defaultRoot = bootBasicPackages(['bbb', 'aaa']);
         var packageGraph = await utils.bootBasicPackage(
-            defaultRoot.path, packageMetaProvider, packageConfigProvider,
+            defaultRoot.path, packageMetaProvider,
             additionalArguments: [
               '--auto-include-dependencies',
             ]);
@@ -504,7 +485,7 @@ var b = a;
       test('packages named in --package-order option come first', () async {
         defaultRoot = bootBasicPackages(['aaa', 'bbb', 'ccc']);
         var packageGraph = await utils.bootBasicPackage(
-            defaultRoot.path, packageMetaProvider, packageConfigProvider,
+            defaultRoot.path, packageMetaProvider,
             additionalArguments: [
               '--auto-include-dependencies',
               '--package-order=bbb,aaa',

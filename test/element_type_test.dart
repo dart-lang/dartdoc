@@ -4,7 +4,6 @@
 
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:test/test.dart';
 
 import 'src/test_descriptor_utils.dart' as d;
@@ -25,7 +24,6 @@ void main() async {
   final packageMetaProvider = testPackageMetaProvider;
   final resourceProvider =
       packageMetaProvider.resourceProvider as MemoryResourceProvider;
-  late FakePackageConfigProvider packageConfigProvider;
   late String packagePath;
 
   Future<void> setUpPackage(String name) async {
@@ -33,11 +31,6 @@ void main() async {
       name,
       resourceProvider: resourceProvider,
     );
-
-    packageConfigProvider =
-        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, name, Uri.file('$packagePath/'));
   }
 
   Future<Library> bootPackageWithLibrary(String libraryContent) async {
@@ -52,7 +45,6 @@ $libraryContent
     final packageGraph = await bootBasicPackage(
       packagePath,
       packageMetaProvider,
-      packageConfigProvider,
     );
     return packageGraph.libraries.named(libraryName);
   }

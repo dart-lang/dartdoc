@@ -19,7 +19,6 @@ import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
@@ -94,8 +93,7 @@ void runPubGet(String dirPath) {
 /// [PubPackageBuilder.buildPackageGraph].
 Future<PackageGraph> bootBasicPackage(
   String dirPath,
-  PackageMetaProvider packageMetaProvider,
-  PackageConfigProvider packageConfigProvider, {
+  PackageMetaProvider packageMetaProvider, {
   List<String> excludeLibraries = const [],
   List<String> additionalArguments = const [],
   bool skipUnreachableSdkLibraries = true,
@@ -118,19 +116,8 @@ Future<PackageGraph> bootBasicPackage(
       ...additionalArguments,
     ], packageMetaProvider),
     packageMetaProvider,
-    packageConfigProvider,
     skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
   ).buildPackageGraph();
-}
-
-/// Returns a [FakePackageConfigProvider] with an entry for the SDK directory.
-FakePackageConfigProvider getTestPackageConfigProvider(String sdkPath) {
-  var packageConfigProvider = FakePackageConfigProvider();
-  // To build the package graph, we always ask package_config for a
-  // [PackageConfig] for the SDK directory. Put a dummy entry in.
-  packageConfigProvider.addPackageToConfigFor(
-      sdkPath, 'analyzer', Uri.file('/sdk/pkg/analyzer/'));
-  return packageConfigProvider;
 }
 
 /// Returns a [PackageMetaProvider] using a [MemoryResourceProvider].
@@ -184,10 +171,9 @@ void _writeMockSdkBinFiles(Folder root) {
 /// written if one is not provided via [pubspecContent].
 Folder writePackage(
   String packageName,
-  MemoryResourceProvider resourceProvider,
-  FakePackageConfigProvider packageConfigProvider, {
+  MemoryResourceProvider resourceProvider, {
   String? pubspecContent,
-  List<String> dependencies = const [],
+  Map<String, String> dependencies = const {},
 }) {
   pubspecContent ??= '''
 name: $packageName
@@ -199,7 +185,6 @@ homepage: https://github.com/dart-lang
       ResourceProviderExtension(resourceProvider).convertPath('/projects')));
   var projectFolder = projectsFolder.getChildAssumingFolder(packageName)
     ..create();
-  var projectRoot = projectFolder.path;
   projectFolder
       .getChildAssumingFile('pubspec.yaml')
       .writeAsStringSync(pubspecContent);
@@ -208,11 +193,11 @@ homepage: https://github.com/dart-lang
   "configVersion": 2,
   "packages": [
 ''');
-  for (var name in dependencies) {
+  for (var MapEntry(key: name, value: root) in dependencies.entries) {
     buffer.write('''
     {
       "name": "$name",
-      "rootUri": "../../$name",
+      "rootUri": "$root",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -236,8 +221,6 @@ homepage: https://github.com/dart-lang
       .getChildAssumingFile('package_config.json')
       .writeAsStringSync(buffer.toString());
   projectFolder.getChildAssumingFolder('lib').create();
-  packageConfigProvider.addPackageToConfigFor(projectRoot, packageName,
-      Uri.file('$projectRoot${resourceProvider.pathContext.separator}'));
 
   return projectFolder;
 }

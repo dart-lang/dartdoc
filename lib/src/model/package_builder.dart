@@ -43,7 +43,6 @@ abstract class PackageBuilder {
 class PubPackageBuilder implements PackageBuilder {
   final DartdocOptionContext _config;
   final PackageMetaProvider _packageMetaProvider;
-  final PackageConfigProvider _packageConfigProvider;
 
   final AnalysisContextCollectionImpl _contextCollection;
   final AnalysisContext _analysisContext;
@@ -54,8 +53,7 @@ class PubPackageBuilder implements PackageBuilder {
 
   factory PubPackageBuilder(
     DartdocOptionContext config,
-    PackageMetaProvider packageMetaProvider,
-    PackageConfigProvider packageConfigProvider, {
+    PackageMetaProvider packageMetaProvider, {
     @visibleForTesting bool skipUnreachableSdkLibraries = false,
   }) {
     var contextCollection = AnalysisContextCollectionImpl(
@@ -76,13 +74,11 @@ class PubPackageBuilder implements PackageBuilder {
     var sdk = packageMetaProvider.defaultSdk ??
         FolderBasedDartSdk(
             resourceProvider, resourceProvider.getFolder(config.sdkDir));
-    var embedderSdkFiles =
-        _findEmbedderSdkFiles(packageConfigProvider, config, resourceProvider);
+    var embedderSdkFiles = _findEmbedderSdkFiles(config, resourceProvider);
 
     return PubPackageBuilder._(
       config,
       packageMetaProvider,
-      packageConfigProvider,
       contextCollection,
       sdk: sdk,
       embedderSdkFiles: embedderSdkFiles,
@@ -94,7 +90,6 @@ class PubPackageBuilder implements PackageBuilder {
   PubPackageBuilder._(
     this._config,
     this._packageMetaProvider,
-    this._packageConfigProvider,
     this._contextCollection, {
     required DartSdk sdk,
     required List<String> embedderSdkFiles,
@@ -106,14 +101,11 @@ class PubPackageBuilder implements PackageBuilder {
         _skipUnreachableSdkLibraries = skipUnreachableSdkLibraries;
 
   static List<String> _findEmbedderSdkFiles(
-      PackageConfigProvider packageConfigProvider,
-      DartdocOptionContext config,
-      ResourceProvider resourceProvider) {
+      DartdocOptionContext config, ResourceProvider resourceProvider) {
     if (config.topLevelPackageMeta.isSdk) return const [];
 
     var cwd = resourceProvider.getResource(config.inputDir) as Folder;
-    var info = packageConfigProvider
-        .findPackageConfig(resourceProvider.getFolder(cwd.path));
+    var info = findPackageConfig(resourceProvider.getFolder(cwd.path));
     if (info == null) return const [];
 
     var skyEngine =
@@ -415,8 +407,8 @@ class PubPackageBuilder implements PackageBuilder {
       return {basePackageRoot};
     }
 
-    var packageConfig = _packageConfigProvider
-        .findPackageConfig(_resourceProvider.getFolder(basePackageRoot))!;
+    var packageConfig =
+        findPackageConfig(_resourceProvider.getFolder(basePackageRoot))!;
     return {
       basePackageRoot,
       for (var package in packageConfig.packages)

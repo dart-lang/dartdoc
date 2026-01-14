@@ -42,8 +42,6 @@ class OptionsTest extends DartdocTestBase {
       resourceProvider: resourceProvider,
     );
     await writeDartdocResources(resourceProvider);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, packageName, Uri.file('$packagePath/'));
   }
 
   void test_faviconOption_copiesFaviconFile() async {
@@ -171,11 +169,8 @@ class Baz {}
 '''),
       ],
     );
-    final packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
+    final packageGraph =
+        await bootBasicPackage(packagePath, packageMetaProvider);
     expect(packageGraph.localPublicLibraries.map((l) => l.name),
         orderedEquals(['library_1', 'library_2']));
   }
@@ -212,11 +207,8 @@ class Foo {
         ])
       ],
     );
-    final packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
+    final packageGraph =
+        await bootBasicPackage(packagePath, packageMetaProvider);
     expect(packageGraph.localPublicLibraries.map((l) => l.name),
         orderedEquals(['library_1']));
     final foo =
@@ -249,7 +241,6 @@ class Baz {}
     final packageGraph = await bootBasicPackage(
       packagePath,
       packageMetaProvider,
-      packageConfigProvider,
       additionalArguments: ['--include', 'library_3'],
     );
     expect(packageGraph.localPublicLibraries.map((l) => l.name),
@@ -276,7 +267,6 @@ class Bar {}
     final packageGraph = await bootBasicPackage(
       packagePath,
       packageMetaProvider,
-      packageConfigProvider,
       additionalArguments: ['--exclude', 'library_1'],
     );
     expect(packageGraph.localPublicLibraries.map((l) => l.name),
@@ -297,11 +287,8 @@ class Foo {}
 '''),
       ],
     );
-    final packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
+    final packageGraph =
+        await bootBasicPackage(packagePath, packageMetaProvider);
     final classFoo =
         packageGraph.localPackages.first.libraries.first.classes.named('Foo');
     expect(classFoo.displayedCategories, isNotEmpty);
@@ -340,11 +327,8 @@ class C3 {}
         d.file('three.md', ''),
       ],
     );
-    final packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
+    final packageGraph =
+        await bootBasicPackage(packagePath, packageMetaProvider);
     final package = packageGraph.packages
         .firstWhere((element) => element.name == packageName);
     expect(package.documentedCategoriesSorted.map((c) => c.name),
@@ -390,11 +374,8 @@ class C4 {}
         d.file('four.md', ''),
       ],
     );
-    final packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
+    final packageGraph =
+        await bootBasicPackage(packagePath, packageMetaProvider);
     final package = packageGraph.packages
         .firstWhere((element) => element.name == packageName);
     expect(package.documentedCategoriesSorted.map((c) => c.name),
@@ -424,11 +405,8 @@ class C1 {}
         d.file('two.md', ''),
       ],
     );
-    final packageGraph = await bootBasicPackage(
-      packagePath,
-      packageMetaProvider,
-      packageConfigProvider,
-    );
+    final packageGraph =
+        await bootBasicPackage(packagePath, packageMetaProvider);
     final package = packageGraph.packages
         .firstWhere((element) => element.name == packageName);
     expect(

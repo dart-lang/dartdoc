@@ -31,8 +31,7 @@ class DocumentationCommentTestBase extends DartdocTestBase {
     List<(String, String)> filesAndComments, {
     List<String> additionalArguments = const [],
   }) async {
-    projectRoot = utils.writePackage(
-        packageName, resourceProvider, packageConfigProvider);
+    projectRoot = utils.writePackage(packageName, resourceProvider);
     projectRoot
         .getChildAssumingFile('dartdoc_options.yaml')
         .writeAsStringSync('''
@@ -53,7 +52,7 @@ class DocumentationCommentTestBase extends DartdocTestBase {
         'dartdoc', [createDartdocOptions], packageMetaProvider);
     optionSet.parseArguments([]);
     packageGraph = await utils.bootBasicPackage(
-        projectRoot.path, packageMetaProvider, packageConfigProvider,
+        projectRoot.path, packageMetaProvider,
         additionalArguments: additionalArguments);
     libraryModel = packageGraph.defaultPackage.libraries.first;
   }

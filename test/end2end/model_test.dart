@@ -15,7 +15,6 @@ import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -30,8 +29,8 @@ import '../src/utils.dart'
 
 final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraph async =>
-    _testPackageGraphMemo.runOnce(() => bootBasicPackage('testing/test_package',
-        pubPackageMetaProvider, PhysicalPackageConfigProvider(),
+    _testPackageGraphMemo.runOnce(() => bootBasicPackage(
+        'testing/test_package', pubPackageMetaProvider,
         excludeLibraries: ['css', 'code_in_comments'],
         additionalArguments: ['--no-link-to-remote']));
 

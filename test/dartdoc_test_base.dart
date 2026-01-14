@@ -6,7 +6,6 @@ import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
@@ -27,7 +26,6 @@ class DartdocTestBaseFailure implements Exception {
 abstract class DartdocTestBase {
   late final PackageMetaProvider packageMetaProvider;
   late final MemoryResourceProvider resourceProvider;
-  late final FakePackageConfigProvider packageConfigProvider;
   late String packagePath;
 
   String get libraryName;
@@ -84,11 +82,6 @@ analyzer:
       analysisOptions: analysisOptions,
       resourceProvider: resourceProvider,
     );
-
-    packageConfigProvider =
-        getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
-    packageConfigProvider.addPackageToConfigFor(
-        packagePath, libraryName, Uri.file('$packagePath/'));
   }
 
   Future<PackageGraph> bootPackageFromFiles(Iterable<d.Descriptor> files,
@@ -102,7 +95,6 @@ analyzer:
     return await bootBasicPackage(
       packagePath,
       packageMetaProvider,
-      packageConfigProvider,
       additionalArguments: additionalArguments,
       skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
     );
@@ -155,7 +147,6 @@ $libraryContent
     final packageBuilder = PubPackageBuilder(
       context,
       packageMetaProvider,
-      packageConfigProvider,
       skipUnreachableSdkLibraries: skipUnreachableSdkLibraries,
     );
     startLogging(

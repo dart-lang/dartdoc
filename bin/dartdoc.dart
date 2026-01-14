@@ -5,7 +5,6 @@
 import 'package:dartdoc/src/dartdoc.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 
 /// Analyzes Dart files and generates a representation of included libraries,
@@ -17,8 +16,6 @@ void main(List<String> arguments) {
     // `--help` was passed, or `--version` was passed.
     return;
   }
-  final packageConfigProvider = PhysicalPackageConfigProvider();
-  final packageBuilder =
-      PubPackageBuilder(config, pubPackageMetaProvider, packageConfigProvider);
+  final packageBuilder = PubPackageBuilder(config, pubPackageMetaProvider);
   Dartdoc.fromContext(config, packageBuilder).executeGuarded();
 }

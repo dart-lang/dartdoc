@@ -13,7 +13,6 @@ import 'package:dartdoc/src/generator/html_generator_backend.dart';
 import 'package:dartdoc/src/generator/html_resources.g.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/library.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
@@ -29,7 +28,6 @@ void main() {
     late path.Context pathContext;
 
     late PackageMetaProvider packageMetaProvider;
-    late FakePackageConfigProvider packageConfigProvider;
 
     final Templates templates = HtmlAotTemplates();
     late Generator generator;
@@ -42,8 +40,6 @@ void main() {
       resourceProvider =
           packageMetaProvider.resourceProvider as MemoryResourceProvider;
       pathContext = resourceProvider.pathContext;
-      packageConfigProvider = utils
-          .getTestPackageConfigProvider(packageMetaProvider.defaultSdkDir.path);
       await utils.writeDartdocResources(resourceProvider);
 
       var optionRoot = DartdocOptionRoot.fromOptionGenerators(
@@ -59,8 +55,7 @@ void main() {
           DartdocGeneratorOptionContext.fromDefaultContextLocation(
               optionRoot, resourceProvider);
       var options = DartdocGeneratorBackendOptions.fromContext(defaultContext);
-      projectRoot = utils.writePackage(
-          'my_package', resourceProvider, packageConfigProvider);
+      projectRoot = utils.writePackage('my_package', resourceProvider);
       projectPath = projectRoot.path;
       var outputPath = projectRoot.getChildAssumingFolder('doc').path;
       var writer = DartdocFileWriter(outputPath, resourceProvider);
@@ -95,8 +90,8 @@ void main() {
           .writeAsStringSync('library a;');
       getConvertedFile('$projectPath/lib/b.dart')
           .writeAsStringSync('library b;');
-      var packageGraph = await utils.bootBasicPackage(
-          projectPath, packageMetaProvider, packageConfigProvider);
+      var packageGraph =
+          await utils.bootBasicPackage(projectPath, packageMetaProvider);
       await generator.generate(packageGraph);
 
       expect(packageGraph.packageWarningCounter.errorCount, 0);
@@ -109,8 +104,8 @@ void main() {
           .writeAsStringSync('library a;');
       getConvertedFile('$projectPath/lib/b.dart')
           .writeAsStringSync('library a;');
-      var packageGraph = await utils.bootBasicPackage(
-          projectPath, packageMetaProvider, packageConfigProvider);
+      var packageGraph =
+          await utils.bootBasicPackage(projectPath, packageMetaProvider);
       await generator.generate(packageGraph);
 
       var expectedPath = pathContext.join('a', 'a-library.html');

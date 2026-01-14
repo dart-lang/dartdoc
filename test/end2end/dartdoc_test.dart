@@ -11,7 +11,6 @@ import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/package_builder.dart';
 import 'package:dartdoc/src/model_utils.dart';
-import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
@@ -69,8 +68,7 @@ void main() {
 
       return Dartdoc.fromContext(
         context,
-        PubPackageBuilder(
-            context, pubPackageMetaProvider, PhysicalPackageConfigProvider(),
+        PubPackageBuilder(context, pubPackageMetaProvider,
             skipUnreachableSdkLibraries: true),
       );
     }
