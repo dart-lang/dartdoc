@@ -64,13 +64,8 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// An element is considered to be 'nodoc' if any of the following are true:
   /// * the element has no documentation comment,
   /// * the documentation comment contains the `@nodoc` dartdoc directive.
-  late final bool hasNodoc = () {
-    if (!hasDocumentationComment) {
-      return false;
-    }
-    _scanForDirectives(documentationComment);
-    return _hasNodoc;
-  }();
+  bool get hasNodoc =>
+      hasDocumentationComment && documentationComment.contains('@nodoc');
 
   /// Process a [documentationComment], performing various actions based on
   /// `{@}`-style directives (except tool directives), returning the processed
@@ -562,8 +557,10 @@ mixin DocumentationComment implements Warnable, SourceCode {
             .write(content.substring(offset, docImport.offset - commentOffset));
         offset = docImport.end - commentOffset;
       }
-      // Write from the end of the last doc-import to the end of the comment.
-      buffer.write(content.substring(offset));
+      if (offset < content.length) {
+        // Write from the end of the last doc-import to the end of the comment.
+        buffer.write(content.substring(offset));
+      }
       return buffer.toString();
     } else {
       return content;
@@ -692,80 +689,22 @@ mixin DocumentationComment implements Warnable, SourceCode {
     _documentationLocalIsSet = true;
   }
 
-  late final bool _hasNodoc;
-
-  late final bool _hasInjectHtml;
-
-  late final bool _hasTemplate;
-
-  late final bool _hasTool;
-
-  bool get needsPrecache {
-    _scanForDirectives(documentationComment);
-    return _hasInjectHtml || _hasTemplate || _hasTool;
-  }
-
-  bool _directivesHaveBeenScanned = false;
-
-  void _scanForDirectives(String docComment) {
-    if (_directivesHaveBeenScanned) {
-      return;
-    }
-    _directivesHaveBeenScanned = true;
-    var startIndex = 0;
-    var hasNodoc = false;
-    var hasInjectHtml = false;
-    var hasTemplate = false;
-    var hasTool = false;
-    var docCommentLength = docComment.length;
-    while (true) {
-      startIndex = docComment.indexOf('@', startIndex);
-      if (startIndex < 0) {
-        // No more directives.
-        break;
-      }
-      startIndex++;
-      if (startIndex >= docCommentLength) {
-        // EOL.
-        break;
-      }
-      if (docComment.startsWith('nodoc', startIndex)) {
-        hasNodoc = true;
-      } else if (startIndex - 2 >= 0 && docComment[startIndex - 2] == '{') {
-        if (docComment.startsWith('inject-html', startIndex)) {
-          // This is soft, but for the purposes of `needsPrecache`, it works.
-          hasInjectHtml = true;
-        } else if (docComment.startsWith('template', startIndex)) {
-          // This is soft, but for the purposes of `needsPrecache`, it works.
-          hasTemplate = true;
-        } else if (docComment.startsWith('tool', startIndex)) {
-          // This is soft, but for the purposes of `needsPrecache`, it works.
-          hasTool = true;
-        }
-      }
-    }
-    _hasNodoc = hasNodoc;
-    _hasInjectHtml = hasInjectHtml;
-    _hasTemplate = hasTemplate;
-    _hasTool = hasTool;
-  }
-
   String? _rawDocs;
 
   /// Override this to add more features to the documentation builder in a
-  /// subclass.  This function is allowed to have side-effects such as caching
-  /// the presence of dartdoc directives within the class, but implementations
+  /// subclass.
+  ///
+  /// This function is allowed to have side-effects such as caching the
+  /// presence of dartdoc directives within the class, but implementations
   /// must be safe to call multiple times.
-  /// TODO(jcollins-g): Consider a restructure that avoids relying on
-  /// side-effects and repeatedly traversing the doc string.
+  // TODO(jcollins-g): Consider a restructure that avoids relying on
+  // side-effects and repeatedly traversing the doc string.
   @mustCallSuper
   String buildDocumentationAddition(String docs) => docs;
 
   String _buildDocumentationBaseSync() {
     assert(_rawDocs == null,
         'reentrant calls to _buildDocumentation* not allowed');
-    // Do not use the sync method if we need to evaluate tools or templates.
-    assert(!isCanonical || !needsPrecache);
     var rawDocs = _processCommentWithoutTools(documentationComment);
     return _rawDocs = buildDocumentationAddition(rawDocs);
   }
