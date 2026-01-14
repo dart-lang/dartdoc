@@ -234,8 +234,8 @@ class C {}
     expect(c.documentation, 'Line 3');
   }
 
-  /// Check that if there is an annotation in doc comments it is treated as part
-  /// of the comment.
+  /// Check that if there is an annotation in a doc comment it is treated as
+  /// part of the comment.
   void test_inside1() async {
     var library = await bootPackageWithLibrary('''
 const Meta = 1;
@@ -251,8 +251,8 @@ class C {}
 `@Meta` Line 2''');
   }
 
-  /// Check that if there is an annotation in doc comments it is treated as part
-  /// of the comment.
+  /// Check that if there is an annotation in a doc comment it is treated as
+  /// part of the comment.
   void test_inside2() async {
     var library = await bootPackageWithLibrary('''
 const Meta = 1;
