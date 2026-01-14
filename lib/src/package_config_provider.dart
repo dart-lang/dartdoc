@@ -13,8 +13,6 @@ import 'package:package_config/package_config.dart' as package_config;
 /// See https://github.com/dart-lang/tools/issues/1536 for any progress on
 /// synchronous APIs in the package_config package.
 package_config.PackageConfig? findPackageConfig(Folder folder) {
-  //var directory = io.Directory(baseDirectory.path);
-  //if (!directory.isAbsolute) directory = directory.absolute;
   if (!folder.exists) return null;
 
   do {
@@ -35,7 +33,6 @@ package_config.PackageConfig? findPackageConfig(Folder folder) {
 /// with `checkForPackageConfigJsonFile` inlined.
 package_config.PackageConfig? findPackageConfigInDirectory(Folder folder) {
   var packageConfigFile =
-      // io.File(path.join(folder.path, '.dart_tool', 'package_config.json'));
       folder
           .getChildAssumingFolder('.dart_tool')
           .getChildAssumingFile('package_config.json');
