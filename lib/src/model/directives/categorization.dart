@@ -44,7 +44,7 @@ mixin Categorization on DocumentationComment {
   /// Either a set of strings containing all declared subcategories for this symbol,
   /// or 'null' if none were declared.
   List<String>? get subCategoryNames {
-    // TODO(jcollins-g): avoid side-effect dependency
+    // TODO(srawlins): avoid side-effect dependency.
     if (_subCategoryNames == null) documentationLocal;
     return _subCategoryNames;
   }
@@ -55,7 +55,7 @@ mixin Categorization on DocumentationComment {
   /// Either a set of strings containing all declared categories for this symbol,
   /// or 'null' if none were declared.
   List<String>? get categoryNames {
-    // TODO(jcollins-g): avoid side-effect dependency
+    // TODO(srawlins): avoid side-effect dependency.
     if (_categoryNames == null) documentationLocal;
     return _categoryNames;
   }
@@ -75,6 +75,7 @@ mixin Categorization on DocumentationComment {
   /// True if categories, subcategories, or a documentation icon were
   /// declared.
   late final bool hasCategorization = () {
+    // TODO(srawlins): avoid side-effect dependency.
     if (_hasCategorization == null) documentationLocal;
     return _hasCategorization ?? false;
   }();

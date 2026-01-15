@@ -3657,15 +3657,13 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('@nodoc on setter only works', () {
       expect(nodocSetter.isPublic, isTrue);
       expect(nodocSetter.readOnly, isTrue);
-      expect(nodocSetter.documentationComment,
-          equals('Getter docs should be shown.'));
+      expect(nodocSetter.documentation, equals('Getter docs should be shown.'));
     });
 
     test('@nodoc on getter only works', () {
       expect(nodocGetter.isPublic, isTrue);
       expect(nodocGetter.writeOnly, isTrue);
-      expect(nodocGetter.documentationComment,
-          equals('Setter docs should be shown.'));
+      expect(nodocGetter.documentation, equals('Setter docs should be shown.'));
     });
 
     test('@internal annotation hides element from docs', () {

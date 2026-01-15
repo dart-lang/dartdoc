@@ -13,6 +13,11 @@ import 'model.dart';
 /// An interface that bridges the gap between [ModelElement]s, [Category]s, and
 /// [Package]s, all of which have documentation, but in different forms.
 abstract interface class Documentable with Nameable {
+  /// The documentation, stripped of its comment syntax, like `///` characters,
+  /// and with all doc directives processed.
+  ///
+  /// Macro directives (`{@macro}`), templates, tools, etc. are all processed
+  /// and stripped from this value.
   String? get documentation;
 
   String get documentationAsHtml;

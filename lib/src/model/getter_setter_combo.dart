@@ -173,16 +173,15 @@ mixin GetterSetterCombo on ModelElement {
 
   @override
   late final List<DocumentationComment> documentationFrom = () {
-    var comments = [
+    var docFrom = [
       if (getter case Accessor(isPublic: true, :var documentationFrom))
         ...documentationFrom
       else if (setter case Accessor(isPublic: true, :var documentationFrom))
         ...documentationFrom,
     ];
-    return (comments.isEmpty ||
-            comments.every((e) => e.documentationComment == ''))
+    return (docFrom.isEmpty || docFrom.every((e) => !e.hasDocumentationComment))
         ? super.documentationFrom
-        : comments;
+        : docFrom;
   }();
 
   bool get hasAccessorsWithDocs =>
