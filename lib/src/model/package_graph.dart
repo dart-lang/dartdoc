@@ -141,7 +141,11 @@ class PackageGraph with CommentReferable, Nameable {
     allExtensionsAdded = true;
   }
 
-  /// Generate a list of futures for any docs that actually require precaching.
+  /// Generates a list of futures for any docs that actually require precaching.
+  ///
+  /// Precaching is required as processing `{tool}` directives, and maybe
+  /// others, requires async activity. When we fetch doc comments for placement
+  /// in the final HTML, we cannot call async APIs.
   Iterable<Future<void>> _precacheLocalDocs() {
     // Prevent reentrancy.
     var precachedElements = <ModelElement>{};
@@ -165,13 +169,11 @@ class PackageGraph with CommentReferable, Nameable {
           e.enclosingElement!.isCanonical) {
         for (var d
             in e.documentationFrom.where((d) => d.hasDocumentationComment)) {
-          if (d.needsPrecache && !precachedElements.contains(d)) {
-            precachedElements.add(d as ModelElement);
+          if (precachedElements.add(d as ModelElement)) {
             futures.add(d.precacheLocalDocs());
             // [TopLevelVariable]s get their documentation from getters and
             // setters, so should be precached if either has a template.
-            if (e is TopLevelVariable && !precachedElements.contains(e)) {
-              precachedElements.add(e);
+            if (e is TopLevelVariable && precachedElements.add(e)) {
               futures.add(e.precacheLocalDocs());
             }
           }
