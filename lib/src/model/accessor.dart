@@ -11,7 +11,6 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 /// Getters and setters.
@@ -62,17 +61,15 @@ class Accessor extends ModelElement with HasLibrary {
   String get sourceCode => _sourceCode;
 
   @override
-  late final String documentationComment = () {
+  String get documentationComment {
     if (isSynthetic) {
       /// Build a documentation comment for this accessor.
       return _hasSyntheticDocumentationComment
           ? definingCombo.documentationComment
           : '';
     }
-    // TODO(srawlins): This doesn't seem right... the super value has delimiters
-    // (like `///`), but this one doesn't?
-    return stripCommentDelimiters(super.documentationComment);
-  }();
+    return super.documentationComment;
+  }
 
   /// If this is a getter, assume we want synthetic documentation.
   ///

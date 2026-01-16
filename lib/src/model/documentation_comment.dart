@@ -667,12 +667,15 @@ mixin DocumentationComment implements Warnable, SourceCode {
 
   bool _documentationLocalIsSet = false;
 
-  /// Returns the documentation for this element.
+  /// The documentation for this element.
   ///
   /// Macro definitions are stripped, but macros themselves are not injected.
   /// This is a two stage process to avoid ordering problems.
-  late final String _documentationLocal;
-
+  ///
+  /// This getter has side-effects which are relied upon in a few places (see
+  /// call-sites). This is not ideal. But for now, invoking this getter invokes
+  /// [buildDocumentationAddition]. Various overrides of
+  /// [buildDocumentationAddition] set various local field values.
   String get documentationLocal {
     if (!_documentationLocalIsSet) {
       _documentationLocal = _buildDocumentationBaseSync();
@@ -681,6 +684,8 @@ mixin DocumentationComment implements Warnable, SourceCode {
     return _documentationLocal;
   }
 
+  late final String _documentationLocal;
+
   /// Unconditionally precache local documentation.
   ///
   /// Use only in factory for [PackageGraph].
@@ -688,8 +693,6 @@ mixin DocumentationComment implements Warnable, SourceCode {
     _documentationLocal = await _buildDocumentationBase();
     _documentationLocalIsSet = true;
   }
-
-  String? _rawDocs;
 
   /// Override this to add more features to the documentation builder in a
   /// subclass.
@@ -703,20 +706,24 @@ mixin DocumentationComment implements Warnable, SourceCode {
   String buildDocumentationAddition(String docs) => docs;
 
   String _buildDocumentationBaseSync() {
-    assert(_rawDocs == null,
+    assert(!_docsHaveBeenBuilt,
         'reentrant calls to _buildDocumentation* not allowed');
-    var rawDocs = _processCommentWithoutTools(documentationComment);
-    return _rawDocs = buildDocumentationAddition(rawDocs);
+    _docsHaveBeenBuilt = true;
+    var processedDocs = _processCommentWithoutTools(documentationComment);
+    return buildDocumentationAddition(processedDocs);
   }
 
   /// Can only be used as part of `PackageGraph.setUpPackageGraph`.
   Future<String> _buildDocumentationBase() async {
-    assert(_rawDocs == null,
+    assert(!_docsHaveBeenBuilt,
         'reentrant calls to _buildDocumentation* not allowed');
+    _docsHaveBeenBuilt = true;
     // Do not use the sync method if we need to evaluate tools or templates.
-    var rawDocs = await processComment();
-    return _rawDocs = buildDocumentationAddition(rawDocs);
+    var processedDocs = await processComment();
+    return buildDocumentationAddition(processedDocs);
   }
+
+  bool _docsHaveBeenBuilt = false;
 
   /// Replace `<dartdoc-html>[digest]</dartdoc-html>` in API comments with
   /// the contents of the HTML fragment earlier defined by the

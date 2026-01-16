@@ -328,7 +328,7 @@ enum E {
     expect(xSetter.isGetter, false);
     expect(xSetter.isSetter, true);
     expect(xSetter.isPublic, true);
-    expect(xSetter.documentationComment, 'A setter.');
+    expect(xSetter.documentation, 'A setter.');
   }
 
   void test_instanceSettersCanBeReferenced() async {
@@ -546,7 +546,7 @@ enum E {
       method1.linkedName,
       '<a href="$linkPrefix/E/getter1.html">getter1</a>',
     );
-    expect(method1.documentationComment, 'Doc comment.');
+    expect(method1.documentation, 'Doc comment.');
   }
 
   void test_staticMethodsAreDocumented() async {
