@@ -128,7 +128,7 @@ mixin CommentReferable implements Nameable {
     ModelElement result;
     if (resultElement is PropertyAccessorElement) {
       final variable = resultElement.variable;
-      if (variable.isSynthetic) {
+      if (!variable.isOriginDeclaration) {
         // First, cache the synthetic variable, so that the
         // PropertyAccessorElement getter and/or setter are set (see
         // `Field.new` regarding `enclosingCombo`).

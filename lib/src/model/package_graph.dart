@@ -228,33 +228,35 @@ class PackageGraph with CommentReferable, Nameable {
       for (var declaration in unit.declarations) {
         _populateModelNodeFor(declaration);
         switch (declaration) {
-          case ClassDeclaration():
-            for (var member in declaration.members) {
+          case ClassDeclaration(body: BlockClassBody(:var members)):
+            for (var member in members) {
               _populateModelNodeFor(member);
             }
           case EnumDeclaration():
             if (declaration.declaredFragment?.element.isPublic ?? false) {
-              for (var constant in declaration.constants) {
+              for (var constant in declaration.body.constants) {
                 _populateModelNodeFor(constant);
               }
-              for (var member in declaration.members) {
+              for (var member in declaration.body.members) {
                 _populateModelNodeFor(member);
               }
             }
-          case MixinDeclaration():
-            for (var member in declaration.members) {
+          case MixinDeclaration(body: BlockClassBody(:var members)):
+            for (var member in members) {
               _populateModelNodeFor(member);
             }
           case ExtensionDeclaration():
             if (declaration.declaredFragment?.element.isPublic ?? false) {
-              for (var member in declaration.members) {
+              for (var member in declaration.body.members) {
                 _populateModelNodeFor(member);
               }
             }
           case ExtensionTypeDeclaration():
             if (declaration.declaredFragment?.element.isPublic ?? false) {
-              for (var member in declaration.members) {
-                _populateModelNodeFor(member);
+              if (declaration.body case BlockClassBody(:var members)) {
+                for (var member in members) {
+                  _populateModelNodeFor(member);
+                }
               }
             }
         }

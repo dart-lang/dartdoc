@@ -1,3 +1,6 @@
+## 9.0.2
+* Require analyzer 10.0.0 APIs.
+
 ## 9.0.1
 * Deprecate the `typeAsHtml` warning
 * Require analyzer 9.0.0 APIs.

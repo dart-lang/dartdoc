@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/ast/ast.dart'
     show Expression, InstanceCreationExpression;
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/element.dart'
@@ -114,16 +115,21 @@ mixin GetterSetterCombo on ModelElement {
         return null;
       }
     }
+    if (element
+        case FieldElement(isOriginGetterSetter: false) ||
+            TopLevelVariableElement(isOriginGetterSetter: false)) {
+      return super.characterLocation;
+    }
+
     // Handle all synthetic possibilities.  Ordinarily, warnings for
     // explicit setters/getters will be handled by those objects, but
     // if a warning comes up for an enclosing synthetic field we have to
     // put it somewhere.  So pick an accessor.
-    if (element.isSynthetic) {
-      if (hasExplicitGetter) return getter!.characterLocation;
-      if (hasExplicitSetter) return setter!.characterLocation;
-      assert(false, 'Field and accessors can not all be synthetic: $element');
+    if (hasExplicitGetter) {
+      return getter!.characterLocation;
     }
-    return super.characterLocation;
+    assert(hasExplicitSetter);
+    return setter!.characterLocation;
   }
 
   String get constantValue => linkifyConstantValue(constantValueBase);

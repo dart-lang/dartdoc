@@ -31,9 +31,9 @@ class Accessor extends ModelElement with HasLibrary {
       {ExecutableElement? super.originalElement});
 
   @override
-  CharacterLocation? get characterLocation => element.isSynthetic
-      ? enclosingCombo.characterLocation
-      : super.characterLocation;
+  CharacterLocation? get characterLocation => element.isOriginDeclaration
+      ? super.characterLocation
+      : enclosingCombo.characterLocation;
 
   @override
   ExecutableElement? get originalMember =>
@@ -42,7 +42,7 @@ class Accessor extends ModelElement with HasLibrary {
   late final Callable modelType =
       getTypeFor((originalMember ?? element).type, library) as Callable;
 
-  bool get isSynthetic => element.isSynthetic;
+  bool get isSynthetic => !element.isOriginDeclaration;
 
   /// The [enclosingCombo] where this element was defined.
   late final GetterSetterCombo definingCombo =
