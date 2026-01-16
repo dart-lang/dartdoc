@@ -31,9 +31,9 @@ class Accessor extends ModelElement with HasLibrary {
       {ExecutableElement? super.originalElement});
 
   @override
-  CharacterLocation? get characterLocation => !element.isOriginDeclaration
-      ? enclosingCombo.characterLocation
-      : super.characterLocation;
+  CharacterLocation? get characterLocation => element.isOriginDeclaration
+      ? super.characterLocation
+      : enclosingCombo.characterLocation;
 
   @override
   ExecutableElement? get originalMember =>
