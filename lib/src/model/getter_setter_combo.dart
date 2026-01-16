@@ -115,10 +115,9 @@ mixin GetterSetterCombo on ModelElement {
         return null;
       }
     }
-
     if (element
-        case FieldElement(isOriginDeclaration: true) ||
-            TopLevelVariableElement(isOriginDeclaration: true)) {
+        case FieldElement(isOriginGetterSetter: false) ||
+            TopLevelVariableElement(isOriginGetterSetter: false)) {
       return super.characterLocation;
     }
 

@@ -226,11 +226,9 @@ class PackageGraph with CommentReferable, Nameable {
       for (var declaration in unit.declarations) {
         _populateModelNodeFor(declaration);
         switch (declaration) {
-          case ClassDeclaration():
-            if (declaration.body case BlockClassBody(:var members)) {
-              for (var member in members) {
-                _populateModelNodeFor(member);
-              }
+          case ClassDeclaration(body: BlockClassBody(:var members)):
+            for (var member in members) {
+              _populateModelNodeFor(member);
             }
           case EnumDeclaration():
             if (declaration.declaredFragment?.element.isPublic ?? false) {
@@ -241,8 +239,8 @@ class PackageGraph with CommentReferable, Nameable {
                 _populateModelNodeFor(member);
               }
             }
-          case MixinDeclaration():
-            for (var member in declaration.body.members) {
+          case MixinDeclaration(body: BlockClassBody(:var members)):
+            for (var member in members) {
               _populateModelNodeFor(member);
             }
           case ExtensionDeclaration():
