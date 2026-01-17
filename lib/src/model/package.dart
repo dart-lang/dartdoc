@@ -254,12 +254,12 @@ final class Package extends LibraryContainer
   /// map, if it is annotated with `{@category}`, or `[defaultCategory], if not,
   /// via the [addTo] callback.
   void addToCategories(
-      Categorization categorization, void Function(Category) addTo) {
+      ModelElement categorization, void Function(Category) addTo) {
     if (!categorization.isCanonical) {
       return;
     }
     var categoryNames = categorization.categoryNames;
-    if (categoryNames == null || categoryNames.isEmpty) {
+    if (categoryNames.isEmpty) {
       addTo(defaultCategory);
       return;
     }

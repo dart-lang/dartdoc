@@ -9,8 +9,7 @@ import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 /// Top-level variables. But also picks up getters and setters?
-class TopLevelVariable extends ModelElement
-    with GetterSetterCombo, Categorization, HasLibrary {
+class TopLevelVariable extends ModelElement with GetterSetterCombo, HasLibrary {
   @override
   final TopLevelVariableElement element;
 

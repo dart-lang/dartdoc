@@ -9,7 +9,7 @@ import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 /// A [ModelElement] for a [TopLevelFunctionElement] that isn't part of a type definition.
-class ModelFunction extends ModelFunctionTyped with Categorization {
+class ModelFunction extends ModelFunctionTyped {
   ModelFunction(
       TopLevelFunctionElement super.element, super.library, super.packageGraph);
 

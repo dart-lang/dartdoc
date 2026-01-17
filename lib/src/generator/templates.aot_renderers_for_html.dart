@@ -2104,7 +2104,7 @@ String _deduplicated__categorization(ModelElement context0) {
     var context1 = context0.displayedCategories;
     for (var context2 in context1) {
       buffer.write('\n    ');
-      buffer.write(context2!.categoryLabel);
+      buffer.write(context2.categoryLabel);
     }
   }
   buffer.writeln();

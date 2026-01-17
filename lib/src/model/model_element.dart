@@ -372,13 +372,6 @@ abstract class ModelElement
   /// * An [Accessor] is either enclosed by a [Container] or a [Library].
   ModelElement? get enclosingElement;
 
-  // Stub for mustache, which would otherwise search enclosing elements to find
-  // names for members.
-  bool get hasCategoryNames => false;
-
-  // Stub for mustache.
-  Iterable<Category?> get displayedCategories => const [];
-
   @override
   ModelNode? get modelNode => packageGraph.getModelNodeFor(element);
 

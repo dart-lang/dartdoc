@@ -13,8 +13,7 @@ import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
 import 'package:dartdoc/src/warnings.dart';
 
-class Library extends ModelElement
-    with Categorization, TopLevelContainer, CanonicalFor {
+class Library extends ModelElement with TopLevelContainer {
   @override
   final LibraryElement element;
 
@@ -464,12 +463,9 @@ class Library extends ModelElement
   @override
   Iterable<CommentReferable> get referenceParents => [package];
 
-  /// Check [canonicalFor] for correctness and warn if it refers to
-  /// non-existent elements (or those that this Library can not be canonical
-  /// for).
-  @override
-  String buildDocumentationAddition(String rawDocs) {
-    rawDocs = super.buildDocumentationAddition(rawDocs);
+  /// Checks [canonicalFor] for correctness and warn if it refers to non-
+  /// existent elements (or those that this Library can not be canonical for).
+  void checkCanonicalForIsValid() {
     var elementNames = _allOriginalModelElementNames;
     var notFoundInAllModelElements = {
       for (var elementName in canonicalFor)
@@ -480,7 +476,6 @@ class Library extends ModelElement
     }
     // TODO(jcollins-g): warn if a macro/tool generates an unexpected
     // canonicalFor?
-    return rawDocs;
   }
 
   /// The immediate elements of this library, resolved to their original names.

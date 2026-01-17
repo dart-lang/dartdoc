@@ -52,11 +52,11 @@ class Generator {
     }
 
     var indexElements = _generateDocs(packageGraph);
-    var categories = indexElements
-        .whereType<Categorization>()
+    var categorizedElements = indexElements
+        .whereType<ModelElement>()
         .where((e) => e.hasCategorization)
         .toList(growable: false);
-    _generatorBackend.generateCategoryJson(categories);
+    _generatorBackend.generateCategoryJson(categorizedElements);
     _generatorBackend.generateSearchIndex(indexElements);
   }
 

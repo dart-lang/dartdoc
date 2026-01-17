@@ -89,12 +89,12 @@ abstract class GeneratorBackend {
     writer.write(filename, content, element: e is Warnable ? e : null);
   }
 
-  /// Emits JSON describing the [categories] defined by the package.
-  void generateCategoryJson(List<Categorization> categories) {
+  /// Emits JSON describing the [categorizedElements] defined by the package.
+  void generateCategoryJson(List<ModelElement> categorizedElements) {
     var json = '[]';
-    if (categories.isNotEmpty) {
+    if (categorizedElements.isNotEmpty) {
       json = generator_util.generateCategoryJson(
-          categories, options.prettyIndexJson);
+          categorizedElements, options.prettyIndexJson);
       if (!options.useBaseHref) {
         json = json.replaceAll(htmlBasePlaceholder, '');
       }
