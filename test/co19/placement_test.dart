@@ -38,8 +38,8 @@ class PlacementTest extends Co19TestBase {
   void test_beforeLibrary() async {
     await writePackageWithCommentedLibrary('''
 /// Line 1
-library;
-/// Line 2
+library; /// Line 2
+/// Line 3
 ''');
     expectDocComment('Line 1');
   }
@@ -48,10 +48,10 @@ library;
   void test_beforeClass() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
-class C {
-/// Line 2
-}
+class C { /// Line 2
 /// Line 3
+}
+/// Line 4
 ''');
     var c = library.classes.named('C');
     expect(c.documentation, 'Line 1');
@@ -61,10 +61,10 @@ class C {
   void test_beforeMixin() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
-mixin M {
-/// Line 2
-}
+mixin M { /// Line 2
 /// Line 3
+}
+/// Line 4
 ''');
     var m = library.mixins.named('M');
     expect(m.documentation, 'Line 1');
@@ -74,11 +74,11 @@ mixin M {
   void test_beforeEnum() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
-enum E {
+enum E { /// Line 2
   e0;
-/// Line 2
-}
 /// Line 3
+}
+/// Line 4
 ''');
     var e = library.enums.named('E');
     expect(e.documentation, 'Line 1');
@@ -90,10 +90,10 @@ enum E {
 class A {}
     
 /// Line 1
-extension Ext {
-/// Line 2
-}
+extension Ext { /// Line 2
 /// Line 3
+}
+/// Line 4
 ''');
     var ext = library.extensions.named('Ext');
     expect(ext.documentation, 'Line 1');
@@ -103,23 +103,34 @@ extension Ext {
   void test_beforeExtensionType() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
-extension type ET(int _) {
-/// Line 2
-}
+extension type ET(int _) { /// Line 2
 /// Line 3
+}
+/// Line 4
 ''');
     var et = library.extensionTypes.named('ET');
     expect(et.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before a typedef.
-  void test_beforeTypedef() async {
+  void test_beforeTypedef1() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
-typedef IntAlias = int;
-/// Line 2
+typedef IntAlias = int; /// Line 2
+/// Line 3
 ''');
     var td = library.typedefs.named('IntAlias');
+    expect(td.documentation, 'Line 1');
+  }
+
+  /// Check that doc comments can be placed before a typedef.
+  void test_beforeTypedef2() async {
+    var library = await bootPackageWithLibrary('''
+/// Line 1
+typedef void Foo(); /// Line 2
+/// Line 3
+''');
+    var td = library.typedefs.named('Foo');
     expect(td.documentation, 'Line 1');
   }
 
@@ -127,10 +138,10 @@ typedef IntAlias = int;
   void test_beforeFunction() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
-void foo() {
-/// Line 2
-}
+void foo() { /// Line 2
 /// Line 3
+}
+/// Line 4
 ''');
     var f = library.functions.named('foo');
     expect(f.documentation, 'Line 1');
@@ -140,8 +151,8 @@ void foo() {
   void test_beforeVariable1() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
-int x = 0;
-/// Line 2
+int x = 0; /// Line 2
+/// Line 3
 ''');
     var v = library.properties.named('x');
     expect(v.documentation, 'Line 1');
@@ -151,8 +162,8 @@ int x = 0;
   void test_beforeVariable2() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
-final int x = 0;
-/// Line 2
+final int x = 0; /// Line 2
+/// Line 3
 ''');
     var v = library.properties.named('x');
     expect(v.documentation, 'Line 1');
@@ -162,8 +173,8 @@ final int x = 0;
   void test_beforeVariable3() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
-late int x;
-/// Line 2
+late int x; /// Line 2
+/// Line 3
 ''');
     var v = library.properties.named('x');
     expect(v.documentation, 'Line 1');
@@ -173,8 +184,8 @@ late int x;
   void test_beforeVariable4() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
-late final int x;
-/// Line 2
+late final int x; /// Line 2
+/// Line 3
 ''');
     var v = library.properties.named('x');
     expect(v.documentation, 'Line 1');
@@ -184,8 +195,8 @@ late final int x;
   void test_beforeGetter() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
-int get g => 0;
-/// Line 2
+int get g => 0; /// Line 2
+/// Line 3
 ''');
     var g = library.properties.named('g');
     expect(g.documentation, 'Line 1');
@@ -195,10 +206,10 @@ int get g => 0;
   void test_beforeSetter() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
-void set s(int _) {
-/// Line 2
-}
+void set s(int _) { /// Line 2
 /// Line 3
+}
+/// Line 4
 ''');
     var s = library.properties.named('s');
     expect(s.documentation, 'Line 1');
