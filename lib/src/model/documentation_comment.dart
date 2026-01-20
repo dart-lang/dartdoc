@@ -109,7 +109,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
       }
       docs = _stripHtmlAndAddToIndex(docs);
     }
-    docs = _stripAndSetDartdocCategories(docs);
+    docs = _stripAndSetCategories(docs);
     return _stripCanonicalFor(docs);
   }
 
@@ -699,7 +699,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// `/// {@canonicalFor libname.ClassName}`
   String _stripCanonicalFor(String docs) {
     if (this is Library) {
-      docs.replaceAll(_canonicalRegExp, '');
+      docs = docs.replaceAll(_canonicalRegExp, '');
 
       (this as Library).checkCanonicalForIsValid();
     }
@@ -797,7 +797,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// Parse `{@category ...}` and related information in API comments, stripping
   /// out that information from the given comments and returning the stripped
   /// version.
-  String _stripAndSetDartdocCategories(String rawDocs) {
+  String _stripAndSetCategories(String rawDocs) {
     Set<String>? categorySet;
     Set<String>? subCategorySet;
 
