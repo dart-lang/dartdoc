@@ -9,8 +9,6 @@ export 'class.dart';
 export 'constructor.dart';
 export 'container.dart';
 export 'container_member.dart';
-export 'directives/canonical_for.dart';
-export 'directives/categorization.dart';
 export 'documentable.dart';
 export 'documentation.dart';
 export 'documentation_comment.dart';

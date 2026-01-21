@@ -9,8 +9,7 @@ import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
-abstract class Typedef extends ModelElement
-    with TypeParameters, Categorization, HasLibrary {
+abstract class Typedef extends ModelElement with TypeParameters, HasLibrary {
   @override
   final TypeAliasElement element;
 

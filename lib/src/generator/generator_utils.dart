@@ -5,17 +5,17 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
-import 'package:dartdoc/src/model/directives/categorization.dart';
 import 'package:dartdoc/src/model/documentable.dart';
 import 'package:dartdoc/src/model/inheritable.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/nameable.dart';
 
-String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
+String generateCategoryJson(
+    List<ModelElement> categorizedElements, bool pretty) {
   final indexItems = [
     for (final categorization
-        in categories.sorted(_compareElementRepresentations))
+        in categorizedElements.sorted(_compareElementRepresentations))
       <String, Object?>{
         'name': categorization.name,
         'qualifiedName': categorization.canonicalQualifiedName,
@@ -24,7 +24,7 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
         'type': categorization.kind.toString(),
         if (categorization.hasCategoryNames)
           'categories': categorization.categoryNames,
-        if (categorization.hasSubCategoryNames)
+        if (categorization.subCategoryNames.isNotEmpty)
           'subcategories': categorization.subCategoryNames,
       }
   ];

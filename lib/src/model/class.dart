@@ -29,9 +29,7 @@ class Class extends InheritingContainer with Constructable, MixedInTypes {
 
   Class(this.element, Library library, PackageGraph packageGraph)
       : super(library, packageGraph) {
-    if (element.name == 'Object' &&
-        library.element.name == 'dart.core' &&
-        package.name == 'Dart') {
+    if (isDartCoreObject) {
       packageGraph.objectClass = this;
     }
   }

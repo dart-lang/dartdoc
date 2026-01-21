@@ -8,7 +8,9 @@ library;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
+import 'package:dartdoc/src/model/category.dart';
 import 'package:dartdoc/src/model/documentation.dart';
+import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/source_code_mixin.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -67,21 +69,17 @@ mixin DocumentationComment implements Warnable, SourceCode {
   bool get hasNodoc =>
       hasDocumentationComment && documentationComment.contains('@nodoc');
 
-  /// Process a [documentationComment], performing various actions based on
+  /// Processes a [documentationComment], performing various actions based on
   /// `{@}`-style directives (except tool directives), returning the processed
   /// result.
-  String _processCommentWithoutTools(String documentationComment) {
+  String _processCommentWithoutTools() {
     // We must first strip the comment of directives like `@docImport`, since
     // the offsets are for the source text.
     var docs = _stripDocImports(documentationComment);
     docs = stripCommentDelimiters(docs);
-    if (docs.contains('{@')) {
-      docs = _injectYouTube(docs);
-      docs = _injectAnimations(docs);
-      // TODO(srawlins): Processing templates here causes #2281. But leaving
-      // them unprocessed causes #2272.
-      docs = _stripHtmlAndAddToIndex(docs);
-    }
+    // TODO(srawlins): Processing templates here causes #2281. But leaving
+    // them unprocessed causes #2272.
+    docs = _processCommentDirectives(docs, processMacros: false);
     return docs;
   }
 
@@ -96,21 +94,23 @@ mixin DocumentationComment implements Warnable, SourceCode {
     // Then we evaluate tools, in case they insert any other directives that
     // would need to be processed by `processCommentDirectives`.
     docs = await _evaluateTools(docs);
-    docs = processCommentDirectives(docs);
+    docs = _processCommentDirectives(docs);
     return docs;
   }
 
-  String processCommentDirectives(String docs) {
+  String _processCommentDirectives(String docs, {bool processMacros = true}) {
     // The vast, vast majority of doc comments have no directives.
-    if (!docs.contains('{@')) {
-      return docs;
+    if (docs.contains('{@')) {
+      _checkForUnknownDirectives(docs);
+      docs = _injectYouTube(docs);
+      docs = _injectAnimations(docs);
+      if (processMacros) {
+        docs = _stripMacroTemplatesAndAddToIndex(docs);
+      }
+      docs = _stripHtmlAndAddToIndex(docs);
     }
-    _checkForUnknownDirectives(docs);
-    docs = _injectYouTube(docs);
-    docs = _injectAnimations(docs);
-    docs = _stripMacroTemplatesAndAddToIndex(docs);
-    docs = _stripHtmlAndAddToIndex(docs);
-    return docs;
+    docs = _stripAndSetCategories(docs);
+    return _stripCanonicalFor(docs);
   }
 
   String? get sourceFileName;
@@ -253,9 +253,9 @@ mixin DocumentationComment implements Warnable, SourceCode {
     var env = {
       'SOURCE_LINE': characterLocation?.lineNumber.toString(),
       'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),
-      if (sourceFileName != null)
+      if (sourceFileName case var sourceFileName?)
         'SOURCE_PATH':
-            pathContext.relative(sourceFileName!, from: package.packagePath),
+            pathContext.relative(sourceFileName, from: package.packagePath),
       'PACKAGE_PATH': package.packagePath,
       'PACKAGE_NAME': package.name,
       'LIBRARY_NAME': library?.fullyQualifiedName,
@@ -665,21 +665,17 @@ mixin DocumentationComment implements Warnable, SourceCode {
     });
   }
 
-  bool _documentationLocalIsSet = false;
-
   /// The documentation for this element.
   ///
   /// Macro definitions are stripped, but macros themselves are not injected.
   /// This is a two stage process to avoid ordering problems.
   ///
   /// This getter has side-effects which are relied upon in a few places (see
-  /// call-sites). This is not ideal. But for now, invoking this getter invokes
-  /// [buildDocumentationAddition]. Various overrides of
-  /// [buildDocumentationAddition] set various local field values.
+  /// call-sites). This is not ideal.
   String get documentationLocal {
-    if (!_documentationLocalIsSet) {
-      _documentationLocal = _buildDocumentationBaseSync();
-      _documentationLocalIsSet = true;
+    if (!_docsHaveBeenBuilt) {
+      _docsHaveBeenBuilt = true;
+      _documentationLocal = _processCommentWithoutTools();
     }
     return _documentationLocal;
   }
@@ -690,37 +686,25 @@ mixin DocumentationComment implements Warnable, SourceCode {
   ///
   /// Use only in factory for [PackageGraph].
   Future<void> precacheLocalDocs() async {
-    _documentationLocal = await _buildDocumentationBase();
-    _documentationLocalIsSet = true;
+    assert(!_docsHaveBeenBuilt,
+        'reentrant calls to _buildDocumentation* not allowed');
+    _docsHaveBeenBuilt = true;
+    _documentationLocal = await processComment();
   }
 
-  /// Override this to add more features to the documentation builder in a
-  /// subclass.
+  /// Removes `{@canonicalFor}` from [docs] and checks that they're valid.
   ///
-  /// This function is allowed to have side-effects such as caching the
-  /// presence of dartdoc directives within the class, but implementations
-  /// must be safe to call multiple times.
-  // TODO(jcollins-g): Consider a restructure that avoids relying on
-  // side-effects and repeatedly traversing the doc string.
-  @mustCallSuper
-  String buildDocumentationAddition(String docs) => docs;
+  /// Example:
+  ///
+  /// `/// {@canonicalFor libname.ClassName}`
+  String _stripCanonicalFor(String docs) {
+    if (this is Library) {
+      docs = docs.replaceAll(_canonicalForRegExp, '');
 
-  String _buildDocumentationBaseSync() {
-    assert(!_docsHaveBeenBuilt,
-        'reentrant calls to _buildDocumentation* not allowed');
-    _docsHaveBeenBuilt = true;
-    var processedDocs = _processCommentWithoutTools(documentationComment);
-    return buildDocumentationAddition(processedDocs);
-  }
+      (this as Library).checkCanonicalForIsValid();
+    }
 
-  /// Can only be used as part of `PackageGraph.setUpPackageGraph`.
-  Future<String> _buildDocumentationBase() async {
-    assert(!_docsHaveBeenBuilt,
-        'reentrant calls to _buildDocumentation* not allowed');
-    _docsHaveBeenBuilt = true;
-    // Do not use the sync method if we need to evaluate tools or templates.
-    var processedDocs = await processComment();
-    return buildDocumentationAddition(processedDocs);
+    return docs;
   }
 
   bool _docsHaveBeenBuilt = false;
@@ -805,8 +789,81 @@ mixin DocumentationComment implements Warnable, SourceCode {
       if (macro == null) {
         warn(PackageWarning.unknownMacro, message: macroName);
       }
-      macro = processCommentDirectives(macro ?? '');
+      macro = _processCommentDirectives(macro ?? '');
       return macro;
     });
   }
+
+  /// Parse `{@category ...}` and related information in API comments, stripping
+  /// out that information from the given comments and returning the stripped
+  /// version.
+  String _stripAndSetCategories(String rawDocs) {
+    Set<String>? categorySet;
+    Set<String>? subCategorySet;
+
+    rawDocs = rawDocs.replaceAllMapped(_categoryRegExp, (match) {
+      switch (match[1]) {
+        case 'category':
+          (categorySet ??= {}).add(match[2]!.trim());
+        case 'subCategory':
+          (subCategorySet ??= {}).add(match[2]!.trim());
+      }
+      return '';
+    });
+
+    _categoryNames = categorySet == null
+        ? const []
+        : (categorySet!.toList(growable: false)..sort());
+    _subCategoryNames = subCategorySet == null
+        ? const []
+        : (subCategorySet!.toList(growable: false)..sort());
+    return rawDocs;
+  }
+
+  static final RegExp _categoryRegExp =
+      RegExp(r'[ ]*{@(category|subCategory) (.+?)}[ ]*\n?', multiLine: true);
+
+  List<String>? _subCategoryNames;
+
+  /// A set of strings containing all declared subcategories for this element.
+  List<String> get subCategoryNames {
+    // TODO(srawlins): avoid side-effect dependency.
+    documentationLocal;
+    return _subCategoryNames!;
+  }
+
+  bool get hasCategoryNames => categoryNames.isNotEmpty;
+  List<String>? _categoryNames;
+
+  /// A set of strings containing all declared categories for this element.
+  List<String> get categoryNames {
+    // TODO(srawlins): avoid side-effect dependency.
+    documentationLocal;
+    return _categoryNames!;
+  }
+
+  @visibleForTesting
+  List<Category> get categories =>
+      [...categoryNames.map((n) => package.nameToCategory[n]).nonNulls]..sort();
+
+  Iterable<Category> get displayedCategories {
+    if (config.showUndocumentedCategories) return categories;
+    return categories.where((c) => c.isDocumented);
+  }
+
+  /// True if categories or subcategories were parsed.
+  bool get hasCategorization {
+    // TODO(srawlins): avoid side-effect dependency.
+    documentationLocal;
+    return categoryNames.isNotEmpty || subCategoryNames.isNotEmpty;
+  }
+
+  /// The set of libraries which this [Library] is canonical for.
+  late final Set<String> canonicalFor = {
+    for (var match in _canonicalForRegExp.allMatches(documentationComment))
+      match.group(1)!,
+  };
+
+  static final _canonicalForRegExp =
+      RegExp(r'[ ]*{@canonicalFor\s([^}]+)}[ ]*\n?');
 }
