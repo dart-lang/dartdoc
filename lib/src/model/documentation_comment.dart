@@ -699,7 +699,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// `/// {@canonicalFor libname.ClassName}`
   String _stripCanonicalFor(String docs) {
     if (this is Library) {
-      docs = docs.replaceAll(_canonicalRegExp, '');
+      docs = docs.replaceAll(_canonicalForRegExp, '');
 
       (this as Library).checkCanonicalForIsValid();
     }
@@ -832,7 +832,6 @@ mixin DocumentationComment implements Warnable, SourceCode {
     return _subCategoryNames!;
   }
 
-  // todo change template
   bool get hasCategoryNames => categoryNames.isNotEmpty;
   List<String>? _categoryNames;
 
@@ -861,9 +860,10 @@ mixin DocumentationComment implements Warnable, SourceCode {
 
   /// The set of libraries which this [Library] is canonical for.
   late final Set<String> canonicalFor = {
-    for (var match in _canonicalRegExp.allMatches(documentationComment))
+    for (var match in _canonicalForRegExp.allMatches(documentationComment))
       match.group(1)!,
   };
 
-  static final _canonicalRegExp = RegExp(r'{@canonicalFor\s([^}]+)}');
+  static final _canonicalForRegExp =
+      RegExp(r'[ ]*{@canonicalFor\s([^}]+)}[ ]*\n?');
 }
