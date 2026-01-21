@@ -44,6 +44,15 @@ Line 1.
 Line 2.'''));
   }
 
+  /// Check that the content within the delimiters is treated as the
+  /// documentation. Test single-line comment.
+  void test_singleLine() async {
+    await writePackageWithCommentedLibrary('''
+/** Line 1. */
+''');
+    expectDocComment(equals('Line 1.'));
+  }
+
   /// Check that leading asterisk without trailing whitespace is stripped
   void test_contentNoTrailingWhitespace1() async {
     markTestSkipped('Skipping until issue '
