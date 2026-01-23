@@ -266,7 +266,7 @@ enum E {
     expect(c5.documentation, 'Line 1');
   }
 
-  /// Check that doc comments can be placed before class constructors.
+  /// Check that doc comments can be placed before extension type constructors.
   void test_beforeExtensionTypeConstructor1() async {
     var library = await bootPackageWithLibrary('''
 extension type ET._(int v) {
@@ -330,7 +330,7 @@ Line 3
 Line 1''');
   }
 
-  /// Check that block-based doc comments can be placed before class
+  /// Check that block-based doc comments can be placed before extension type
   /// constructors.
   void test_beforeExtensionTypeConstructor2() async {
     var library = await bootPackageWithLibrary('''
