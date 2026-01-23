@@ -58,7 +58,7 @@ class C {
   factory C.redirectingFactory() = C.named; /// Line 2
   /// Line 3
   
-    /// Line 1
+  /// Line 1
   C._private() { /// Line 2
   /// Line 3
   }
@@ -138,8 +138,8 @@ class C {
   /** Line 1
    */
   C._private() { /** Line 2 */
-    /** Line 3
-     */
+  /** Line 3
+   */
   }
   /** Line 4
    */
