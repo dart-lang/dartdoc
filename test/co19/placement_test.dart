@@ -379,7 +379,7 @@ late final int x = 0; /** Line 2 */
     expect(v.documentation, 'Line 1');
   }
 
-  /// Check that doc comments can be placed before a late final variable.
+  /// Check that doc comments can be placed before a constant.
   void test_beforeVariable9() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
@@ -390,7 +390,7 @@ const x = 42; /// Line 2
     expect(v.documentation, 'Line 1');
   }
 
-  /// Check that doc comments can be placed before a variable.
+  /// Check that doc comments can be placed before a constant.
   void test_beforeVariable10() async {
     var library = await bootPackageWithLibrary('''
 /** Line 1
