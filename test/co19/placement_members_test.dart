@@ -65,28 +65,28 @@ class C {
   /// Line 4
 }
 ''');
-    var c = library.classes.named("C");
-    var c1 = c.constructors.named("C.new");
-    expect(c1.documentation, "Line 1");
-    var c2 = c.constructors.named("C.named");
+    var c = library.classes.named('C');
+    var c1 = c.constructors.named('C.new');
+    expect(c1.documentation, 'Line 1');
+    var c2 = c.constructors.named('C.named');
     expect(c2.documentation, '''
 Line 2
 Line 3
 Line 1''');
-    var c3 = c.constructors.named("C.redirecting");
+    var c3 = c.constructors.named('C.redirecting');
     expect(c3.documentation, '''
 Line 4
 Line 1''');
-    var c4 = c.constructors.named("C.factory");
+    var c4 = c.constructors.named('C.factory');
     expect(c4.documentation, '''
 Line 2
 Line 3
 Line 1''');
-    var c5 = c.constructors.named("C.redirectingFactory");
+    var c5 = c.constructors.named('C.redirectingFactory');
     expect(c5.documentation, '''
 Line 4
 Line 1''');
-    var c6 = c.constructors.named("C._private");
+    var c6 = c.constructors.named('C._private');
     expect(c6.documentation, '''
 Line 2
 Line 3
@@ -145,19 +145,19 @@ class C {
    */
 }
 ''');
-    var c = library.classes.named("C");
-    var c1 = c.constructors.named("C.new");
-    expect(c1.documentation, "Line 1");
-    var c2 = c.constructors.named("C.named");
-    expect(c2.documentation, "Line 1");
-    var c3 = c.constructors.named("C.redirecting");
-    expect(c3.documentation, "Line 1");
-    var c4 = c.constructors.named("C.factory");
-    expect(c4.documentation, "Line 1");
-    var c5 = c.constructors.named("C.redirectingFactory");
-    expect(c5.documentation, "Line 1");
-    var c6 = c.constructors.named("C._private");
-    expect(c6.documentation, "Line 1");
+    var c = library.classes.named('C');
+    var c1 = c.constructors.named('C.new');
+    expect(c1.documentation, 'Line 1');
+    var c2 = c.constructors.named('C.named');
+    expect(c2.documentation, 'Line 1');
+    var c3 = c.constructors.named('C.redirecting');
+    expect(c3.documentation, 'Line 1');
+    var c4 = c.constructors.named('C.factory');
+    expect(c4.documentation, 'Line 1');
+    var c5 = c.constructors.named('C.redirectingFactory');
+    expect(c5.documentation, 'Line 1');
+    var c6 = c.constructors.named('C._private');
+    expect(c6.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before enum constructors.
@@ -189,25 +189,25 @@ enum E {
   /// Line 3
 }
 ''');
-    var e = library.enums.named("E");
-    var c1 = e.constructors.named("E.new");
-    expect(c1.documentation, "Line 1");
-    var c2 = e.constructors.named("E.named");
+    var e = library.enums.named('E');
+    var c1 = e.constructors.named('E.new');
+    expect(c1.documentation, 'Line 1');
+    var c2 = e.constructors.named('E.named');
     expect(c2.documentation, '''
 Line 2
 Line 3
 Line 1''');
-    var c3 = e.constructors.named("E.redirecting");
+    var c3 = e.constructors.named('E.redirecting');
     expect(c3.documentation, '''
 Line 2
 Line 3
 Line 1''');
-    var c4 = e.constructors.named("E.factory");
+    var c4 = e.constructors.named('E.factory');
     expect(c4.documentation, '''
 Line 2
 Line 3
 Line 1''');
-    var c5 = e.constructors.named("E._private");
+    var c5 = e.constructors.named('E._private');
     expect(c5.documentation, '''
 Line 4
 Line 1''');
@@ -253,17 +253,17 @@ enum E {
    */
 }
 ''');
-    var e = library.enums.named("E");
-    var c1 = e.constructors.named("E.new");
-    expect(c1.documentation, "Line 1");
-    var c2 = e.constructors.named("E.named");
-    expect(c2.documentation, "Line 1");
-    var c3 = e.constructors.named("E.redirecting");
-    expect(c3.documentation, "Line 1");
-    var c4 = e.constructors.named("E.factory");
-    expect(c4.documentation, "Line 1");
-    var c5 = e.constructors.named("E._private");
-    expect(c5.documentation, "Line 1");
+    var e = library.enums.named('E');
+    var c1 = e.constructors.named('E.new');
+    expect(c1.documentation, 'Line 1');
+    var c2 = e.constructors.named('E.named');
+    expect(c2.documentation, 'Line 1');
+    var c3 = e.constructors.named('E.redirecting');
+    expect(c3.documentation, 'Line 1');
+    var c4 = e.constructors.named('E.factory');
+    expect(c4.documentation, 'Line 1');
+    var c5 = e.constructors.named('E._private');
+    expect(c5.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before class constructors.
@@ -302,28 +302,28 @@ extension type ET._(int v) {
   /// Line 4
 }
 ''');
-    var et = library.extensionTypes.named("ET");
-    var c1 = et.constructors.named("ET.new");
-    expect(c1.documentation, "Line 1");
-    var c2 = et.constructors.named("ET.named");
+    var et = library.extensionTypes.named('ET');
+    var c1 = et.constructors.named('ET.new');
+    expect(c1.documentation, 'Line 1');
+    var c2 = et.constructors.named('ET.named');
     expect(c2.documentation, '''
 Line 2
 Line 3
 Line 1''');
-    var c3 = et.constructors.named("ET.redirecting");
+    var c3 = et.constructors.named('ET.redirecting');
     expect(c3.documentation, '''
 Line 4
 Line 1''');
-    var c4 = et.constructors.named("ET.factory");
+    var c4 = et.constructors.named('ET.factory');
     expect(c4.documentation, '''
 Line 2
 Line 3
 Line 1''');
-    var c5 = et.constructors.named("ET.redirectingFactory");
+    var c5 = et.constructors.named('ET.redirectingFactory');
     expect(c5.documentation, '''
 Line 4
 Line 1''');
-    var c6 = et.constructors.named("ET._private");
+    var c6 = et.constructors.named('ET._private');
     expect(c6.documentation, '''
 Line 2
 Line 3
@@ -382,18 +382,18 @@ extension type ET._(int v) {
    */
 }
 ''');
-    var et = library.extensionTypes.named("ET");
-    var c1 = et.constructors.named("ET.new");
-    expect(c1.documentation, "Line 1");
-    var c2 = et.constructors.named("ET.named");
-    expect(c2.documentation, "Line 1");
-    var c3 = et.constructors.named("ET.redirecting");
-    expect(c3.documentation, "Line 1");
-    var c4 = et.constructors.named("ET.factory");
-    expect(c4.documentation, "Line 1");
-    var c5 = et.constructors.named("ET.redirectingFactory");
-    expect(c5.documentation, "Line 1");
-    var c6 = et.constructors.named("ET._private");
-    expect(c6.documentation, "Line 1");
+    var et = library.extensionTypes.named('ET');
+    var c1 = et.constructors.named('ET.new');
+    expect(c1.documentation, 'Line 1');
+    var c2 = et.constructors.named('ET.named');
+    expect(c2.documentation, 'Line 1');
+    var c3 = et.constructors.named('ET.redirecting');
+    expect(c3.documentation, 'Line 1');
+    var c4 = et.constructors.named('ET.factory');
+    expect(c4.documentation, 'Line 1');
+    var c5 = et.constructors.named('ET.redirectingFactory');
+    expect(c5.documentation, 'Line 1');
+    var c6 = et.constructors.named('ET._private');
+    expect(c6.documentation, 'Line 1');
   }
 }
