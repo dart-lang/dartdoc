@@ -5,7 +5,6 @@
 import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
-import 'package:analyzer/source/line_info.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -74,25 +73,13 @@ class Library extends ModelElement with TopLevelContainer {
 
   bool get isInSdk => element.isInSdk;
 
-  @override
-  CharacterLocation? get characterLocation {
-    if (element.firstFragment.nameOffset == null) {
-      return CharacterLocation(1, 1);
-    }
-    return super.characterLocation;
-  }
-
-  @override
-  LibraryFragment get unitElement => element.library.firstFragment;
-
-  @override
-
   /// Whether this library is considered "public."
   ///
   /// A library is considered public if it:
   /// * is an SDK library and it is documented and it is not internal, or
   /// * is found in a package's top-level 'lib' directory, and
   ///   not found in it's 'lib/src' directory, and it is not excluded.
+  @override
   bool get isPublic {
     // Package-private libraries are not public.
     var elementUri = element.firstFragment.source.uri;

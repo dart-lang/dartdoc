@@ -585,9 +585,52 @@ abstract class ModelElement
 
   @override
   late final CharacterLocation? characterLocation = () {
-    final lineInfo = unitElement.lineInfo;
+    var library = element.library;
+    if (library == null) return null;
 
-    final nameOffset = element.firstFragment.nameOffset;
+    // Many nodes are "synthetic" or do not have a "declaration" as their
+    // origin. In these cases we calculate an appropriate character location.
+    int? nameOffset;
+    var lineInfo = library.firstFragment.lineInfo;
+    switch ((element, enclosingElement?.element)) {
+      case (
+          ConstructorElement(isOriginDeclaration: false),
+          InterfaceElement enclosingElement
+        ):
+        nameOffset = enclosingElement.firstFragment.nameOffset;
+        lineInfo = enclosingElement.library.firstFragment.lineInfo;
+      case ((ConstructorElement element, _)):
+        // A "default constructor" is synthesized if a class is declared without
+        // any explicit constructors.
+        nameOffset = element.firstFragment.nameOffset ??
+            element.firstFragment.typeNameOffset;
+      case (MethodElement(), EnumElement enclosingElement)
+          when element.name == 'toString':
+        // The 'toString' method of an enum is synthetic.
+        nameOffset = enclosingElement.firstFragment.nameOffset;
+        lineInfo = enclosingElement.library.firstFragment.lineInfo;
+      case (FieldElement(isOriginGetterSetter: true, :var getter?), _):
+        // If a field is synthesized from a getter, use the getter's offset.
+        nameOffset = getter.firstFragment.nameOffset;
+      case (FieldElement(isOriginGetterSetter: true, :var setter?), _):
+        // If a field is synthesized from a setter (and no getter), use the
+        // setter's offset.
+        nameOffset = setter.firstFragment.nameOffset;
+      case (
+            PropertyAccessorElement(isOriginDeclaration: false) && var element,
+            EnumElement enclosingElement
+          )
+          // The 'index' and 'values' fields of an enum are synthetic.
+          when element.name == 'index' || element.name == 'values':
+        nameOffset = enclosingElement.firstFragment.nameOffset;
+        lineInfo = enclosingElement.library.firstFragment.lineInfo;
+      case (PropertyAccessorElement element, _)
+          when !element.isOriginDeclaration:
+        nameOffset = element.variable.firstFragment.nameOffset;
+      default:
+        nameOffset = element.firstFragment.nameOffset;
+    }
+
     // TODO(scheglov): For extension types, or with primary constructors
     // and declaring formal parameters, the field has no declaration, so
     // no name offset.
@@ -596,17 +639,8 @@ abstract class ModelElement
     if (nameOffset != null && nameOffset >= 0) {
       return lineInfo.getLocation(nameOffset);
     }
-    return null;
+    return CharacterLocation(1, 1);
   }();
-
-  LibraryFragment get unitElement {
-    Fragment? fragment = element.firstFragment;
-    while (fragment != null) {
-      if (fragment is LibraryFragment) return fragment;
-      fragment = fragment.enclosingFragment;
-    }
-    throw StateError('Unable to find enclosing LibraryFragment for $element');
-  }
 
   bool get hasAnnotations => annotations.isNotEmpty;
 

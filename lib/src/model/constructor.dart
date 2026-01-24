@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/source/line_info.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
@@ -16,23 +15,6 @@ class Constructor extends ModelElement
   final ConstructorElement element;
 
   Constructor(this.element, Library super.library, super.packageGraph);
-
-  @override
-  CharacterLocation? get characterLocation {
-    if (!element.isOriginDeclaration) {
-      // Make warnings for a synthetic constructor refer to somewhere reasonable
-      // since a synthetic constructor has no definition independent of the
-      // parent class.
-      return enclosingElement.characterLocation;
-    }
-    final lineInfo = unitElement.lineInfo;
-    var offset = element.firstFragment.nameOffset ??
-        element.firstFragment.typeNameOffset;
-    if (offset != null && offset >= 0) {
-      return lineInfo.getLocation(offset);
-    }
-    return null;
-  }
 
   @override
   bool get isPublic {
