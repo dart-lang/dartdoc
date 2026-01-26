@@ -110,19 +110,6 @@ mixin Warnable implements CommentReferable, Documentable {
         extendedDebug: extendedDebug);
   }
 
-  /// Whether [documentationFrom] contains only one item, `this`.
-  bool get documentationIsLocal =>
-      documentationFrom.length == 1 && identical(documentationFrom.first, this);
-
-  /// The [Warnable]s from which we will get documentation.
-  ///
-  /// Can be more than one if this is a [Field] composing documentation from
-  /// multiple [Accessor]s.
-  ///
-  /// This will walk up the inheritance hierarchy to find docs, if the current
-  /// class doesn't have docs for this element.
-  List<Warnable> get documentationFrom;
-
   /// The URI of this [Warnable].
   @visibleForOverriding
   String get location;

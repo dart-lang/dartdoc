@@ -103,9 +103,6 @@ final class Package extends LibraryContainer
   @override
   String? get belowSidebarPath => null;
 
-  @override
-  List<Warnable> get documentationFrom => [this];
-
   /// Return true if the code has defined non-default categories for libraries
   /// in this package.
   bool get hasCategories => categories.isNotEmpty;

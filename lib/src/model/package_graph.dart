@@ -169,7 +169,7 @@ class PackageGraph with CommentReferable, Nameable {
           e.enclosingElement!.isCanonical) {
         for (var d
             in e.documentationFrom.where((d) => d.hasDocumentationComment)) {
-          if (precachedElements.add(d as ModelElement)) {
+          if (precachedElements.add(d)) {
             futures.add(d.precacheLocalDocs());
             // [TopLevelVariable]s get their documentation from getters and
             // setters, so should be precached if either has a template.

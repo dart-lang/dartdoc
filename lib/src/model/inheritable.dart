@@ -37,7 +37,7 @@ mixin Inheritable on ContainerMember {
       };
 
   @override
-  List<DocumentationComment> get documentationFrom {
+  List<ModelElement> get documentationFrom {
     if (!hasDocumentationComment && overriddenElement != null) {
       return overriddenElement!.documentationFrom;
     } else if (isInherited) {

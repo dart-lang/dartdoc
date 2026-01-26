@@ -42,9 +42,6 @@ mixin DocumentationComment implements Warnable, SourceCode {
   Element get element;
 
   @override
-  List<DocumentationComment> get documentationFrom => [this];
-
-  @override
   late final String documentationAsHtml =
       _injectHtmlFragments(elementDocumentation.asHtml);
 

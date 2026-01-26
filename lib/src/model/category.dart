@@ -91,9 +91,6 @@ final class Category extends LibraryContainer
   PackageGraph get packageGraph => package.packageGraph;
 
   @override
-  List<Warnable> get documentationFrom => [this];
-
-  @override
   DocumentLocation get documentedWhere => package.documentedWhere;
 
   @override
