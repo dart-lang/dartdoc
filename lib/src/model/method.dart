@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/source/line_info.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -48,19 +47,6 @@ class Method extends ModelElement
     typeParameters = element.typeParameters.map((f) {
       return getModelFor(f, library) as TypeParameter;
     }).toList(growable: false);
-  }
-
-  @override
-  CharacterLocation? get characterLocation {
-    if (enclosingElement is Enum && name == 'toString') {
-      // The toString() method on Enums is special, treated as not having
-      // a definition location by the analyzer yet not being inherited, either.
-      // Just directly override our location with the Enum definition --
-      // this is OK because Enums can not inherit from each other nor
-      // have their definitions split between files.
-      return enclosingElement.characterLocation;
-    }
-    return super.characterLocation;
   }
 
   @override

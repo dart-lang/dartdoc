@@ -5,7 +5,6 @@
 import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/source/line_info.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
@@ -28,11 +27,6 @@ class Accessor extends ModelElement with HasLibrary {
 
   Accessor(this.element, Library super.library, super.packageGraph,
       {ExecutableElement? super.originalElement});
-
-  @override
-  CharacterLocation? get characterLocation => element.isOriginDeclaration
-      ? super.characterLocation
-      : enclosingCombo.characterLocation;
 
   @override
   ExecutableElement? get originalMember =>
@@ -178,19 +172,6 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
       super.element, super.library, super.packageGraph, this._enclosingElement,
       {super.originalElement})
       : isInherited = true;
-
-  /// The index and values fields are never declared, and must be special cased.
-  bool get _isEnumSynthetic =>
-      enclosingCombo is EnumField && (name == 'index' || name == 'values');
-
-  @override
-  CharacterLocation? get characterLocation {
-    if (_isEnumSynthetic) return enclosingElement.characterLocation;
-    // TODO(jcollins-g): Remove the enclosingCombo case below once
-    // https://github.com/dart-lang/sdk/issues/46154 is fixed.
-    if (enclosingCombo is EnumField) return enclosingCombo.characterLocation;
-    return super.characterLocation;
-  }
 
   @override
   bool get isCovariant => isSetter && parameters.first.isCovariant;

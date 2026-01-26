@@ -6,8 +6,6 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/ast/ast.dart'
     show Expression, InstanceCreationExpression;
-import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/source/line_info.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/element/element.dart'
     show VariableFragmentImpl;
@@ -104,32 +102,6 @@ mixin GetterSetterCombo on ModelElement {
     }
     return original.replaceAll('${enclosingElement.name}.${target.name}',
         '${enclosingElement.linkedName}.${target.linkedName}');
-  }
-
-  @override
-  CharacterLocation? get characterLocation {
-    if (enclosingElement is Enum) {
-      if (name == 'values') {
-        return null;
-      } else if (name == 'index') {
-        return null;
-      }
-    }
-    if (element
-        case FieldElement(isOriginGetterSetter: false) ||
-            TopLevelVariableElement(isOriginGetterSetter: false)) {
-      return super.characterLocation;
-    }
-
-    // Handle all synthetic possibilities.  Ordinarily, warnings for
-    // explicit setters/getters will be handled by those objects, but
-    // if a warning comes up for an enclosing synthetic field we have to
-    // put it somewhere.  So pick an accessor.
-    if (hasExplicitGetter) {
-      return getter!.characterLocation;
-    }
-    assert(hasExplicitSetter);
-    return setter!.characterLocation;
   }
 
   String get constantValue => linkifyConstantValue(constantValueBase);
