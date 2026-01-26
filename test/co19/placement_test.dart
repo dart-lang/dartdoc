@@ -366,7 +366,7 @@ late final int x; /// Line 2
     expect(v.documentation, 'Line 1');
   }
 
-  /// Check that doc comments can be placed before a variable.
+  /// Check that doc comments can be placed before a late final variable.
   void test_beforeVariable8() async {
     var library = await bootPackageWithLibrary('''
 /** Line 1
