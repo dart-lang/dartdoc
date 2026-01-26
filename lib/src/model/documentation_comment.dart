@@ -46,9 +46,11 @@ mixin DocumentationComment implements Warnable, SourceCode {
 
   @override
   late final String documentationAsHtml =
-      _injectHtmlFragments(elementDocumentation.asHtml);
+      _injectHtmlFragments(_elementDocumentation.asHtml);
 
-  late final Documentation elementDocumentation =
+  String get oneLineDoc => _elementDocumentation.asOneLiner;
+
+  late final Documentation _elementDocumentation =
       Documentation.forElement(this);
 
   /// The rawest form of the documentation comment, including comment delimiters

@@ -759,9 +759,6 @@ abstract class ModelElement
   @override
   String get name => element.lookupName ?? '';
 
-  @override
-  String get oneLineDoc => elementDocumentation.asOneLiner;
-
   Element? get originalMember => _originalMember;
 
   @override
