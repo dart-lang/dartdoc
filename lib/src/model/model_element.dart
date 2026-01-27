@@ -539,6 +539,15 @@ abstract class ModelElement
   String get documentation => injectMacros(
       documentationFrom.map((e) => e.documentationLocal).join('<p>'));
 
+  /// The [ModelElement]s from which we will get documentation.
+  ///
+  /// Can be more than one if this is a [Field] composing documentation from
+  /// multiple [Accessor]s.
+  ///
+  /// This will walk up the inheritance hierarchy to find docs, if the current
+  /// object doesn't have docs for this element.
+  List<ModelElement> get documentationFrom => [this];
+
   @override
   Element get element;
 

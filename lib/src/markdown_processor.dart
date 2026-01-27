@@ -329,11 +329,11 @@ class MarkdownDocument extends md.Document {
     } else {
       // Avoid claiming documentation is inherited when it comes from the
       // current element.
+      var referredFrom = {
+        if (element is ModelElement) ...element.documentationFrom
+      }..remove(element);
       element.warn(PackageWarning.unresolvedDocReference,
-          message: referenceText,
-          referredFrom: element.documentationIsLocal
-              ? const []
-              : element.documentationFrom);
+          message: referenceText, referredFrom: referredFrom);
       return md.Element.text('code', textContent);
     }
   }

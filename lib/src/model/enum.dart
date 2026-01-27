@@ -95,7 +95,7 @@ class EnumField extends Field {
           : renderedName;
 
   @override
-  List<DocumentationComment> get documentationFrom {
+  List<ModelElement> get documentationFrom {
     if (name == 'values' || name == 'index') return [this];
     return super.documentationFrom;
   }

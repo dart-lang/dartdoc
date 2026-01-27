@@ -16,7 +16,6 @@ import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/class.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/constructor.dart';
-import 'package:dartdoc/src/model/documentation_comment.dart';
 import 'package:dartdoc/src/model/enum.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/parameter.dart';
@@ -150,16 +149,16 @@ mixin GetterSetterCombo on ModelElement {
   bool get isPublic => hasPublicGetter || hasPublicSetter;
 
   @override
-  late final List<DocumentationComment> documentationFrom = () {
+  late final List<ModelElement> documentationFrom = () {
     var docFrom = [
       if (getter case Accessor(isPublic: true, :var documentationFrom))
         ...documentationFrom
       else if (setter case Accessor(isPublic: true, :var documentationFrom))
         ...documentationFrom,
     ];
-    return (docFrom.isEmpty || docFrom.every((e) => !e.hasDocumentationComment))
-        ? super.documentationFrom
-        : docFrom;
+    return docFrom.any((e) => e.hasDocumentationComment)
+        ? docFrom
+        : super.documentationFrom;
   }();
 
   bool get hasAccessorsWithDocs =>
