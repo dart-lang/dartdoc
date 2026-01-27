@@ -127,9 +127,6 @@ final class Package extends LibraryContainer
   bool get hasDocumentation => documentation?.isNotEmpty == true;
 
   @override
-  String get oneLineDoc => '';
-
-  @override
   bool get isDocumented =>
       isFirstPackage || documentedWhere != DocumentLocation.missing;
 

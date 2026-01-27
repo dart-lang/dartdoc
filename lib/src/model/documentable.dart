@@ -24,8 +24,6 @@ abstract interface class Documentable with Nameable {
 
   bool get hasDocumentation;
 
-  String get oneLineDoc;
-
   @override
   PackageGraph get packageGraph;
 
@@ -84,7 +82,6 @@ mixin MarkdownFileDocumentation implements Documentable, Warnable {
   @override
   bool get isDocumented;
 
-  @override
   String get oneLineDoc => _documentation.asOneLiner;
 
   File? get documentationFile;
