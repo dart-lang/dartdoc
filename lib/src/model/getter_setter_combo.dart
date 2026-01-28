@@ -191,30 +191,22 @@ mixin GetterSetterCombo on ModelElement {
   late final String? documentationComment =
       _getterSetterDocumentationComment ?? element.documentationComment;
 
-  @override
-  bool get hasDocumentationComment =>
-      _getterSetterDocumentationComment != null ||
-      element.documentationComment != null;
-
   /// Derives a documentation comment for the combo by copying documentation
   /// from the [getter] and/or [setter].
   late final String? _getterSetterDocumentationComment = () {
-    // Check for synthetic before public, always, or stack overflow.
-    var getterComment = switch (getter) {
-      Accessor(isSynthetic: false, isPublic: true) && var g =>
-        g.documentationFrom.first.documentationComment,
-      _ => null,
-    };
-    var setterComment = switch (setter) {
-      Accessor(isSynthetic: false, isPublic: true) && var s =>
-        s.documentationFrom.first.documentationComment,
-      _ => null,
-    };
+    String? getComment(Accessor? a) => switch (a) {
+          Accessor(isSynthetic: false, isPublic: true) =>
+            a.documentationFrom.firstOrNull?.documentationComment,
+          _ => null,
+        };
+
+    var getterComment = getComment(getter);
+    var setterComment = getComment(setter);
 
     if (setterComment == null) return getterComment;
-    return getterComment == null
-        ? setterComment
-        : '$getterComment\n\n$setterComment';
+    if (getterComment == null) return setterComment;
+
+    return '$getterComment\n\n$setterComment';
   }();
 
   @override
