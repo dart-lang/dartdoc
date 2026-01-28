@@ -50,12 +50,12 @@ mixin DocumentationComment implements Warnable, SourceCode {
   late final Documentation _elementDocumentation =
       Documentation.forElement(this);
 
-  /// The rawest form of the documentation comment, including comment delimiters
-  /// like `///`, `//`, `/*`, `*/`.
-  String get documentationComment => element.documentationComment ?? '';
+  /// The rawest form of [element]'s documentation comment, if there is one,
+  /// including comment delimiters like `///`, `//`, `/*`, `*/`, or `null` if
+  /// there is no documentation comment.
+  String? get documentationComment => element.documentationComment;
 
-  /// Whether `this` has a synthetic/inherited or local documentation comment,
-  /// and false otherwise.
+  /// Whether [element] has a documentation comment.
   bool get hasDocumentationComment => element.documentationComment != null;
 
   /// Whether the raw documentation comment is considered to be 'nodoc', an
@@ -65,8 +65,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// An element is considered to be 'nodoc' if any of the following are true:
   /// * the element has no documentation comment,
   /// * the documentation comment contains the `@nodoc` dartdoc directive.
-  bool get hasNodoc =>
-      hasDocumentationComment && documentationComment.contains('@nodoc');
+  bool get hasNodoc => documentationComment?.contains('@nodoc') ?? false;
 
   /// Processes a [documentationComment], performing various actions based on
   /// `{@}`-style directives (except tool directives), returning the processed
@@ -74,7 +73,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   String _processCommentWithoutTools() {
     // We must first strip the comment of directives like `@docImport`, since
     // the offsets are for the source text.
-    var docs = _stripDocImports(documentationComment);
+    var docs = _stripDocImports(documentationComment ?? '');
     docs = stripCommentDelimiters(docs);
     // TODO(srawlins): Processing templates here causes #2281. But leaving
     // them unprocessed causes #2272.
@@ -88,7 +87,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   Future<String> processComment() async {
     // We must first strip the comment of directives like `@docImport`, since
     // the offsets are for the source text.
-    var docs = _stripDocImports(documentationComment);
+    var docs = _stripDocImports(documentationComment ?? '');
     docs = stripCommentDelimiters(docs);
     // Then we evaluate tools, in case they insert any other directives that
     // would need to be processed by `processCommentDirectives`.
@@ -859,8 +858,9 @@ mixin DocumentationComment implements Warnable, SourceCode {
 
   /// The set of libraries which this [Library] is canonical for.
   late final Set<String> canonicalFor = {
-    for (var match in _canonicalForRegExp.allMatches(documentationComment))
-      match.group(1)!,
+    if (documentationComment case var comment?)
+      for (var match in _canonicalForRegExp.allMatches(comment))
+        match.group(1)!,
   };
 
   static final _canonicalForRegExp =

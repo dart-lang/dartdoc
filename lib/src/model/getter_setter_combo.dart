@@ -188,48 +188,25 @@ mixin GetterSetterCombo on ModelElement {
   }
 
   @override
-  late final String documentationComment =
-      _getterSetterDocumentationComment.isEmpty
-          ? element.documentationComment ?? ''
-          : _getterSetterDocumentationComment;
-
-  @override
-  bool get hasDocumentationComment =>
-      _getterSetterDocumentationComment.isNotEmpty ||
-      element.documentationComment != null;
+  late final String? documentationComment =
+      _getterSetterDocumentationComment ?? element.documentationComment;
 
   /// Derives a documentation comment for the combo by copying documentation
   /// from the [getter] and/or [setter].
-  late final String _getterSetterDocumentationComment = () {
-    // Check for synthetic before public, always, or stack overflow.
-    var getterComment = '';
-    if (hasGetter) {
-      final getter = this.getter!;
-      if (!getter.isSynthetic && getter.isPublic) {
-        assert(getter.documentationFrom.length == 1);
-        var fromGetter = getter.documentationFrom.first;
-        if (fromGetter.hasDocumentationComment) {
-          getterComment = fromGetter.documentationComment;
-        }
-      }
-    }
+  late final String? _getterSetterDocumentationComment = () {
+    String? getComment(Accessor? a) => switch (a) {
+          Accessor(isSynthetic: false, isPublic: true) =>
+            a.documentationFrom.firstOrNull?.documentationComment,
+          _ => null,
+        };
 
-    if (!hasSetter) {
-      return getterComment;
-    }
+    var getterComment = getComment(getter);
+    var setterComment = getComment(setter);
 
-    final setter = this.setter!;
-    if (setter.isSynthetic || !setter.isPublic) return getterComment;
+    if (setterComment == null) return getterComment;
+    if (getterComment == null) return setterComment;
 
-    assert(setter.documentationFrom.length == 1);
-    var fromSetter = setter.documentationFrom.first;
-    if (fromSetter.hasDocumentationComment) {
-      return getterComment.isEmpty
-          ? fromSetter.documentationComment
-          : '$getterComment\n\n${fromSetter.documentationComment}';
-    } else {
-      return getterComment;
-    }
+    return '$getterComment\n\n$setterComment';
   }();
 
   @override
