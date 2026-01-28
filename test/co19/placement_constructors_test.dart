@@ -160,6 +160,7 @@ class C {
   factory C._privateFactory() { /** Line 2 */
   /** Line 3
    */
+    return C();
   }
   /** Line 4
    */
