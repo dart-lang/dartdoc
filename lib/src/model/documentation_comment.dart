@@ -858,9 +858,9 @@ mixin DocumentationComment implements Warnable, SourceCode {
 
   /// The set of libraries which this [Library] is canonical for.
   late final Set<String> canonicalFor = {
-    for (var match
-        in _canonicalForRegExp.allMatches(documentationComment ?? ''))
-      match.group(1)!,
+    if (documentationComment case var comment?)
+      for (var match in _canonicalForRegExp.allMatches(comment))
+        match.group(1)!,
   };
 
   static final _canonicalForRegExp =
