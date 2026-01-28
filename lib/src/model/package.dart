@@ -3,8 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -30,7 +30,7 @@ const String htmlBasePlaceholder = r'%%__HTMLBASE_dartdoc_internal__%%';
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
 final class Package extends LibraryContainer
-    with Nameable, Warnable, CommentReferable {
+    with Nameable, Warnable, CommentReferable, MarkdownFileDocumentation {
   @override
   final String name;
 
@@ -108,20 +108,7 @@ final class Package extends LibraryContainer
   bool get hasCategories => categories.isNotEmpty;
 
   @override
-  late final String documentationAsHtml = Documentation.forElement(this).asHtml;
-
-  /// The documentation from the README contents.
-  @override
-  String? get documentation {
-    final docFile = packageMeta.getReadmeContents();
-    return docFile != null
-        ? packageGraph.resourceProvider
-            .readAsMalformedAllowedStringSync(docFile)
-        : null;
-  }
-
-  @override
-  bool get hasDocumentation => documentation?.isNotEmpty == true;
+  File? get documentationFile => packageMeta.getReadmeContents();
 
   @override
   bool get isDocumented =>
@@ -167,6 +154,7 @@ final class Package extends LibraryContainer
 
   /// Returns the location of documentation for this package, for making
   /// decisions regarding the 'linkToRemote' option and canonicalization.
+  @override
   late DocumentLocation documentedWhere = () {
     if (isLocal && isPublic) {
       return DocumentLocation.local;
