@@ -55,12 +55,12 @@ class Accessor extends ModelElement with HasLibrary {
   String get sourceCode => _sourceCode;
 
   @override
-  String get documentationComment {
+  String? get documentationComment {
     if (isSynthetic) {
-      /// Build a documentation comment for this accessor.
+      // Build a documentation comment for this accessor.
       return _hasSyntheticDocumentationComment
           ? definingCombo.documentationComment
-          : '';
+          : null;
     }
     return super.documentationComment;
   }
