@@ -68,16 +68,16 @@ mixin MarkdownFileDocumentation implements Documentable, Warnable {
   String get documentationAsHtml => _documentation.asHtml;
 
   @override
-  String get documentation {
+  String? get documentation {
     final docFile = documentationFile;
     return docFile == null
-        ? ''
+        ? null
         : packageGraph.resourceProvider
             .readAsMalformedAllowedStringSync(docFile);
   }
 
   @override
-  bool get hasDocumentation => documentation.isNotEmpty;
+  bool get hasDocumentation => documentation?.isNotEmpty == true;
 
   @override
   bool get isDocumented;
