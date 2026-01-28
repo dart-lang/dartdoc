@@ -63,6 +63,13 @@ class C {
   /// Line 3
   }
   /// Line 4
+  
+  /// Line 1
+  factory C._privateFactory() { /// Line 2
+  /// Line 3
+    return C();
+  }
+  /// Line 4
 }
 ''');
     var c = library.classes.named('C');
@@ -90,6 +97,10 @@ Line 1''');
     expect(c6.documentation, '''
 Line 2
 Line 3
+Line 1''');
+    var c7 = c.constructors.named('C._privateFactory');
+    expect(c7.documentation, '''
+Line 4
 Line 1''');
   }
 
@@ -143,6 +154,15 @@ class C {
   }
   /** Line 4
    */
+   
+     /** Line 1
+   */
+  factory C._privateFactory() { /** Line 2 */
+  /** Line 3
+   */
+  }
+  /** Line 4
+   */
 }
 ''');
     var c = library.classes.named('C');
@@ -158,6 +178,8 @@ class C {
     expect(c5.documentation, 'Line 1');
     var c6 = c.constructors.named('C._private');
     expect(c6.documentation, 'Line 1');
+    var c7 = c.constructors.named('C._privateFactory');
+    expect(c7.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before enum constructors.
@@ -187,6 +209,13 @@ enum E {
   /// Line 1
   const E._private(); /// Line 2
   /// Line 3
+  
+    /// Line 1
+  factory E._privateFactory() { /// Line 2
+    /// Line 3
+    return E.e0;
+  }
+  /// Line 4
 }
 ''');
     var e = library.enums.named('E');
@@ -210,6 +239,11 @@ Line 1''');
     var c5 = e.constructors.named('E._private');
     expect(c5.documentation, '''
 Line 4
+Line 1''');
+    var c6 = e.constructors.named('E._privateFactory');
+    expect(c6.documentation, '''
+Line 2
+Line 3
 Line 1''');
   }
 
@@ -251,6 +285,16 @@ enum E {
   const E._private(); /** Line 2 */
   /** Line 3
    */
+   
+     /** Line 1
+   */
+  factory E._privateFactory() { /** Line 2 */
+    /** Line 3
+     */
+    return E.e0;
+  }
+  /** Line 4
+   */
 }
 ''');
     var e = library.enums.named('E');
@@ -264,6 +308,8 @@ enum E {
     expect(c4.documentation, 'Line 1');
     var c5 = e.constructors.named('E._private');
     expect(c5.documentation, 'Line 1');
+    var c6 = e.constructors.named('E._privateFactory');
+    expect(c6.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before extension type constructors.
@@ -300,6 +346,13 @@ extension type ET._(int v) {
   /// Line 3
   }
   /// Line 4
+  
+  /// Line 1
+  factory ET._privateFactory() { /// Line 2
+  /// Line 3
+    return ET(0);
+  }
+  /// Line 4
 }
 ''');
     var et = library.extensionTypes.named('ET');
@@ -327,6 +380,10 @@ Line 1''');
     expect(c6.documentation, '''
 Line 2
 Line 3
+Line 1''');
+    var c7 = et.constructors.named('ET._privateFactory');
+    expect(c7.documentation, '''
+Line 4
 Line 1''');
   }
 
@@ -380,6 +437,16 @@ extension type ET._(int v) {
   }
   /** Line 4
    */
+   
+  /** Line 1
+   */
+  factory ET._privateFactory() { /** Line 2 */
+  /** Line 3
+   */
+     return ET(0);
+  }
+  /** Line 4
+   */
 }
 ''');
     var et = library.extensionTypes.named('ET');
@@ -395,5 +462,7 @@ extension type ET._(int v) {
     expect(c5.documentation, 'Line 1');
     var c6 = et.constructors.named('ET._private');
     expect(c6.documentation, 'Line 1');
+    var c7 = et.constructors.named('ET._privateFactory');
+    expect(c7.documentation, 'Line 1');
   }
 }
