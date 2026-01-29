@@ -41,7 +41,7 @@
     font-size: 15px;
     background-color: var(--main-bg-color);
     color: var(--main-text-color);
-    background-image: url("./search.svg");
+    background-image: var(--search-icon-url);
     background-repeat: no-repeat;
     background-position: 2%;
     outline: 0;
