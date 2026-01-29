@@ -23,7 +23,6 @@ class PropertiesTest extends DartdocTestBase {
   final libraryName = 'properties';
 
   void test_field() async {
-    // model_test.dart: 'a property with no explicit getters and setters does not duplicate docs'
     var library = await bootPackageWithLibrary('''
 class C {
   /// Comment.
@@ -38,7 +37,6 @@ class C {
   }
 
   void test_field_nodoc() async {
-    // model_test.dart: '@nodoc on simple property works'
     var library = await bootPackageWithLibrary('''
 class C {
   /// @nodoc Comment.
@@ -86,7 +84,6 @@ class D extends C {
   }
 
   void test_field_overridesGetter_withDocComment() async {
-    // model_test.dart: 'doc comment inherited from getter'
     var library = await bootPackageWithLibrary('''
 class C {
   /// Comment.
@@ -115,7 +112,7 @@ class D extends C {
 }
 ''');
     var x = library.instanceField('D', 'x');
-    // TODO(srawlins): This doesn't seem great.
+    // TODO(srawlins): This doesn't seem right.
     expect(x.documentationAsHtml, '');
   }
 
@@ -153,7 +150,6 @@ class D extends C {
   }
 
   void test_getter() async {
-    // model_test.dart: 'just a getter has documentation'
     var library = await bootPackageWithLibrary('''
 class C {
   /// Comment.
@@ -168,7 +164,6 @@ class C {
   }
 
   void test_getter_nodoc_preservedOnSyntheticField() async {
-    // model_test.dart: '@nodoc on explicit getters/setters hides entire field'
     var library = await bootPackageWithLibrary('''
 class C {
   /// @nodoc Comment.
@@ -199,7 +194,6 @@ class D extends C {
   }
 
   void test_getter_overridesGetter_withNoDoc() async {
-    // model_test.dart: '@nodoc overridden in subclass for getter works'
     var library = await bootPackageWithLibrary('''
 class C {
   /// @nodoc Comment.
@@ -220,7 +214,6 @@ class D extends C {
   }
 
   void test_getter_overridesField_withDocComment() async {
-    // model_test.dart: 'Docs from inherited implicit accessors are preserved'
     var library = await bootPackageWithLibrary('''
 class C {
   /// Comment.
@@ -237,7 +230,6 @@ class D extends C {
   }
 
   void test_getter_overridesField_withNodoc() async {
-    // model_test.dart: '@nodoc overridden in subclass with explicit getter over simple property works'
     var library = await bootPackageWithLibrary('''
 class C {
   /// @nodoc Comment.
@@ -258,7 +250,6 @@ class D extends C {
   }
 
   void test_setter() async {
-    // model_test.dart: 'just a setter has documentation'
     var library = await bootPackageWithLibrary('''
 class C {
   /// Comment.
