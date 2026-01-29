@@ -338,7 +338,7 @@ class C {
 ''');
     var x = library.instanceField('C', 'x');
     expect(x.fullyQualifiedName, 'properties.C.x');
-    // TODO(srawlins): Should this include the getter part from the super-field?
+    // TODO(srawlins): Is this correct?
     expect(x.documentationAsHtml, '<p>Comment 2.</p>');
   }
 
