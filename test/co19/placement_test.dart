@@ -32,6 +32,14 @@ void main() {
   });
 }
 
+/// Verifies that a doc comment is valid only when it appears in a location
+/// permitted by the specification. Doc comments in all other locations must be
+/// ignored.
+///
+/// Tools may, but are not required to, generate documentation for doc comments
+/// in permitted locations. For example, `dartdoc` does not generate
+/// documentation for private declarations; therefore, [expectOrEmpty] is used
+/// to validate the parsed documentation output for private declarations.
 @reflectiveTest
 class PlacementTest extends Co19TestBase {
   /// Check that doc comments can be placed before `library` directive
@@ -94,7 +102,7 @@ class _C { /// Line 2
 /// Line 4
 ''');
     var c = library.classes.named('_C');
-    expect(c.documentation, 'Line 1');
+    expectOrEmpty(c.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private class.
@@ -110,7 +118,7 @@ class _C { /** Line 2 */
  */
 ''');
     var c = library.classes.named('_C');
-    expect(c.documentation, 'Line 1');
+    expectOrEmpty(c.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before a mixin.
@@ -152,7 +160,7 @@ mixin _M { /// Line 2
 /// Line 4
 ''');
     var m = library.mixins.named('_M');
-    expect(m.documentation, 'Line 1');
+    expectOrEmpty(m.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private mixin.
@@ -168,7 +176,7 @@ mixin _M { /** Line 2 */
  */
 ''');
     var m = library.mixins.named('_M');
-    expect(m.documentation, 'Line 1');
+    expectOrEmpty(m.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before an enum.
@@ -213,7 +221,7 @@ enum _E { /// Line 2
 /// Line 4
 ''');
     var e = library.enums.named('_E');
-    expect(e.documentation, 'Line 1');
+    expectOrEmpty(e.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private enum.
@@ -230,7 +238,7 @@ enum _E { /** Line 2 */
  */
 ''');
     var e = library.enums.named('_E');
-    expect(e.documentation, 'Line 1');
+    expectOrEmpty(e.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before an extension.
@@ -278,7 +286,7 @@ extension _Ext { /// Line 2
 /// Line 4
 ''');
     var ext = library.extensions.named('_Ext');
-    expect(ext.documentation, 'Line 1');
+    expectOrEmpty(ext.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private
@@ -297,7 +305,7 @@ extension _Ext { /** Line 2 */
  */
 ''');
     var ext = library.extensions.named('_Ext');
-    expect(ext.documentation, 'Line 1');
+    expectOrEmpty(ext.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before an extension type.
@@ -339,7 +347,7 @@ extension type _ET(int _) { /// Line 2
 /// Line 4
 ''');
     var et = library.extensionTypes.named('_ET');
-    expect(et.documentation, 'Line 1');
+    expectOrEmpty(et.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private
@@ -356,7 +364,7 @@ extension type _ET(int _) { /** Line 2 */
  */
 ''');
     var et = library.extensionTypes.named('_ET');
-    expect(et.documentation, 'Line 1');
+    expectOrEmpty(et.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before a typedef.
@@ -391,7 +399,7 @@ typedef _IntAlias = int; /// Line 2
 /// Line 3
 ''');
     var td = library.typedefs.named('_IntAlias');
-    expect(td.documentation, 'Line 1');
+    expectOrEmpty(td.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private typedef.
@@ -404,7 +412,7 @@ typedef _IntAlias = int; /** Line 2 */
  */
 ''');
     var td = library.typedefs.named('_IntAlias');
-    expect(td.documentation, 'Line 1');
+    expectOrEmpty(td.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before an old-fashioned typedef.
@@ -441,7 +449,7 @@ typedef void _Foo(); /// Line 2
 /// Line 3
 ''');
     var td = library.typedefs.named('_Foo');
-    expect(td.documentation, 'Line 1');
+    expectOrEmpty(td.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before an old-fashioned
@@ -455,7 +463,7 @@ typedef void _Foo(); /** Line 2 */
  */
 ''');
     var td = library.typedefs.named('_Foo');
-    expect(td.documentation, 'Line 1');
+    expectOrEmpty(td.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before a top-level function.
@@ -498,7 +506,7 @@ void _foo() { /// Line 2
 /// Line 4
 ''');
     var f = library.functions.named('_foo');
-    expect(f.documentation, 'Line 1');
+    expectOrEmpty(f.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private
@@ -515,7 +523,7 @@ void _foo() { /** Line 2 */
  */
 ''');
     var f = library.functions.named('_foo');
-    expect(f.documentation, 'Line 1');
+    expectOrEmpty(f.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before a variable.
@@ -550,7 +558,7 @@ int _x = 0; /// Line 2
 /// Line 3
 ''');
     var v = library.properties.named('_x');
-    expect(v.documentation, 'Line 1');
+    expectOrEmpty(v.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private
@@ -564,7 +572,7 @@ int _x = 0; /** Line 2 */
  */
 ''');
     var v = library.properties.named('_x');
-    expect(v.documentation, 'Line 1');
+    expectOrEmpty(v.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before a final variable.
@@ -599,7 +607,7 @@ final int _x = 0; /// Line 2
 /// Line 3
 ''');
     var v = library.properties.named('_x');
-    expect(v.documentation, 'Line 1');
+    expectOrEmpty(v.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private final
@@ -613,7 +621,7 @@ final int _x = 0; /** Line 2 */
  */
 ''');
     var v = library.properties.named('_x');
-    expect(v.documentation, 'Line 1');
+    expectOrEmpty(v.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before a late variable.
@@ -648,7 +656,7 @@ late int _x; /// Line 2
 /// Line 3
 ''');
     var v = library.properties.named('_x');
-    expect(v.documentation, 'Line 1');
+    expectOrEmpty(v.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private late
@@ -662,7 +670,7 @@ late int _x = 0; /** Line 2 */
  */
 ''');
     var v = library.properties.named('_x');
-    expect(v.documentation, 'Line 1');
+    expectOrEmpty(v.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before a late final variable.
@@ -698,7 +706,7 @@ late final int _x; /// Line 2
 /// Line 3
 ''');
     var v = library.properties.named('_x');
-    expect(v.documentation, 'Line 1');
+    expectOrEmpty(v.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private late
@@ -712,7 +720,7 @@ late final int _x = 0; /** Line 2 */
  */
 ''');
     var v = library.properties.named('_x');
-    expect(v.documentation, 'Line 1');
+    expectOrEmpty(v.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before a constant.
@@ -747,7 +755,7 @@ const _x = 42; /// Line 2
 /// Line 3
 ''');
     var v = library.constants.named('_x');
-    expect(v.documentation, 'Line 1');
+    expectOrEmpty(v.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private
@@ -761,7 +769,7 @@ const _x = 0; /** Line 2 */
  */
 ''');
     var v = library.constants.named('_x');
-    expect(v.documentation, 'Line 1');
+    expectOrEmpty(v.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before a getter.
@@ -790,30 +798,26 @@ int get g => 0; /** Line 2 */
 
   /// Check that doc comments can be placed before a private getter.
   void test_beforeGetter3() async {
-    markTestSkipped('Skipping until issue '
-        'https://github.com/dart-lang/dartdoc/issues/4185 is resolved.');
-//     var library = await bootPackageWithLibrary('''
-// /// Line 1
-// int get _g => 0; /// Line 2
-// /// Line 3
-// ''');
-//     var g = library.properties.named('_g');
-//     expect(g.documentation, 'Line 1');
+    var library = await bootPackageWithLibrary('''
+/// Line 1
+int get _g => 0; /// Line 2
+/// Line 3
+''');
+    var g = library.properties.named('_g');
+    expectOrEmpty(g.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private getter.
   void test_beforeGetter4() async {
-    markTestSkipped('Skipping until issue '
-        'https://github.com/dart-lang/dartdoc/issues/4185 is resolved.');
-//     var library = await bootPackageWithLibrary('''
-// /** Line 1
-//  */
-// int get _g => 0; /** Line 2 */
-// /** Line 3
-//  */
-// ''');
-//     var g = library.properties.named('_g');
-//     expect(g.documentation, 'Line 1');
+    var library = await bootPackageWithLibrary('''
+/** Line 1
+ */
+int get _g => 0; /** Line 2 */
+/** Line 3
+ */
+''');
+    var g = library.properties.named('_g');
+    expectOrEmpty(g.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be placed before a setter.
@@ -847,34 +851,30 @@ void set s(int _) { /** Line 2 */
 
   /// Check that doc comments can be placed before a private setter.
   void test_beforeSetter3() async {
-    markTestSkipped('Skipping until issue '
-        'https://github.com/dart-lang/dartdoc/issues/4185 is resolved.');
-//     var library = await bootPackageWithLibrary('''
-// /// Line 1
-// void set _s(int _) { /// Line 2
-// /// Line 3
-// }
-// /// Line 4
-// ''');
-//     var s = library.properties.named('_s');
-//     expect(s.documentation, 'Line 1');
+    var library = await bootPackageWithLibrary('''
+/// Line 1
+void set _s(int _) { /// Line 2
+/// Line 3
+}
+/// Line 4
+''');
+    var s = library.properties.named('_s');
+    expectOrEmpty(s.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be placed before a private setter.
   void test_beforeSetter4() async {
-    markTestSkipped('Skipping until issue '
-        'https://github.com/dart-lang/dartdoc/issues/4185 is resolved.');
-//     var library = await bootPackageWithLibrary('''
-// /** Line 1
-//  */
-// void set _s(int _) { /** Line 2 */
-// /** Line 3
-//  */
-// }
-// /** Line 4
-//  */
-// ''');
-//     var s = library.properties.named('_s');
-//     expect(s.documentation, 'Line 1');
+    var library = await bootPackageWithLibrary('''
+/** Line 1
+ */
+void set _s(int _) { /** Line 2 */
+/** Line 3
+ */
+}
+/** Line 4
+ */
+''');
+    var s = library.properties.named('_s');
+    expectOrEmpty(s.documentation, 'Line 1');
   }
 }
