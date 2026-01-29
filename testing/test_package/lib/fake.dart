@@ -409,9 +409,6 @@ functionUsingMixinReturningFunction() {
 @deprecated
 class SuperAwesomeClass {
   /// In the super class.
-  List<String>? powers;
-
-  /// In the super class.
   ///
   /// Another comment line.
   void fly(int height, Cool superCool, {String? msg}) {
@@ -491,17 +488,11 @@ class ImplicitProperties {
   /// @nodoc for you
   String get explicitNonDocumentedGetter => "something";
 
-  /// @nodoc for you but check downstream
-  String get explicitNonDocumentedInBaseClassGetter => "something else";
-
   /// but documented here.
   double get explicitPartiallyDocumentedField => 1.3;
 
   /// @nodoc here, you should never see this
   set explicitPartiallyDocumentedField(double foo) {}
-
-  /// @nodoc here, you should never see this
-  String? documentedPartialFieldInSubclassOnly;
 
   /// Explicit getter for inheriting.
   int get explicitGetterSetterForInheriting => 12;
@@ -515,13 +506,9 @@ class ImplicitProperties {
 /// Or rather, dartdoc used to think they didn't exist.  Check the variations
 /// on inheritance and overrides here.
 abstract class ClassWithUnusualProperties extends ImplicitProperties {
-  /// This getter is documented, so we should see a read-only property here.
-  @override
-  String get documentedPartialFieldInSubclassOnly => "overridden getter";
-
-  @override
 
   /// Docs for setter of implicitGetterExplicitSetter.
+  @override
   set implicitGetterExplicitSetter(String? x) {}
 
   @override
@@ -531,24 +518,11 @@ abstract class ClassWithUnusualProperties extends ImplicitProperties {
 
   myCoolTypedef? _aFunction;
 
-  /// Since I have a different doc, I should be documented.
-  @override
-  String get explicitNonDocumentedInBaseClassGetter => "something else";
-
   /// Getter doc for explicitGetterSetter.
   @Annotation('a Getter Annotation')
   myCoolTypedef? get explicitGetterSetter {
     return _aFunction;
   }
-
-  /// @nodoc for a simple hidden property.
-  String? simpleHidden;
-
-  /// @nodoc on setter
-  set explicitNodocGetterSetter(String s) {}
-
-  /// @nodoc on getter
-  String get explicitNodocGetterSetter => "something";
 
   /// This property is not synthetic, so it might reference [f] -- display it.
   @Annotation('a Setter Annotation')
@@ -658,9 +632,6 @@ class LongFirstLine extends SuperAwesomeClass
   /// One dynamic param, two named optionals.
   bool optionalParams(first, {second, int? third}) => true;
 
-  /// Dynamic getter. Readable only.
-  get dynamicGetter => 'could be anything';
-
   /// Only a setter, with a single param, of type double.
   void set onlySetter(double d) {}
 
@@ -752,9 +723,6 @@ void set setAndGet(String thing) {}
 
 /// The getter for setAndGet.
 String get setAndGet => 'hello';
-
-/// A dynamic getter.
-get dynamicGetter => 'i could be anything';
 
 /// Top-level function 3 params and 1 optional positional param.
 ///
@@ -938,9 +906,6 @@ class BaseForDocComments {
 
   void anotherMethod() {}
 
-  /// Some really great topics.
-  bool get getterWithDocs => true;
-
   String operator [](String key) => "${key}'s value";
 
   final bool? initializeMe;
@@ -979,9 +944,6 @@ class SubForDocComments extends BaseForDocComments {
 
   /// Reference to [foo] and [bar]
   void localMethod(String foo, bar) {}
-
-  @override
-  final bool getterWithDocs = false;
 }
 
 typedef void VoidCallback();

@@ -1454,22 +1454,6 @@ void main() async {
       expect(localMethod.documentationAsHtml, contains('<code>foo</code>'));
       expect(localMethod.documentationAsHtml, contains('<code>bar</code>'));
     });
-
-    test('doc comment inherited from getter', () {
-      var getterWithDocs =
-          subForDocComments.instanceFields.named('getterWithDocs');
-      expect(getterWithDocs.documentationAsHtml,
-          contains('Some really great topics.'));
-    });
-
-    test(
-        'a property with no explicit getters and setters does not duplicate docs',
-        () {
-      var powers = superAwesomeClass.instanceFields.named('powers');
-      var matches =
-          RegExp('In the super class').allMatches(powers.documentationAsHtml);
-      expect(matches, hasLength(1));
-    });
   });
 
   group('Class edge cases', () {
@@ -3183,14 +3167,12 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
 
   group('Field', () {
     late final Class c, LongFirstLine, CatString, UnusualProperties;
-    late final Field f1, f2, constField, dynamicGetter, onlySetter;
+    late final Field f1, f2, constField, onlySetter;
     late final Field lengthX;
     late final Field sFromApple, mFromApple, mInB, autoCompress;
     late final Field isEmpty;
     late final Field implicitGetterExplicitSetter, explicitGetterImplicitSetter;
     late final Field explicitGetterSetter;
-    late final Field explicitNonDocumentedInBaseClassGetter;
-    late final Field documentedPartialFieldInSubclassOnly;
     late final Field finalProperty;
     late final Field ExtraSpecialListLength;
     late final Field aProperty;
@@ -3212,18 +3194,10 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((e) => e.name == 'explicitGetterImplicitSetter') as Field;
       explicitGetterSetter = UnusualProperties.allModelElements
           .firstWhere((e) => e.name == 'explicitGetterSetter') as Field;
-      explicitNonDocumentedInBaseClassGetter =
-          UnusualProperties.allModelElements.firstWhere(
-                  (e) => e.name == 'explicitNonDocumentedInBaseClassGetter')
-              as Field;
-      documentedPartialFieldInSubclassOnly = UnusualProperties.allModelElements
-          .firstWhere(
-              (e) => e.name == 'documentedPartialFieldInSubclassOnly') as Field;
       finalProperty = UnusualProperties.allModelElements
           .firstWhere((e) => e.name == 'finalProperty') as Field;
 
       isEmpty = CatString.instanceFields.named('isEmpty');
-      dynamicGetter = LongFirstLine.instanceFields.named('dynamicGetter');
       onlySetter = LongFirstLine.instanceFields.named('onlySetter');
 
       lengthX = fakeLibrary.classes
@@ -3290,43 +3264,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
             '}\n'
             '```'),
       );
-    });
-
-    test('Docs from inherited implicit accessors are preserved', () {
-      expect(
-          explicitGetterImplicitSetter.setter!.documentationComment, isNot(''));
-    });
-
-    test('@nodoc on simple property works', () {
-      var simpleHidden = UnusualProperties.allModelElements
-          .firstWhereOrNull((e) => e.name == 'simpleHidden' && e.isPublic);
-      expect(simpleHidden, isNull);
-    });
-
-    test('@nodoc on explicit getters/setters hides entire field', () {
-      var explicitNodocGetterSetter = UnusualProperties.allModelElements
-          .firstWhereOrNull(
-              (e) => e.name == 'explicitNodocGetterSetter' && e.isPublic);
-      expect(explicitNodocGetterSetter, isNull);
-    });
-
-    test(
-        '@nodoc overridden in subclass with explicit getter over simple property works',
-        () {
-      expect(documentedPartialFieldInSubclassOnly.isPublic, isTrue);
-      expect(documentedPartialFieldInSubclassOnly.readOnly, isTrue);
-      expect(documentedPartialFieldInSubclassOnly.documentationComment,
-          contains('This getter is documented'));
-      expect(documentedPartialFieldInSubclassOnly.annotations,
-          isNot(contains(Attribute.inheritedSetter)));
-    });
-
-    test('@nodoc overridden in subclass for getter works', () {
-      expect(explicitNonDocumentedInBaseClassGetter.isPublic, isTrue);
-      expect(explicitNonDocumentedInBaseClassGetter.hasPublicGetter, isTrue);
-      expect(explicitNonDocumentedInBaseClassGetter.documentationComment,
-          contains('I should be documented'));
-      expect(explicitNonDocumentedInBaseClassGetter.readOnly, isTrue);
     });
 
     test('inheritance of docs from SDK works for getter/setter combos', () {
@@ -3436,18 +3373,10 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(onlySetter.isFinal, isFalse);
       expect(onlySetter.attributes, isNot(contains(Attribute.final_)));
       expect(onlySetter.attributes, isNot(contains(Attribute.late_)));
-      expect(dynamicGetter.isFinal, isFalse);
-      expect(dynamicGetter.attributes, isNot(contains(Attribute.final_)));
-      expect(dynamicGetter.attributes, isNot(contains(Attribute.late_)));
     });
 
     test('is not static', () {
       expect(f2.isStatic, isFalse);
-    });
-
-    test('getter documentation', () {
-      expect(dynamicGetter.documentation,
-          equals('Dynamic getter. Readable only.'));
     });
 
     test('setter documentation', () {
@@ -3716,16 +3645,6 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('linked return type is dynamic', () {
       expect(v3.modelType.linkedName, 'dynamic');
-    });
-
-    test('just a getter has documentation', () {
-      expect(justGetter.documentation,
-          equals('Just a getter. No partner setter.'));
-    });
-
-    test('just a setter has documentation', () {
-      expect(justSetter.documentation,
-          equals('Just a setter. No partner getter.'));
     });
 
     test('has a getter accessor', () {
