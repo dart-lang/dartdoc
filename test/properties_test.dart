@@ -1,4 +1,4 @@
-// Copyright (c) 2024, the Dart project authors.  Please see the AUTHORS file
+// Copyright (c) 2026, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
@@ -145,7 +145,6 @@ class D extends C {
 }
 ''');
     var x = library.instanceField('D', 'x');
-    // TODO(srawlins): Why does this not have the setter?
     expect(x.documentationAsHtml, '<p>Comment.</p>');
   }
 
@@ -307,6 +306,7 @@ class D extends C {
 ''');
     var x = library.instanceSetter('D', 'x=');
     expect(x.fullyQualifiedName, 'properties.D.x=');
+    // TODO(srawlins): Should this include the getter part from the super-field?
     expect(x.documentationAsHtml, '<p>Comment 2.</p>');
   }
 
@@ -338,6 +338,7 @@ class C {
 ''');
     var x = library.instanceField('C', 'x');
     expect(x.fullyQualifiedName, 'properties.C.x');
+    // TODO(srawlins): Should this include the getter part from the super-field?
     expect(x.documentationAsHtml, '<p>Comment 2.</p>');
   }
 
