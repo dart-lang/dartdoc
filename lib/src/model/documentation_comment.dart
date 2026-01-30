@@ -71,29 +71,33 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// `{@}`-style directives (except tool directives), returning the processed
   /// result.
   String _processCommentWithoutTools() {
-    // We must first strip the comment of directives like `@docImport`, since
-    // the offsets are for the source text.
-    var docs = _stripDocImports(documentationComment ?? '');
-    docs = stripCommentDelimiters(docs);
-    // TODO(srawlins): Processing templates here causes #2281. But leaving
-    // them unprocessed causes #2272.
-    docs = _processCommentDirectives(docs, processMacros: false);
-    return docs;
+    if (documentationComment case var comment?) {
+      // We must first strip the comment of directives like `@docImport`, since
+      // the offsets are for the source text.
+      var docs = _stripDocImports(comment);
+      docs = stripCommentDelimiters(docs);
+      // TODO(srawlins): Processing templates here causes #2281. But leaving
+      // them unprocessed causes #2272.
+      return _processCommentDirectives(docs, processMacros: false);
+    }
+    return '';
   }
 
   /// Process [documentationComment], performing various actions based on
   /// `{@}`-style directives, returning the processed result.
   @visibleForTesting
   Future<String> processComment() async {
-    // We must first strip the comment of directives like `@docImport`, since
-    // the offsets are for the source text.
-    var docs = _stripDocImports(documentationComment ?? '');
-    docs = stripCommentDelimiters(docs);
-    // Then we evaluate tools, in case they insert any other directives that
-    // would need to be processed by `processCommentDirectives`.
-    docs = await _evaluateTools(docs);
-    docs = _processCommentDirectives(docs);
-    return docs;
+    if (documentationComment case var comment?) {
+      // We must first strip the comment of directives like `@docImport`, since
+      // the offsets are for the source text.
+      var docs = _stripDocImports(comment);
+      docs = stripCommentDelimiters(docs);
+      // Then we evaluate tools, in case they insert any other directives that
+      // would need to be processed by `processCommentDirectives`.
+      docs = await _evaluateTools(docs);
+      return _processCommentDirectives(docs);
+    }
+    return '';
   }
 
   String _processCommentDirectives(String docs, {bool processMacros = true}) {
@@ -109,6 +113,57 @@ mixin DocumentationComment implements Warnable, SourceCode {
     }
     docs = _stripAndSetCategories(docs);
     return _stripCanonicalFor(docs);
+  }
+
+  /// Parse `{@category ...}` and related information in API comments, stripping
+  /// out that information from the given comments and returning the stripped
+  /// version.
+  String _stripAndSetCategories(String rawDocs) {
+    _ensureInitialCategorization();
+    final parsed = parseCategorization(rawDocs);
+    _categoryNamesSet.addAll(parsed.categories);
+    _subCategoryNamesSet.addAll(parsed.subCategories);
+    return rawDocs.replaceAll(_categoryRegExp, '');
+  }
+
+  @visibleForTesting
+  ({List<String> categories, List<String> subCategories}) parseCategorization(
+      String docs) {
+    Set<String>? categorySet;
+    Set<String>? subCategorySet;
+
+    for (var match in _categoryRegExp.allMatches(docs)) {
+      switch (match[1]) {
+        case 'category':
+          (categorySet ??= {}).add(match[2]!.trim());
+        case 'subCategory':
+          (subCategorySet ??= {}).add(match[2]!.trim());
+      }
+    }
+
+    return (
+      categories: categorySet == null
+          ? const []
+          : (categorySet.toList(growable: false)..sort()),
+      subCategories: subCategorySet == null
+          ? const []
+          : (subCategorySet.toList(growable: false)..sort()),
+    );
+  }
+
+  final Set<String> _categoryNamesSet = {};
+  final Set<String> _subCategoryNamesSet = {};
+  bool _initialCategorizationDone = false;
+
+  void _ensureInitialCategorization() {
+    if (_initialCategorizationDone) return;
+    _initialCategorizationDone = true;
+    if (documentationComment case var comment?) {
+      final parsed = parseCategorization(
+          stripCommentDelimiters(_stripDocImports(comment)));
+      _categoryNamesSet.addAll(parsed.categories);
+      _subCategoryNamesSet.addAll(parsed.subCategories);
+    }
   }
 
   String? get sourceFileName;
@@ -667,26 +722,17 @@ mixin DocumentationComment implements Warnable, SourceCode {
   ///
   /// Macro definitions are stripped, but macros themselves are not injected.
   /// This is a two stage process to avoid ordering problems.
-  ///
-  /// This getter has side-effects which are relied upon in a few places (see
-  /// call-sites). This is not ideal.
-  String get documentationLocal {
-    if (!_docsHaveBeenBuilt) {
-      _docsHaveBeenBuilt = true;
-      _documentationLocal = _processCommentWithoutTools();
-    }
-    return _documentationLocal;
-  }
+  String get documentationLocal =>
+      _documentationLocal ??= _processCommentWithoutTools();
 
-  late final String _documentationLocal;
+  String? _documentationLocal;
 
   /// Unconditionally precache local documentation.
   ///
   /// Use only in factory for [PackageGraph].
   Future<void> precacheLocalDocs() async {
-    assert(!_docsHaveBeenBuilt,
+    assert(_documentationLocal == null,
         'reentrant calls to _buildDocumentation* not allowed');
-    _docsHaveBeenBuilt = true;
     _documentationLocal = await processComment();
   }
 
@@ -704,8 +750,6 @@ mixin DocumentationComment implements Warnable, SourceCode {
 
     return docs;
   }
-
-  bool _docsHaveBeenBuilt = false;
 
   /// Replace `<dartdoc-html>[digest]</dartdoc-html>` in API comments with
   /// the contents of the HTML fragment earlier defined by the
@@ -792,52 +836,21 @@ mixin DocumentationComment implements Warnable, SourceCode {
     });
   }
 
-  /// Parse `{@category ...}` and related information in API comments, stripping
-  /// out that information from the given comments and returning the stripped
-  /// version.
-  String _stripAndSetCategories(String rawDocs) {
-    Set<String>? categorySet;
-    Set<String>? subCategorySet;
-
-    rawDocs = rawDocs.replaceAllMapped(_categoryRegExp, (match) {
-      switch (match[1]) {
-        case 'category':
-          (categorySet ??= {}).add(match[2]!.trim());
-        case 'subCategory':
-          (subCategorySet ??= {}).add(match[2]!.trim());
-      }
-      return '';
-    });
-
-    _categoryNames = categorySet == null
-        ? const []
-        : (categorySet!.toList(growable: false)..sort());
-    _subCategoryNames = subCategorySet == null
-        ? const []
-        : (subCategorySet!.toList(growable: false)..sort());
-    return rawDocs;
-  }
-
   static final RegExp _categoryRegExp =
       RegExp(r'[ ]*{@(category|subCategory) (.+?)}[ ]*\n?', multiLine: true);
 
-  List<String>? _subCategoryNames;
-
   /// A set of strings containing all declared subcategories for this element.
   List<String> get subCategoryNames {
-    // TODO(srawlins): avoid side-effect dependency.
-    documentationLocal;
-    return _subCategoryNames!;
+    _ensureInitialCategorization();
+    return _subCategoryNamesSet.toList()..sort();
   }
 
   bool get hasCategoryNames => categoryNames.isNotEmpty;
-  List<String>? _categoryNames;
 
   /// A set of strings containing all declared categories for this element.
   List<String> get categoryNames {
-    // TODO(srawlins): avoid side-effect dependency.
-    documentationLocal;
-    return _categoryNames!;
+    _ensureInitialCategorization();
+    return _categoryNamesSet.toList()..sort();
   }
 
   @visibleForTesting
@@ -851,9 +864,8 @@ mixin DocumentationComment implements Warnable, SourceCode {
 
   /// True if categories or subcategories were parsed.
   bool get hasCategorization {
-    // TODO(srawlins): avoid side-effect dependency.
-    documentationLocal;
-    return categoryNames.isNotEmpty || subCategoryNames.isNotEmpty;
+    _ensureInitialCategorization();
+    return _categoryNamesSet.isNotEmpty || _subCategoryNamesSet.isNotEmpty;
   }
 
   /// The set of libraries which this [Library] is canonical for.
