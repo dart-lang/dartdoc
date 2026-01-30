@@ -10,6 +10,7 @@ import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
 import 'dartdoc_test_base.dart';
+import 'src/utils.dart';
 
 void main() {
   defineReflectiveSuite(() {
@@ -97,6 +98,162 @@ class D extends C {
 ''');
     var x = library.instanceField('D', 'x');
     expect(x.documentationAsHtml, '<p>Comment.</p>');
+  }
+
+  void test_field_overridesField_fromSuperclassConstraint() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  /// Comment.
+  int x = 0;
+}
+
+mixin M on C {
+  @override
+  int x = 1;
+}
+''');
+    var x = library.instanceField('M', 'x');
+    expect(x.documentationAsHtml, '<p>Comment.</p>');
+  }
+
+  void test_field_inherited_fromExtendedType_andMixin() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  /// Comment.
+  int x = 0;
+}
+
+mixin M on C {
+  @override
+  int x = 1;
+}
+
+class D extends C with M {}
+''');
+    var x = library.instanceField('D', 'x');
+    expect(x.documentationAsHtml, '<p>Comment.</p>');
+  }
+
+  void test_field_inherited_fromTransitiveExtended_andMixin() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  /// Comment.
+  int x = 0;
+}
+
+class D extends C {}
+
+mixin M on C {
+  @override
+  int x = 1;
+}
+
+// [D] and [M] are "unrelated" (don't reference each other); docs still come
+// from [C].
+class E extends D with M {}
+''');
+    var x = library.instanceField('E', 'x');
+    expect(x.documentationAsHtml, '<p>Comment.</p>');
+    expect(x.canonicalEnclosingContainer, library.mixins.named('M'));
+    expect(x.documentationFrom, hasLength(1));
+    expect(
+      x.documentationFrom.single,
+      library.classes.named('C').instanceFields.named('x').getter,
+    );
+  }
+
+  void test_field_inherited_fromExtened_andFromTransitiveExtended() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  /// Comment.
+  int x = 0;
+}
+
+class D extends C {
+  @override
+  int x = 0;
+}
+
+mixin M on C {}
+
+// [D] and [M] are "unrelated" (don't reference each other); docs still come
+// from [C].
+class E extends D with M {}
+''');
+    var x = library.instanceField('E', 'x');
+    expect(x.documentationAsHtml, '<p>Comment.</p>');
+    expect(x.canonicalEnclosingContainer, library.classes.named('D'));
+    expect(x.documentationFrom, hasLength(1));
+    expect(
+      x.documentationFrom.single,
+      library.classes.named('C').instanceFields.named('x').getter,
+    );
+  }
+
+  void
+      test_field_inherited_fromExtended_andFromTransitiveExtended_andMixin() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  /// Comment.
+  int x = 0;
+}
+
+class D extends C {
+  @override
+  int x = 0;
+}
+
+mixin M on C {
+  @override
+  int x = 1;
+}
+
+// [D] and [M] are "unrelated" (don't reference each other); docs still come
+// from [C].
+class E extends D with M {}
+''');
+    var x = library.instanceField('E', 'x');
+    expect(x.documentationAsHtml, '<p>Comment.</p>');
+    expect(x.canonicalEnclosingContainer, library.mixins.named('M'));
+    expect(x.documentationFrom, hasLength(1));
+    expect(
+      x.documentationFrom.single,
+      library.classes.named('C').instanceFields.named('x').getter,
+    );
+  }
+
+  void
+      test_field_overrides_fromExtended_andTransitiveExtended_andMixin() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  /// Comment.
+  int x = 0;
+}
+
+class D extends C {
+  @override
+  int x = 1;
+}
+
+mixin M on C {
+  @override
+  int x = 1;
+}
+
+// [D] and [M] are "unrelated" (don't reference each other); docs still come
+// from [C].
+class E extends D with M {
+  int x = 0;
+}
+''');
+    var x = library.instanceField('E', 'x');
+    expect(x.documentationAsHtml, '<p>Comment.</p>');
+    expect(x.canonicalEnclosingContainer, library.classes.named('E'));
+    expect(x.documentationFrom, hasLength(1));
+    expect(
+      x.documentationFrom.single,
+      library.classes.named('C').instanceFields.named('x').getter,
+    );
   }
 
   void test_field_overridesSetter_withDocComment() async {
@@ -367,18 +524,19 @@ class D extends C {
 }
 
 extension on Library {
-  Field instanceField(String className, String fieldName) => classes
-      .firstWhere((c) => c.name == className)
-      .instanceFields
-      .firstWhere((field) => field.name == fieldName);
+  Field instanceField(String containerName, String fieldName) =>
+      [...classes, ...mixins]
+          .named(containerName)
+          .instanceFields
+          .firstWhere((field) => field.name == fieldName);
 
   Accessor instanceGetter(String className, String getterName) => classes
-      .firstWhere((c) => c.name == className)
+      .named(className)
       .instanceAccessors
       .firstWhere((getter) => getter.name == getterName);
 
   Accessor instanceSetter(String className, String setterName) => classes
-      .firstWhere((c) => c.name == className)
+      .named(className)
       .instanceAccessors
       .firstWhere((setter) => setter.name == setterName);
 }

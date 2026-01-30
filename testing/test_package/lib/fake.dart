@@ -350,53 +350,20 @@ class AClassUsingNewStyleMixin extends NotAMixin
 /// A generic class for testing type inference.
 class GenericClass<T> {
   T? member;
-
-  /// Destined to be overridden by [ModifierClass].
-  T? overrideByModifierClass;
-
-  /// Destined to be overridden by [GenericMixin].
-  T? overrideByGenericMixin;
-
-  /// Destined to be overridden by [ModifierClass] and [GenericMixin], both.
-  T? overrideByBoth;
-
-  /// Destined to be overridden by everything.
-  T? overrideByEverything;
 }
 
 /// A class extending a generic class.
 class ModifierClass<T> extends GenericClass<T> {
   T? modifierMember;
-
-  @override
-  T? overrideByModifierClass;
-
-  @override
-  T? overrideByBoth;
-
-  @override
-  T? overrideByEverything;
 }
 
 /// A generic mixin that requires GenericClass as a superclass.
 mixin GenericMixin<T> on GenericClass<T> {
   T? mixinMember;
-
-  @override
-  T? overrideByGenericMixin;
-
-  @override
-  T? overrideByBoth;
-
-  @override
-  T? overrideByEverything;
 }
 
 /// A class verifying type inference across new-style mixins.
-class TypeInferenceMixedIn extends ModifierClass<int> with GenericMixin {
-  @override
-  int? overrideByEverything;
-}
+class TypeInferenceMixedIn extends ModifierClass<int> with GenericMixin {}
 
 GenericMixin<T>? aMixinReturningFunction<T>() => null;
 

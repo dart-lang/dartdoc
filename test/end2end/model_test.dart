@@ -1538,10 +1538,6 @@ void main() async {
   group('Mixin', () {
     late final Mixin GenericMixin;
     late final Class GenericClass, ModifierClass, TypeInferenceMixedIn;
-    late final Field overrideByEverything,
-        overrideByGenericMixin,
-        overrideByBoth,
-        overrideByModifierClass;
 
     setUpAll(() {
       var classes = fakeLibrary.classes.wherePublic;
@@ -1549,14 +1545,6 @@ void main() async {
       ModifierClass = classes.named('ModifierClass');
       GenericMixin = fakeLibrary.mixins.wherePublic.named('GenericMixin');
       TypeInferenceMixedIn = classes.named('TypeInferenceMixedIn');
-      overrideByEverything =
-          TypeInferenceMixedIn.instanceFields.named('overrideByEverything');
-      overrideByGenericMixin =
-          TypeInferenceMixedIn.instanceFields.named('overrideByGenericMixin');
-      overrideByBoth =
-          TypeInferenceMixedIn.instanceFields.named('overrideByBoth');
-      overrideByModifierClass =
-          TypeInferenceMixedIn.instanceFields.named('overrideByModifierClass');
     });
 
     test('computes interfaces and implementors correctly', () {
@@ -1622,79 +1610,6 @@ void main() async {
       expect(member.canonicalEnclosingContainer, equals(GenericClass));
       expect(modifierMember.canonicalEnclosingContainer, equals(ModifierClass));
       expect(mixinMember.canonicalEnclosingContainer, equals(GenericMixin));
-    });
-
-    test('Verify overrides & documentation inheritance work as intended', () {
-      expect(overrideByEverything.canonicalEnclosingContainer,
-          equals(TypeInferenceMixedIn));
-      expect(overrideByGenericMixin.canonicalEnclosingContainer,
-          equals(GenericMixin));
-      expect(overrideByBoth.canonicalEnclosingContainer, equals(GenericMixin));
-      expect(overrideByModifierClass.canonicalEnclosingContainer,
-          equals(ModifierClass));
-      expect(
-        overrideByEverything.documentationFrom.first,
-        equals(
-            GenericClass.instanceFields.named('overrideByEverything').getter),
-      );
-      expect(
-        overrideByGenericMixin.documentationFrom.first,
-        equals(
-            GenericClass.instanceFields.named('overrideByGenericMixin').getter),
-      );
-      expect(
-        overrideByBoth.documentationFrom.first,
-        equals(GenericClass.instanceFields.named('overrideByBoth').getter),
-      );
-      expect(
-        overrideByModifierClass.documentationFrom.first,
-        equals(GenericClass.instanceFields
-            .named('overrideByModifierClass')
-            .getter),
-      );
-    });
-
-    test('Verify that documentation for mixin applications contains links', () {
-      expect(
-        overrideByModifierClass.oneLineDoc,
-        contains(
-            '<a href="${htmlBasePlaceholder}fake/ModifierClass-class.html">ModifierClass</a>'),
-      );
-      expect(
-        overrideByModifierClass.canonicalModelElement!.documentationAsHtml,
-        contains(
-            '<a href="${htmlBasePlaceholder}fake/ModifierClass-class.html">ModifierClass</a>'),
-      );
-      expect(
-        overrideByGenericMixin.oneLineDoc,
-        contains(
-            '<a href="${htmlBasePlaceholder}fake/GenericMixin-mixin.html">GenericMixin</a>'),
-      );
-      expect(
-        overrideByGenericMixin.canonicalModelElement!.documentationAsHtml,
-        contains(
-            '<a href="${htmlBasePlaceholder}fake/GenericMixin-mixin.html">GenericMixin</a>'),
-      );
-      expect(
-        overrideByBoth.oneLineDoc,
-        contains(
-            '<a href="${htmlBasePlaceholder}fake/ModifierClass-class.html">ModifierClass</a>'),
-      );
-      expect(
-        overrideByBoth.oneLineDoc,
-        contains(
-            '<a href="${htmlBasePlaceholder}fake/GenericMixin-mixin.html">GenericMixin</a>'),
-      );
-      expect(
-        overrideByBoth.canonicalModelElement!.documentationAsHtml,
-        contains(
-            '<a href="${htmlBasePlaceholder}fake/ModifierClass-class.html">ModifierClass</a>'),
-      );
-      expect(
-        overrideByBoth.canonicalModelElement!.documentationAsHtml,
-        contains(
-            '<a href="${htmlBasePlaceholder}fake/GenericMixin-mixin.html">GenericMixin</a>'),
-      );
     });
   });
 
