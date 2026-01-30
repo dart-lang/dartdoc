@@ -162,6 +162,34 @@ class E extends D with M {}
     );
   }
 
+  void test_field_inherited_fromExtened_andFromTransitiveExtended() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  /// Comment.
+  int x = 0;
+}
+
+class D extends C {
+  @override
+  int x = 0;
+}
+
+mixin M on C {}
+
+// [D] and [M] are "unrelated" (don't reference each other); docs still come
+// from [C].
+class E extends D with M {}
+''');
+    var x = library.instanceField('E', 'x');
+    expect(x.documentationAsHtml, '<p>Comment.</p>');
+    expect(x.canonicalEnclosingContainer, library.classes.named('D'));
+    expect(x.documentationFrom, hasLength(1));
+    expect(
+      x.documentationFrom.single,
+      library.classes.named('C').instanceFields.named('x').getter,
+    );
+  }
+
   void
       test_field_inherited_fromExtened_andFromTransitiveExtended_andMixin() async {
     var library = await bootPackageWithLibrary('''
