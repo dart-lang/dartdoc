@@ -102,7 +102,7 @@ class _C { /// Line 2
 /// Line 4
 ''');
     var c = library.classes.named('_C');
-    expectOrEmpty(c.documentation, 'Line 1');
+    expect(c.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a private
@@ -119,7 +119,7 @@ class _C { /** Line 2 */
  */
 ''');
     var c = library.classes.named('_C');
-    expectOrEmpty(c.documentation, 'Line 1');
+    expect(c.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before a mixin.
@@ -161,7 +161,7 @@ mixin _M { /// Line 2
 /// Line 4
 ''');
     var m = library.mixins.named('_M');
-    expectOrEmpty(m.documentation, 'Line 1');
+    expect(m.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a private
@@ -178,7 +178,7 @@ mixin _M { /** Line 2 */
  */
 ''');
     var m = library.mixins.named('_M');
-    expectOrEmpty(m.documentation, 'Line 1');
+    expect(m.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before an enum.
@@ -223,7 +223,7 @@ enum _E { /// Line 2
 /// Line 4
 ''');
     var e = library.enums.named('_E');
-    expectOrEmpty(e.documentation, 'Line 1');
+    expect(e.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a private
@@ -241,7 +241,7 @@ enum _E { /** Line 2 */
  */
 ''');
     var e = library.enums.named('_E');
-    expectOrEmpty(e.documentation, 'Line 1');
+    expect(e.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before an extension.
@@ -289,7 +289,7 @@ extension _Ext { /// Line 2
 /// Line 4
 ''');
     var ext = library.extensions.named('_Ext');
-    expectOrEmpty(ext.documentation, 'Line 1');
+    expect(ext.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a private
@@ -308,7 +308,7 @@ extension _Ext { /** Line 2 */
  */
 ''');
     var ext = library.extensions.named('_Ext');
-    expectOrEmpty(ext.documentation, 'Line 1');
+    expect(ext.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before an extension type.
@@ -351,7 +351,7 @@ extension type _ET(int _) { /// Line 2
 /// Line 4
 ''');
     var et = library.extensionTypes.named('_ET');
-    expectOrEmpty(et.documentation, 'Line 1');
+    expect(et.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a private
@@ -368,7 +368,7 @@ extension type _ET(int _) { /** Line 2 */
  */
 ''');
     var et = library.extensionTypes.named('_ET');
-    expectOrEmpty(et.documentation, 'Line 1');
+    expect(et.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before a typedef.
@@ -403,7 +403,7 @@ typedef _IntAlias = int; /// Line 2
 /// Line 3
 ''');
     var td = library.typedefs.named('_IntAlias');
-    expectOrEmpty(td.documentation, 'Line 1');
+    expect(td.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a private
@@ -417,7 +417,7 @@ typedef _IntAlias = int; /** Line 2 */
  */
 ''');
     var td = library.typedefs.named('_IntAlias');
-    expectOrEmpty(td.documentation, 'Line 1');
+    expect(td.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before an old-fashioned typedef.
@@ -454,7 +454,7 @@ typedef void _Foo(); /// Line 2
 /// Line 3
 ''');
     var td = library.typedefs.named('_Foo');
-    expectOrEmpty(td.documentation, 'Line 1');
+    expect(td.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before an
@@ -468,7 +468,7 @@ typedef void _Foo(); /** Line 2 */
  */
 ''');
     var td = library.typedefs.named('_Foo');
-    expectOrEmpty(td.documentation, 'Line 1');
+    expect(td.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before a top-level function.
@@ -512,7 +512,7 @@ void _foo() { /// Line 2
 /// Line 4
 ''');
     var f = library.functions.named('_foo');
-    expectOrEmpty(f.documentation, 'Line 1');
+    expect(f.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a private
@@ -529,7 +529,7 @@ void _foo() { /** Line 2 */
  */
 ''');
     var f = library.functions.named('_foo');
-    expectOrEmpty(f.documentation, 'Line 1');
+    expect(f.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before a variable.
@@ -564,7 +564,7 @@ int _x = 0; /// Line 2
 /// Line 3
 ''');
     var v = library.properties.named('_x');
-    expectOrEmpty(v.documentation, 'Line 1');
+    expect(v.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a private
@@ -578,7 +578,7 @@ int _x = 0; /** Line 2 */
  */
 ''');
     var v = library.properties.named('_x');
-    expectOrEmpty(v.documentation, 'Line 1');
+    expect(v.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before a final variable.
@@ -614,7 +614,7 @@ final int _x = 0; /// Line 2
 /// Line 3
 ''');
     var v = library.properties.named('_x');
-    expectOrEmpty(v.documentation, 'Line 1');
+    expect(v.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a private
@@ -628,7 +628,7 @@ final int _x = 0; /** Line 2 */
  */
 ''');
     var v = library.properties.named('_x');
-    expectOrEmpty(v.documentation, 'Line 1');
+    expect(v.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before a late variable.
@@ -664,7 +664,7 @@ late int _x; /// Line 2
 /// Line 3
 ''');
     var v = library.properties.named('_x');
-    expectOrEmpty(v.documentation, 'Line 1');
+    expect(v.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a private
@@ -678,7 +678,7 @@ late int _x = 0; /** Line 2 */
  */
 ''');
     var v = library.properties.named('_x');
-    expectOrEmpty(v.documentation, 'Line 1');
+    expect(v.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before a late final variable.
@@ -715,7 +715,7 @@ late final int _x; /// Line 2
 /// Line 3
 ''');
     var v = library.properties.named('_x');
-    expectOrEmpty(v.documentation, 'Line 1');
+    expect(v.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a private
@@ -729,7 +729,7 @@ late final int _x = 0; /** Line 2 */
  */
 ''');
     var v = library.properties.named('_x');
-    expectOrEmpty(v.documentation, 'Line 1');
+    expect(v.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before a constant.
@@ -764,7 +764,7 @@ const _x = 42; /// Line 2
 /// Line 3
 ''');
     var v = library.constants.named('_x');
-    expectOrEmpty(v.documentation, 'Line 1');
+    expect(v.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a private
@@ -778,7 +778,7 @@ const _x = 0; /** Line 2 */
  */
 ''');
     var v = library.constants.named('_x');
-    expectOrEmpty(v.documentation, 'Line 1');
+    expect(v.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before a getter.
@@ -805,30 +805,7 @@ int get g => 0; /** Line 2 */
     expect(g.documentation, 'Line 1');
   }
 
-  /// Check that doc comments can be recognized before a private getter.
-  void test_beforeGetter3() async {
-    var library = await bootPackageWithLibrary('''
-/// Line 1
-int get _g => 0; /// Line 2
-/// Line 3
-''');
-    var g = library.properties.named('_g');
-    expectOrEmpty(g.documentation, 'Line 1');
-  }
-
-  /// Check that block-based doc comments can be recognized before a private
-  /// getter.
-  void test_beforeGetter4() async {
-    var library = await bootPackageWithLibrary('''
-/** Line 1
- */
-int get _g => 0; /** Line 2 */
-/** Line 3
- */
-''');
-    var g = library.properties.named('_g');
-    expectOrEmpty(g.documentation, 'Line 1');
-  }
+  // TODO (sgrekhov) Add tests for private getters after https://github.com/dart-lang/dartdoc/issues/4185
 
   /// Check that doc comments can be recognized before a setter.
   void test_beforeSetter1() async {
@@ -859,33 +836,5 @@ void set s(int _) { /** Line 2 */
     expect(s.documentation, 'Line 1');
   }
 
-  /// Check that doc comments can be recognized before a private setter.
-  void test_beforeSetter3() async {
-    var library = await bootPackageWithLibrary('''
-/// Line 1
-void set _s(int _) { /// Line 2
-/// Line 3
-}
-/// Line 4
-''');
-    var s = library.properties.named('_s');
-    expectOrEmpty(s.documentation, 'Line 1');
-  }
-
-  /// Check that block-based doc comments can be recognized before a private
-  /// setter.
-  void test_beforeSetter4() async {
-    var library = await bootPackageWithLibrary('''
-/** Line 1
- */
-void set _s(int _) { /** Line 2 */
-/** Line 3
- */
-}
-/** Line 4
- */
-''');
-    var s = library.properties.named('_s');
-    expectOrEmpty(s.documentation, 'Line 1');
-  }
+  // TODO (sgrekhov) Add tests for private setters after https://github.com/dart-lang/dartdoc/issues/4185
 }

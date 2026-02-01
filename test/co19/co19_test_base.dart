@@ -18,11 +18,4 @@ class Co19TestBase extends DocumentationCommentTestBase {
   void expectDocComment(dynamic matcher) {
     expect(libraryModel.documentation, matcher);
   }
-
-  /// Calls [expect] if [actual] is not an empty string.
-  void expectOrEmpty(String actual, String expected) {
-    if (actual.isNotEmpty) {
-      expect(actual, expected);
-    }
-  }
 }
