@@ -28,8 +28,8 @@ void main() {
 
 @reflectiveTest
 class PlacementTest extends Co19TestBase {
-  /// Check that doc comments can be placed before class methods (instance and
-  /// static).
+  /// Check that doc comments can be recognized before class methods (instance
+  /// and static).
   void test_beforeClassMethod1() async {
     var library = await bootPackageWithLibrary('''
 class C {
@@ -95,7 +95,7 @@ Line 4
 Line 1''');
   }
 
-  /// Check that block-based doc comments can be placed before class methods
+  /// Check that block-based doc comments can be recognized before class methods
   /// (instance and static).
   void test_beforeClassMethod2() async {
     var library = await bootPackageWithLibrary('''
@@ -163,8 +163,8 @@ class C {
     expect(m2.documentation, 'Line 1');
   }
 
-  /// Check that doc comments can be placed before mixin methods (instance and
-  /// static).
+  /// Check that doc comments can be recognized before mixin methods (instance
+  /// and static).
   void test_beforeMixinMethod1() async {
     var library = await bootPackageWithLibrary('''
 mixin M {
@@ -230,7 +230,7 @@ Line 4
 Line 1''');
   }
 
-  /// Check that block-based doc comments can be placed before mixin methods
+  /// Check that block-based doc comments can be recognized before mixin methods
   /// (instance and static).
   void test_beforeMixinMethod2() async {
     var library = await bootPackageWithLibrary('''
@@ -298,8 +298,8 @@ mixin M {
     expect(m2.documentation, 'Line 1');
   }
 
-  /// Check that doc comments can be placed before enum methods (instance and
-  /// static).
+  /// Check that doc comments can be recognized before enum methods (instance
+  /// and static).
   void test_beforeEnumMethod1() async {
     var library = await bootPackageWithLibrary('''
 enum E {
@@ -365,7 +365,7 @@ Line 4
 Line 1''');
   }
 
-  /// Check that block-based doc comments can be placed before enum methods
+  /// Check that block-based doc comments can be recognized before enum methods
   /// (instance and static).
   void test_beforeEnumMethod2() async {
     var library = await bootPackageWithLibrary('''
@@ -434,8 +434,8 @@ enum E {
     expect(m2.documentation, 'Line 1');
   }
 
-  /// Check that doc comments can be placed before extension methods (instance
-  /// and static).
+  /// Check that doc comments can be recognized before extension methods
+  /// (instance and static).
   void test_beforeExtensionMethod1() async {
     var library = await bootPackageWithLibrary('''
 class A {}
@@ -502,7 +502,7 @@ Line 4
 Line 1''');
   }
 
-  /// Check that block-based doc comments can be placed before extension
+  /// Check that block-based doc comments can be recognized before extension
   /// methods (instance and static).
   void test_beforeExtensionMethod2() async {
     var library = await bootPackageWithLibrary('''
@@ -572,7 +572,7 @@ extension Ext on A {
     expect(m2.documentation, 'Line 1');
   }
 
-  /// Check that doc comments can be placed before extension type methods
+  /// Check that doc comments can be recognized before extension type methods
   /// (instance and static).
   void test_beforeExtensionTypeMethod1() async {
     var library = await bootPackageWithLibrary('''
@@ -638,8 +638,8 @@ Line 4
 Line 1''');
   }
 
-  /// Check that block-based doc comments can be placed before extension type
-  /// methods (instance and static).
+  /// Check that block-based doc comments can be recognized before extension
+  /// type methods (instance and static).
   void test_beforeExtensionTypeMethod2() async {
     var library = await bootPackageWithLibrary('''
 extension type ET(int v) {
