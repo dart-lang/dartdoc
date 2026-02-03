@@ -11,7 +11,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 // ignore: implementation_imports
-import 'package:analyzer/src/context/builder.dart' show EmbedderYamlLocator;
+import 'package:analyzer/src/context/builder.dart' show locateEmbedderYamlFor;
 // ignore: implementation_imports
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
@@ -116,8 +116,9 @@ class PubPackageBuilder implements PackageBuilder {
         resourceProvider.pathContext.fromUri(skyEngine.packageUriRoot));
     var skyEngineLibFolder =
         resourceProvider.getResource(packagePath) as Folder;
-    var embedderSdk = EmbedderSdk(resourceProvider,
-        EmbedderYamlLocator.forLibFolder(skyEngineLibFolder).embedderYamls,
+    var embedderYaml = locateEmbedderYamlFor(skyEngineLibFolder);
+    var embedderSdk = EmbedderSdk.new2(
+        resourceProvider, skyEngineLibFolder, embedderYaml,
         languageVersion: languageVersionFromSdkVersion(io.Platform.version));
 
     return [
