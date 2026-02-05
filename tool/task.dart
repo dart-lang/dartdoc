@@ -777,7 +777,7 @@ Future<void> serveTestingPackageDocs() async {
 
 Future<void> runTest() async {
   await analyzeTestPackages();
-  await SubprocessLauncher('dart run test')
+  await SubprocessLauncher('dart test')
       .runStreamedDartCommand(['--enable-asserts', 'run', 'test']);
 }
 

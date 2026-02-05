@@ -48,7 +48,7 @@ commands:
    is `"../"` on a library page or library member page, and `"../../"` on a
    library member's member page (like a constructor of a class).
 
-3. `flutter pub run grinder serve-flutter-docs` (warning: takes a crazy long time)
+3. `dart run grinder serve-flutter-docs` (warning: takes a crazy long time)
    - This serves the docs for Flutter at http://localhost:8001/. The "base
    href" settings result in a `body` tag like:
    `<body data-base-href data-using-base-href="true">` and a `base` tag in the
