@@ -179,7 +179,9 @@ class Dartdoc {
     return Dartdoc._(
       context,
       outputDir,
-      initHtmlGenerator(context, writer: writer),
+      context.format == 'vitepress'
+          ? initVitePressGenerator(context, writer: writer)
+          : initHtmlGenerator(context, writer: writer),
       packageBuilder,
     );
   }
@@ -200,7 +202,9 @@ class Dartdoc {
     runtimeStats.endPerfTask();
 
     var writtenFiles = generator.writtenFiles;
-    if (config.validateLinks && writtenFiles.isNotEmpty) {
+    if (config.validateLinks &&
+        writtenFiles.isNotEmpty &&
+        config.format != 'vitepress') {
       runtimeStats.startPerfTask('validateLinks');
       Validator(packageGraph, config, _outputDir.path, writtenFiles,
               _onCheckProgress)

@@ -9,6 +9,7 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';
 import 'package:dartdoc/src/generator/html_generator_backend.dart';
 import 'package:dartdoc/src/generator/templates.dart';
+import 'package:dartdoc/src/generator/vitepress_generator_backend.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
@@ -318,5 +319,16 @@ Generator initHtmlGenerator(
   var options = DartdocGeneratorBackendOptions.fromContext(context);
   var generatorBackend = HtmlGeneratorBackend(
       options, templates, writer, context.resourceProvider);
+  return Generator(generatorBackend);
+}
+
+/// Creates a [Generator] with a [VitePressGeneratorBackend] backend.
+Generator initVitePressGenerator(
+  DartdocGeneratorOptionContext context, {
+  required FileWriter writer,
+}) {
+  var options = DartdocGeneratorBackendOptions.fromContext(context);
+  var generatorBackend =
+      VitePressGeneratorBackend(options, writer, context.resourceProvider);
   return Generator(generatorBackend);
 }

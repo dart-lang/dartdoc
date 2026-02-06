@@ -1153,6 +1153,8 @@ class DartdocOptionContext extends DartdocOptionContextBase
   }
 
   // All values defined in createDartdocOptions should be exposed here.
+  String get format => optionSet['format'].valueAt(context);
+
   bool get allowTools => optionSet['allowTools'].valueAt(context);
 
   double get ambiguousReexportScorerMinConfidence =>
@@ -1381,6 +1383,8 @@ List<DartdocOption> createDartdocOptions(
 ) {
   var resourceProvider = packageMetaProvider.resourceProvider;
   return [
+    DartdocOptionArgFile<String>('format', 'html', resourceProvider,
+        help: 'Output format: html or vitepress.'),
     DartdocOptionArgOnly<bool>('allowTools', false, resourceProvider,
         help: 'Execute user-defined tools to fill in @tool directives.',
         negatable: true),
