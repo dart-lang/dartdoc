@@ -165,6 +165,12 @@ class Dartdoc {
     DartdocGeneratorOptionContext context,
     PackageBuilder packageBuilder,
   ) {
+    var format = context.format;
+    if (format != 'html' && format != 'vitepress') {
+      throw DartdocOptionError(
+          "Invalid format '$format'. Allowed values: html, vitepress.");
+    }
+
     var resourceProvider = context.resourceProvider;
     var outputPath = resourceProvider.pathContext.absolute(context.output);
     var outputDir = resourceProvider.getFolder(outputPath)..create();
@@ -179,7 +185,7 @@ class Dartdoc {
     return Dartdoc._(
       context,
       outputDir,
-      context.format == 'vitepress'
+      format == 'vitepress'
           ? initVitePressGenerator(context, writer: writer)
           : initHtmlGenerator(context, writer: writer),
       packageBuilder,

@@ -8,6 +8,8 @@ import 'package:dartdoc/src/generator/generator_backend.dart';
 import 'package:dartdoc/src/generator/template_data.dart';
 import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/generator/vitepress_doc_processor.dart';
+import 'package:dartdoc/src/generator/vitepress_guide_generator.dart';
+import 'package:dartdoc/src/generator/vitepress_init.dart';
 import 'package:dartdoc/src/generator/vitepress_paths.dart'
     show VitePressPathResolver;
 import 'package:dartdoc/src/generator/vitepress_renderer.dart' as renderer;
@@ -40,6 +42,13 @@ class VitePressGeneratorBackend extends GeneratorBackend {
   late VitePressDocProcessor _docs;
   late VitePressSidebarGenerator _sidebar;
 
+  final String _outputPath;
+  final String _packageName;
+  final String _repositoryUrl;
+  final List<String> _guideDirs;
+  final List<String> _guideInclude;
+  final List<String> _guideExclude;
+
   /// Tracks all file paths written during this generation run.
   ///
   /// Used for incremental generation: after generation completes, files
@@ -51,14 +60,25 @@ class VitePressGeneratorBackend extends GeneratorBackend {
   int _writtenCount = 0;
 
   /// Number of files skipped because content was identical.
-  // ignore: prefer_final_fields
   int _unchangedCount = 0;
 
   VitePressGeneratorBackend(
     DartdocGeneratorBackendOptions options,
     FileWriter writer,
-    ResourceProvider resourceProvider,
-  )   : _paths = VitePressPathResolver(),
+    ResourceProvider resourceProvider, {
+    required String outputPath,
+    required String packageName,
+    String repositoryUrl = '',
+    List<String> guideDirs = const ['doc', 'docs'],
+    List<String> guideInclude = const [],
+    List<String> guideExclude = const [],
+  })  : _paths = VitePressPathResolver(),
+        _outputPath = outputPath,
+        _packageName = packageName,
+        _repositoryUrl = repositoryUrl,
+        _guideDirs = guideDirs,
+        _guideInclude = guideInclude,
+        _guideExclude = guideExclude,
         super(options, _NoOpTemplates(), writer, resourceProvider);
 
   // ---------------------------------------------------------------------------
@@ -73,13 +93,26 @@ class VitePressGeneratorBackend extends GeneratorBackend {
   @override
   void generatePackage(PackageGraph packageGraph, Package package) {
     // Initialize dependencies that require the PackageGraph.
+    _paths.initFromPackageGraph(packageGraph);
     _docs = VitePressDocProcessor(packageGraph, _paths);
     _sidebar = VitePressSidebarGenerator(_paths);
 
-    logInfo('Generating VitePress docs for package ${package.name}...');
+    final isMultiPackage = packageGraph.localPackages.length > 1;
 
-    // Write package overview page: api/index.md
-    var content = renderer.renderPackagePage(package, _paths, _docs);
+    if (isMultiPackage) {
+      logInfo('Generating VitePress docs for workspace '
+          '(${packageGraph.localPackages.length} packages)...');
+    } else {
+      logInfo('Generating VitePress docs for package ${package.name}...');
+    }
+
+    // Write package/workspace overview page: api/index.md
+    String content;
+    if (isMultiPackage) {
+      content = renderer.renderWorkspaceOverview(packageGraph, _paths, _docs);
+    } else {
+      content = renderer.renderPackagePage(package, _paths, _docs);
+    }
     var filePath = _paths.filePathFor(package);
     if (filePath != null) {
       _writeMarkdown(filePath, content);
@@ -90,6 +123,35 @@ class VitePressGeneratorBackend extends GeneratorBackend {
     _writeMarkdown(
       p.join('.vitepress', 'generated', 'api-sidebar.ts'),
       sidebarContent,
+    );
+
+    // Generate guide files from doc/docs directories.
+    var guideGen = VitePressGuideGenerator(
+      resourceProvider: resourceProvider,
+      scanDirs: _guideDirs,
+      include: _guideInclude,
+      exclude: _guideExclude,
+    );
+    var guideEntries = guideGen.collectGuideEntries(
+      packageGraph: packageGraph,
+      isMultiPackage: isMultiPackage,
+    );
+
+    // Write guide files through _writeMarkdown for incremental checks.
+    for (final entry in guideEntries) {
+      _writeMarkdown(entry.relativePath, entry.content);
+    }
+
+    // Track scaffold guide/index.md so stale cleanup doesn't delete it.
+    _expectedFiles.add(p.join('guide', 'index.md'));
+
+    var guideSidebarContent = guideGen.generateSidebar(
+      guideEntries,
+      isMultiPackage: isMultiPackage,
+    );
+    _writeMarkdown(
+      p.join('.vitepress', 'generated', 'guide-sidebar.ts'),
+      guideSidebarContent,
     );
 
     runtimeStats.incrementAccumulator('writtenPackageFileCount');
@@ -156,10 +218,14 @@ class VitePressGeneratorBackend extends GeneratorBackend {
   /// Output: `api/<dirName>/<ClassName>.md`
   @override
   void generateClass(PackageGraph packageGraph, Library library, Class class_) {
-    var content = renderer.renderClassPage(class_, library, _paths, _docs);
-    var filePath = _paths.filePathFor(class_);
-    if (filePath != null) {
-      _writeMarkdown(filePath, content);
+    try {
+      var content = renderer.renderClassPage(class_, library, _paths, _docs);
+      var filePath = _paths.filePathFor(class_);
+      if (filePath != null) {
+        _writeMarkdown(filePath, content);
+      }
+    } on Object catch (e) {
+      logWarning('Failed to generate page for class ${class_.name}: $e');
     }
 
     runtimeStats.incrementAccumulator('writtenClassFileCount');
@@ -170,10 +236,14 @@ class VitePressGeneratorBackend extends GeneratorBackend {
   /// Output: `api/<dirName>/<EnumName>.md`
   @override
   void generateEnum(PackageGraph packageGraph, Library library, Enum enum_) {
-    var content = renderer.renderEnumPage(enum_, library, _paths, _docs);
-    var filePath = _paths.filePathFor(enum_);
-    if (filePath != null) {
-      _writeMarkdown(filePath, content);
+    try {
+      var content = renderer.renderEnumPage(enum_, library, _paths, _docs);
+      var filePath = _paths.filePathFor(enum_);
+      if (filePath != null) {
+        _writeMarkdown(filePath, content);
+      }
+    } on Object catch (e) {
+      logWarning('Failed to generate page for enum ${enum_.name}: $e');
     }
 
     runtimeStats.incrementAccumulator('writtenEnumFileCount');
@@ -184,10 +254,14 @@ class VitePressGeneratorBackend extends GeneratorBackend {
   /// Output: `api/<dirName>/<MixinName>.md`
   @override
   void generateMixin(PackageGraph packageGraph, Library library, Mixin mixin) {
-    var content = renderer.renderMixinPage(mixin, library, _paths, _docs);
-    var filePath = _paths.filePathFor(mixin);
-    if (filePath != null) {
-      _writeMarkdown(filePath, content);
+    try {
+      var content = renderer.renderMixinPage(mixin, library, _paths, _docs);
+      var filePath = _paths.filePathFor(mixin);
+      if (filePath != null) {
+        _writeMarkdown(filePath, content);
+      }
+    } on Object catch (e) {
+      logWarning('Failed to generate page for mixin ${mixin.name}: $e');
     }
 
     runtimeStats.incrementAccumulator('writtenMixinFileCount');
@@ -199,11 +273,15 @@ class VitePressGeneratorBackend extends GeneratorBackend {
   @override
   void generateExtension(
       PackageGraph packageGraph, Library library, Extension extension) {
-    var content =
-        renderer.renderExtensionPage(extension, library, _paths, _docs);
-    var filePath = _paths.filePathFor(extension);
-    if (filePath != null) {
-      _writeMarkdown(filePath, content);
+    try {
+      var content =
+          renderer.renderExtensionPage(extension, library, _paths, _docs);
+      var filePath = _paths.filePathFor(extension);
+      if (filePath != null) {
+        _writeMarkdown(filePath, content);
+      }
+    } on Object catch (e) {
+      logWarning('Failed to generate page for extension ${extension.name}: $e');
     }
 
     runtimeStats.incrementAccumulator('writtenExtensionFileCount');
@@ -216,11 +294,16 @@ class VitePressGeneratorBackend extends GeneratorBackend {
   @override
   void generateExtensionType(
       PackageGraph packageGraph, Library library, ExtensionType extensionType) {
-    var content =
-        renderer.renderExtensionTypePage(extensionType, library, _paths, _docs);
-    var filePath = _paths.filePathFor(extensionType);
-    if (filePath != null) {
-      _writeMarkdown(filePath, content);
+    try {
+      var content = renderer.renderExtensionTypePage(
+          extensionType, library, _paths, _docs);
+      var filePath = _paths.filePathFor(extensionType);
+      if (filePath != null) {
+        _writeMarkdown(filePath, content);
+      }
+    } on Object catch (e) {
+      logWarning(
+          'Failed to generate page for extension type ${extensionType.name}: $e');
     }
 
     runtimeStats.incrementAccumulator('writtenExtensionTypeFileCount');
@@ -238,10 +321,15 @@ class VitePressGeneratorBackend extends GeneratorBackend {
   @override
   void generateFunction(
       PackageGraph packageGraph, Library library, ModelFunction function) {
-    var content = renderer.renderFunctionPage(function, library, _paths, _docs);
-    var filePath = _paths.filePathFor(function);
-    if (filePath != null) {
-      _writeMarkdown(filePath, content);
+    try {
+      var content =
+          renderer.renderFunctionPage(function, library, _paths, _docs);
+      var filePath = _paths.filePathFor(function);
+      if (filePath != null) {
+        _writeMarkdown(filePath, content);
+      }
+    } on Object catch (e) {
+      logWarning('Failed to generate page for function ${function.name}: $e');
     }
 
     runtimeStats.incrementAccumulator('writtenFunctionFileCount');
@@ -253,10 +341,15 @@ class VitePressGeneratorBackend extends GeneratorBackend {
   @override
   void generateTopLevelProperty(
       PackageGraph packageGraph, Library library, TopLevelVariable property) {
-    var content = renderer.renderPropertyPage(property, library, _paths, _docs);
-    var filePath = _paths.filePathFor(property);
-    if (filePath != null) {
-      _writeMarkdown(filePath, content);
+    try {
+      var content =
+          renderer.renderPropertyPage(property, library, _paths, _docs);
+      var filePath = _paths.filePathFor(property);
+      if (filePath != null) {
+        _writeMarkdown(filePath, content);
+      }
+    } on Object catch (e) {
+      logWarning('Failed to generate page for property ${property.name}: $e');
     }
 
     runtimeStats.incrementAccumulator('writtenTopLevelPropertyFileCount');
@@ -268,10 +361,14 @@ class VitePressGeneratorBackend extends GeneratorBackend {
   @override
   void generateTypeDef(
       PackageGraph packageGraph, Library library, Typedef typedef) {
-    var content = renderer.renderTypedefPage(typedef, library, _paths, _docs);
-    var filePath = _paths.filePathFor(typedef);
-    if (filePath != null) {
-      _writeMarkdown(filePath, content);
+    try {
+      var content = renderer.renderTypedefPage(typedef, library, _paths, _docs);
+      var filePath = _paths.filePathFor(typedef);
+      if (filePath != null) {
+        _writeMarkdown(filePath, content);
+      }
+    } on Object catch (e) {
+      logWarning('Failed to generate page for typedef ${typedef.name}: $e');
     }
 
     runtimeStats.incrementAccumulator('writtenTypedefFileCount');
@@ -311,13 +408,16 @@ class VitePressGeneratorBackend extends GeneratorBackend {
   // Infrastructure -- NO-OPs for VitePress.
   // ---------------------------------------------------------------------------
 
-  /// No-op: VitePress has built-in full-text search via MiniSearch.
+  /// Finalizes VitePress generation: deletes stale files and logs summary.
   ///
-  /// The HTML backend writes `index.json` for its custom search; VitePress
-  /// does not need this.
+  /// VitePress has built-in full-text search via MiniSearch, so no search
+  /// index is generated. Instead, this method is used as a finalization hook
+  /// (it is called last by the traversal) to clean up stale files and log
+  /// generation statistics.
   @override
   void generateSearchIndex(List<Documentable> indexedElements) {
-    // Intentionally empty -- VitePress provides its own search.
+    _deleteStaleFiles();
+    _logSummary();
   }
 
   /// No-op: category JSON is only used by the HTML frontend.
@@ -326,29 +426,118 @@ class VitePressGeneratorBackend extends GeneratorBackend {
     // Intentionally empty -- not needed for VitePress.
   }
 
-  /// No-op: called BEFORE the traversal at `generator.dart:49`, so no model
-  /// data is available yet.
+  /// Called BEFORE the traversal at `generator.dart:49`.
   ///
-  /// The HTML backend uses this to copy static resources (CSS, JS, favicon).
-  /// VitePress handles its own static assets, so nothing to do here.
+  /// Creates VitePress scaffold files (`package.json`, `.vitepress/config.ts`,
+  /// `index.md`) if they don't already exist. These are one-time setup files
+  /// that the user may customize afterwards.
   @override
   Future<void> generateAdditionalFiles() async {
-    // Intentionally empty -- VitePress manages its own static assets.
+    var initGenerator = VitePressInitGenerator(
+      writer: writer,
+      resourceProvider: resourceProvider,
+      outputPath: _outputPath,
+    );
+    await initGenerator.generate(
+      packageName: _packageName,
+      repositoryUrl: _repositoryUrl,
+    );
   }
 
   // ---------------------------------------------------------------------------
   // File writing
   // ---------------------------------------------------------------------------
 
-  /// Writes markdown content to the output directory.
+  /// Writes markdown content to the output directory (incremental).
   ///
   /// Tracks the file path in [_expectedFiles] for manifest-based stale file
-  /// deletion. In the future, this method will compare content against the
-  /// existing file and skip the write if identical (incremental generation).
+  /// deletion. Compares new content against the existing file on disk and
+  /// skips the write if identical, incrementing [_unchangedCount] instead
+  /// of [_writtenCount].
   void _writeMarkdown(String filePath, String content) {
     _expectedFiles.add(filePath);
+
+    // Incremental generation: skip write if content is unchanged.
+    final fullPath = p.join(_outputPath, filePath);
+    final existingFile = resourceProvider.getFile(fullPath);
+    if (existingFile.exists) {
+      try {
+        if (existingFile.readAsStringSync() == content) {
+          _unchangedCount++;
+          return;
+        }
+      } on FileSystemException {
+        // If we can't read the file, fall through to write.
+      }
+    }
+
     writer.write(filePath, content);
     _writtenCount++;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Stale file cleanup
+  // ---------------------------------------------------------------------------
+
+  /// Number of stale files deleted during cleanup.
+  int _deletedCount = 0;
+
+  /// Scans the output `api/` directory and deletes files not in
+  /// [_expectedFiles].
+  ///
+  /// Only deletes `.md` files under `api/` and `.ts` files under
+  /// `.vitepress/generated/` to avoid removing user-created files.
+  void _deleteStaleFiles() {
+    _deletedCount = 0;
+    _deleteStaleInDir('api', '.md');
+    _deleteStaleInDir('guide', '.md');
+    _deleteStaleInDir(p.join('.vitepress', 'generated'), '.ts');
+  }
+
+  /// Recursively scans [dirRelative] under [_outputPath] and deletes files
+  /// with [extension] that are NOT in [_expectedFiles].
+  ///
+  /// Uses a [visited] set to protect against symlink loops (same approach as
+  /// `_collectMarkdownFiles` in `vitepress_guide_generator.dart`).
+  /// Normalizes paths to POSIX separators for cross-platform consistency.
+  void _deleteStaleInDir(String dirRelative, String extension,
+      [Set<String>? visited]) {
+    visited ??= {};
+    final dirPath = p.join(_outputPath, dirRelative);
+    if (!visited.add(dirPath)) return; // Symlink loop protection.
+    final folder = resourceProvider.getFolder(dirPath);
+    if (!folder.exists) return;
+
+    for (final child in folder.getChildren()) {
+      if (child is Folder) {
+        // Recurse into subdirectories.
+        final relativePath = p.relative(child.path, from: _outputPath);
+        _deleteStaleInDir(relativePath, extension, visited);
+      } else {
+        // Normalize to POSIX separators so the path matches _expectedFiles
+        // (which always uses forward slashes).
+        final relativePath =
+            p.posix.joinAll(p.split(p.relative(child.path, from: _outputPath)));
+        if (relativePath.endsWith(extension) &&
+            !_expectedFiles.contains(relativePath)) {
+          try {
+            (child as File).delete();
+            _deletedCount++;
+          } on FileSystemException {
+            // If we can't delete the file, skip it silently.
+          }
+        }
+      }
+    }
+  }
+
+  /// Logs a summary of generation statistics.
+  void _logSummary() {
+    logInfo(
+      'Generated: $_writtenCount written, '
+      '$_unchangedCount unchanged, '
+      '$_deletedCount deleted',
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -363,6 +552,9 @@ class VitePressGeneratorBackend extends GeneratorBackend {
 
   /// Number of files skipped because content was identical.
   int get unchangedCount => _unchangedCount;
+
+  /// Number of stale files deleted during cleanup.
+  int get deletedCount => _deletedCount;
 }
 
 // ---------------------------------------------------------------------------

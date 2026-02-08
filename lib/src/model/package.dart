@@ -146,11 +146,13 @@ final class Package extends LibraryContainer
   /// True if the global config excludes this package by name.
   bool get _isExcluded => packageGraph.config.isPackageExcluded(name);
 
-  /// True if this is the package being documented by default, or the
-  /// global config indicates we are auto-including dependencies.
+  /// True if this is the package being documented by default, if the
+  /// global config indicates we are auto-including dependencies, or if
+  /// this package is a workspace member or explicitly included package.
   bool get _isLocalPublicByDefault =>
       packageMeta == packageGraph.packageMeta ||
-      packageGraph.config.autoIncludeDependencies;
+      packageGraph.config.autoIncludeDependencies ||
+      packageGraph.workspacePackageNames.contains(name);
 
   /// Returns the location of documentation for this package, for making
   /// decisions regarding the 'linkToRemote' option and canonicalization.

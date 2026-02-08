@@ -11,10 +11,13 @@
 library;
 
 import 'package:dartdoc/src/comment_references/parser.dart' show operatorNames;
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/generator/vitepress_doc_processor.dart';
 import 'package:dartdoc/src/generator/vitepress_paths.dart';
+import 'package:dartdoc/src/model/attribute.dart' show Attribute;
 import 'package:dartdoc/src/model/container_modifiers.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:meta/meta.dart';
 
 // ---------------------------------------------------------------------------
 // Generic name helpers (ADR-7).
@@ -46,6 +49,23 @@ String escapeGenerics(String text) =>
     text.replaceAll('<', r'\<').replaceAll('>', r'\>');
 
 // ---------------------------------------------------------------------------
+// Testable string helpers.
+// ---------------------------------------------------------------------------
+
+/// Escapes pipe characters in table cell content to prevent breaking the
+/// markdown table structure.
+@visibleForTesting
+String escapeTableCell(String cell) => cell.replaceAll('|', r'\|');
+
+/// Escapes characters that are special in YAML double-quoted string values.
+@visibleForTesting
+String yamlEscape(String text) => text
+    .replaceAll(r'\', r'\\')
+    .replaceAll('"', r'\"')
+    .replaceAll('\n', r'\n')
+    .replaceAll('\r', r'\r');
+
+// ---------------------------------------------------------------------------
 // Helper: _MarkdownPageBuilder
 // ---------------------------------------------------------------------------
 
@@ -65,8 +85,8 @@ class _MarkdownPageBuilder {
   }) {
     _buffer.writeln('---');
     // Quote the title to handle special characters like `<` and `:`.
-    _buffer.writeln('title: "${_yamlEscape(title)}"');
-    _buffer.writeln('description: "${_yamlEscape(description)}"');
+    _buffer.writeln('title: "${yamlEscape(title)}"');
+    _buffer.writeln('description: "${yamlEscape(description)}"');
     if (outline is bool) {
       _buffer.writeln('outline: $outline');
     } else if (outline is List<int>) {
@@ -77,6 +97,25 @@ class _MarkdownPageBuilder {
     _buffer.writeln('prev: false');
     _buffer.writeln('next: false');
     _buffer.writeln('---');
+    _buffer.writeln();
+  }
+
+  /// Writes a breadcrumb navigation line above the page title.
+  ///
+  /// Renders as small muted links: `Library > Kind > Element`.
+  void writeBreadcrumbs(List<(String label, String? link)> crumbs) {
+    if (crumbs.isEmpty) return;
+    final parts = crumbs.map((c) {
+      if (c.$2 != null) {
+        return '<a href="${c.$2}" style="text-decoration:none;color:var(--vp-c-text-2)">${escapeGenerics(c.$1)}</a>';
+      }
+      return '<span style="color:var(--vp-c-text-3)">${escapeGenerics(c.$1)}</span>';
+    });
+    _buffer.writeln(
+      '<div style="font-size:0.85em;margin-bottom:0.5em;color:var(--vp-c-text-3)">'
+      '${parts.join(" › ")}'
+      '</div>',
+    );
     _buffer.writeln();
   }
 
@@ -91,9 +130,12 @@ class _MarkdownPageBuilder {
     _buffer.writeln();
   }
 
-  /// Writes an h2 section heading.
+  /// Writes an h2 section heading with an explicit ID to prevent collisions
+  /// with member-level anchors (e.g., `## Values` auto-generates `id="values"`
+  /// which collides with an enum constant named `values`).
   void writeH2(String text) {
-    _buffer.writeln('## $text');
+    final slug = text.toLowerCase().replaceAll(' ', '-');
+    _buffer.writeln('## $text {#section-$slug}');
     _buffer.writeln();
   }
 
@@ -105,8 +147,8 @@ class _MarkdownPageBuilder {
   }) {
     final escapedText = escapeGenerics(text);
     if (deprecated) {
-      _buffer.writeln('### ~~$escapedText~~ {#$anchor} '
-          '<Badge type="warning" text="deprecated" />');
+      _buffer.writeln('### ~~$escapedText~~ '
+          '<Badge type="warning" text="deprecated" /> {#$anchor}');
     } else {
       _buffer.writeln('### $escapedText {#$anchor}');
     }
@@ -151,10 +193,10 @@ class _MarkdownPageBuilder {
     required List<List<String>> rows,
   }) {
     if (rows.isEmpty) return;
-    _buffer.writeln('| ${headers.join(' | ')} |');
+    _buffer.writeln('| ${headers.map(escapeTableCell).join(' | ')} |');
     _buffer.writeln('|${headers.map((_) => '---').join('|')}|');
     for (final row in rows) {
-      _buffer.writeln('| ${row.join(' | ')} |');
+      _buffer.writeln('| ${row.map(escapeTableCell).join(' | ')} |');
     }
     _buffer.writeln();
   }
@@ -166,11 +208,17 @@ class _MarkdownPageBuilder {
 
   @override
   String toString() => _buffer.toString();
-
-  /// Escapes characters that are special in YAML double-quoted string values.
-  static String _yamlEscape(String text) =>
-      text.replaceAll(r'\', r'\\').replaceAll('"', r'\"');
 }
+
+// ---------------------------------------------------------------------------
+// Pre-compiled regular expressions (avoid re-creating on every call).
+// ---------------------------------------------------------------------------
+
+/// Matches HTML tags for stripping in [_annotationPlainText].
+final _htmlTagRegExp = RegExp(r'<[^>]*>');
+
+/// Matches a leading `# Title` line in documentation text.
+final _leadingH1RegExp = RegExp(r'^#\s+(.+?)(\r?\n|$)');
 
 // ---------------------------------------------------------------------------
 // Shared rendering helpers.
@@ -182,7 +230,10 @@ class _MarkdownPageBuilder {
 /// or just the display name as plain text if not.
 String _markdownLink(Documentable element, VitePressPathResolver paths) {
   final url = paths.linkFor(element);
-  final name = element.name;
+  // Use full name with generics for elements that have type parameters.
+  final rawName =
+      element is ModelElement ? plainNameWithGenerics(element) : element.name;
+  final name = escapeGenerics(rawName);
   if (url == null) return name;
   return '[$name]($url)';
 }
@@ -220,15 +271,12 @@ String _buildContainerDeclaration(InheritingContainer container) {
     parts.add(modifier.displayName);
   }
 
-  // Add the kind keyword
+  // Add the kind keyword (Mixin and ExtensionType use dedicated declaration
+  // builders, so only Class and Enum are handled here).
   if (container is Class) {
     parts.add('class');
   } else if (container is Enum) {
     parts.add('enum');
-  } else if (container is Mixin) {
-    parts.add('mixin');
-  } else if (container is ExtensionType) {
-    parts.add('extension type');
   }
 
   // Add name with generics (unescaped -- this goes inside a code block)
@@ -260,6 +308,75 @@ String _buildContainerDeclaration(InheritingContainer container) {
   return parts.join(' ');
 }
 
+/// Renders an [ElementType] as plain text, correctly expanding callable
+/// (function) types into their full signature (e.g. `T Function()`).
+///
+/// For non-callable types, falls back to [ElementType.nameWithGenericsPlain].
+/// This is necessary because [nameWithGenericsPlain] for [FunctionTypeElementType]
+/// returns only `Function` (the name), omitting the return type and parameters.
+String _renderTypePlain(ElementType type) {
+  if (type is Callable) {
+    final buf = StringBuffer();
+    buf.write(_renderTypePlain(type.returnType));
+    buf.write(' ');
+    buf.write(type.nameWithGenericsPlain);
+    buf.write('(');
+    buf.write(_buildCallableParameterList(type.parameters));
+    buf.write(')');
+    if (type.nullabilitySuffix.isNotEmpty) {
+      // Wrap in parens for nullable function types: `void Function()?`
+      return '($buf)${type.nullabilitySuffix}';
+    }
+    return buf.toString();
+  }
+  return type.nameWithGenericsPlain;
+}
+
+/// Builds the inner parameter list for a callable type (no brackets, just
+/// comma-separated type+name pairs).
+String _buildCallableParameterList(List<Parameter> parameters) {
+  if (parameters.isEmpty) return '';
+
+  final parts = <String>[];
+  var inOptionalPositional = false;
+  var inNamed = false;
+
+  for (final param in parameters) {
+    final buf = StringBuffer();
+
+    if (param.isOptionalPositional && !inOptionalPositional) {
+      inOptionalPositional = true;
+      buf.write('[');
+    } else if (param.isNamed && !inNamed) {
+      inNamed = true;
+      buf.write('{');
+    }
+
+    if (param.isRequiredNamed) {
+      buf.write('required ');
+    }
+
+    buf.write(_renderTypePlain(param.modelType));
+    // Function type parameters in callable signatures often have no name,
+    // but if they do, include it.
+    if (param.name.isNotEmpty) {
+      buf.write(' ${param.name}');
+    }
+
+    final defaultValue = param.defaultValue;
+    if (defaultValue != null && defaultValue.isNotEmpty) {
+      buf.write(' = $defaultValue');
+    }
+
+    parts.add(buf.toString());
+  }
+
+  var result = parts.join(', ');
+  if (inOptionalPositional) result += ']';
+  if (inNamed) result += '}';
+  return result;
+}
+
 /// Builds the parameter signature string for an element.
 ///
 /// Iterates parameters manually (NOT using `linkedParams` which produces HTML).
@@ -287,8 +404,8 @@ String _buildParameterSignature(List<Parameter> parameters) {
       buf.write('required ');
     }
 
-    // Type and name
-    buf.write('${param.modelType.nameWithGenericsPlain} ${param.name}');
+    // Type and name (use _renderTypePlain to expand callable types)
+    buf.write('${_renderTypePlain(param.modelType)} ${param.name}');
 
     // Default value
     final defaultValue = param.defaultValue;
@@ -314,9 +431,9 @@ String _buildCallableSignature(ModelElement element) {
 
   // Return type (for methods and functions)
   if (element is Method) {
-    buf.write('${element.modelType.returnType.nameWithGenericsPlain} ');
+    buf.write('${_renderTypePlain(element.modelType.returnType)} ');
   } else if (element is ModelFunctionTyped) {
-    buf.write('${element.modelType.returnType.nameWithGenericsPlain} ');
+    buf.write('${_renderTypePlain(element.modelType.returnType)} ');
   }
 
   // Name with generics
@@ -382,11 +499,90 @@ String _memberAnchor(ModelElement element) {
   }
   if (element is Constructor) {
     if (element.isUnnamedConstructor) {
-      return element.enclosingElement.name.toLowerCase();
+      // Prefix with 'ctor-' to avoid collision with VitePress auto-generated
+      // ID for the class H1 heading (which would also be lowercased class name).
+      return 'ctor-${element.enclosingElement.name.toLowerCase()}';
     }
     return element.element.name!.toLowerCase();
   }
-  return element.name.toLowerCase();
+  final name = element.name.toLowerCase();
+  // Prefix property anchors to avoid collision with methods of the same name
+  // (e.g. property `s` and method `s()` would both produce anchor `{#s}`).
+  if (element is Field) {
+    return 'prop-$name';
+  }
+  return name;
+}
+
+/// Renders a "View source" link for elements that have a source URL.
+void _renderSourceLink(_MarkdownPageBuilder builder, ModelElement element) {
+  if (element.hasSourceHref) {
+    builder.writeParagraph('[View source](${element.sourceHref})');
+  }
+}
+
+/// Renders annotations for an element (excluding `@Deprecated` which is
+/// handled separately as a deprecation notice).
+///
+/// Uses the source representation of each annotation for plain-text output
+/// (the `linkedNameWithParameters` getter produces HTML, which is not
+/// suitable for markdown).
+void _renderAnnotations(_MarkdownPageBuilder builder, ModelElement element) {
+  if (!element.hasAnnotations) return;
+  final annotations = element.annotations
+      .map(_annotationPlainText)
+      .where(
+          (text) => text != '@deprecated' && !text.startsWith('@Deprecated('))
+      .map((text) => '`$text`')
+      .toList();
+  if (annotations.isEmpty) return;
+  builder.writeParagraph('**Annotations:** ${annotations.join(', ')}');
+}
+
+/// Converts an annotation's `linkedNameWithParameters` (which may contain
+/// HTML tags and entities) into plain text suitable for markdown output.
+String _annotationPlainText(Attribute annotation) {
+  return annotation.linkedNameWithParameters
+      .replaceAll(_htmlTagRegExp, '') // Strip HTML tags
+      .replaceAll('&lt;', '<')
+      .replaceAll('&#60;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&#62;', '>')
+      .replaceAll('&amp;', '&')
+      .replaceAll('&#38;', '&')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#34;', '"')
+      .replaceAll('&#39;', "'");
+}
+
+/// Renders the "Implementers" section for a class/interface.
+void _renderImplementors(
+  _MarkdownPageBuilder builder,
+  InheritingContainer container,
+  VitePressPathResolver paths,
+) {
+  final implementors = container.publicImplementersSorted;
+  if (implementors.isEmpty) return;
+
+  builder.writeH2('Implementers');
+  for (final impl in implementors) {
+    builder.writeParagraph('- ${_markdownLink(impl, paths)}');
+  }
+}
+
+/// Renders the "Available Extensions" section for a class.
+void _renderAvailableExtensions(
+  _MarkdownPageBuilder builder,
+  InheritingContainer container,
+  VitePressPathResolver paths,
+) {
+  final extensions = container.potentiallyApplicableExtensionsSorted;
+  if (extensions.isEmpty) return;
+
+  builder.writeH2('Available Extensions');
+  for (final ext in extensions) {
+    builder.writeParagraph('- ${_markdownLink(ext, paths)}');
+  }
 }
 
 /// Renders a library overview table for a specific element kind group.
@@ -418,8 +614,22 @@ void _renderLibraryOverviewTable(
     rows.add([nameCell, descCell]);
   }
 
+  const singularNames = {
+    'Classes': 'Class',
+    'Exceptions': 'Exception',
+    'Enums': 'Enum',
+    'Mixins': 'Mixin',
+    'Extensions': 'Extension',
+    'Extension Types': 'Extension Type',
+    'Functions': 'Function',
+    'Properties': 'Property',
+    'Constants': 'Constant',
+    'Typedefs': 'Typedef',
+  };
+  final singularName = singularNames[sectionTitle] ?? sectionTitle;
+
   builder.writeTable(
-    headers: ['Name', 'Description'],
+    headers: [singularName, 'Description'],
     rows: rows,
   );
 }
@@ -545,8 +755,18 @@ void _renderFieldMember(
   if (field.isLate) {
     sig.write('late ');
   }
-  sig.write('${field.modelType.nameWithGenericsPlain} ');
-  sig.write(field.name);
+
+  // Show get/set for explicit getter/setter fields
+  final fieldTypePlain = _renderTypePlain(field.modelType);
+  if (field.hasExplicitGetter && !field.hasExplicitSetter) {
+    sig.write('$fieldTypePlain get ${field.name}');
+  } else if (field.hasExplicitSetter && !field.hasExplicitGetter) {
+    sig.write('set ${field.name}($fieldTypePlain value)');
+  } else if (field.hasExplicitGetter && field.hasExplicitSetter) {
+    sig.write('$fieldTypePlain get ${field.name}');
+  } else {
+    sig.write('$fieldTypePlain ${field.name}');
+  }
 
   // Show constant value if available
   if (field.isConst && field.hasConstantValueForDisplay) {
@@ -571,7 +791,7 @@ void _renderMethodMember(
 
   // Display name: for operators, use the full name like "operator =="
   // For methods, append "()" to indicate it's callable
-  final displaySuffix = method is Operator ? '' : '()';
+  final displaySuffix = '()';
   final displayName = '${method.name}$displaySuffix';
 
   builder.writeH3WithAnchor(
@@ -607,10 +827,14 @@ String renderPackagePage(
 
   builder.writeH1(package.name);
 
-  // Package documentation
-  final packageDoc = package.documentation;
+  // Package documentation (strip leading H1 if it matches the package name
+  // to avoid a duplicate heading, since README often starts with # PackageName)
+  var packageDoc = package.documentation;
   if (packageDoc != null && packageDoc.isNotEmpty) {
-    builder.writeParagraph(packageDoc);
+    packageDoc = _stripLeadingH1(packageDoc, package.name);
+    if (packageDoc.isNotEmpty) {
+      builder.writeParagraph(packageDoc);
+    }
   }
 
   // Libraries table
@@ -625,9 +849,12 @@ String renderPackagePage(
     final rows = <List<String>>[];
     for (final lib in libraries) {
       final link = _markdownLink(lib, paths);
-      final libDoc = lib.documentation;
-      final description =
-          libDoc.isNotEmpty ? _extractFirstParagraph(libDoc) : '';
+      var description = docs.extractOneLineDoc(lib);
+      // Fall back to the pubspec.yaml description when the library itself
+      // has no doc comment (common for single-library packages).
+      if (description.isEmpty) {
+        description = package.packageMeta.description;
+      }
       rows.add([link, description]);
     }
 
@@ -635,6 +862,74 @@ String renderPackagePage(
       headers: ['Library', 'Description'],
       rows: rows,
     );
+  }
+
+  return builder.toString();
+}
+
+/// Renders a workspace overview page (`api/index.md`) when multiple local
+/// packages are being documented together.
+///
+/// Shows each local package as a section with its pubspec description and
+/// a table of its public libraries.
+String renderWorkspaceOverview(
+  PackageGraph packageGraph,
+  VitePressPathResolver paths,
+  VitePressDocProcessor docs,
+) {
+  final builder = _MarkdownPageBuilder();
+  final workspaceName = packageGraph.defaultPackageName;
+
+  builder.writeFrontmatter(
+    title: workspaceName,
+    description: 'API documentation for the $workspaceName workspace',
+    outline: [2, 3],
+  );
+
+  builder.writeH1(workspaceName);
+  builder.writeParagraph(
+    'This workspace contains the following packages.',
+  );
+
+  // Sort packages by name for deterministic output.
+  final localPackages = [...packageGraph.localPackages]
+    ..sort((a, b) => a.name.compareTo(b.name));
+
+  builder.writeH2('Packages');
+
+  for (final package in localPackages) {
+    // Package sub-heading (h3 with anchor).
+    final anchor = package.name.toLowerCase().replaceAll(' ', '-');
+    builder.writeH3WithAnchor(package.name, anchor: anchor);
+
+    // Package description from pubspec.yaml.
+    final description = package.packageMeta.description;
+    if (description.isNotEmpty) {
+      builder.writeParagraph(description);
+    }
+
+    // Libraries table for this package.
+    final libraries = package.libraries
+        .where((lib) => lib.isPublic && lib.isDocumented)
+        .toList()
+      ..sort((a, b) => a.name.compareTo(b.name));
+
+    if (libraries.isNotEmpty) {
+      final rows = <List<String>>[];
+      for (final lib in libraries) {
+        final link = _markdownLink(lib, paths);
+        var libDescription = docs.extractOneLineDoc(lib);
+        if (libDescription.isEmpty) {
+          libDescription = package.packageMeta.description;
+        }
+        rows.add([link, libDescription]);
+      }
+
+      builder.writeTable(
+        headers: ['Library', 'Description'],
+        rows: rows,
+      );
+    }
   }
 
   return builder.toString();
@@ -659,9 +954,12 @@ String renderLibraryPage(
 
   builder.writeH1(library.name);
 
-  // Library documentation
-  final libDoc = library.documentation;
+  // Library documentation (strip leading H1 if it matches the library name
+  // to avoid a duplicate heading, since library doc comments sometimes start
+  // with `# LibraryName`).
+  var libDoc = docs.processDocumentation(library);
   if (libDoc.isNotEmpty) {
+    libDoc = _stripLeadingH1(libDoc, library.name);
     builder.writeParagraph(libDoc);
   }
 
@@ -711,8 +1009,8 @@ String renderLibraryPage(
 
   _renderLibraryOverviewTable(
     builder,
-    'Constants',
-    library.publicConstantsSorted.cast<Documentable>(),
+    'Functions',
+    library.publicFunctionsSorted.cast<Documentable>(),
     paths,
     docs,
   );
@@ -727,8 +1025,8 @@ String renderLibraryPage(
 
   _renderLibraryOverviewTable(
     builder,
-    'Functions',
-    library.publicFunctionsSorted.cast<Documentable>(),
+    'Constants',
+    library.publicConstantsSorted.cast<Documentable>(),
     paths,
     docs,
   );
@@ -761,6 +1059,13 @@ String renderClassPage(
     outline: [2, 3],
   );
 
+  final libraryUrl = '/api/${paths.dirNameFor(library)}/';
+  builder.writeBreadcrumbs([
+    (library.name, libraryUrl),
+    ('Classes', null),
+    (nameWithGenerics, null),
+  ]);
+
   builder.writeH1(nameWithGenerics, deprecated: clazz.isDeprecated);
 
   // Declaration line
@@ -771,9 +1076,21 @@ String renderClassPage(
     builder.writeDeprecationNotice(_extractDeprecationMessage(clazz));
   }
 
+  // Annotations
+  _renderAnnotations(builder, clazz);
+
   // Documentation
   final doc = docs.processDocumentation(clazz);
   builder.writeParagraph(doc);
+
+  // Source link
+  _renderSourceLink(builder, clazz);
+
+  // Implementers
+  _renderImplementors(builder, clazz, paths);
+
+  // Available Extensions
+  _renderAvailableExtensions(builder, clazz, paths);
 
   // All members
   _renderContainerMembers(builder, clazz, docs);
@@ -798,6 +1115,13 @@ String renderEnumPage(
     outline: [2, 3],
   );
 
+  final libraryUrl = '/api/${paths.dirNameFor(library)}/';
+  builder.writeBreadcrumbs([
+    (library.name, libraryUrl),
+    ('Enums', null),
+    (nameWithGenerics, null),
+  ]);
+
   builder.writeH1(nameWithGenerics, deprecated: enumeration.isDeprecated);
 
   // Declaration line
@@ -808,21 +1132,36 @@ String renderEnumPage(
     builder.writeDeprecationNotice(_extractDeprecationMessage(enumeration));
   }
 
+  // Annotations
+  _renderAnnotations(builder, enumeration);
+
   // Documentation
   final doc = docs.processDocumentation(enumeration);
   builder.writeParagraph(doc);
+
+  // Source link
+  _renderSourceLink(builder, enumeration);
+
+  // Implementers
+  _renderImplementors(builder, enumeration, paths);
+
+  // Available Extensions
+  _renderAvailableExtensions(builder, enumeration, paths);
 
   // Enum values section (before other members)
   final enumValues = enumeration.publicEnumValues;
   if (enumValues.isNotEmpty) {
     builder.writeH2('Values');
     for (final value in enumValues) {
-      final anchor = value.name.toLowerCase();
+      final anchor = 'value-${value.name.toLowerCase()}';
       builder.writeH3WithAnchor(
         value.name,
         anchor: anchor,
         deprecated: value.isDeprecated,
       );
+      if (value.isDeprecated) {
+        builder.writeDeprecationNotice(_extractDeprecationMessage(value));
+      }
       final valueDoc = docs.processDocumentation(value);
       builder.writeParagraph(valueDoc);
     }
@@ -851,6 +1190,13 @@ String renderMixinPage(
     outline: [2, 3],
   );
 
+  final libraryUrl = '/api/${paths.dirNameFor(library)}/';
+  builder.writeBreadcrumbs([
+    (library.name, libraryUrl),
+    ('Mixins', null),
+    (nameWithGenerics, null),
+  ]);
+
   builder.writeH1(nameWithGenerics, deprecated: mixin_.isDeprecated);
 
   // Declaration line
@@ -862,9 +1208,21 @@ String renderMixinPage(
     builder.writeDeprecationNotice(_extractDeprecationMessage(mixin_));
   }
 
+  // Annotations
+  _renderAnnotations(builder, mixin_);
+
   // Documentation
   final doc = docs.processDocumentation(mixin_);
   builder.writeParagraph(doc);
+
+  // Source link
+  _renderSourceLink(builder, mixin_);
+
+  // Implementers
+  _renderImplementors(builder, mixin_, paths);
+
+  // Available Extensions
+  _renderAvailableExtensions(builder, mixin_, paths);
 
   // Superclass constraints
   final constraints = mixin_.publicSuperclassConstraints.toList();
@@ -899,6 +1257,13 @@ String renderExtensionPage(
     outline: [2, 3],
   );
 
+  final libraryUrl = '/api/${paths.dirNameFor(library)}/';
+  builder.writeBreadcrumbs([
+    (library.name, libraryUrl),
+    ('Extensions', null),
+    (nameWithGenerics, null),
+  ]);
+
   builder.writeH1(nameWithGenerics, deprecated: ext.isDeprecated);
 
   // Declaration line
@@ -911,9 +1276,15 @@ String renderExtensionPage(
     builder.writeDeprecationNotice(_extractDeprecationMessage(ext));
   }
 
+  // Annotations
+  _renderAnnotations(builder, ext);
+
   // Documentation
   final doc = docs.processDocumentation(ext);
   builder.writeParagraph(doc);
+
+  // Source link
+  _renderSourceLink(builder, ext);
 
   // All members
   _renderContainerMembers(builder, ext, docs);
@@ -939,6 +1310,13 @@ String renderExtensionTypePage(
     outline: [2, 3],
   );
 
+  final libraryUrl = '/api/${paths.dirNameFor(library)}/';
+  builder.writeBreadcrumbs([
+    (library.name, libraryUrl),
+    ('Extension Types', null),
+    (nameWithGenerics, null),
+  ]);
+
   builder.writeH1(nameWithGenerics, deprecated: et.isDeprecated);
 
   // Declaration line
@@ -950,9 +1328,18 @@ String renderExtensionTypePage(
     builder.writeDeprecationNotice(_extractDeprecationMessage(et));
   }
 
+  // Annotations
+  _renderAnnotations(builder, et);
+
   // Documentation
   final doc = docs.processDocumentation(et);
   builder.writeParagraph(doc);
+
+  // Source link
+  _renderSourceLink(builder, et);
+
+  // Implementers
+  _renderImplementors(builder, et, paths);
 
   // All members (including constructors via Constructable)
   _renderContainerMembers(builder, et, docs);
@@ -977,6 +1364,13 @@ String renderFunctionPage(
     outline: false,
   );
 
+  final libraryUrl = '/api/${paths.dirNameFor(library)}/';
+  builder.writeBreadcrumbs([
+    (library.name, libraryUrl),
+    ('Functions', null),
+    (nameWithGenerics, null),
+  ]);
+
   builder.writeH1(nameWithGenerics, deprecated: func.isDeprecated);
 
   // Signature
@@ -987,9 +1381,15 @@ String renderFunctionPage(
     builder.writeDeprecationNotice(_extractDeprecationMessage(func));
   }
 
+  // Annotations
+  _renderAnnotations(builder, func);
+
   // Documentation
   final doc = docs.processDocumentation(func);
   builder.writeParagraph(doc);
+
+  // Source link
+  _renderSourceLink(builder, func);
 
   return builder.toString();
 }
@@ -1012,6 +1412,14 @@ String renderPropertyPage(
     outline: false,
   );
 
+  final sidebarKind = prop.isConst ? 'Constants' : 'Properties';
+  final libraryUrl = '/api/${paths.dirNameFor(library)}/';
+  builder.writeBreadcrumbs([
+    (library.name, libraryUrl),
+    (sidebarKind, null),
+    (prop.name, null),
+  ]);
+
   builder.writeH1(prop.name, deprecated: prop.isDeprecated);
 
   // Signature
@@ -1021,7 +1429,7 @@ String renderPropertyPage(
   } else if (prop.isFinal) {
     sig.write('final ');
   }
-  sig.write('${prop.modelType.nameWithGenericsPlain} ${prop.name}');
+  sig.write('${_renderTypePlain(prop.modelType)} ${prop.name}');
 
   if (prop.isConst && prop.hasConstantValueForDisplay) {
     sig.write(' = ${prop.constantValueBase}');
@@ -1034,9 +1442,15 @@ String renderPropertyPage(
     builder.writeDeprecationNotice(_extractDeprecationMessage(prop));
   }
 
+  // Annotations
+  _renderAnnotations(builder, prop);
+
   // Documentation
   final doc = docs.processDocumentation(prop);
   builder.writeParagraph(doc);
+
+  // Source link
+  _renderSourceLink(builder, prop);
 
   return builder.toString();
 }
@@ -1058,6 +1472,13 @@ String renderTypedefPage(
     outline: false,
   );
 
+  final libraryUrl = '/api/${paths.dirNameFor(library)}/';
+  builder.writeBreadcrumbs([
+    (library.name, libraryUrl),
+    ('Typedefs', null),
+    (nameWithGenerics, null),
+  ]);
+
   builder.writeH1(nameWithGenerics, deprecated: td.isDeprecated);
 
   // Typedef declaration
@@ -1065,12 +1486,12 @@ String renderTypedefPage(
 
   if (td is FunctionTypedef) {
     // Function typedef: show the return type and parameter types
-    sig.write(td.modelType.returnType.nameWithGenericsPlain);
+    sig.write(_renderTypePlain(td.modelType.returnType));
     sig.write(' Function');
     sig.write(_buildParameterSignature(td.parameters));
   } else {
     // Type alias (ClassTypedef, GeneralizedTypedef)
-    sig.write(td.modelType.nameWithGenericsPlain);
+    sig.write(_renderTypePlain(td.modelType));
   }
 
   builder.writeCodeBlock(sig.toString());
@@ -1103,9 +1524,9 @@ String renderCategoryPage(
 
   builder.writeH1(cat.name);
 
-  // Category documentation (from markdown file)
-  final catDoc = cat.documentation;
-  if (catDoc != null && catDoc.isNotEmpty) {
+  // Category documentation (processed through doc processor for directives)
+  final catDoc = docs.processRawDocumentation(cat.documentation);
+  if (catDoc.isNotEmpty) {
     builder.writeParagraph(catDoc);
   }
 
@@ -1154,8 +1575,8 @@ String renderCategoryPage(
 
   _renderLibraryOverviewTable(
     builder,
-    'Constants',
-    cat.publicConstantsSorted.cast<Documentable>(),
+    'Functions',
+    cat.publicFunctionsSorted.cast<Documentable>(),
     paths,
     docs,
   );
@@ -1170,8 +1591,8 @@ String renderCategoryPage(
 
   _renderLibraryOverviewTable(
     builder,
-    'Functions',
-    cat.publicFunctionsSorted.cast<Documentable>(),
+    'Constants',
+    cat.publicConstantsSorted.cast<Documentable>(),
     paths,
     docs,
   );
@@ -1211,7 +1632,7 @@ void _renderExtensionsTable(
     final descCell = isDeprecated && oneLineDoc.isNotEmpty
         ? '**Deprecated.** $oneLineDoc'
         : oneLineDoc;
-    rows.add([nameCell, onType, descCell]);
+    rows.add([nameCell, escapeGenerics(onType), descCell]);
   }
   builder.writeTable(
     headers: ['Extension', 'on', 'Description'],
@@ -1264,11 +1685,22 @@ String _buildExtensionTypeDeclaration(ExtensionType et) {
   return parts.join(' ');
 }
 
-/// Extracts the first paragraph from documentation text.
+/// Strips or downgrades a leading `# title` from documentation text.
 ///
-/// Takes text up to the first blank line and collapses it to a single line.
-String _extractFirstParagraph(String text) {
-  if (text.isEmpty) return '';
-  final firstPara = text.split(RegExp(r'\n\s*\n')).first.trim();
-  return firstPara.replaceAll('\n', ' ');
+/// If the H1 matches [expectedTitle], it is stripped entirely to avoid
+/// duplication (README files often start with `# PackageName`).
+/// If the H1 does NOT match, it is downgraded to H2 (`##`) to prevent
+/// multiple H1 headings on the page (only the generator's own H1 should
+/// remain as the page title).
+String _stripLeadingH1(String text, String expectedTitle) {
+  final match = _leadingH1RegExp.firstMatch(text);
+  if (match == null) return text;
+
+  final title = match.group(1)!.trim();
+  if (title == expectedTitle) {
+    // Exact duplicate — strip entirely.
+    return text.substring(match.end).trimLeft();
+  }
+  // Different H1 from user content — downshift to H2.
+  return '## ${match.group(1)}${text.substring(match.end)}';
 }

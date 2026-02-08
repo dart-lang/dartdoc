@@ -32,6 +32,13 @@ class PackageGraph with CommentReferable, Nameable {
 
   final bool hasEmbedderSdk;
 
+  /// Names of packages that are workspace members, populated by the builder
+  /// when `workspaceDocs` is enabled.
+  ///
+  /// Used by [Package.isLocal] to determine if a package should be treated
+  /// as local documentation.
+  final Set<String> workspacePackageNames = {};
+
   /// [PackageMeta] provider for building [PackageMeta]s.
   final PackageMetaProvider packageMetaProvider;
 

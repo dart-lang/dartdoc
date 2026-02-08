@@ -327,8 +327,20 @@ Generator initVitePressGenerator(
   DartdocGeneratorOptionContext context, {
   required FileWriter writer,
 }) {
+  var resourceProvider = context.resourceProvider;
+  var outputPath = resourceProvider.pathContext.absolute(context.output);
+  var meta = context.topLevelPackageMeta;
   var options = DartdocGeneratorBackendOptions.fromContext(context);
-  var generatorBackend =
-      VitePressGeneratorBackend(options, writer, context.resourceProvider);
+  var generatorBackend = VitePressGeneratorBackend(
+    options,
+    writer,
+    resourceProvider,
+    outputPath: outputPath,
+    packageName: meta.name,
+    repositoryUrl: meta.repository.isNotEmpty ? meta.repository : meta.homepage,
+    guideDirs: context.guideDirs,
+    guideInclude: context.guideInclude,
+    guideExclude: context.guideExclude,
+  );
   return Generator(generatorBackend);
 }

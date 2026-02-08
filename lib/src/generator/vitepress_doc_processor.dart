@@ -37,6 +37,7 @@ final _htmlBasePlaceholder =
 /// These match the syntaxes used by dartdoc's own `MarkdownDocument`,
 /// ensuring consistent parsing behavior.
 final List<md.InlineSyntax> _inlineSyntaxes = [
+  _InlineCodeSyntax(),
   md.InlineHtmlSyntax(),
   md.StrikethroughSyntax(),
   md.AutolinkExtensionSyntax(),
@@ -95,6 +96,21 @@ MatchingLinkResult _resolveReference(
   return result;
 }
 
+/// Inline syntax for dartdoc's `[: code :]` notation.
+///
+/// Converts `[: code :]` to markdown inline code (`` `code` ``).
+/// This mirrors dartdoc's `_InlineCodeSyntax` from `markdown_processor.dart`,
+/// but produces markdown backtick-wrapped code instead of HTML `<code>` elements.
+class _InlineCodeSyntax extends md.InlineSyntax {
+  _InlineCodeSyntax() : super(r'\[:\s?((?:.|\n)*?)\s?:\]');
+
+  @override
+  bool onMatch(md.InlineParser parser, Match match) {
+    parser.addNode(md.Text('`${match[1]!.trim()}`'));
+    return true;
+  }
+}
+
 /// Processes documentation text from [ModelElement]s for VitePress output.
 ///
 /// The processor performs these steps:
@@ -112,6 +128,48 @@ class VitePressDocProcessor {
   final VitePressPathResolver paths;
 
   VitePressDocProcessor(this.packageGraph, this.paths);
+
+  // ---------------------------------------------------------------------------
+  // Pre-compiled patterns for sanitizeHtml.
+  // ---------------------------------------------------------------------------
+  static final _scriptOpenClose = RegExp(
+      r'<\s*script\b[^>]*>[\s\S]*?<\s*/\s*script\s*>',
+      caseSensitive: false);
+  static final _scriptSelfClose =
+      RegExp(r'<\s*script\b[^>]*/\s*>', caseSensitive: false);
+  static final _styleOpenClose = RegExp(
+      r'<\s*style\b[^>]*>[\s\S]*?<\s*/\s*style\s*>',
+      caseSensitive: false);
+  static final _baseTag =
+      RegExp(r'<\s*base\b[^>]*/?\s*>', caseSensitive: false);
+  static final _metaTag =
+      RegExp(r'<\s*meta\b[^>]*/?\s*>', caseSensitive: false);
+  static final _linkTag =
+      RegExp(r'<\s*link\b[^>]*/?\s*>', caseSensitive: false);
+  static final _iframeTag = RegExp(
+      r'<\s*iframe\b[^>]*>[\s\S]*?<\s*/\s*iframe\s*>',
+      caseSensitive: false);
+  static final _iframeSrcAttr =
+      RegExp(r"""src\s*=\s*["']([^"']*)["']""", caseSensitive: false);
+  static final _javascriptUrl =
+      RegExp(r'''(href|src)\s*=\s*["']?\s*javascript:''', caseSensitive: false);
+  static final _dataUrl =
+      RegExp(r'''(href|src)\s*=\s*["']?\s*data:''', caseSensitive: false);
+  static final _eventHandler = RegExp(
+      r'''\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)''',
+      caseSensitive: false);
+  static final _dangerousEmbedOpenClose = {
+    for (final tag in ['embed', 'object', 'applet', 'form', 'svg'])
+      tag: RegExp('<\\s*$tag\\b[^>]*>[\\s\\S]*?<\\s*/\\s*$tag\\s*>',
+          caseSensitive: false),
+  };
+  static final _dangerousEmbedSelfClose = {
+    for (final tag in ['embed', 'object', 'applet', 'form', 'svg'])
+      tag: RegExp('<\\s*$tag\\b[^>]*/\\s*>', caseSensitive: false),
+  };
+
+  // Pre-compiled pattern for extractOneLineDoc.
+  static final _blankLine = RegExp(r'\n\s*\n');
 
   /// Processes the full documentation for [element], resolving cross-references
   /// and `{@inject-html}` placeholders.
@@ -131,19 +189,34 @@ class VitePressDocProcessor {
   /// Extracts the first paragraph from documentation as a one-line description.
   ///
   /// Used for library overview tables where only a brief description is needed.
-  /// Returns raw markdown that may still contain `[references]` -- the caller
-  /// should process these through the doc processor if link resolution is needed.
+  /// Processes the full documentation through [processDocumentation] first to
+  /// resolve `[ClassName]` bracket references into proper markdown links, then
+  /// extracts the first paragraph and collapses it to a single line.
   ///
   /// If the documentation is empty, returns an empty string.
   String extractOneLineDoc(ModelElement element) {
     final doc = element.documentation;
     if (doc.isEmpty) return '';
 
+    // Process through the full pipeline to resolve bracket references.
+    final processed = processDocumentation(element);
+    if (processed.isEmpty) return '';
+
     // Take the first paragraph (up to the first blank line or end of text).
-    final firstPara = doc.split(RegExp(r'\n\s*\n')).first.trim();
+    final firstPara = processed.split(_blankLine).first.trim();
 
     // Collapse to a single line by replacing newlines with spaces.
     return firstPara.replaceAll('\n', ' ');
+  }
+
+  /// Processes raw documentation text that is not attached to a [ModelElement].
+  ///
+  /// Runs pre-processing (inject-html resolution, placeholder stripping) but
+  /// does NOT resolve bracket references since there is no element context.
+  /// Used for [Category] docs and other non-ModelElement documentation.
+  String processRawDocumentation(String? text) {
+    if (text == null || text.isEmpty) return '';
+    return _preprocess(text);
   }
 
   /// Pre-processes raw documentation text before markdown parsing.
@@ -197,15 +270,98 @@ class VitePressDocProcessor {
     );
 
     final nodes = document.parse(text);
-    return MarkdownRenderer().render(nodes);
+    final rendered = MarkdownRenderer().render(nodes);
+    return sanitizeHtml(rendered);
+  }
+
+  /// Strips dangerous HTML constructs from rendered documentation.
+  ///
+  /// Since `encodeHtml: false` is required for `{@youtube}` and
+  /// `{@inject-html}` directives, raw HTML from doc comments passes through
+  /// unescaped. This method removes:
+  /// - Null bytes (bypass prevention)
+  /// - `<script>` and `<style>` tags and their content
+  /// - Dangerous embed elements (`<embed>`, `<object>`, `<applet>`, `<form>`)
+  /// - `<iframe>` tags that are NOT YouTube embeds
+  /// - `javascript:` URLs in href/src attributes
+  /// - Inline event handlers (`on*=`)
+  static String sanitizeHtml(String html) {
+    // 1. Remove null bytes (bypass prevention).
+    html = html.replaceAll('\x00', '');
+
+    // 2. Remove <script> tags (handle whitespace in tag name: `< script>`).
+    html = html.replaceAll(_scriptOpenClose, '');
+    html = html.replaceAll(_scriptSelfClose, '');
+
+    // 3. Remove <style> tags.
+    html = html.replaceAll(_styleOpenClose, '');
+
+    // 4. Remove dangerous embed elements.
+    for (final tag in ['embed', 'object', 'applet', 'form', 'svg']) {
+      html = html.replaceAll(_dangerousEmbedOpenClose[tag]!, '');
+      html = html.replaceAll(_dangerousEmbedSelfClose[tag]!, '');
+    }
+
+    // 4b. Remove <base> tags (can hijack page base URL).
+    html = html.replaceAll(_baseTag, '');
+
+    // 4c. Remove <meta> tags (can redirect via http-equiv="refresh").
+    html = html.replaceAll(_metaTag, '');
+
+    // 4d. Remove <link> tags (can load external CSS for exfiltration).
+    html = html.replaceAll(_linkTag, '');
+
+    // 5. Remove <iframe> tags that are NOT YouTube/YouTube-nocookie embeds.
+    //    Check the src attribute specifically to prevent bypass via other
+    //    attributes (e.g. title="youtube.com").
+    html = html.replaceAllMapped(
+      _iframeTag,
+      (match) {
+        final tag = match.group(0)!;
+        final srcMatch = _iframeSrcAttr.firstMatch(tag);
+        if (srcMatch != null) {
+          final src = srcMatch.group(1)!;
+          if (src.contains('youtube.com') ||
+              src.contains('youtube-nocookie.com')) {
+            return tag; // Keep YouTube embeds.
+          }
+        }
+        return ''; // Remove all other iframes.
+      },
+    );
+
+    // 6. Remove javascript: URLs (use replaceAllMapped for backreference).
+    html = html.replaceAllMapped(
+      _javascriptUrl,
+      (match) => '${match[1]}="',
+    );
+
+    // 6b. Remove data: URIs in href/src (can embed HTML/JS).
+    html = html.replaceAllMapped(
+      _dataUrl,
+      (match) => '${match[1]}="',
+    );
+
+    // 7. Remove inline event handlers (on*="...", on*='...', on*=value).
+    html = html.replaceAll(_eventHandler, '');
+
+    // 8. Escape Vue template interpolation (VitePress renders md as Vue SFC).
+    html = html.replaceAll('{{', r'\{\{');
+    html = html.replaceAll('}}', r'\}\}');
+
+    return html;
   }
 
   /// Resolves a single bracket reference `[referenceText]` found in a doc
   /// comment attached to [element].
   ///
   /// Uses the same resolution logic as dartdoc's `getMatchingLinkElement`
-  /// function, then maps the resolved element to a VitePress URL via
-  /// the [VitePressPathResolver].
+  /// function. For local elements, maps to VitePress URLs via
+  /// [VitePressPathResolver]. For external elements (SDK, pub packages),
+  /// delegates to the model's built-in [CommentReferable.href] which
+  /// already computes correct remote URLs via [Package.baseHref] and the
+  /// `linkToUrl`/`linkToRemote` options (matching the original dartdoc
+  /// behavior in `_makeLinkNode`).
   ///
   /// Returns an `md.Element('a', ...)` with the resolved href, or `null`
   /// if the reference cannot be resolved (the markdown parser will render it
@@ -217,16 +373,39 @@ class VitePressDocProcessor {
     final linkedElement = result.commentReferable;
 
     if (linkedElement != null) {
-      // The linked element was found. Compute VitePress URL.
       if (linkedElement is Documentable) {
-        final url = paths.linkFor(linkedElement as Documentable);
+        final documentable = linkedElement as Documentable;
+
+        // Escape angle brackets in link text so VitePress/Vue doesn't
+        // interpret generic type parameters (e.g. `<Object>`) as HTML
+        // component tags.
+        final safeText = _escapeLinkText(referenceText);
+
+        // Always try VitePress path first. This handles both local elements
+        // AND re-exported elements whose canonical library is in the local
+        // package (e.g., `Binder` defined in `modularity_contracts` but
+        // re-exported via `modularity_core`).
+        final url = paths.linkFor(documentable);
         if (url != null) {
-          final anchor = md.Element('a', [md.Text(referenceText)]);
+          final anchor = md.Element('a', [md.Text(safeText)]);
           anchor.attributes['href'] = url;
           return anchor;
         }
-        // URL could not be computed (e.g., private element) -- fall through
-        // to inline code rendering.
+
+        // Fallback for truly external elements (SDK, pub packages): use
+        // the model's built-in href which computes remote URLs via
+        // Package.baseHref.
+        if (linkedElement.href case var href?) {
+          // Strip the htmlBasePlaceholder that dartdoc injects for local
+          // packages. For external packages this is a no-op since their
+          // href contains a full remote URL.
+          href = href.replaceAll(_htmlBasePlaceholder, '');
+          if (href.isNotEmpty) {
+            final anchor = md.Element('a', [md.Text(safeText)]);
+            anchor.attributes['href'] = href;
+            return anchor;
+          }
+        }
       }
 
       // For non-Documentable referables or elements without URLs, render
@@ -237,6 +416,17 @@ class VitePressDocProcessor {
     // Reference not resolved -- render as inline code, matching dartdoc's
     // behavior for unresolved references.
     return md.Element.text('code', referenceText);
+  }
+
+  /// Escapes `<` and `>` in link display text to prevent VitePress/Vue
+  /// from interpreting generic type parameters as HTML tags.
+  ///
+  /// For example, `DiagnosticsProperty<Object>` becomes
+  /// `DiagnosticsProperty\<Object\>` which renders correctly in markdown
+  /// without triggering Vue's template compiler.
+  static String _escapeLinkText(String text) {
+    if (!text.contains('<')) return text;
+    return text.replaceAll('<', r'\<').replaceAll('>', r'\>');
   }
 }
 
@@ -253,6 +443,13 @@ class VitePressDocProcessor {
 class MarkdownRenderer implements md.NodeVisitor {
   final StringBuffer _buffer = StringBuffer();
 
+  /// Tracks the number of consecutive trailing newline characters in [_buffer].
+  ///
+  /// This avoids calling `_buffer.toString()` (which copies the entire buffer)
+  /// just to check whether the buffer ends with `\n` or `\n\n`. Updated by
+  /// [_writeToBuffer] and [_writelnToBuffer].
+  int _trailingNewlines = 0;
+
   /// Stack of elements currently being visited, used for context-dependent
   /// rendering (e.g., detecting `<pre><code>` for fenced code blocks).
   final List<md.Element> _elementStack = [];
@@ -266,9 +463,17 @@ class MarkdownRenderer implements md.NodeVisitor {
   /// Used to compute indentation for nested list items and code blocks.
   int _listDepth = 0;
 
+  /// Tracks the current nesting depth of blockquotes.
+  /// Used to compute the correct `> ` prefix for nested blockquotes.
+  int _blockquoteDepth = 0;
+
   /// Whether we are currently inside a `<pre><code>` block (fenced code).
   /// Content inside should NOT be escaped.
   bool _inCodeBlock = false;
+
+  /// Whether we are currently inside an inline `<code>` element.
+  /// Content inside should NOT be escaped.
+  bool _inInlineCode = false;
 
   /// Collects table rows during table rendering.
   final List<List<String>> _tableRows = [];
@@ -290,13 +495,40 @@ class MarkdownRenderer implements md.NodeVisitor {
     return _buffer.toString().trimRight();
   }
 
+  /// Matches generic type parameter patterns like `<Object>`, `<T>`,
+  /// `<DiagnosticsNode>`, `<Key, Value>` but NOT HTML tags like `<iframe>`,
+  /// `</div>`, or Vue components.
+  ///
+  /// Pattern: `<` followed by an uppercase letter, then word chars and
+  /// optional nested generics/commas, closed by `>`.
+  static final _genericTypePattern = RegExp(
+    r'<([A-Z]\w*(?:\s*,\s*[A-Z]\w*)*(?:<[^>]*>)?)>',
+  );
+
   @override
   void visitText(md.Text text) {
+    var content = text.textContent;
+
+    // Escape generic type parameters in non-code contexts to prevent
+    // VitePress/Vue from interpreting them as HTML component tags.
+    //
+    // Only targets patterns like `<Object>`, `<T>`, `<Key, Value>` --
+    // these start with an uppercase letter (Dart naming convention).
+    // HTML tags (`<iframe>`, `</div>`) and Vue components are left alone.
+    //
+    // Code blocks and inline code are exempt (rendered verbatim).
+    if (!_inCodeBlock && !_inInlineCode && content.contains('<')) {
+      content = content.replaceAllMapped(
+        _genericTypePattern,
+        (m) => r'\<' '${m[1]}' r'\>',
+      );
+    }
+
     if (_cellBuffer != null) {
-      _cellBuffer!.write(text.textContent);
+      _cellBuffer!.write(content);
       return;
     }
-    _buffer.write(text.textContent);
+    _writeToBuffer(content);
   }
 
   @override
@@ -313,20 +545,20 @@ class MarkdownRenderer implements md.NodeVisitor {
       case 'h6':
         _ensureBlankLine();
         final level = int.parse(element.tag.substring(1));
-        _buffer.write('${'#' * level} ');
+        _writeToBuffer('${'#' * level} ');
         return true;
 
       case 'p':
         if (_isInsideBlockquote()) {
           // Paragraphs inside blockquotes: prefix with `> ` if not the first.
           if (_isNotFirstChild(element)) {
-            _buffer.writeln();
-            _buffer.write('> ');
+            _writelnToBuffer();
+            _writeToBuffer('> ' * _blockquoteDepth);
           }
         } else if (_isInsideListItem()) {
           // Paragraphs inside list items: separate with blank line if not first.
           if (_isNotFirstChild(element)) {
-            _buffer.writeln();
+            _writelnToBuffer();
           }
         } else {
           _ensureBlankLine();
@@ -334,8 +566,9 @@ class MarkdownRenderer implements md.NodeVisitor {
         return true;
 
       case 'blockquote':
+        _blockquoteDepth++;
         _ensureBlankLine();
-        _buffer.write('> ');
+        _writeToBuffer('> ' * _blockquoteDepth);
         return true;
 
       case 'pre':
@@ -346,10 +579,10 @@ class MarkdownRenderer implements md.NodeVisitor {
           final codeChild = element.children!.first as md.Element;
           final language = _extractLanguage(codeChild);
           final codeIndent = _listDepth > 0 ? '  ' * _listDepth : '';
-          _buffer.writeln('$codeIndent```$language');
+          _writelnToBuffer('$codeIndent```$language');
           _renderCodeBlockContent(codeChild, indent: codeIndent);
-          _buffer.writeln();
-          _buffer.write('$codeIndent```');
+          _writelnToBuffer();
+          _writeToBuffer('$codeIndent```');
           _inCodeBlock = false;
           return false; // Don't visit children -- we already handled them.
         }
@@ -361,6 +594,7 @@ class MarkdownRenderer implements md.NodeVisitor {
           // Already handled by the `pre` case above.
           return true;
         }
+        _inInlineCode = true;
         _writeToTarget('`');
         return true;
 
@@ -399,7 +633,7 @@ class MarkdownRenderer implements md.NodeVisitor {
 
       case 'hr':
         _ensureBlankLine();
-        _buffer.write('---');
+        _writeToBuffer('---');
         return false;
 
       case 'ul':
@@ -422,9 +656,9 @@ class MarkdownRenderer implements md.NodeVisitor {
         final parentTag = _parentTag();
         if (parentTag == 'ol') {
           _orderedListStack.last++;
-          _buffer.write('$indent${_orderedListStack.last}. ');
+          _writeToBuffer('$indent${_orderedListStack.last}. ');
         } else {
-          _buffer.write('$indent- ');
+          _writeToBuffer('$indent- ');
         }
         return true;
 
@@ -470,28 +704,30 @@ class MarkdownRenderer implements md.NodeVisitor {
       case 'h6':
         // Add generated ID as custom heading ID if present.
         if (element.generatedId != null) {
-          _buffer.write(' {#${element.generatedId}}');
+          _writeToBuffer(' {#${element.generatedId}}');
         }
-        _buffer.writeln();
+        _writelnToBuffer();
 
       case 'p':
         if (_isInsideBlockquote()) {
-          _buffer.writeln();
+          _writelnToBuffer();
         } else if (_isInsideListItem()) {
-          _buffer.writeln();
+          _writelnToBuffer();
         } else {
-          _buffer.writeln();
-          _buffer.writeln();
+          _writelnToBuffer();
+          _writelnToBuffer();
         }
 
       case 'blockquote':
+        _blockquoteDepth--;
         // Ensure trailing newline after blockquote.
-        if (!_buffer.toString().endsWith('\n')) {
-          _buffer.writeln();
+        if (_trailingNewlines < 1) {
+          _writelnToBuffer();
         }
 
       case 'code':
         if (!_inCodeBlock) {
+          _inInlineCode = false;
           _writeToTarget('`');
         }
 
@@ -514,8 +750,8 @@ class MarkdownRenderer implements md.NodeVisitor {
         }
 
       case 'li':
-        if (!_buffer.toString().endsWith('\n')) {
-          _buffer.writeln();
+        if (_trailingNewlines < 1) {
+          _writelnToBuffer();
         }
 
       case 'ul':
@@ -547,13 +783,79 @@ class MarkdownRenderer implements md.NodeVisitor {
         // Close unknown/raw HTML tags.
         if (element.children != null) {
           _writeToTarget('</${element.tag}>');
+          // Add a newline after block-level HTML elements so adjacent blocks
+          // (e.g. consecutive <div> alert containers) are separated properly.
+          if (_cellBuffer == null && _isBlockLevelTag(element.tag)) {
+            _writelnToBuffer();
+          }
         }
     }
   }
 
+  /// Block-level HTML tags that need newline separation in markdown output.
+  static const _blockLevelTags = {
+    'div',
+    'section',
+    'article',
+    'aside',
+    'header',
+    'footer',
+    'nav',
+    'main',
+    'figure',
+    'figcaption',
+    'details',
+    'summary',
+    'dialog',
+    'address',
+  };
+
+  /// Whether [tag] is a block-level HTML element.
+  static bool _isBlockLevelTag(String tag) =>
+      _blockLevelTags.contains(tag.toLowerCase());
+
   // ---------------------------------------------------------------------------
   // Helper methods
   // ---------------------------------------------------------------------------
+
+  /// Writes [text] to the main buffer and updates [_trailingNewlines].
+  ///
+  /// All writes to [_buffer] should go through this method (or
+  /// [_writelnToBuffer]) so that the trailing-newline counter stays in sync.
+  void _writeToBuffer(String text) {
+    _buffer.write(text);
+    _updateTrailingNewlines(text);
+  }
+
+  /// Writes [text] followed by a newline to the main buffer and updates
+  /// [_trailingNewlines].
+  void _writelnToBuffer([String text = '']) {
+    _buffer.writeln(text);
+    if (text.isEmpty) {
+      // writeln('') writes just '\n'.
+      _trailingNewlines++;
+    } else {
+      // writeln(text) writes text + '\n', so exactly 1 trailing newline.
+      _trailingNewlines = 1;
+    }
+  }
+
+  /// Updates [_trailingNewlines] based on the characters at the end of [text].
+  void _updateTrailingNewlines(String text) {
+    if (text.isEmpty) return;
+    // Count trailing '\n' characters from the end of text.
+    var count = 0;
+    for (var i = text.length - 1; i >= 0 && text.codeUnitAt(i) == 0x0A; i--) {
+      count++;
+    }
+    if (count == text.length) {
+      // The entire text is newlines — add to existing count.
+      _trailingNewlines += count;
+    } else {
+      // Text contains non-newline characters, so reset and count from end.
+      _trailingNewlines = count;
+    }
+  }
 
   /// Writes [text] to either the cell buffer (if inside a table cell) or
   /// the main buffer.
@@ -561,7 +863,7 @@ class MarkdownRenderer implements md.NodeVisitor {
     if (_cellBuffer != null) {
       _cellBuffer!.write(text);
     } else {
-      _buffer.write(text);
+      _writeToBuffer(text);
     }
   }
 
@@ -569,13 +871,12 @@ class MarkdownRenderer implements md.NodeVisitor {
   /// element separation. Does nothing if the buffer is empty.
   void _ensureBlankLine() {
     if (_buffer.isEmpty) return;
-    final current = _buffer.toString();
-    if (current.endsWith('\n\n')) return;
-    if (current.endsWith('\n')) {
-      _buffer.writeln();
+    if (_trailingNewlines >= 2) return;
+    if (_trailingNewlines == 1) {
+      _writelnToBuffer();
     } else {
-      _buffer.writeln();
-      _buffer.writeln();
+      _writelnToBuffer();
+      _writelnToBuffer();
     }
   }
 
@@ -642,9 +943,9 @@ class MarkdownRenderer implements md.NodeVisitor {
         : content;
     if (indent.isNotEmpty) {
       final lines = trimmed.split('\n');
-      _buffer.write(lines.map((line) => '$indent$line').join('\n'));
+      _writeToBuffer(lines.map((line) => '$indent$line').join('\n'));
     } else {
-      _buffer.write(trimmed);
+      _writeToBuffer(trimmed);
     }
   }
 
@@ -652,7 +953,12 @@ class MarkdownRenderer implements md.NodeVisitor {
   String _openTag(md.Element element) {
     final sb = StringBuffer('<${element.tag}');
     for (final entry in element.attributes.entries) {
-      sb.write(' ${entry.key}="${entry.value}"');
+      final escaped = entry.value
+          .replaceAll('&', '&amp;')
+          .replaceAll('"', '&quot;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;');
+      sb.write(' ${entry.key}="$escaped"');
     }
     if (element.isEmpty) {
       sb.write(' />');
@@ -670,38 +976,38 @@ class MarkdownRenderer implements md.NodeVisitor {
     final columnCount = headerRow.length;
 
     // Render header row.
-    _buffer.write('| ');
-    _buffer.write(headerRow.join(' | '));
-    _buffer.writeln(' |');
+    _writeToBuffer('| ');
+    _writeToBuffer(headerRow.join(' | '));
+    _writelnToBuffer(' |');
 
     // Render separator row with alignment.
-    _buffer.write('|');
+    _writeToBuffer('|');
     for (var i = 0; i < columnCount; i++) {
       final alignment =
           i < _tableAlignments.length ? _tableAlignments[i] : null;
       if (alignment != null && alignment.contains('text-align: center')) {
-        _buffer.write(':---:|');
+        _writeToBuffer(':---:|');
       } else if (alignment != null && alignment.contains('text-align: right')) {
-        _buffer.write('---:|');
+        _writeToBuffer('---:|');
       } else if (alignment != null && alignment.contains('text-align: left')) {
-        _buffer.write(':---|');
+        _writeToBuffer(':---|');
       } else {
-        _buffer.write('---|');
+        _writeToBuffer('---|');
       }
     }
-    _buffer.writeln();
+    _writelnToBuffer();
 
     // Render body rows (skip header row).
     for (var r = 1; r < _tableRows.length; r++) {
       final row = _tableRows[r];
-      _buffer.write('| ');
+      _writeToBuffer('| ');
       // Pad row to match column count if needed.
       final paddedRow = List<String>.generate(
         columnCount,
         (i) => i < row.length ? row[i] : '',
       );
-      _buffer.write(paddedRow.join(' | '));
-      _buffer.writeln(' |');
+      _writeToBuffer(paddedRow.join(' | '));
+      _writelnToBuffer(' |');
     }
   }
 }

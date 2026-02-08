@@ -52,36 +52,48 @@ class VitePressSidebarGenerator {
   }
 
   /// Generates a flat `SidebarItem[]` export for smaller projects.
+  ///
+  /// Wraps the result in a `DefaultTheme.Sidebar` record with an `/api/` key
+  /// so the config.ts can always use `sidebar: apiSidebar` directly.
   void _generateFlat(
     StringBuffer buf,
     List<Package> packages,
     bool isMultiPackage,
   ) {
     buf.writeln(
-      'export const apiSidebar: DefaultTheme.SidebarItem[] = [',
+      'export const apiSidebar: DefaultTheme.Sidebar = {',
     );
+    buf.writeln("  '/api/': [");
 
     for (final package in packages) {
       final libraries = package.publicLibrariesSorted;
+      if (libraries.isEmpty) continue;
       if (isMultiPackage) {
-        // Wrap libraries in a package-level group.
-        buf.writeln('  {');
-        buf.writeln("    text: '${_escapeTs(package.name)}',");
-        buf.writeln('    collapsed: false,');
-        buf.writeln('    items: [');
-        for (final library in libraries) {
-          _writeLibraryGroup(buf, library, indent: 6);
+        // When the package has a single library with the same name,
+        // skip the package-level wrapper to avoid redundant nesting.
+        if (libraries.length == 1 && libraries.first.name == package.name) {
+          _writeLibraryGroup(buf, libraries.first, indent: 4);
+        } else {
+          // Wrap libraries in a package-level group.
+          buf.writeln('    {');
+          buf.writeln("      text: '${_escapeTs(package.name)}',");
+          buf.writeln('      collapsed: false,');
+          buf.writeln('      items: [');
+          for (final library in libraries) {
+            _writeLibraryGroup(buf, library, indent: 8);
+          }
+          buf.writeln('      ],');
+          buf.writeln('    },');
         }
-        buf.writeln('    ],');
-        buf.writeln('  },');
       } else {
         for (final library in libraries) {
-          _writeLibraryGroup(buf, library, indent: 2);
+          _writeLibraryGroup(buf, library, indent: 4);
         }
       }
     }
 
-    buf.writeln(']');
+    buf.writeln('  ],');
+    buf.writeln('}');
   }
 
   /// Generates a `Record<string, SidebarItem[]>` export for large projects
@@ -92,13 +104,13 @@ class VitePressSidebarGenerator {
     bool isMultiPackage,
   ) {
     buf.writeln(
-      'export const apiSidebar: '
-      'Record<string, DefaultTheme.SidebarItem[]> = {',
+      'export const apiSidebar: DefaultTheme.Sidebar = {',
     );
 
     for (final package in packages) {
       for (final library in package.publicLibrariesSorted) {
-        final base = '/api/${library.dirName}/';
+        final dirName = paths.dirNameFor(library);
+        final base = '/api/$dirName/';
         buf.writeln("  '${_escapeTs(base)}': [");
         _writeLibraryGroup(buf, library, indent: 4);
         buf.writeln('  ],');
@@ -108,23 +120,36 @@ class VitePressSidebarGenerator {
     // Fallback overview sidebar for /api/.
     buf.writeln("  '/api/': [");
     for (final package in packages) {
+      final libraries = package.publicLibrariesSorted;
+      if (libraries.isEmpty) continue;
       if (isMultiPackage) {
-        buf.writeln('    {');
-        buf.writeln("      text: '${_escapeTs(package.name)}',");
-        buf.writeln('      items: [');
-        for (final library in package.publicLibrariesSorted) {
-          buf.writeln('        {');
-          buf.writeln("          text: '${_escapeTs(library.name)}',");
-          buf.writeln("          link: '/api/${library.dirName}/',");
-          buf.writeln('        },');
+        if (libraries.length == 1 && libraries.first.name == package.name) {
+          // Single library matching package name — no wrapper needed.
+          final dirName = paths.dirNameFor(libraries.first);
+          buf.writeln('    {');
+          buf.writeln("      text: '${_escapeTs(libraries.first.name)}',");
+          buf.writeln("      link: '/api/$dirName/',");
+          buf.writeln('    },');
+        } else {
+          buf.writeln('    {');
+          buf.writeln("      text: '${_escapeTs(package.name)}',");
+          buf.writeln('      items: [');
+          for (final library in libraries) {
+            final dirName = paths.dirNameFor(library);
+            buf.writeln('        {');
+            buf.writeln("          text: '${_escapeTs(library.name)}',");
+            buf.writeln("          link: '/api/$dirName/',");
+            buf.writeln('        },');
+          }
+          buf.writeln('      ],');
+          buf.writeln('    },');
         }
-        buf.writeln('      ],');
-        buf.writeln('    },');
       } else {
-        for (final library in package.publicLibrariesSorted) {
+        for (final library in libraries) {
+          final dirName = paths.dirNameFor(library);
           buf.writeln('    {');
           buf.writeln("      text: '${_escapeTs(library.name)}',");
-          buf.writeln("      link: '/api/${library.dirName}/',");
+          buf.writeln("      link: '/api/$dirName/',");
           buf.writeln('    },');
         }
       }
@@ -143,7 +168,8 @@ class VitePressSidebarGenerator {
     final pad = ' ' * indent;
     final totalElements = _countLibraryElements(library);
     final libraryCollapsed = totalElements > 30;
-    final base = '/api/${library.dirName}/';
+    final dirName = paths.dirNameFor(library);
+    final base = '/api/$dirName/';
 
     buf.writeln('$pad{');
     buf.writeln("$pad  text: '${_escapeTs(library.name)}',");
@@ -332,7 +358,8 @@ class VitePressSidebarGenerator {
   }) {
     final pad = ' ' * indent;
     final url = paths.urlFor(element) ?? '/${element.name}';
-    final base = '/api/${library.dirName}/';
+    final dirName = paths.dirNameFor(library);
+    final base = '/api/$dirName/';
 
     // Make link relative to the library base.
     String link;
@@ -362,12 +389,17 @@ class VitePressSidebarGenerator {
         library.publicTypedefsSorted.length;
   }
 
-  /// Escapes a string for use inside a TypeScript single-quoted string.
-  static String _escapeTs(String value) {
-    return value
-        .replaceAll(r'\', r'\\')
-        .replaceAll("'", r"\'")
-        .replaceAll('\n', r'\n')
-        .replaceAll('\r', r'\r');
-  }
+  static String _escapeTs(String value) => escapeForTs(value);
+}
+
+/// Escapes a string for use inside a TypeScript single-quoted string.
+///
+/// Shared by [VitePressSidebarGenerator] and [VitePressGuideGenerator].
+String escapeForTs(String value) {
+  return value
+      .replaceAll(r'\', r'\\')
+      .replaceAll("'", r"\'")
+      .replaceAll('\n', r'\n')
+      .replaceAll('\r', r'\r')
+      .replaceAll('\t', r'\t');
 }

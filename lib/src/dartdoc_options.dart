@@ -1176,6 +1176,19 @@ class DartdocOptionContext extends DartdocOptionContextBase
   Set<String> get _excludePackages =>
       {...optionSet['excludePackages'].valueAt(context)};
 
+  bool get workspaceDocs => optionSet['workspaceDocs'].valueAt(context);
+
+  List<String> get includePackages =>
+      optionSet['includePackages'].valueAt(context);
+
+  List<String> get guideDirs => optionSet['guide']['dirs'].valueAt(context);
+
+  List<String> get guideInclude =>
+      optionSet['guide']['include'].valueAt(context);
+
+  List<String> get guideExclude =>
+      optionSet['guide']['exclude'].valueAt(context);
+
   String? get flutterRoot => optionSet['flutterRoot'].valueAt(context);
 
   late final Set<String> include =
@@ -1414,6 +1427,27 @@ List<DartdocOption> createDartdocOptions(
     DartdocOptionArgOnly<List<String>>('excludePackages', [], resourceProvider,
         help: 'Names of packages to exclude from documentation.',
         splitCommas: true),
+    DartdocOptionArgOnly<bool>('workspaceDocs', false, resourceProvider,
+        help: 'Auto-detect workspace packages from the root pubspec.yaml '
+            "'workspace:' key and document them as local packages.",
+        negatable: true),
+    DartdocOptionArgOnly<List<String>>('includePackages', [], resourceProvider,
+        help: 'Names of packages to force-include as local (manual override '
+            'for multi-package documentation).',
+        splitCommas: true),
+    DartdocOptionSet('guide', resourceProvider)
+      ..addAll([
+        DartdocOptionArgFile<List<String>>(
+            'dirs', ['doc', 'docs'], resourceProvider,
+            help: 'Directory names to scan for guide markdown files.',
+            splitCommas: true),
+        DartdocOptionArgFile<List<String>>('include', [], resourceProvider,
+            help: 'Regexp patterns for guide file paths to include.',
+            splitCommas: true),
+        DartdocOptionArgFile<List<String>>('exclude', [], resourceProvider,
+            help: 'Regexp patterns for guide file paths to exclude.',
+            splitCommas: true),
+      ]),
     DartdocOptionSyntheticOnly<String?>('flutterRoot',
         (DartdocSyntheticOption<String?> option, Folder dir) {
       var flutterRootEnv =

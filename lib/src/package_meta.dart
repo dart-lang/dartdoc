@@ -124,6 +124,10 @@ abstract class PackageMeta {
 
   String get name;
 
+  /// The package description from pubspec.yaml, or an empty string if not
+  /// available.
+  String get description;
+
   /// The hostname that the package is hosted at, usually 'pub.dev', or `null`
   /// if not a hosted pub package.
   String? get hostedAt;
@@ -131,6 +135,8 @@ abstract class PackageMeta {
   String get version;
 
   String get homepage;
+
+  String get repository;
 
   File? getReadmeContents();
 
@@ -307,11 +313,17 @@ class _FilePackageMeta extends PubPackageMeta {
   String get name => _pubspec.getOptionalString('name') ?? '';
 
   @override
+  String get description => _pubspec.getOptionalString('description') ?? '';
+
+  @override
   String get version =>
       _pubspec.getOptionalString('version') ?? '0.0.0-unknown';
 
   @override
   String get homepage => _pubspec.getOptionalString('homepage') ?? '';
+
+  @override
+  String get repository => _pubspec.getOptionalString('repository') ?? '';
 
   @override
   bool get requiresFlutter =>
@@ -367,6 +379,9 @@ class _SdkMeta extends PubPackageMeta {
   String get name => 'Dart';
 
   @override
+  String get description => '';
+
+  @override
   String get version {
     var versionFile = resourceProvider
         .getFile(resourceProvider.pathContext.join(dir.path, 'version'));
@@ -376,6 +391,9 @@ class _SdkMeta extends PubPackageMeta {
 
   @override
   String get homepage => 'https://github.com/dart-lang/sdk';
+
+  @override
+  String get repository => 'https://github.com/dart-lang/sdk';
 
   @override
   bool get requiresFlutter => false;

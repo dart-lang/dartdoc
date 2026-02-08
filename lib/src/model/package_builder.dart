@@ -30,8 +30,10 @@ import 'package:dartdoc/src/package_config_provider.dart';
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, PackageMetaProvider;
 import 'package:dartdoc/src/runtime_stats.dart';
+import 'package:glob/glob.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show Context;
+import 'package:yaml/yaml.dart';
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
 abstract class PackageBuilder {
@@ -200,6 +202,12 @@ class PubPackageBuilder implements PackageBuilder {
         for (var filename in files)
           _packageMetaProvider.fromFilename(filename)!,
       };
+
+  /// Names of packages discovered as workspace members during
+  /// [_findWorkspacePackages]. Populated when `workspaceDocs` is enabled.
+  ///
+  /// Used to mark workspace member packages as "local" in the [PackageGraph].
+  final Set<String> _workspacePackageNames = {};
 
   /// Whether to skip unreachable libraries when gathering all of the libraries
   /// for the package graph.
@@ -401,9 +409,24 @@ class PubPackageBuilder implements PackageBuilder {
 
   /// Returns a set of package roots that are to be documented.
   ///
+  /// If `_config.workspaceDocs` is `true`, reads the root pubspec.yaml's
+  /// `workspace:` key, resolves each entry (including glob patterns) to
+  /// package directories, and returns those package roots.
+  ///
+  /// If `_config.includePackages` is non-empty, filters the package config
+  /// to only those package names and returns their roots.
+  ///
   /// If `_config.autoIncludeDependencies` is `true`, then every package in
   /// [basePackageRoot]'s package config is included.
   Future<Set<String>> _findPackagesToDocument(String basePackageRoot) async {
+    if (_config.workspaceDocs) {
+      return _findWorkspacePackages(basePackageRoot);
+    }
+
+    if (_config.includePackages.isNotEmpty) {
+      return _findIncludedPackages(basePackageRoot);
+    }
+
     if (!_config.autoIncludeDependencies) {
       return {basePackageRoot};
     }
@@ -419,10 +442,160 @@ class PubPackageBuilder implements PackageBuilder {
     };
   }
 
+  /// Reads the `workspace:` key from the root pubspec.yaml and resolves
+  /// each entry (supporting glob patterns) to package directories.
+  ///
+  /// Returns the set of package root paths for all workspace members.
+  Set<String> _findWorkspacePackages(String basePackageRoot) {
+    var pubspecFile = _resourceProvider
+        .getFile(_pathContext.join(basePackageRoot, 'pubspec.yaml'));
+    if (!pubspecFile.exists) {
+      logWarning('workspaceDocs enabled but no pubspec.yaml found at '
+          '$basePackageRoot');
+      return {basePackageRoot};
+    }
+
+    var pubspecYaml = loadYaml(pubspecFile.readAsStringSync());
+    if (pubspecYaml is! YamlMap) {
+      logWarning('workspaceDocs enabled but pubspec.yaml is not a valid '
+          'YAML map at $basePackageRoot');
+      return {basePackageRoot};
+    }
+
+    var workspaceEntries = pubspecYaml['workspace'];
+    if (workspaceEntries is! YamlList) {
+      logWarning("workspaceDocs enabled but no 'workspace:' key found in "
+          'pubspec.yaml at $basePackageRoot');
+      return {basePackageRoot};
+    }
+
+    var packageRoots = <String>{basePackageRoot};
+
+    for (var entry in workspaceEntries) {
+      var pattern = entry.toString();
+      var resolvedDirs = _resolveWorkspaceEntry(basePackageRoot, pattern);
+
+      for (var dir in resolvedDirs) {
+        var dirPubspec = _resourceProvider
+            .getFile(_pathContext.join(dir, 'pubspec.yaml'));
+        if (!dirPubspec.exists) {
+          logDebug('Workspace entry "$pattern" resolved to "$dir" but no '
+              'pubspec.yaml found, skipping.');
+          continue;
+        }
+
+        var dirName = _readPackageName(dirPubspec);
+        if (dirName == null) {
+          logDebug('Workspace entry "$pattern" resolved to "$dir" but '
+              "pubspec.yaml has no 'name' field, skipping.");
+          continue;
+        }
+
+        if (_config.isPackageExcluded(dirName)) {
+          logDebug('Workspace package "$dirName" excluded by '
+              'excludePackages option.');
+          continue;
+        }
+
+        _workspacePackageNames.add(dirName);
+        packageRoots.add(_pathContext.canonicalize(dir));
+      }
+    }
+
+    return packageRoots;
+  }
+
+  /// Resolves a single workspace entry pattern to a list of directory paths.
+  ///
+  /// If [pattern] contains glob characters (`*`, `?`, `[`, `{`), it is
+  /// treated as a glob and matched against the filesystem. Otherwise, it is
+  /// treated as a literal relative path.
+  List<String> _resolveWorkspaceEntry(String baseRoot, String pattern) {
+    var isGlob = pattern.contains('*') ||
+        pattern.contains('?') ||
+        pattern.contains('[') ||
+        pattern.contains('{');
+
+    if (!isGlob) {
+      var resolved = _pathContext.normalize(
+          _pathContext.join(baseRoot, pattern));
+      var folder = _resourceProvider.getFolder(resolved);
+      if (folder.exists) {
+        return [resolved];
+      }
+      logDebug('Workspace entry "$pattern" resolved to non-existent '
+          'directory "$resolved".');
+      return [];
+    }
+
+    // Handle glob patterns by expanding the parent directory and matching.
+    var glob = Glob(pattern, recursive: false);
+    var results = <String>[];
+    var baseFolder = _resourceProvider.getFolder(baseRoot);
+
+    // Walk directories matching the glob from the base root.
+    _matchGlob(baseFolder, glob, baseRoot, results);
+    return results;
+  }
+
+  /// Recursively matches [glob] against directories starting from [folder].
+  void _matchGlob(
+      Folder folder, Glob glob, String baseRoot, List<String> results) {
+    for (var child in folder.getChildren()) {
+      if (child is Folder) {
+        var relativePath = _pathContext.relative(child.path, from: baseRoot);
+        if (glob.matches(relativePath)) {
+          results.add(child.path);
+        }
+        // Continue searching subdirectories for patterns like 'packages/adapters/*'
+        _matchGlob(child, glob, baseRoot, results);
+      }
+    }
+  }
+
+  /// Reads the `name` field from a pubspec.yaml [file].
+  String? _readPackageName(File file) {
+    try {
+      var yaml = loadYaml(file.readAsStringSync());
+      if (yaml is YamlMap) {
+        return yaml['name'] as String?;
+      }
+    } catch (_) {
+      // Ignore malformed YAML files.
+    }
+    return null;
+  }
+
+  /// Returns package roots for packages whose names are in
+  /// `_config.includePackages`.
+  Set<String> _findIncludedPackages(String basePackageRoot) {
+    var packageConfig =
+        findPackageConfig(_resourceProvider.getFolder(basePackageRoot))!;
+    var includeSet = _config.includePackages.toSet();
+
+    var packageRoots = <String>{basePackageRoot};
+    for (var package in packageConfig.packages) {
+      if (includeSet.contains(package.name) &&
+          !_config.isPackageExcluded(package.name)) {
+        packageRoots.add(_pathContext.dirname(
+            _pathContext.fromUri(packageConfig[package.name]!.packageUriRoot)));
+      }
+    }
+
+    return packageRoots;
+  }
+
   /// Adds all libraries with documentable elements to
   /// [uninitializedPackageGraph].
   Future<void> _getLibraries(PackageGraph uninitializedPackageGraph) async {
     var files = await _getFilesToDocument();
+
+    // Propagate discovered workspace package names and includePackages
+    // to the PackageGraph so Package.isLocal can use them.
+    uninitializedPackageGraph.workspacePackageNames
+        .addAll(_workspacePackageNames);
+    uninitializedPackageGraph.workspacePackageNames
+        .addAll(_config.includePackages);
 
     logInfo('Discovering libraries...');
     var foundLibraries = <LibraryElement>{};

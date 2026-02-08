@@ -51,6 +51,10 @@ void main() {
       expect(p.getInvalidReasons(), isEmpty);
     });
 
+    test('has a repository', () {
+      expect(p.repository, equals('https://github.com/dart-lang/dartdoc'));
+    });
+
     test('has a readme', () {
       expect(p.getReadmeContents(), isNotNull);
       expect(
@@ -81,6 +85,10 @@ void main() {
 
     test('has a homepage', () {
       expect(p.homepage, equals('https://github.com/dart-lang/sdk'));
+    });
+
+    test('has a repository', () {
+      expect(p.repository, equals('https://github.com/dart-lang/sdk'));
     });
 
     test('has a readme', () {
