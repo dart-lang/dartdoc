@@ -21,10 +21,14 @@ class ExampleDirectiveTest extends DocumentationCommentTestBase {
       {Map<String, String> files = const {},
       String libraryPath = 'lib/a.dart'}) async {
     projectRoot = utils.writePackage(packageName, resourceProvider);
+    var pathContext = resourceProvider.pathContext;
     for (var entry in files.entries) {
-      var pathParts = entry.key.split('/');
+      var pathParts = pathContext.split(entry.key);
       var currentFolder = projectRoot;
       for (var i = 0; i < pathParts.length - 1; i++) {
+        if (pathParts[i] == '' || pathParts[i] == pathContext.separator) {
+          continue;
+        }
         currentFolder = currentFolder.getChildAssumingFolder(pathParts[i]);
       }
       currentFolder
@@ -32,9 +36,12 @@ class ExampleDirectiveTest extends DocumentationCommentTestBase {
           .writeAsStringSync(entry.value);
     }
 
-    var pathParts = libraryPath.split('/');
+    var pathParts = pathContext.split(libraryPath);
     var currentFolder = projectRoot;
     for (var i = 0; i < pathParts.length - 1; i++) {
+      if (pathParts[i] == '' || pathParts[i] == pathContext.separator) {
+        continue;
+      }
       currentFolder = currentFolder.getChildAssumingFolder(pathParts[i]);
     }
     currentFolder
@@ -43,8 +50,11 @@ class ExampleDirectiveTest extends DocumentationCommentTestBase {
 
     packageGraph =
         await utils.bootBasicPackage(projectRoot.path, packageMetaProvider);
-    libraryModel = packageGraph.defaultPackage.libraries
-        .firstWhere((l) => l.sourceFileName.endsWith(libraryPath));
+
+    libraryModel = packageGraph.defaultPackage.libraries.firstWhere((l) =>
+        pathContext
+            .normalize(l.sourceFileName)
+            .endsWith(pathContext.normalize(libraryPath)));
   }
 
   void test_processesExampleDirective() async {
