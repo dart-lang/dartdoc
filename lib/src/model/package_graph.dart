@@ -461,6 +461,7 @@ class PackageGraph with CommentReferable, Nameable {
       PackageWarning.orphanedFile ||
       PackageWarning.unknownFile ||
       PackageWarning.missingFromSearchIndex ||
+      PackageWarning.missingExampleFile ||
       PackageWarning.typeAsHtml ||
       PackageWarning.invalidParameter ||
       PackageWarning.toolError ||
