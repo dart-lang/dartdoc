@@ -5,6 +5,7 @@
 /// @docImport 'package:dartdoc/src/model/package_graph.dart';
 library;
 
+import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -104,6 +105,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
     // The vast, vast majority of doc comments have no directives.
     if (docs.contains('{@')) {
       _checkForUnknownDirectives(docs);
+      docs = _injectExamples(docs);
       docs = _injectYouTube(docs);
       docs = _injectAnimations(docs);
       if (processMacros) {
@@ -180,6 +182,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
     'end-inject-html',
     'end-tool',
     'endtemplate',
+    'example',
     'macro',
     'inject-html',
     'template',
@@ -319,6 +322,178 @@ mixin DocumentationComment implements Warnable, SourceCode {
     return (env..removeWhere((key, value) => value == null))
         .cast<String, String>();
   }
+
+  /// Replace &#123;@example ...&#125; in API comments with a fenced code block
+  /// containing the contents of the specified file.
+  ///
+  /// Syntax:
+  ///
+  ///     &#123;@example PATH [lang=LANGUAGE] [indent=keep|strip]&#125;
+  ///
+  /// The `PATH` is resolved relative to the package root or the current file;
+  /// see [resolveExamplePath] for details.
+  ///
+  /// The `lang` parameter specifies the language for the fenced code block. If
+  /// not provided, it defaults to the file extension of `PATH`, or `dart` if
+  /// the extension is empty.
+  ///
+  /// The `indent` parameter specifies whether to `strip` common indentation
+  /// from the file contents (the default) or `keep` it exactly as is.
+  ///
+  /// Example:
+  ///
+  ///     &#123;@example /examples/my_example.dart&#125;
+  ///     &#123;@example ../subdir/utils.dart lang=dart indent=strip&#125;
+  String _injectExamples(String rawDocs) {
+    return rawDocs.replaceAllMapped(_exampleRegExp, (match) {
+      var argsAsString = match[1];
+      if (argsAsString == null) {
+        warn(PackageWarning.invalidParameter,
+            message: 'Must specify a file path for the @example directive.');
+        return '';
+      }
+      var args = _parseArgs(argsAsString, _exampleArgParser, 'example');
+      if (args == null) {
+        // Already warned about an invalid parameter if this happens.
+        return '';
+      }
+      if (args.rest.isEmpty) {
+        warn(PackageWarning.invalidParameter,
+            message: 'Must specify a file path for the @example directive.');
+        return '';
+      }
+
+      var filepath = args.rest.first;
+      // TODO(zarah): Add support for regions (#region, #endregion).
+
+      var resolved = resolveExamplePath(
+        filepath,
+        packagePath: package.packagePath,
+        sourceFileName: sourceFileName,
+        pathContext: pathContext,
+        warn: warn,
+      );
+      if (resolved == null) return '';
+
+      var file = packageGraph.resourceProvider.getFile(resolved.path);
+      if (!file.exists) {
+        warn(PackageWarning.missingExampleFile, message: filepath);
+        return '';
+      }
+
+      var extension = resolved.extension;
+      var language = args['lang'] ?? (extension.isEmpty ? 'dart' : extension);
+      var indent = args['indent'] ?? 'strip';
+
+      var content = file.readAsStringSync();
+      if (indent == 'strip') {
+        content = _stripIndentation(content);
+      }
+
+      return '\n```$language\n$content\n```\n';
+    });
+  }
+
+  /// Resolves the given [filepath] as a URI reference relative to the current
+  /// package root.
+  ///
+  /// The [filepath] is resolved as follows:
+  /// - If it starts with a leading `/`, it is resolved relative to the package
+  ///   root.
+  /// - Otherwise, it is resolved relative to the directory containing the file
+  ///   with the documentation comment.
+  /// - Resolution follows URI reference rules, ensuring that `..` segments
+  ///   stop at the package root and never escape it.
+  /// - [filepath] can include URI-encoded characters (like `%20` for spaces).
+  ///
+  /// Returns the absolute path and extension of the resolved file, or `null` if
+  /// the path could not be resolved or is outside the package root.
+  @visibleForTesting
+  static ({String path, String extension})? resolveExamplePath(
+    String filepath, {
+    required String packagePath,
+    required String? sourceFileName,
+    required p.Context pathContext,
+    required void Function(PackageWarning, {String? message}) warn,
+  }) {
+    // Resolve the path as a URI reference.
+    // 1. Get the relative path of the current file from the package root.
+    var relativeBase = sourceFileName != null
+        ? pathContext.relative(sourceFileName, from: packagePath)
+        : '';
+
+    // 2. Convert to POSIX-style for URI parsing (using '/' as separator).
+    // We start with a '/' so that Uri.resolve() stops at the package root
+    // when it sees too many '..' segments.
+    var relativeBasePosix = '/${pathContext.split(relativeBase).join('/')}';
+
+    // 3. Resolve using [Uri.resolve].
+    // This handles:
+    // - Leading '/' (relative to root)
+    // - Relative paths (relative to base)
+    // - '..' (stops at root)
+    // - URI encoding (%20 etc)
+    String resolvedPath;
+    String extension;
+    try {
+      var baseUri = Uri.parse(relativeBasePosix);
+      var resolvedUri = baseUri.resolve(filepath);
+
+      // 4. Convert back to a package-relative file path.
+      resolvedPath = pathContext.joinAll([
+        packagePath,
+        ...resolvedUri.pathSegments,
+      ]);
+      extension = pathContext
+          .extension(resolvedUri.path)
+          .replaceFirst('.', '')
+          .toLowerCase();
+    } on FormatException catch (e) {
+      warn(PackageWarning.invalidParameter,
+          message:
+              'Invalid path for @example directive ($filepath): ${e.message}');
+      return null;
+    }
+
+    resolvedPath = pathContext.normalize(resolvedPath);
+
+    if (!pathContext.isWithin(packagePath, resolvedPath) &&
+        !pathContext.equals(packagePath, resolvedPath)) {
+      warn(PackageWarning.invalidParameter,
+          message:
+              'Example file $filepath must be within the package root ($packagePath).');
+      return null;
+    }
+
+    return (path: resolvedPath, extension: extension);
+  }
+
+  static String _stripIndentation(String content) {
+    var lines = LineSplitter.split(content).toList();
+    if (lines.isEmpty) return content;
+
+    int? minIndent;
+    for (var line in lines) {
+      if (line.trim().isEmpty) continue;
+      var indent = line.length - line.trimLeft().length;
+      if (minIndent == null || indent < minIndent) {
+        minIndent = indent;
+      }
+    }
+
+    if (minIndent == null || minIndent == 0) return content;
+
+    return lines.map((line) {
+      if (line.length < minIndent!) return '';
+      return line.substring(minIndent);
+    }).join('\n');
+  }
+
+  static final _exampleRegExp = RegExp(r'{@example(?:\s+([^\s}][^}]*))?}');
+
+  static final _exampleArgParser = ArgParser()
+    ..addOption('lang')
+    ..addOption('indent', allowed: ['keep', 'strip'], defaultsTo: 'strip');
 
   /// Matches all youtube directives (even some invalid ones). This is so
   /// we can give good error messages if the directive is malformed, instead of
