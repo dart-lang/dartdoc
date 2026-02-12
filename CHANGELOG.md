@@ -1,3 +1,6 @@
+## 9.0.4-wip
+* Document using the public name for private named parameters.
+
 ## 9.0.3
 * Require analyzer 10.1.0 APIs.
 * Remove usage of `EmbedderYamlLocator` and `EmbedderSdk.new`, internal

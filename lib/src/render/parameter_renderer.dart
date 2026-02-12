@@ -208,7 +208,7 @@ abstract class ParameterRenderer {
           ? modelType.linkedName
           : modelType.returnType.linkedName;
       buffer.write(typeName(returnTypeName));
-      buffer.write(' ${parameterName(param.name)}');
+      buffer.write(' ${parameterName(param.documentedName ?? param.name)}');
 
       // Writes out the generic type parameters for a function type.
       // TODO(kallentu): Pull this type parameter generation into a helper for
@@ -252,7 +252,7 @@ abstract class ParameterRenderer {
         }
       }
       if (param.name.isNotEmpty) {
-        buffer.write(parameterName(param.name));
+        buffer.write(parameterName(param.documentedName ?? param.name));
       }
     }
 

@@ -37,6 +37,21 @@ mixin CommentReferable implements Nameable {
 
   String? get href => null;
 
+  /// The name that should be used in documentation to refer to this object if
+  /// not the name that was actually used in the reference.
+  ///
+  /// This is `null` for most objects in which case the reference's original
+  /// text is used, but returns the public name of a private named parameter:
+  ///
+  ///     class C {
+  ///       /// Make with [_x].
+  ///       C({this._x});
+  ///     }
+  ///
+  /// Here, the generated doc comment will use "x" as the name for the parameter
+  /// reference, not "_x".
+  String? get documentedName => null;
+
   /// Looks up a comment reference by its component parts.
   ///
   /// If [tryParents] is true, try looking up the same reference in any parents
