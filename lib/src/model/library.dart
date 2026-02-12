@@ -486,24 +486,8 @@ class Library extends ModelElement with TopLevelContainer {
       ...library.properties,
       ...library.typedefs,
     ];
-    return libraryMembers.map((member) {
-      if (member is! GetterSetterCombo) {
-        return getModelForElement(member.element).fullyQualifiedName;
-      }
-      var getter = switch (member.getter) {
-        Accessor accessor => getModelForElement(accessor.element) as Accessor,
-        _ => null,
-      };
-      var setter = switch (member.setter) {
-        Accessor accessor => getModelForElement(accessor.element) as Accessor,
-        _ => null,
-      };
-      return getModelForPropertyInducingElement(
-        member.element as TopLevelVariableElement,
-        getModelForElement(member.element.library!) as Library,
-        getter: getter,
-        setter: setter,
-      ).fullyQualifiedName;
-    }).toSet();
+    return libraryMembers
+        .map((member) => member.originalFullyQualifiedName)
+        .toSet();
   }();
 }

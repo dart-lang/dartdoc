@@ -11,10 +11,10 @@ const int _separatorChar = 0x3B;
 /// Searches [PackageGraph.libraryExports] for a public, documented library
 /// which exports this [ModelElement], ideally in its library's package.
 Library? canonicalLibraryCandidate(ModelElement modelElement) {
-  var library = modelElement.library;
-  if (library == null) return null;
+  var libraryElement = modelElement.element.library;
+  if (libraryElement == null) return null;
   var thisAndExported =
-      modelElement.packageGraph.libraryExports[library.element];
+      modelElement.packageGraph.libraryExports[libraryElement];
   if (thisAndExported == null) {
     return null;
   }
@@ -34,11 +34,18 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
 
   final candidateLibraries = thisAndExported.where((l) {
     if (!l.isPublic) return false;
-    if (l.package.documentedWhere == DocumentLocation.missing) return false;
+    if (l.package.documentedWhere == DocumentLocation.missing &&
+        modelElement.library?.package.documentedWhere !=
+            DocumentLocation.missing) {
+      return false;
+    }
     if (modelElement is Library) return true;
     var lookup = l.element.exportNamespace.definedNames2[topLevelElementName];
-    return topLevelElement ==
-        (lookup is PropertyAccessorElement ? lookup.variable : lookup);
+    var lookupElement =
+        lookup is PropertyAccessorElement ? lookup.variable : lookup;
+    var targetElement =
+        topLevelElement is PropertyAccessorElement ? topLevelElement.variable : topLevelElement;
+    return targetElement == lookupElement;
   }).toList(growable: true);
 
   if (candidateLibraries.isEmpty) {
@@ -46,15 +53,6 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
   }
   if (candidateLibraries.length == 1) {
     return candidateLibraries.single;
-  }
-
-  var remoteLibraries = candidateLibraries
-      .where((l) => l.package.documentedWhere == DocumentLocation.remote);
-  if (remoteLibraries.length == 1) {
-    // If one or more local libraries export code from a remotely documented
-    // library (and we're linking to remote libraries), then just use the remote
-    // library.
-    return remoteLibraries.single;
   }
 
   var topLevelModelElement =
@@ -114,9 +112,15 @@ final class _Canonicalization {
         .split(_locationSplitter)
         .where((s) => s.isNotEmpty)
         .toSet();
+    var elementQualifiedName = _modelElement.isFromInternalLibrary
+        ? _modelElement.originalFullyQualifiedName
+        : _modelElement.fullyQualifiedName;
     var scoredCandidates = libraries
         .map((library) => _scoreElementWithLibrary(
-            library, _modelElement.fullyQualifiedName, locationPieces))
+            library, elementQualifiedName, locationPieces,
+            preferredPackage: _modelElement.library?.package,
+            preferredLibraryName: _modelElement.element.library?.name,
+            preferredLibrary: _modelElement.element.library))
         .toList(growable: false)
       ..sort();
 
@@ -144,13 +148,34 @@ final class _Canonicalization {
   // package names, etc. Anyways, add more tests, in addition to the
   // `StringName` tests in `model_test.dart`.
   static _ScoredCandidate _scoreElementWithLibrary(Library library,
-      String elementQualifiedName, Set<String> elementLocationPieces) {
+      String elementQualifiedName, Set<String> elementLocationPieces,
+      {Package? preferredPackage,
+      String? preferredLibraryName,
+      LibraryElement? preferredLibrary}) {
     var scoredCandidate = _ScoredCandidate(library);
+
+    var isDeprecatedElement = elementQualifiedName.endsWith('.deprecated');
 
     // Large boost for `@canonicalFor`, essentially overriding all other
     // concerns.
     if (library.canonicalFor.contains(elementQualifiedName)) {
-      scoredCandidate._alterScore(5.0, _Reason.canonicalFor);
+      scoredCandidate._alterScore(10.0, _Reason.canonicalFor);
+    }
+
+    if (preferredPackage != null && library.package == preferredPackage) {
+      scoredCandidate._alterScore(1.0, _Reason.samePackage);
+    }
+
+    if (preferredLibrary != null && library.element == preferredLibrary) {
+      scoredCandidate._alterScore(4.0, _Reason.sameLibrary);
+    }
+
+    if (preferredLibraryName != null && library.name == preferredLibraryName) {
+      scoredCandidate._alterScore(0.1, _Reason.exactLibraryName);
+    }
+
+    if (library.element.firstFragment.source.uri.isScheme('dart')) {
+      scoredCandidate._alterScore(0.2, _Reason.isDartScheme);
     }
 
     // Penalty for deprecated libraries.
@@ -169,7 +194,7 @@ final class _Canonicalization {
 
     // Same idea as the above, for the Dart SDK.
     if (library.name == 'dart:core') {
-      scoredCandidate._alterScore(0.9, _Reason.packageName);
+      scoredCandidate._alterScore(1.1, _Reason.packageName);
     }
 
     // Give a tiny boost for libraries with long names, assuming they're
@@ -201,6 +226,7 @@ final class _Canonicalization {
       }
     }
     scoredCandidate._alterScore(scoreBoost, _Reason.locationPartStart);
+
     return scoredCandidate;
   }
 }
@@ -229,7 +255,11 @@ class _ScoredCandidate implements Comparable<_ScoredCandidate> {
   }
 
   @override
-  int compareTo(_ScoredCandidate other) => score.compareTo(other.score);
+  int compareTo(_ScoredCandidate other) {
+    var result = score.compareTo(other.score);
+    if (result != 0) return result;
+    return byName(library, other.library);
+  }
 
   @override
   String toString() {
@@ -245,6 +275,10 @@ class _ScoredCandidate implements Comparable<_ScoredCandidate> {
 /// A reason that a candidate's score is changed.
 enum _Reason {
   canonicalFor('marked @canonicalFor'),
+  samePackage('is in the same package'),
+  sameLibrary('is the same library'),
+  isDartScheme('uses dart: scheme'),
+  exactLibraryName('library name matches defining library name'),
   deprecated('is deprecated'),
   packageName('embeds package name'),
   longName('name is long'),
