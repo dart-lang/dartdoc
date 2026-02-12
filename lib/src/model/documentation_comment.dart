@@ -328,13 +328,13 @@ mixin DocumentationComment implements Warnable, SourceCode {
   ///
   /// Syntax:
   ///
-  ///     &#123;@example PATH [lang=LANGUAGE] [indent=keep|strip]&#125;
+  ///     &#123;@example <path> [lang=LANGUAGE] [indent=keep|strip]&#125;
   ///
-  /// The `PATH` is resolved relative to the package root or the current file;
+  /// The `path` is resolved relative to the package root or the current file;
   /// see [resolveExamplePath] for details.
   ///
   /// The `lang` parameter specifies the language for the fenced code block. If
-  /// not provided, it defaults to the file extension of `PATH`, or `dart` if
+  /// not provided, it defaults to the file extension of `path`, or `dart` if
   /// the extension is empty.
   ///
   /// The `indent` parameter specifies whether to `strip` common indentation
@@ -382,7 +382,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
       }
 
       var extension = resolved.extension;
-      var language = args['lang'] ?? (extension.isEmpty ? 'dart' : extension);
+      var language = args['lang'] ?? extension;
       var indent = args['indent'] ?? 'strip';
 
       var content = file.readAsStringSync();

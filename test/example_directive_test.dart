@@ -83,6 +83,24 @@ void main() => print("hello");
 End text.'''));
   }
 
+  void test_processesExampleDirective_noExtension_noLang() async {
+    await _bootPackage('''
+/// {@example /examples/hello}
+''', files: {
+      'examples/hello': 'hello world',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expectNoWarnings();
+    expect(doc, equals('''
+
+```
+hello world
+```
+'''));
+  }
+
   void test_processesExampleDirective_withLang() async {
     await _bootPackage('''
 /// {@example /examples/hello.txt lang=text}
