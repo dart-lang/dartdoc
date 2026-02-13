@@ -43,8 +43,9 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
     var lookup = l.element.exportNamespace.definedNames2[topLevelElementName];
     var lookupElement =
         lookup is PropertyAccessorElement ? lookup.variable : lookup;
-    var targetElement =
-        topLevelElement is PropertyAccessorElement ? topLevelElement.variable : topLevelElement;
+    var targetElement = topLevelElement is PropertyAccessorElement
+        ? topLevelElement.variable
+        : topLevelElement;
     return targetElement == lookupElement;
   }).toList(growable: true);
 
@@ -154,7 +155,7 @@ final class _Canonicalization {
       LibraryElement? preferredLibrary}) {
     var scoredCandidate = _ScoredCandidate(library);
 
-    var isDeprecatedElement = elementQualifiedName.endsWith('.deprecated');
+    elementQualifiedName.endsWith('.deprecated');
 
     // Large boost for `@canonicalFor`, essentially overriding all other
     // concerns.

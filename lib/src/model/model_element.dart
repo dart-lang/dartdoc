@@ -710,7 +710,6 @@ abstract class ModelElement
 
     var documentedWhere = canonicalLibrary.package.documentedWhere;
     if (documentedWhere == DocumentLocation.remote) {
-      assert(canonicalLibrary.package.baseHref != null);
       return '${canonicalLibrary.package.baseHref}$filePath';
     }
     if (documentedWhere == DocumentLocation.local) {
