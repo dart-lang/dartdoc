@@ -17,6 +17,7 @@ run:
 dart run tool/task.dart build
 ```
 Then commit the resulting changes before rerunning `buildbot`.
+Make sure you rebuild before claiming a task is complete.
 
 ## 2. Verify specific logic areas
 If you modified canonicalization or documentation rendering, verify these
