@@ -3034,8 +3034,7 @@ String _renderCategory_partial_property_7(TopLevelVariable context2) {
 
 String _renderCategory_partial_search_sidebar_12(
   CategoryTemplateData context0,
-) =>
-    _deduplicated__search_sidebar(context0);
+) => _deduplicated__search_sidebar(context0);
 
 String _renderCategory_partial_sidebar_for_category_14(
   CategoryTemplateData context0,
@@ -3367,8 +3366,7 @@ String _renderConstructor_partial_head_0(ConstructorTemplateData context0) =>
 
 String _renderConstructor_partial_search_sidebar_6(
   ConstructorTemplateData context0,
-) =>
-    _deduplicated__search_sidebar(context0);
+) => _deduplicated__search_sidebar(context0);
 
 String _renderConstructor_partial_source_code_5(Constructor context1) =>
     _deduplicated__source_code(context1);
@@ -3465,66 +3463,57 @@ String _renderError_partial_search_sidebar_1(PackageTemplateData context0) =>
 
 String _renderExtensionType_partial_available_extensions_6(
   ExtensionType context1,
-) =>
-    _deduplicated__available_extensions(context1);
+) => _deduplicated__available_extensions(context1);
 
 String _renderExtensionType_partial_constructors_8(ExtensionType context1) =>
     _deduplicated__constructors(context1);
 
 String _renderExtensionType_partial_container_annotations_7(
   ExtensionType context1,
-) =>
-    _deduplicated__container_annotations(context1);
+) => _deduplicated__container_annotations(context1);
 
 String _renderExtensionType_partial_documentation_4(ExtensionType context1) =>
     _deduplicated__documentation(context1);
 
 String _renderExtensionType_partial_footer_16<T extends ExtensionType>(
   ExtensionTypeTemplateData<T> context0,
-) =>
-    _deduplicated__footer(context0);
+) => _deduplicated__footer(context0);
 
 String _renderExtensionType_partial_head_0<T extends ExtensionType>(
   ExtensionTypeTemplateData<T> context0,
-) =>
-    _deduplicated__head(context0);
+) => _deduplicated__head(context0);
 
 String _renderExtensionType_partial_instance_fields_9(ExtensionType context1) =>
     _deduplicated__instance_fields(context1);
 
 String _renderExtensionType_partial_instance_methods_10(
   ExtensionType context1,
-) =>
-    _deduplicated__instance_methods(context1);
+) => _deduplicated__instance_methods(context1);
 
 String _renderExtensionType_partial_instance_operators_11(
   ExtensionType context1,
-) =>
-    _deduplicated__instance_operators(context1);
+) => _deduplicated__instance_operators(context1);
 
 String _renderExtensionType_partial_interfaces_5(ExtensionType context1) =>
     _deduplicated__interfaces(context1);
 
 String _renderExtensionType_partial_search_sidebar_15<T extends ExtensionType>(
   ExtensionTypeTemplateData<T> context0,
-) =>
-    _deduplicated__search_sidebar(context0);
+) => _deduplicated__search_sidebar(context0);
 
 String _renderExtensionType_partial_source_link_1(ExtensionType context1) =>
     _deduplicated__source_link(context1);
 
 String _renderExtensionType_partial_static_constants_14(
   ExtensionType context1,
-) =>
-    _deduplicated__static_constants(context1);
+) => _deduplicated__static_constants(context1);
 
 String _renderExtensionType_partial_static_methods_13(ExtensionType context1) =>
     _deduplicated__static_methods(context1);
 
 String _renderExtensionType_partial_static_properties_12(
   ExtensionType context1,
-) =>
-    _deduplicated__static_properties(context1);
+) => _deduplicated__static_properties(context1);
 
 String _renderExtensionType_partial_tags_2(ExtensionType context1) =>
     _deduplicated__tags(context1);
@@ -3537,13 +3526,11 @@ String _renderExtension_partial_documentation_4(Extension context1) =>
 
 String _renderExtension_partial_footer_13<T extends Extension>(
   ExtensionTemplateData<T> context0,
-) =>
-    _deduplicated__footer(context0);
+) => _deduplicated__footer(context0);
 
 String _renderExtension_partial_head_0<T extends Extension>(
   ExtensionTemplateData<T> context0,
-) =>
-    _deduplicated__head(context0);
+) => _deduplicated__head(context0);
 
 String _renderExtension_partial_instance_fields_6(Extension context1) =>
     _deduplicated__instance_fields(context1);
@@ -3556,8 +3543,7 @@ String _renderExtension_partial_instance_operators_8(Extension context1) =>
 
 String _renderExtension_partial_search_sidebar_12<T extends Extension>(
   ExtensionTemplateData<T> context0,
-) =>
-    _deduplicated__search_sidebar(context0);
+) => _deduplicated__search_sidebar(context0);
 
 String _renderExtension_partial_source_link_1(Extension context1) =>
     _deduplicated__source_link(context1);
@@ -3613,8 +3599,7 @@ String _renderFunction_partial_head_0(FunctionTemplateData context0) =>
 
 String _renderFunction_partial_search_sidebar_8(
   FunctionTemplateData context0,
-) =>
-    _deduplicated__search_sidebar(context0);
+) => _deduplicated__search_sidebar(context0);
 
 String _renderFunction_partial_source_code_7(ModelFunction context1) =>
     _deduplicated__source_code(context1);
@@ -3889,8 +3874,7 @@ String _renderProperty_partial_name_summary_4(Field context1) =>
 
 String _renderProperty_partial_search_sidebar_10(
   PropertyTemplateData context0,
-) =>
-    _deduplicated__search_sidebar(context0);
+) => _deduplicated__search_sidebar(context0);
 
 String _renderProperty_partial_source_code_7(Field context1) =>
     _deduplicated__source_code(context1);
@@ -4068,43 +4052,35 @@ String _renderTopLevelProperty_partial_accessor_setter_10(
 
 String _renderTopLevelProperty_partial_annotations_4(
   TopLevelVariable context1,
-) =>
-    _deduplicated__annotations(context1);
+) => _deduplicated__annotations(context1);
 
 String _renderTopLevelProperty_partial_documentation_7(
   TopLevelVariable context1,
-) =>
-    _deduplicated__documentation(context1);
+) => _deduplicated__documentation(context1);
 
 String _renderTopLevelProperty_partial_footer_12(
   TopLevelPropertyTemplateData context0,
-) =>
-    _deduplicated__footer(context0);
+) => _deduplicated__footer(context0);
 
 String _renderTopLevelProperty_partial_head_0(
   TopLevelPropertyTemplateData context0,
-) =>
-    _deduplicated__head(context0);
+) => _deduplicated__head(context0);
 
 String _renderTopLevelProperty_partial_name_summary_5(
   TopLevelVariable context1,
-) =>
-    _deduplicated__name_summary(context1);
+) => _deduplicated__name_summary(context1);
 
 String _renderTopLevelProperty_partial_search_sidebar_11(
   TopLevelPropertyTemplateData context0,
-) =>
-    _deduplicated__search_sidebar(context0);
+) => _deduplicated__search_sidebar(context0);
 
 String _renderTopLevelProperty_partial_source_code_8(
   TopLevelVariable context1,
-) =>
-    _deduplicated__source_code(context1);
+) => _deduplicated__source_code(context1);
 
 String _renderTopLevelProperty_partial_source_link_1(
   TopLevelVariable context1,
-) =>
-    _deduplicated__source_link(context1);
+) => _deduplicated__source_link(context1);
 
 String _renderTopLevelProperty_partial_tags_2(TopLevelVariable context1) =>
     _deduplicated__tags(context1);
@@ -4180,43 +4156,35 @@ String _renderTypedef_partial_typedef_multiline_4(Typedef context1) {
 
 String __renderCategory_partial_callable_8_partial_attributes_1(
   ModelFunctionTyped context2,
-) =>
-    _deduplicated__attributes(context2);
+) => _deduplicated__attributes(context2);
 
 String __renderCategory_partial_callable_8_partial_categorization_0(
   ModelFunctionTyped context2,
-) =>
-    _deduplicated__categorization(context2);
+) => _deduplicated__categorization(context2);
 
 String __renderCategory_partial_constant_6_partial_attributes_1(
   TopLevelVariable context2,
-) =>
-    _deduplicated__attributes(context2);
+) => _deduplicated__attributes(context2);
 
 String __renderCategory_partial_constant_6_partial_categorization_0(
   TopLevelVariable context2,
-) =>
-    _deduplicated__categorization(context2);
+) => _deduplicated__categorization(context2);
 
 String __renderCategory_partial_container_3_partial_categorization_0(
   Container context2,
-) =>
-    _deduplicated__categorization(context2);
+) => _deduplicated__categorization(context2);
 
 String __renderCategory_partial_library_2_partial_categorization_0(
   Library context2,
-) =>
-    _deduplicated__categorization(context2);
+) => _deduplicated__categorization(context2);
 
 String __renderCategory_partial_typedef_10_partial_attributes_1(
   FunctionTypedef context3,
-) =>
-    _deduplicated__attributes(context3);
+) => _deduplicated__attributes(context3);
 
 String __renderCategory_partial_typedef_10_partial_categorization_0(
   FunctionTypedef context3,
-) =>
-    _deduplicated__categorization(context3);
+) => _deduplicated__categorization(context3);
 
 String __renderCategory_partial_typedef_10_partial_type_2(Typedef context2) {
   final buffer = StringBuffer();
@@ -4458,75 +4426,61 @@ String __renderClass_partial_static_constants_16_partial_constant_0(
 
 String __renderFunction_partial_callable_multiline_4_partial_annotations_0(
   ModelFunction context1,
-) =>
-    _deduplicated__annotations(context1);
+) => _deduplicated__annotations(context1);
 
 String __renderFunction_partial_callable_multiline_4_partial_name_summary_1(
   ModelFunction context1,
-) =>
-    _deduplicated__name_summary(context1);
+) => _deduplicated__name_summary(context1);
 
 String __renderMethod_partial_callable_multiline_3_partial_annotations_0(
   Method context1,
-) =>
-    _deduplicated__annotations(context1);
+) => _deduplicated__annotations(context1);
 
 String __renderMethod_partial_callable_multiline_3_partial_name_summary_1(
   Method context1,
-) =>
-    _deduplicated__name_summary(context1);
+) => _deduplicated__name_summary(context1);
 
 String __renderProperty_partial_accessor_getter_8_partial_annotations_0(
   ContainerAccessor context2,
-) =>
-    _deduplicated__annotations(context2);
+) => _deduplicated__annotations(context2);
 
 String __renderProperty_partial_accessor_getter_8_partial_attributes_2(
   ContainerAccessor context2,
-) =>
-    _deduplicated__attributes(context2);
+) => _deduplicated__attributes(context2);
 
 String __renderProperty_partial_accessor_getter_8_partial_documentation_3(
   ContainerAccessor context2,
-) =>
-    _deduplicated__documentation(context2);
+) => _deduplicated__documentation(context2);
 
 String __renderProperty_partial_accessor_getter_8_partial_name_summary_1(
   ContainerAccessor context2,
-) =>
-    _deduplicated__name_summary(context2);
+) => _deduplicated__name_summary(context2);
 
 String __renderProperty_partial_accessor_getter_8_partial_source_code_4(
   ContainerAccessor context2,
-) =>
-    _deduplicated__source_code(context2);
+) => _deduplicated__source_code(context2);
 
 String __renderTopLevelProperty_partial_accessor_getter_9_partial_annotations_0(
   Accessor context2,
-) =>
-    _deduplicated__annotations(context2);
+) => _deduplicated__annotations(context2);
 
 String __renderTopLevelProperty_partial_accessor_getter_9_partial_attributes_2(
   Accessor context2,
-) =>
-    _deduplicated__attributes(context2);
+) => _deduplicated__attributes(context2);
 
 String
-    __renderTopLevelProperty_partial_accessor_getter_9_partial_documentation_3(
+__renderTopLevelProperty_partial_accessor_getter_9_partial_documentation_3(
   Accessor context2,
-) =>
-        _deduplicated__documentation(context2);
+) => _deduplicated__documentation(context2);
 
 String
-    __renderTopLevelProperty_partial_accessor_getter_9_partial_name_summary_1(
+__renderTopLevelProperty_partial_accessor_getter_9_partial_name_summary_1(
   Accessor context2,
-) =>
-        _deduplicated__name_summary(context2);
+) => _deduplicated__name_summary(context2);
 
 String __renderTopLevelProperty_partial_accessor_getter_9_partial_source_code_4(
   Accessor context2,
-) =>
-    _deduplicated__source_code(context2);
+) => _deduplicated__source_code(context2);
 
 String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
   Typedef context1,
@@ -4564,44 +4518,37 @@ String __renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0(
 
 String ___renderCategory_partial_typedef_10_partial_type_2_partial_attributes_1(
   Typedef context2,
-) =>
-    _deduplicated__attributes(context2);
+) => _deduplicated__attributes(context2);
 
 String
-    ___renderCategory_partial_typedef_10_partial_type_2_partial_categorization_0(
+___renderCategory_partial_typedef_10_partial_type_2_partial_categorization_0(
   Typedef context2,
-) =>
-        _deduplicated__categorization(context2);
+) => _deduplicated__categorization(context2);
 
 String
-    ___renderClass_partial_instance_fields_11_partial_property_0_partial_attributes_1(
+___renderClass_partial_instance_fields_11_partial_property_0_partial_attributes_1(
   Field context2,
-) =>
-        _deduplicated__attributes(context2);
+) => _deduplicated__attributes(context2);
 
 String
-    ___renderClass_partial_instance_fields_11_partial_property_0_partial_categorization_0(
+___renderClass_partial_instance_fields_11_partial_property_0_partial_categorization_0(
   Field context2,
-) =>
-        _deduplicated__categorization(context2);
+) => _deduplicated__categorization(context2);
 
 String
-    ___renderClass_partial_instance_methods_12_partial_callable_0_partial_attributes_1(
+___renderClass_partial_instance_methods_12_partial_callable_0_partial_attributes_1(
   Method context2,
-) =>
-        _deduplicated__attributes(context2);
+) => _deduplicated__attributes(context2);
 
 String
-    ___renderClass_partial_instance_methods_12_partial_callable_0_partial_categorization_0(
+___renderClass_partial_instance_methods_12_partial_callable_0_partial_categorization_0(
   Method context2,
-) =>
-        _deduplicated__categorization(context2);
+) => _deduplicated__categorization(context2);
 
 String
-    ___renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0_partial_name_summary_0(
+___renderTypedef_partial_typedef_multiline_4_partial_type_multiline_0_partial_name_summary_0(
   Typedef context1,
-) =>
-        _deduplicated__name_summary(context1);
+) => _deduplicated__name_summary(context1);
 
 extension on StringBuffer {
   void writeEscaped(String? value) {
