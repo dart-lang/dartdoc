@@ -504,11 +504,15 @@ abstract class ModelElement
     // If the defining library is local and public, we usually want to stay there
     // unless someone has claimed this element via `@canonicalFor`.
     var definingLibrary = library;
-    if (definingLibrary != null &&
-        packageGraph.localPublicLibraries.contains(definingLibrary)) {
-      if (!packageGraph.libraryExports[definingLibrary.element]!.any((l) =>
-          l.canonicalFor.contains(originalFullyQualifiedName) ||
-          l.canonicalFor.contains(fullyQualifiedName))) {
+    if (definingLibrary != null) {
+      if (packageGraph.localPublicLibraries.contains(definingLibrary)) {
+        if (!packageGraph.libraryExports[definingLibrary.element]!.any((l) =>
+            l.canonicalFor.contains(originalFullyQualifiedName) ||
+            l.canonicalFor.contains(fullyQualifiedName))) {
+          return definingLibrary;
+        }
+      }
+      if (definingLibrary.package.documentedWhere == DocumentLocation.remote) {
         return definingLibrary;
       }
     }

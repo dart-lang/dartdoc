@@ -14,53 +14,35 @@ class Documentation {
 
   /// The documentation text, rendered with the appropriate
   /// [DocumentationRenderer].
-  late final String _asHtml;
+  String? _asHtml;
 
   /// The first sentence of the documentation text, rendered with the
   /// appropriate [DocumentationRenderer].
-  late final String _asOneLiner;
+  String? _asOneLiner;
 
-  /// A guard against re-computing [_asHtml].
-  bool _hasHtmlBeenRendered = false;
-
-  /// A guard against re-computing [_asOneLiner].
-  bool _hasOneLinerBeenRendered = false;
+  bool _fullTextRendered = false;
 
   String get asHtml {
-    if (_hasHtmlBeenRendered) {
-      return _asHtml;
-    }
-    if (_hasOneLinerBeenRendered) {
-      // Since [_asHtml] and [_asOneLiner] _could_ have been set in
-      // [asOneLiner], we guard here against setting [asOneLiner] but not
-      // setting [asHtml] (unless [_element] is not canonical). It's an awkward
-      // situation where one public getter might set both fields, but might only
-      // set one. We have this awkward check to make sure we set both fields if
-      // we'll need both fields.
-      assert(
-        _warnable.isCanonical,
-        "generating docs for non-canonical element: '$_warnable' "
-        "('${_warnable.runtimeType}', ${_warnable.hashCode}), representing "
-        "'${_warnable.element}'",
-      );
-      return _asHtml;
+    if (_fullTextRendered) {
+      return _asHtml!;
     }
 
     _renderDocumentation(storeFullText: true);
-    _hasHtmlBeenRendered = true;
-    return _asHtml;
+    return _asHtml!;
   }
 
   String get asOneLiner {
-    if (_hasOneLinerBeenRendered || _hasHtmlBeenRendered) {
-      return _asOneLiner;
+    if (_asOneLiner != null) {
+      return _asOneLiner!;
     }
     _renderDocumentation(storeFullText: _warnable.isCanonical);
-    _hasOneLinerBeenRendered = true;
-    return _asOneLiner;
+    return _asOneLiner!;
   }
 
   void _renderDocumentation({required bool storeFullText}) {
+    if (storeFullText && _fullTextRendered) return;
+    if (!storeFullText && _asOneLiner != null) return;
+
     var parseResult = _parseDocumentation(processFullText: storeFullText);
 
     var renderResult = _renderer.render(parseResult,
@@ -69,6 +51,7 @@ class Documentation {
 
     if (storeFullText) {
       _asHtml = renderResult.asHtml;
+      _fullTextRendered = true;
     }
     _asOneLiner = renderResult.asOneLiner;
   }
