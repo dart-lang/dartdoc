@@ -602,7 +602,7 @@ abstract class ModelElement
     }
     if (uri.isScheme('package')) {
       var segments = uri.pathSegments;
-      if (segments.length > 1 && segments[1] == 'src') {
+      if (segments case [_, 'src', ...]) {
         return true;
       }
     }

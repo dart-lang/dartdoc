@@ -229,7 +229,6 @@ final class _Canonicalization {
       }
     }
     scoredCandidate._alterScore(scoreBoost, _Reason.locationPartStart);
-
     return scoredCandidate;
   }
 }
