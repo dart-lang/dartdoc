@@ -213,8 +213,11 @@ class Foo {
         orderedEquals(['library_1']));
     final foo =
         packageGraph.localPackages.first.libraries.first.classes.named('Foo');
-    // The name is not linked, but also does not error.
-    expect(foo.declaredFields.first.modelType.linkedName, 'Client?');
+    // The name is linked because it's from a public package.
+    expect(
+      foo.declaredFields.first.modelType.linkedName,
+      '<a href="%%__HTMLBASE_dartdoc_internal__%%package-http_http/Client-class.html">Client</a>?',
+    );
   }
 
   void test_includeCommandLineOption_overridesOptionsFileOption() async {

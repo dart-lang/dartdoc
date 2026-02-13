@@ -13,9 +13,12 @@ const int _separatorChar = 0x3B;
 Library? canonicalLibraryCandidate(ModelElement modelElement) {
   var libraryElement = modelElement.element.library;
   if (libraryElement == null) return null;
-  var thisAndExported =
-      modelElement.packageGraph.libraryExports[libraryElement];
-  if (thisAndExported == null) {
+  var libraryExports = modelElement.packageGraph.libraryExports[libraryElement];
+  var candidateList = {
+    ...?libraryExports,
+    if (modelElement.library case var library?) library,
+  };
+  if (candidateList.isEmpty) {
     return null;
   }
 
@@ -32,14 +35,11 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
     return null;
   }
 
-  final candidateLibraries = thisAndExported.where((l) {
+  final candidateLibraries = candidateList.where((l) {
     if (!l.isPublic) return false;
-    if (l.package.documentedWhere == DocumentLocation.missing &&
-        modelElement.library?.package.documentedWhere !=
-            DocumentLocation.missing) {
-      return false;
-    }
+    if (l.package.documentedWhere == DocumentLocation.missing) return false;
     if (modelElement is Library) return true;
+    if (l.name == modelElement.library?.name) return true;
     var lookup = l.element.exportNamespace.definedNames2[topLevelElementName];
     var lookupElement =
         lookup is PropertyAccessorElement ? lookup.variable : lookup;
@@ -119,6 +119,8 @@ final class _Canonicalization {
     var scoredCandidates = libraries
         .map((library) => _scoreElementWithLibrary(
             library, elementQualifiedName, locationPieces,
+            elementQualifiedNameInLibrary:
+                '${library.name}.${_modelElement.qualifiedName}',
             preferredPackage: _modelElement.library?.package,
             preferredLibraryName: _modelElement.element.library?.name,
             preferredLibrary: _modelElement.element.library))
@@ -150,16 +152,16 @@ final class _Canonicalization {
   // `StringName` tests in `model_test.dart`.
   static _ScoredCandidate _scoreElementWithLibrary(Library library,
       String elementQualifiedName, Set<String> elementLocationPieces,
-      {Package? preferredPackage,
+      {required String elementQualifiedNameInLibrary,
+      Package? preferredPackage,
       String? preferredLibraryName,
       LibraryElement? preferredLibrary}) {
     var scoredCandidate = _ScoredCandidate(library);
 
-    elementQualifiedName.endsWith('.deprecated');
-
     // Large boost for `@canonicalFor`, essentially overriding all other
     // concerns.
-    if (library.canonicalFor.contains(elementQualifiedName)) {
+    if (library.canonicalFor.contains(elementQualifiedNameInLibrary) ||
+        library.canonicalFor.contains(elementQualifiedName)) {
       scoredCandidate._alterScore(10.0, _Reason.canonicalFor);
     }
 

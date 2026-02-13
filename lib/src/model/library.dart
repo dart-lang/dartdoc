@@ -487,7 +487,10 @@ class Library extends ModelElement with TopLevelContainer {
       ...library.typedefs,
     ];
     return libraryMembers
-        .map((member) => member.originalFullyQualifiedName)
+        .expand((member) => [
+              member.originalFullyQualifiedName,
+              '$name.${member.qualifiedName}',
+            ])
         .toSet();
   }();
 }

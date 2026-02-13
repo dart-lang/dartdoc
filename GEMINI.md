@@ -22,6 +22,14 @@ Then commit the resulting changes before rerunning `buildbot`.
 If you modified canonicalization or documentation rendering, verify these
 specific test groups:
 
+- **Canonicalization:** Run `dart run test test/canonical_for_test.dart` and 
+  `dart run test test/model_utils_test.dart`.
+- **Warnings:** Many tests assert on the exact number of warnings (e.g., `test/options_test.dart`). 
+  If your changes cause new warnings, verify if they are legitimate or if 
+  canonicalization is failing.
+- **Duplicate Outputs:** Watch for "file already written" errors in test output, 
+  which often indicate multiple elements being canonicalized to the same path.
+
 ## 3. Environment Notes
 - Some tests depend on a valid Flutter SDK being present in the environment
   (e.g., `model_special_cases_test.dart`). If these fail due to missing
