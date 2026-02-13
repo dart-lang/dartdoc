@@ -720,7 +720,6 @@ abstract class ModelElement
       var packageBaseHref = package.baseHref;
       return '$packageBaseHref$filePath';
     }
-    // documentedWhere == DocumentLocation.missing
     return null;
   }
 
