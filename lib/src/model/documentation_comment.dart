@@ -330,8 +330,10 @@ mixin DocumentationComment implements Warnable, SourceCode {
   ///
   ///     &#123;@example <path> [lang=LANGUAGE] [indent=keep|strip]&#125;
   ///
-  /// The `path` is resolved relative to the package root or the current file;
+  /// The `path` is resolved relative to the current file's path, using the
+  /// package's root as the root path;
   /// see [resolveExamplePath] for details.
+  ///
   ///
   /// The `lang` parameter specifies the language for the fenced code block. If
   /// not provided, it defaults to the file extension of `path`, or `dart` if
@@ -366,106 +368,128 @@ mixin DocumentationComment implements Warnable, SourceCode {
       var filepath = args.rest.first;
       // TODO(zarah): Add support for regions (#region, #endregion).
 
-      var resolved = resolveExamplePath(
+      var resolvedPath = resolveExamplePath(
         filepath,
         packagePath: package.packagePath,
-        sourceFileName: sourceFileName,
+        sourceFilePath: sourceFileName,
         pathContext: pathContext,
         warn: warn,
       );
-      if (resolved == null) return '';
+      if (resolvedPath == null) return '';
 
-      var file = packageGraph.resourceProvider.getFile(resolved.path);
+      var file = packageGraph.resourceProvider.getFile(resolvedPath);
       if (!file.exists) {
         warn(PackageWarning.missingExampleFile, message: filepath);
         return '';
       }
 
-      var extension = resolved.extension;
+      var extension =
+          pathContext.extension(resolvedPath).replaceFirst('.', '').toLowerCase();
       var language = args['lang'] ?? extension;
       var indent = args['indent'] ?? 'strip';
 
       var content = file.readAsStringSync();
+      // Normalize line endings to \n.
+      content = content.replaceAll(RegExp(r'\r\n|\r'), '\n');
+
       if (indent == 'strip') {
         content = _stripIndentation(content);
       }
 
-      return '\n```$language\n$content\n```\n';
+      // Ensure the content ends with exactly one newline before the closing fence.
+      var trailing = content.endsWith('\n') ? '' : '\n';
+
+      return '\n```$language\n$content$trailing```\n';
     });
   }
 
-  /// Resolves the given [filepath] as a URI reference relative to the current
+  /// Resolves the given [exampleFilePath] as a URI reference relative to the current
   /// package root.
   ///
-  /// The [filepath] is resolved as follows:
+  /// The [exampleFilePath] is resolved as follows:
   /// - If it starts with a leading `/`, it is resolved relative to the package
   ///   root.
-  /// - Otherwise, it is resolved relative to the directory containing the file
-  ///   with the documentation comment.
+  /// - Otherwise, it is resolved relative to the file containing the
+  ///   documentation comment (rooted at the package root).
   /// - Resolution follows URI reference rules, ensuring that `..` segments
   ///   stop at the package root and never escape it.
-  /// - [filepath] can include URI-encoded characters (like `%20` for spaces).
+  /// - [exampleFilePath] must be a valid URI path (using `/` as separator), and can
+  ///   include URI-encoded characters (like `%20` for spaces).
   ///
-  /// Returns the absolute path and extension of the resolved file, or `null` if
-  /// the path could not be resolved or is outside the package root.
+  /// Returns the absolute path of the resolved file, or `null` if the path
+  /// could not be resolved.
+  ///
+  /// The [packagePath] is the file system path of the root of the current package,
+  /// in the form used by [pathContext].
+  ///
+  /// The [sourceFilePath] is the file system path of the file containing the example
+  /// link in the form used by [pathContext].
+  /// If provided, it must be within the package root given by [packagePath].
+  /// If absent, the [exampleFilePath] is resolved relative to the package root.
+  ///
   @visibleForTesting
-  static ({String path, String extension})? resolveExamplePath(
-    String filepath, {
+  static String? resolveExamplePath(
+    String exampleFilePath, {
     required String packagePath,
-    required String? sourceFileName,
+    required String? sourceFilePath,
     required p.Context pathContext,
     required void Function(PackageWarning, {String? message}) warn,
   }) {
+    assert(sourceFilePath == null ||
+        pathContext.isWithin(packagePath, sourceFilePath));
+
     // Resolve the path as a URI reference.
     // 1. Get the relative path of the current file from the package root.
-    var relativeBase = sourceFileName != null
-        ? pathContext.relative(sourceFileName, from: packagePath)
+    var relativePath = sourceFilePath != null
+        ? pathContext.relative(sourceFilePath, from: packagePath)
         : '';
 
-    // 2. Convert to POSIX-style for URI parsing (using '/' as separator).
-    // We start with a '/' so that Uri.resolve() stops at the package root
-    // when it sees too many '..' segments.
-    var relativeBasePosix = '/${pathContext.split(relativeBase).join('/')}';
+    // 2. Convert to a URI, rooted at the file system root.
+    // We prepend [pathContext.separator] so that the resulting URI is absolute,
+    // which ensures that [Uri.resolve] will clamp any '..' segments and
+    // keep them within the package root.
+    // We use a synthetic URI with a path starting at '/' and segments from
+    // [relativePath] to avoid platform-specific drive letters (like 'C:')
+    // entering the path segments on Windows.
+    var segments =
+        pathContext.split(relativePath).where((s) => s != '.').toList();
+    var baseUri = Uri(pathSegments: ['', ...segments]);
 
     // 3. Resolve using [Uri.resolve].
-    // This handles:
-    // - Leading '/' (relative to root)
-    // - Relative paths (relative to base)
-    // - '..' (stops at root)
-    // - URI encoding (%20 etc)
+    // [exampleFilePath] is interpreted as a URI reference.
     String resolvedPath;
-    String extension;
     try {
-      var baseUri = Uri.parse(relativeBasePosix);
-      var resolvedUri = baseUri.resolve(filepath);
+      // [exampleFilePath] is parsed here as a URI reference, which may
+      // throw a [FormatException] if it is malformed.
+      var resolvedUri = baseUri.resolve(exampleFilePath);
 
       // 4. Convert back to a package-relative file path.
+      // We use [pathSegments] to get the unescaped path components.
+      // [Uri.resolve] ensures these segments are relative to our "root".
       resolvedPath = pathContext.joinAll([
         packagePath,
         ...resolvedUri.pathSegments,
       ]);
-      extension = pathContext
-          .extension(resolvedUri.path)
-          .replaceFirst('.', '')
-          .toLowerCase();
     } on FormatException catch (e) {
       warn(PackageWarning.invalidParameter,
           message:
-              'Invalid path for @example directive ($filepath): ${e.message}');
+              'Invalid path for @example directive ($exampleFilePath): ${e.message}');
       return null;
     }
 
     resolvedPath = pathContext.normalize(resolvedPath);
 
+    // Security check: theoretically unreachable due to Uri resolution clamping,
+    // but kept as a safeguard against future refactoring bugs.
     if (!pathContext.isWithin(packagePath, resolvedPath) &&
         !pathContext.equals(packagePath, resolvedPath)) {
       warn(PackageWarning.invalidParameter,
           message:
-              'Example file $filepath must be within the package root ($packagePath).');
+              'Example file $exampleFilePath must be within the package root ($packagePath).');
       return null;
     }
 
-    return (path: resolvedPath, extension: extension);
+    return resolvedPath;
   }
 
   static String _stripIndentation(String content) {
