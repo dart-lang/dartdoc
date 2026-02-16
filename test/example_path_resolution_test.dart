@@ -20,10 +20,10 @@ void main() {
       return DocumentationComment.resolveExamplePath(
         filepath,
         packagePath: packagePath,
-        sourceFileName: sourceFileName,
+        sourceFilePath: sourceFileName,
         pathContext: pathContext,
         warn: (kind, {message}) {},
-      )?.path;
+      );
     }
 
     test('absolute path from root', () {
@@ -102,6 +102,36 @@ void main() {
       expect(result, '/project/lib/examples/hello.dart');
     });
 
+    test('Windows-style absolute paths and resolution', () {
+      var windowsContext = p.Context(style: p.Style.windows, current: r'C:\project');
+      var windowsPackagePath = r'C:\project';
+
+      String? resolveWindows(String filepath, {String? sourceFileName}) {
+        return DocumentationComment.resolveExamplePath(
+          filepath,
+          packagePath: windowsPackagePath,
+          sourceFilePath: sourceFileName,
+          pathContext: windowsContext,
+          warn: (kind, {message}) {},
+        );
+      }
+
+      expect(
+        resolveWindows('hello.dart', sourceFileName: r'C:\project\lib\a.dart'),
+        r'C:\project\lib\hello.dart',
+      );
+      expect(
+        resolveWindows('../examples/hello.dart',
+            sourceFileName: r'C:\project\lib\a.dart'),
+        r'C:\project\examples\hello.dart',
+      );
+      expect(
+        resolveWindows('../../../outside.dart',
+            sourceFileName: r'C:\project\lib\a.dart'),
+        r'C:\project\outside.dart',
+      );
+    });
+
     test('unusual path inputs (no crash)', () {
       var inputs = [
         '\x00',
@@ -121,7 +151,7 @@ void main() {
           DocumentationComment.resolveExamplePath(
             input,
             packagePath: packagePath,
-            sourceFileName: '/project/lib/a.dart',
+            sourceFilePath: '/project/lib/a.dart',
             pathContext: pathContext,
             warn: (kind, {message}) {},
           );
@@ -143,7 +173,7 @@ void main() {
         DocumentationComment.resolveExamplePath(
           input,
           packagePath: packagePath,
-          sourceFileName: '/project/lib/a.dart',
+          sourceFilePath: '/project/lib/a.dart',
           pathContext: pathContext,
           warn: (kind, {message}) => warned = true,
         );
