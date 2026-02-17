@@ -88,10 +88,10 @@ void main() {
       );
     });
 
-    test('absolute URI (resolves its path relative to root)', () {
+    test('absolute URI (rejected)', () {
       expect(
         resolve('https://example.com/hello.dart'),
-        '/project/hello.dart',
+        isNull,
       );
     });
 

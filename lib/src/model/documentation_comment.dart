@@ -34,6 +34,8 @@ final _macroRegExp = RegExp(r'{@macro\s+([^\s}][^}]*)}');
 
 final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 
+final _lineEndingRegExp = RegExp(r'\r\n?');
+
 /// Features for processing directives in a documentation comment.
 ///
 /// [_processCommentWithoutTools] and [processComment] are the primary
@@ -326,6 +328,8 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// Replace &#123;@example ...&#125; in API comments with a fenced code block
   /// containing the contents of the specified file.
   ///
+  /// This is a block-level directive and must appear on its own line.
+  ///
   /// Syntax:
   ///
   ///     &#123;@example <path> [lang=LANGUAGE] [indent=keep|strip]&#125;
@@ -334,13 +338,18 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// package's root as the root path;
   /// see [resolveExamplePath] for details.
   ///
+  /// The file content is processed as follows:
+  /// - Line endings are normalized to `\n`.
+  /// - If `indent` is `strip` (the default), common indentation is removed from
+  ///   all lines. Whitespace-only lines are ignored for calculation and
+  ///   normalized to empty lines.
+  /// - If any line has tab characters in its indentation and `indent` is
+  ///   `strip`, a warning is issued and indentation stripping is skipped to
+  ///   prevent broken formatting.
   ///
   /// The `lang` parameter specifies the language for the fenced code block. If
   /// not provided, it defaults to the file extension of `path`, or `dart` if
   /// the extension is empty.
-  ///
-  /// The `indent` parameter specifies whether to `strip` common indentation
-  /// from the file contents (the default) or `keep` it exactly as is.
   ///
   /// Example:
   ///
@@ -383,17 +392,19 @@ mixin DocumentationComment implements Warnable, SourceCode {
         return '';
       }
 
-      var extension =
-          pathContext.extension(resolvedPath).replaceFirst('.', '').toLowerCase();
+      var extension = pathContext
+          .extension(resolvedPath)
+          .replaceFirst('.', '')
+          .toLowerCase();
       var language = args['lang'] ?? extension;
       var indent = args['indent'] ?? 'strip';
 
       var content = file.readAsStringSync();
       // Normalize line endings to \n.
-      content = content.replaceAll(RegExp(r'\r\n|\r'), '\n');
+      content = content.replaceAll(_lineEndingRegExp, '\n');
 
       if (indent == 'strip') {
-        content = _stripIndentation(content);
+        content = _stripIndentation(content, warn);
       }
 
       // Ensure the content ends with exactly one newline before the closing fence.
@@ -415,9 +426,10 @@ mixin DocumentationComment implements Warnable, SourceCode {
   ///   stop at the package root and never escape it.
   /// - [exampleFilePath] must be a valid URI path (using `/` as separator), and can
   ///   include URI-encoded characters (like `%20` for spaces).
+  /// - Absolute URIs (e.g. starting with `https:`) are not supported.
   ///
-  /// Returns the absolute path of the resolved file, or `null` if the path
-  /// could not be resolved.
+  /// Returns the absolute path of the resolved file, or `null` if
+  /// [exampleFilePath] is not a valid URI reference or has an unsupported scheme.
   ///
   /// The [packagePath] is the file system path of the root of the current package,
   /// in the form used by [pathContext].
@@ -445,31 +457,36 @@ mixin DocumentationComment implements Warnable, SourceCode {
         : '';
 
     // 2. Convert to a URI, rooted at the file system root.
-    // We prepend [pathContext.separator] so that the resulting URI is absolute,
-    // which ensures that [Uri.resolve] will clamp any '..' segments and
-    // keep them within the package root.
-    // We use a synthetic URI with a path starting at '/' and segments from
-    // [relativePath] to avoid platform-specific drive letters (like 'C:')
-    // entering the path segments on Windows.
-    var segments =
-        pathContext.split(relativePath).where((s) => s != '.').toList();
-    var baseUri = Uri(pathSegments: ['', ...segments]);
+    // We explicitly join with [pathContext.separator] to create an
+    // absolute-like path (e.g., "\lib\src\foo.dart" on Windows), which [toUri]
+    // converts to a file URI (potentially including a drive letter,
+    // e.g., "file:///C:/lib/...").
+    var baseUri =
+        pathContext.toUri(pathContext.join(pathContext.separator, relativePath));
 
     // 3. Resolve using [Uri.resolve].
     // [exampleFilePath] is interpreted as a URI reference.
     String resolvedPath;
     try {
-      // [exampleFilePath] is parsed here as a URI reference, which may
-      // throw a [FormatException] if it is malformed.
       var resolvedUri = baseUri.resolve(exampleFilePath);
+      if (resolvedUri.scheme != 'file') {
+        warn(PackageWarning.invalidParameter,
+            message:
+                'Invalid scheme for @example directive ($exampleFilePath): ${resolvedUri.scheme}');
+        return null;
+      }
 
       // 4. Convert back to a package-relative file path.
-      // We use [pathSegments] to get the unescaped path components.
-      // [Uri.resolve] ensures these segments are relative to our "root".
-      resolvedPath = pathContext.joinAll([
-        packagePath,
-        ...resolvedUri.pathSegments,
-      ]);
+      // [fromUri] returns an absolute path (e.g., "C:\lib\example.dart").
+      // We calculate the path relative to the file system root ([separator])
+      // to strip any drive letters or root prefixes, ensuring we can safely
+      // join it back to [packagePath].
+      var relativeToRoot = pathContext.relative(
+        pathContext.fromUri(resolvedUri),
+        from: pathContext.separator,
+      );
+
+      resolvedPath = pathContext.join(packagePath, relativeToRoot);
     } on FormatException catch (e) {
       warn(PackageWarning.invalidParameter,
           message:
@@ -492,28 +509,62 @@ mixin DocumentationComment implements Warnable, SourceCode {
     return resolvedPath;
   }
 
-  static String _stripIndentation(String content) {
+  /// Strips the common indentation from [content].
+  ///
+  /// Whitespace-only lines are ignored when calculating the common indentation
+  /// and are normalized to empty strings in the output.
+  ///
+  /// If any line has tab characters in its indentation, a warning is issued
+  /// and the original [content] is returned.
+  static String _stripIndentation(
+      String content, void Function(PackageWarning, {String? message}) warn) {
     var lines = LineSplitter.split(content).toList();
     if (lines.isEmpty) return content;
 
     int? minIndent;
-    for (var line in lines) {
-      if (line.trim().isEmpty) continue;
-      var indent = line.length - line.trimLeft().length;
-      if (minIndent == null || indent < minIndent) {
-        minIndent = indent;
+    var anyWhitespaceLineChanged = false;
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      var trimmed = line.trimLeft();
+      if (trimmed.isEmpty) {
+        // Normalization: Clear whitespace-only lines so they don't count for indent.
+        if (line.isNotEmpty) {
+          lines[i] = '';
+          anyWhitespaceLineChanged = true;
+        }
+        continue;
+      }
+
+      var indentLength = line.length - trimmed.length;
+      var indentation = line.substring(0, indentLength);
+
+      if (indentation.contains('\t')) {
+        warn(PackageWarning.invalidParameter,
+            message:
+                'Example contains tabs in indentation. Indentation stripping '
+                'disabled to avoid incorrect formatting.');
+        return content;
+      }
+
+      if (minIndent == null || indentLength < minIndent) {
+        minIndent = indentLength;
       }
     }
 
-    if (minIndent == null || minIndent == 0) return content;
+    if (minIndent == null || minIndent == 0) {
+      return anyWhitespaceLineChanged ? lines.join('\n') : content;
+    }
 
     return lines.map((line) {
-      if (line.length < minIndent!) return '';
-      return line.substring(minIndent);
+      if (line.isEmpty) return line;
+      return line.substring(minIndent!);
     }).join('\n');
   }
 
-  static final _exampleRegExp = RegExp(r'{@example(?:\s+([^\s}][^}]*))?}');
+  static final _exampleRegExp = RegExp(
+    r'^[ \t]*\{@example(?:[ \t]+([^}\r\n]*))?\}[ \t]*$',
+    multiLine: true,
+  );
 
   static final _exampleArgParser = ArgParser()
     ..addOption('lang')
