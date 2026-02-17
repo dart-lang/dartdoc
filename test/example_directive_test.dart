@@ -139,6 +139,21 @@ hello world
 '''));
   }
 
+  void test_processesExampleDirective_inline_ignored() async {
+    await _bootPackage('''
+/// This is an inline {@example /examples/hello.dart} directive.
+''', files: {
+      'examples/hello.dart': 'void main() => print("hello");',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expectNoWarnings();
+    // It should NOT be replaced because it's not on its own line.
+    expect(doc, equals('''
+This is an inline {@example /examples/hello.dart} directive.'''));
+  }
+
   void test_processesExampleDirective_withIndentStrip() async {
     await _bootPackage('''
 /// {@example /examples/hello.dart indent=strip}
@@ -155,6 +170,30 @@ hello world
 void main() {
   print("hello");
 }
+```
+'''));
+  }
+
+  void test_processesExampleDirective_withIndentStrip_mixedWhitespace() async {
+    await _bootPackage('''
+/// {@example /examples/hello.dart indent=strip}
+''', files: {
+      'examples/hello.dart': '  space\n\ttab\n  space',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expect(
+      libraryModel,
+      hasWarning(PackageWarning.invalidParameter,
+          'Example contains tabs in indentation. Indentation stripping disabled to avoid incorrect formatting.'),
+    );
+    expect(doc, equals('''
+
+```dart
+  space
+\ttab
+  space
 ```
 '''));
   }
