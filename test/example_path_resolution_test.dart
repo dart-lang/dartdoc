@@ -12,7 +12,10 @@ void main() {
     late String packagePath;
 
     setUp(() {
-      pathContext = p.Context(style: p.Style.posix, current: '/project');
+      // Set current to a directory far away from the package root to ensure
+      // resolution does not accidentally depend on it.
+      pathContext = p.Context(
+          style: p.Style.posix, current: '/completely/different/path');
       packagePath = '/project';
     });
 
@@ -59,10 +62,18 @@ void main() {
       );
     });
 
-    test('path with URI encoded characters', () {
+    test('path with complex URI encoded characters', () {
       expect(
-        resolve('/examples/hello%20world.dart'),
-        '/project/examples/hello world.dart',
+        resolve('/examples/100%25effective.dart'),
+        '/project/examples/100%effective.dart',
+      );
+      expect(
+        resolve('/examples/a%5cb.dart'),
+        '/project/examples/a\\b.dart',
+      );
+      expect(
+        resolve('/examples/a%20b.dart'),
+        '/project/examples/a b.dart',
       );
     });
 
@@ -70,6 +81,27 @@ void main() {
       expect(
         resolve('/examples/hello.dart?q=1#region'),
         '/project/examples/hello.dart',
+      );
+      expect(
+        resolve('/examples/hello.dart?#'),
+        '/project/examples/hello.dart',
+      );
+    });
+
+    test('special characters in package and source paths', () {
+      var specialContext = p.Context(style: p.Style.posix, current: '/other');
+      var specialPackagePath = '/project %25 space';
+      var specialSourcePath = '/project %25 space/lib/a.dart';
+
+      expect(
+        DocumentationComment.resolveExamplePath(
+          'hello.dart',
+          packagePath: specialPackagePath,
+          sourceFilePath: specialSourcePath,
+          pathContext: specialContext,
+          warn: (kind, {message}) {},
+        ),
+        '/project %25 space/lib/hello.dart',
       );
     });
 
@@ -132,7 +164,7 @@ void main() {
       );
     });
 
-    test('unusual path inputs (no crash)', () {
+    group('unusual path inputs (no crash)', () {
       var inputs = [
         '\x00',
         ' ',
@@ -140,14 +172,14 @@ void main() {
         '',
         '..',
         '//',
-        '\\..\\..\\',
+        r'\..\..\',
         'C:\\Windows\\System32',
         'http://[::1]/',
         'a' * 10000,
       ];
 
       for (var input in inputs) {
-        try {
+        test(': $input', () {
           DocumentationComment.resolveExamplePath(
             input,
             packagePath: packagePath,
@@ -155,13 +187,11 @@ void main() {
             pathContext: pathContext,
             warn: (kind, {message}) {},
           );
-        } catch (e) {
-          fail('resolveExamplePath crashed on input "$input": $e');
-        }
+        });
       }
     });
 
-    test('invalid URI inputs (trigger warnings)', () {
+    group('invalid URI inputs (trigger warnings)', () {
       var inputs = [
         ': [', // Invalid URI
         'http://[::1]]', // Invalid IPv6
@@ -169,15 +199,18 @@ void main() {
       ];
 
       for (var input in inputs) {
-        var warned = false;
-        DocumentationComment.resolveExamplePath(
-          input,
-          packagePath: packagePath,
-          sourceFilePath: '/project/lib/a.dart',
-          pathContext: pathContext,
-          warn: (kind, {message}) => warned = true,
-        );
-        expect(warned, isTrue, reason: 'Expected a warning for input "$input"');
+        test(': $input', () {
+          var warned = false;
+          DocumentationComment.resolveExamplePath(
+            input,
+            packagePath: packagePath,
+            sourceFilePath: '/project/lib/a.dart',
+            pathContext: pathContext,
+            warn: (kind, {message}) => warned = true,
+          );
+          expect(warned, isTrue,
+              reason: 'Expected a warning for input "$input"');
+        });
       }
     });
   });

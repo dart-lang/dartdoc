@@ -22,39 +22,32 @@ class ExampleDirectiveTest extends DocumentationCommentTestBase {
       String libraryPath = 'lib/a.dart'}) async {
     projectRoot = utils.writePackage(packageName, resourceProvider);
     var pathContext = resourceProvider.pathContext;
-    for (var entry in files.entries) {
-      var pathParts = pathContext.split(entry.key);
-      var currentFolder = projectRoot;
-      for (var i = 0; i < pathParts.length - 1; i++) {
-        if (pathParts[i] == '' || pathParts[i] == pathContext.separator) {
-          continue;
-        }
-        currentFolder = currentFolder.getChildAssumingFolder(pathParts[i]);
-      }
-      currentFolder
-          .getChildAssumingFile(pathParts.last)
-          .writeAsStringSync(entry.value);
+
+    for (var MapEntry(key: path, value: content) in files.entries) {
+      _writeFile(path, content);
     }
 
-    var pathParts = pathContext.split(libraryPath);
-    var currentFolder = projectRoot;
-    for (var i = 0; i < pathParts.length - 1; i++) {
-      if (pathParts[i] == '' || pathParts[i] == pathContext.separator) {
-        continue;
-      }
-      currentFolder = currentFolder.getChildAssumingFolder(pathParts[i]);
-    }
-    currentFolder
-        .getChildAssumingFile(pathParts.last)
-        .writeAsStringSync('$comment\nlibrary;');
+    _writeFile(libraryPath, '$comment\nlibrary;');
 
     packageGraph =
         await utils.bootBasicPackage(projectRoot.path, packageMetaProvider);
 
+    var expectedPath =
+        pathContext.normalize(pathContext.join(projectRoot.path, libraryPath));
     libraryModel = packageGraph.defaultPackage.libraries.firstWhere((l) =>
-        pathContext
-            .normalize(l.sourceFileName)
-            .endsWith(pathContext.normalize(libraryPath)));
+        pathContext.normalize(l.sourceFileName) == expectedPath);
+  }
+
+  void _writeFile(String path, String content) {
+    var pathParts = path.split('/');
+    var currentFolder = projectRoot;
+    for (var i = 0; i < pathParts.length - 1; i++) {
+      if (pathParts[i].isEmpty) continue;
+      currentFolder = currentFolder.getChildAssumingFolder(pathParts[i]);
+    }
+    currentFolder
+        .getChildAssumingFile(pathParts.last)
+        .writeAsStringSync(content);
   }
 
   void test_processesExampleDirective() async {

@@ -343,6 +343,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// - If `indent` is `strip` (the default), common indentation is removed from
   ///   all lines. Whitespace-only lines are ignored for calculation and
   ///   normalized to empty lines.
+  /// - If `indent` is `keep`, the indentation is left as-is.
   /// - If any line has tab characters in its indentation and `indent` is
   ///   `strip`, a warning is issued and indentation stripping is skipped to
   ///   prevent broken formatting.
@@ -355,6 +356,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   ///
   ///     &#123;@example /examples/my_example.dart&#125;
   ///     &#123;@example ../subdir/utils.dart lang=dart indent=strip&#125;
+  ///     &#123;@example ../subdir/utils.dart indent=keep&#125;
   String _injectExamples(String rawDocs) {
     return rawDocs.replaceAllMapped(_exampleRegExp, (match) {
       var argsAsString = match[1];
