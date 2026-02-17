@@ -16,6 +16,10 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
   var libraryExports = modelElement.packageGraph.libraryExports[libraryElement];
   var candidateList = {
     ...?libraryExports,
+    // When the element is defined in a library that is not documented, the
+    // `libraryExports` map will not contain that library. However, we still want
+    // to consider the defining library as a candidate if it happens to be
+    // documented.
     if (modelElement.library case var library?) library,
   };
   if (candidateList.isEmpty) {
@@ -169,6 +173,9 @@ final class _Canonicalization {
       scoredCandidate._alterScore(1.0, _Reason.samePackage);
     }
 
+    // Give a large boost if the library is the defining library. This is
+    // important for cases where a symbol is re-exported from another package,
+    // but the defining library is also documented.
     if (preferredLibrary != null && library.element == preferredLibrary) {
       scoredCandidate._alterScore(4.0, _Reason.sameLibrary);
     }
