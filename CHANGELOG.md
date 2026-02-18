@@ -1,4 +1,5 @@
 ## 9.0.3
+* Require analyzer 10.1.0 APIs.
 * Remove usage of `EmbedderYamlLocator` and `EmbedderSdk.new`, internal
   analyzer APIs which were removed in analyzer 10.1.0.
 * Significant improvements to canonicalization logic:
