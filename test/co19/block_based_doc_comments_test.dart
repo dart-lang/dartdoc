@@ -115,9 +115,9 @@ Line 2.'''));
 
   /// Check that any whitespace immediately following the asterisk is stripped
   void test_removeWhitespaceAfterAsterisk() async {
-     markTestSkipped('Skipping until issue '
-         'https://github.com/dart-lang/dartdoc/issues/4156 is resolved.');
-     return;
+    markTestSkipped('Skipping until issue '
+        'https://github.com/dart-lang/dartdoc/issues/4156 is resolved.');
+    return;
 //     await writePackageWithCommentedLibrary('''
 // /**  Line 1.
 //  *     Line 2.

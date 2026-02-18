@@ -473,7 +473,6 @@ class ImplicitProperties {
 /// Or rather, dartdoc used to think they didn't exist.  Check the variations
 /// on inheritance and overrides here.
 abstract class ClassWithUnusualProperties extends ImplicitProperties {
-
   /// Docs for setter of implicitGetterExplicitSetter.
   @override
   set implicitGetterExplicitSetter(String? x) {}

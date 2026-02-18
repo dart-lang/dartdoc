@@ -577,6 +577,38 @@ abstract class ModelElement
     return '${library.name}.$qualifiedName';
   }
 
+  /// The fully qualified name of this element, using the name of the library
+  /// in which it is defined.
+  late final String originalFullyQualifiedName = () {
+    var libraryElement = element.library;
+    if (libraryElement == null || this is Library) return name;
+    var originalLibrary =
+        packageGraph.getModelForElement(libraryElement) as Library;
+    return '${originalLibrary.name}.$qualifiedName';
+  }();
+
+  /// Whether this element is defined in an internal library.
+  late final bool isFromInternalLibrary = () {
+    var libraryElement = element.library;
+    if (libraryElement == null) return false;
+    var uri = libraryElement.firstFragment.source.uri;
+    if (uri.isScheme('dart')) {
+      var segments = uri.pathSegments;
+      if (segments case [var firstSegment, ...]
+          when firstSegment.startsWith('_') ||
+              firstSegment == 'nativewrappers') {
+        return true;
+      }
+    }
+    if (uri.isScheme('package')) {
+      var segments = uri.pathSegments;
+      if (segments case [_, 'src', ...]) {
+        return true;
+      }
+    }
+    return false;
+  }();
+
   @override
   late final String qualifiedName = () {
     var enclosingElement = this.enclosingElement;
@@ -665,8 +697,19 @@ abstract class ModelElement
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    var packageBaseHref = package.baseHref;
-    return '$packageBaseHref$filePath';
+    final canonicalLibrary = this.canonicalLibrary;
+    if (canonicalLibrary == null) return null;
+
+    var documentedWhere = canonicalLibrary.package.documentedWhere;
+    if (documentedWhere == DocumentLocation.remote) {
+      if (!config.linkToRemote) return null;
+      return '${canonicalLibrary.package.baseHref}$filePath';
+    }
+    if (documentedWhere == DocumentLocation.local) {
+      var packageBaseHref = package.baseHref;
+      return '$packageBaseHref$filePath';
+    }
+    return null;
   }
 
   String get htmlId => name;

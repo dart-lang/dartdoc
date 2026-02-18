@@ -1,6 +1,11 @@
 ## 9.0.3
 * Remove usage of `EmbedderYamlLocator` and `EmbedderSdk.new`, internal
   analyzer APIs which were removed in analyzer 10.1.0.
+* Significant improvements to canonicalization logic:
+    * elements documented in their intended libraries via `@canonicalFor` overrides are now correctly placed in their respective directories.
+    * improved SDK interlinking to ensure elements re-exported from standard libraries (like `dart:core`) generate absolute remote links when appropriate.
+    * fixed a bug where property accessors (getters/setters) were incorrectly compared during canonical library lookups.
+    * refined scoring heuristics with definitive tie-breakers for standard SDK schemes and defining libraries.
 
 ## 9.0.2
 * Require analyzer 10.0.0 APIs.

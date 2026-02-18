@@ -10,8 +10,10 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
     show AnalysisContextCollectionImpl;
+import 'package:dart_style/dart_style.dart';
 import 'package:dartdoc/src/mustachio/annotations.dart';
 import 'package:path/path.dart' as path;
+import 'package:pub_semver/pub_semver.dart';
 
 import 'codegen_aot_compiler.dart';
 
@@ -61,6 +63,14 @@ Future<void> build(
     root: root,
     sourcePath: sourcePath,
   );
+
+  var formatter = DartFormatter(languageVersion: Version(3, 6, 0));
+  try {
+    aotRenderersContents = formatter.format(aotRenderersContents);
+  } catch (e) {
+    print('Warning: Could not format generated code: $e');
+  }
+
   await File(path.join(root, '$basePath.aot_renderers_for_html.dart'))
       .writeAsString(aotRenderersContents);
 }

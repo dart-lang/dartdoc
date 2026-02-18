@@ -28,7 +28,6 @@ void main() {
 
 @reflectiveTest
 class PlacementTest extends Co19TestBase {
-
   /// Check that doc comments can be placed before class constructors.
   void test_beforeClassConstructor1() async {
     var library = await bootPackageWithLibrary('''
