@@ -214,13 +214,29 @@ Stream<String> _fileLines(Directory dir, {required Set<String> extensions}) {
 }
 
 Future<void> runBuildbot() async {
-  await analyzeTestPackages();
-  await analyzePackage();
-  await validateFormat();
-  await validateBuild();
-  await runTryPublish();
-  await runTest();
-  await validateDartdocDocs();
+  await _section('Analyze test packages', analyzeTestPackages);
+  await _section('Analyze package', analyzePackage);
+  await _section('Validate format', validateFormat);
+  await _section('Validate build', validateBuild);
+  await _section('Run try publish', runTryPublish);
+  await _section('Run test', runTest);
+  await _section('Validate dartdoc docs', validateDartdocDocs);
+}
+
+Future<void> _section(String title, Future<void> Function() body) async {
+  if (Platform.environment['GITHUB_ACTIONS'] == 'true') {
+    print('::group::$title');
+    try {
+      await body();
+    } catch (e) {
+      print('::error::$e');
+      rethrow;
+    } finally {
+      print('::endgroup::');
+    }
+  } else {
+    await body();
+  }
 }
 
 Future<void> runClean() async {
