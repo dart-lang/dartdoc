@@ -35,11 +35,6 @@ void main() {
 /// Verifies that a doc comment is valid only when it appears in a location
 /// permitted by the specification. Doc comments in all other locations must be
 /// ignored.
-///
-/// Tools may, but are not required to, generate documentation for doc comments
-/// in permitted locations. For example, `dartdoc` does not generate
-/// documentation for private declarations; therefore, [expectOrEmpty] is used
-/// to validate the parsed documentation output for private declarations.
 @reflectiveTest
 class PlacementTest extends Co19TestBase {
   /// Check that doc comments can be recognized before `library` directive
@@ -792,7 +787,7 @@ int get g => 0; /// Line 2
     expect(g.documentation, 'Line 1');
   }
 
-  /// Check that block based doc comments can be recognized before a getter.
+  /// Check that block-based doc comments can be recognized before a getter.
   void test_beforeGetter2() async {
     var library = await bootPackageWithLibrary('''
 /** Line 1
@@ -805,7 +800,7 @@ int get g => 0; /** Line 2 */
     expect(g.documentation, 'Line 1');
   }
 
-  // TODO (sgrekhov) Add tests for private getters after https://github.com/dart-lang/dartdoc/issues/4185
+  // TODO(sgrekhov) Add tests for private getters after https://github.com/dart-lang/dartdoc/issues/4185
 
   /// Check that doc comments can be recognized before a setter.
   void test_beforeSetter1() async {
@@ -836,5 +831,5 @@ void set s(int _) { /** Line 2 */
     expect(s.documentation, 'Line 1');
   }
 
-  // TODO (sgrekhov) Add tests for private setters after https://github.com/dart-lang/dartdoc/issues/4185
+  // TODO(sgrekhov) Add tests for private setters after https://github.com/dart-lang/dartdoc/issues/4185
 }
