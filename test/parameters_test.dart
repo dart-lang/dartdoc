@@ -22,15 +22,23 @@ class ParameterTest extends DartdocTestBase {
   String get libraryName => 'parameters';
 
   void test_formalParameter_private_named_referenced() async {
-    var library = await bootPackageWithLibrary('''
+    var library = await bootPackageWithLibrary(
+      '''
 class C {
   int _x;
 
   /// Makes with an [_x].
   C({required this._x});
 }
-''');
+''',
+      libraryPreamble: '// @dart=3.12',
+      additionalArguments: ['--enable-experiment=private-named-parameters'],
+    );
     var cNew = library.classes.named('C').constructors.named('C.new');
+    var parameter = cNew.parameters.first;
+
+    // The parameter's documented name is the public name of the field formal parameter.
+    expect(parameter.documentedName, equals('x'));
 
     // The parameter reference uses its public name.
     expect(cNew.documentationAsHtml, '<p>Makes with an <code>x</code>.</p>');
@@ -38,7 +46,7 @@ class C {
     // The parameter in the signature uses its public name.
     expect(cNew.linkedParams, matchesCompressed(r'''
         \{
-        <span class="parameter" id="-param-_x">
+        <span class="parameter" id="param-x">
           <span>required</span>
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>
