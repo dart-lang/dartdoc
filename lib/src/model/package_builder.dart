@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
+import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
@@ -56,6 +57,11 @@ class PubPackageBuilder implements PackageBuilder {
     PackageMetaProvider packageMetaProvider, {
     @visibleForTesting bool skipUnreachableSdkLibraries = false,
   }) {
+    var resourceProvider = packageMetaProvider.resourceProvider;
+    var sdk = packageMetaProvider.defaultSdk ??
+        FolderBasedDartSdk(
+            resourceProvider, resourceProvider.getFolder(config.sdkDir));
+
     var contextCollection = AnalysisContextCollectionImpl(
       includedPaths: [config.inputDir],
       // TODO(jcollins-g): should we pass excluded directories here instead
@@ -64,16 +70,19 @@ class PubPackageBuilder implements PackageBuilder {
       sdkPath: config.sdkDir,
       updateAnalysisOptions4: ({
         required AnalysisOptionsImpl analysisOptions,
-      }) =>
-          analysisOptions
-            ..warning = false
-            ..lint = false,
+      }) {
+        analysisOptions
+          ..warning = false
+          ..lint = false;
+        if (config.enableExperiment.isNotEmpty) {
+          analysisOptions.contextFeatures = FeatureSet.fromEnableFlags2(
+            sdkLanguageVersion: sdk.languageVersion,
+            flags: config.enableExperiment,
+          );
+        }
+      },
       withFineDependencies: true,
     );
-    var resourceProvider = packageMetaProvider.resourceProvider;
-    var sdk = packageMetaProvider.defaultSdk ??
-        FolderBasedDartSdk(
-            resourceProvider, resourceProvider.getFolder(config.sdkDir));
     var embedderSdkFiles = _findEmbedderSdkFiles(config, resourceProvider);
 
     return PubPackageBuilder._(
