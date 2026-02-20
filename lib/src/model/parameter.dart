@@ -7,6 +7,7 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 
 class Parameter extends ModelElement with HasNoPage {
   @override
@@ -32,6 +33,18 @@ class Parameter extends ModelElement with HasNoPage {
 
   @override
   String? get href => null;
+
+  @override
+  String? get documentedName {
+    // TODO(rnystrom): Allow private named declaring parameters in primary
+    // constructors here too.
+    if (element is FieldFormalParameterElement && element.hasPrivateName) {
+      // Use the public name.
+      return element.displayName.substring(1);
+    }
+
+    return null;
+  }
 
   @override
   String get htmlId {
