@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
@@ -711,50 +710,7 @@ Text.
   }
 
   Matcher hasInvalidParameterWarning(String message) =>
-      _HasWarning(PackageWarning.invalidParameter, message);
+      hasWarning(PackageWarning.invalidParameter, message);
 
 // TODO(srawlins): More unit tests: @tool.
-}
-
-class _HasWarning extends Matcher {
-  final PackageWarning kind;
-
-  final String message;
-
-  _HasWarning(this.kind, this.message);
-
-  @override
-  bool matches(Object? actual, Map<Object?, Object?> matchState) {
-    if (actual is ModelElement) {
-      return actual.packageGraph.packageWarningCounter
-          .hasWarning(actual, kind, message);
-    } else {
-      return false;
-    }
-  }
-
-  @override
-  Description describe(Description description) =>
-      description.add('Library to be warned with $kind and message:\n$message');
-
-  @override
-  Description describeMismatch(Object? actual, Description mismatchDescription,
-      Map<Object?, Object?> matchState, bool verbose) {
-    if (actual is ModelElement) {
-      var warnings = actual
-          .packageGraph.packageWarningCounter.countedWarnings[actual.element];
-      if (warnings == null) {
-        return mismatchDescription.add('has no warnings');
-      }
-      if (warnings.length == 1) {
-        var kind = warnings.keys.first;
-        return mismatchDescription
-            .add('has one $kind warnings: ${warnings[kind]}');
-      }
-
-      return mismatchDescription.add('has warnings: $warnings');
-    }
-
-    return mismatchDescription.add('is a ${actual.runtimeType}');
-  }
 }
