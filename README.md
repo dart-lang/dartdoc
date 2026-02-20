@@ -453,6 +453,29 @@ source links from third party packages it may be necessary to generate
 dartdoc_options.yaml options for each package you are intending to add source links
 to yourself.
 
+### Experimental features
+
+Dartdoc supports enabling experimental Dart language features. These can be specified in three ways, in order of precedence:
+
+1.  **Command-line:** Use the `--enable-experiment` flag.
+    ```bash
+    dart doc --enable-experiment=macros
+    ```
+2.  **`dartdoc_options.yaml`:** Add them under the `dartdoc` key.
+    ```yaml
+    dartdoc:
+      enable-experiment:
+        - macros
+    ```
+3.  **`analysis_options.yaml`:** Dartdoc automatically respects experiments defined in your project's standard analysis configuration.
+    ```yaml
+    analyzer:
+      enable-experiment:
+        - macros
+    ```
+
+Note that specifying experiments via CLI or `dartdoc_options.yaml` will completely override any experiments defined in `analysis_options.yaml`.
+
 ## Issues and bugs
 
 Please file reports on the [GitHub Issue Tracker][].  Issues are labeled with

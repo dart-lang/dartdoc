@@ -1,3 +1,7 @@
+## 9.0.4-wip
+* Fix a bug where experiment flags passed via command-line were ignored.
+* Support specifying experimental features in `dartdoc_options.yaml`.
+
 ## 9.0.3
 * Require analyzer 10.1.0 APIs.
 * Remove usage of `EmbedderYamlLocator` and `EmbedderSdk.new`, internal
