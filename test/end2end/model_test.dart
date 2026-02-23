@@ -3861,7 +3861,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           ParameterRendererHtml().renderLinkedParams(theConstructor.parameters),
           equals(
-              '<span class="parameter" id="-param-x"><span class="type-annotation"><a href="${htmlBasePlaceholder}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">double</span>&gt;</span></span> <span class="parameter-name">x</span></span>'));
+              '<span class="parameter" id="param-x"><span class="type-annotation"><a href="${htmlBasePlaceholder}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">double</span>&gt;</span></span> <span class="parameter-name">x</span></span>'));
     });
 
     test('anonymous nested functions inside typedefs are handled', () {
