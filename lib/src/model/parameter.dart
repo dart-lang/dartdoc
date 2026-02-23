@@ -54,6 +54,9 @@ class Parameter extends ModelElement with HasNoPage {
         if (enclosingName != null && enclosingName.isNotEmpty) break;
       }
     }
+    if (enclosingName == null || enclosingName.isEmpty) {
+      return 'param-$name';
+    }
     return '$enclosingName-param-$name';
   }
 
