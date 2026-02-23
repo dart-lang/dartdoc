@@ -314,6 +314,11 @@ class MarkdownDocument extends md.Document {
     var textContent = _htmlEscape.convert(referenceText);
     var linkedElement = result.commentReferable;
     if (linkedElement != null) {
+      // If the element has a separate name to use in documentation, prefer it.
+      if (linkedElement.documentedName case var name?) {
+        textContent = name;
+      }
+
       if (linkedElement.href case var href?) {
         var anchor = md.Element.text('a', textContent);
         if (linkedElement is ModelElement && linkedElement.isDeprecated) {

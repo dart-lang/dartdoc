@@ -34,6 +34,17 @@ class Parameter extends ModelElement with HasNoPage {
   String? get href => null;
 
   @override
+  String? get documentedName {
+    // TODO(rnystrom): Allow private named declaring parameters in primary
+    // constructors here too.
+    if (element case FieldFormalParameterElement(privateName: _?)) {
+      return element.name;
+    }
+
+    return null;
+  }
+
+  @override
   String get htmlId {
     final enclosingElement = element.enclosingElement;
     if (enclosingElement == null) {

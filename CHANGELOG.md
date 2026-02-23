@@ -1,6 +1,7 @@
 ## 9.0.4-wip
 * Fix a bug where experiment flags passed via command-line were ignored.
 * Support specifying experimental features in `dartdoc_options.yaml`.
+* Document using the public name for private named parameters.
 
 ## 9.0.3
 * Require analyzer 10.1.0 APIs.
