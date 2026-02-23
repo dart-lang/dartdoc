@@ -16,8 +16,6 @@ mixin DartdocExperimentOptionContext implements DartdocOptionContextBase {
       optionSet['enable-experiment'].valueAt(context);
 }
 
-// TODO(jcollins-g): Implement YAML parsing for these flags and generation
-// of [DartdocExperimentOptionContext], once a YAML file is available.
 List<DartdocOption<Object>> createExperimentOptions(
     ResourceProvider resourceProvider) {
   var knownFeatures = ExperimentStatus.knownFeatures.values;
@@ -25,10 +23,8 @@ List<DartdocOption<Object>> createExperimentOptions(
       knownFeatures.map((e) => '    [no-]${e.enableString}: ${e.documentation} '
           '(default: ${e.isEnabledByDefault})');
   return [
-    // TODO(jcollins-g): Consider loading experiment values from
-    // dartdoc_options.yaml?
-    DartdocOptionArgOnly<List<String>>(
-        'enable-experiment', ['non-nullable'], resourceProvider,
+    DartdocOptionArgFile<List<String>>('enable-experiment', [], resourceProvider,
+        splitCommas: true,
         help: 'Enable or disable listed experiments.\n'
             '${featureHelpTexts.join('\n')}'),
   ];
