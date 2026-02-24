@@ -34,8 +34,8 @@ class ExampleDirectiveTest extends DocumentationCommentTestBase {
 
     var expectedPath =
         pathContext.normalize(pathContext.join(projectRoot.path, libraryPath));
-    libraryModel = packageGraph.defaultPackage.libraries.firstWhere((l) =>
-        pathContext.normalize(l.sourceFileName) == expectedPath);
+    libraryModel = packageGraph.defaultPackage.libraries.firstWhere(
+        (l) => pathContext.normalize(l.sourceFileName) == expectedPath);
   }
 
   void _writeFile(String path, String content) {
@@ -179,7 +179,7 @@ void main() {
     expect(
       libraryModel,
       hasWarning(PackageWarning.invalidParameter,
-          'Example contains tabs in indentation. Indentation stripping disabled to avoid incorrect formatting.'),
+          'Example contains non-space whitespace in indentation. Indentation stripping disabled to avoid incorrect formatting.'),
     );
     expect(doc, equals('''
 
@@ -216,6 +216,24 @@ void main() {
       libraryModel,
       hasWarning(PackageWarning.invalidParameter,
           'Must specify a file path for the @example directive.'),
+    );
+  }
+
+  void test_exampleDirective_extraPositionalArguments() async {
+    await _bootPackage('''
+/// {@example /examples/hello.dart extra1 extra2}
+''', files: {
+      'examples/hello.dart': 'void main() {}',
+    });
+
+    await libraryModel.processComment();
+
+    expect(
+      libraryModel,
+      hasWarning(
+          PackageWarning.invalidParameter,
+          'The {@example} directive only takes one positional argument (the file path). '
+          'Ignoring extra arguments: extra1 extra2'),
     );
   }
 }

@@ -135,7 +135,8 @@ void main() {
     });
 
     test('Windows-style absolute paths and resolution', () {
-      var windowsContext = p.Context(style: p.Style.windows, current: r'C:\project');
+      var windowsContext =
+          p.Context(style: p.Style.windows, current: r'C:\project');
       var windowsPackagePath = r'C:\project';
 
       String? resolveWindows(String filepath, {String? sourceFileName}) {
@@ -207,6 +208,34 @@ void main() {
             sourceFilePath: '/project/lib/a.dart',
             pathContext: pathContext,
             warn: (kind, {message}) => warned = true,
+          );
+          expect(warned, isTrue,
+              reason: 'Expected a warning for input "$input"');
+        });
+      }
+    });
+
+    group('rejects paths with schemes or authorities (trigger warnings)', () {
+      var inputs = [
+        'file:///something',
+        'file:///etc/passwd',
+        'http://example.com/script.dart',
+        'https://pub.dev/packages',
+      ];
+
+      for (var input in inputs) {
+        test('rejects: $input', () {
+          var warned = false;
+          DocumentationComment.resolveExamplePath(
+            input,
+            packagePath: packagePath,
+            sourceFilePath: '/project/lib/a.dart',
+            pathContext: pathContext,
+            warn: (kind, {message}) {
+              warned = true;
+              expect(message,
+                  contains('Schemes and authorities are not allowed.'));
+            },
           );
           expect(warned, isTrue,
               reason: 'Expected a warning for input "$input"');

@@ -36,6 +36,11 @@ final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 
 final _lineEndingRegExp = RegExp(r'\r\n?');
 
+final _exampleRegExp = RegExp(
+  r'^[ \t]*\{@example(?:[ \t]+([^}\r\n]*))?\}[ \t]*$',
+  multiLine: true,
+);
+
 /// Features for processing directives in a documentation comment.
 ///
 /// [_processCommentWithoutTools] and [processComment] are the primary
@@ -344,7 +349,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   ///   all lines. Whitespace-only lines are ignored for calculation and
   ///   normalized to empty lines.
   /// - If `indent` is `keep`, the indentation is left as-is.
-  /// - If any line has tab characters in its indentation and `indent` is
+  /// - If any line has non-space characters in its indentation and `indent` is
   ///   `strip`, a warning is issued and indentation stripping is skipped to
   ///   prevent broken formatting.
   ///
@@ -374,6 +379,13 @@ mixin DocumentationComment implements Warnable, SourceCode {
         warn(PackageWarning.invalidParameter,
             message: 'Must specify a file path for the @example directive.');
         return '';
+      }
+
+      if (args.rest.length > 1) {
+        warn(PackageWarning.invalidParameter,
+            message:
+                'The {@example} directive only takes one positional argument (the file path). '
+                'Ignoring extra arguments: ${args.rest.skip(1).join(" ")}');
       }
 
       var filepath = args.rest.first;
@@ -463,20 +475,22 @@ mixin DocumentationComment implements Warnable, SourceCode {
     // absolute-like path (e.g., "\lib\src\foo.dart" on Windows), which [toUri]
     // converts to a file URI (potentially including a drive letter,
     // e.g., "file:///C:/lib/...").
-    var baseUri =
-        pathContext.toUri(pathContext.join(pathContext.separator, relativePath));
+    var baseUri = pathContext
+        .toUri(pathContext.join(pathContext.separator, relativePath));
 
-    // 3. Resolve using [Uri.resolve].
+    // 3. Resolve using [Uri.resolveUri].
     // [exampleFilePath] is interpreted as a URI reference.
     String resolvedPath;
     try {
-      var resolvedUri = baseUri.resolve(exampleFilePath);
-      if (resolvedUri.scheme != 'file') {
+      var exampleFileUri = Uri.parse(exampleFilePath);
+      if (exampleFileUri.hasScheme || exampleFileUri.hasAuthority) {
         warn(PackageWarning.invalidParameter,
             message:
-                'Invalid scheme for @example directive ($exampleFilePath): ${resolvedUri.scheme}');
+                '@example path "$exampleFilePath" must be a local file path. '
+                'Schemes and authorities are not allowed.');
         return null;
       }
+      var resolvedUri = baseUri.resolveUri(exampleFileUri);
 
       // 4. Convert back to a package-relative file path.
       // [fromUri] returns an absolute path (e.g., "C:\lib\example.dart").
@@ -516,7 +530,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// Whitespace-only lines are ignored when calculating the common indentation
   /// and are normalized to empty strings in the output.
   ///
-  /// If any line has tab characters in its indentation, a warning is issued
+  /// If any line has non-space characters in its indentation, a warning is issued
   /// and the original [content] is returned.
   static String _stripIndentation(
       String content, void Function(PackageWarning, {String? message}) warn) {
@@ -540,12 +554,14 @@ mixin DocumentationComment implements Warnable, SourceCode {
       var indentLength = line.length - trimmed.length;
       var indentation = line.substring(0, indentLength);
 
-      if (indentation.contains('\t')) {
-        warn(PackageWarning.invalidParameter,
-            message:
-                'Example contains tabs in indentation. Indentation stripping '
-                'disabled to avoid incorrect formatting.');
-        return content;
+      for (var j = 0; j < indentLength; j++) {
+        if (indentation.codeUnitAt(j) != 0x20) {
+          warn(PackageWarning.invalidParameter,
+              message:
+                  'Example contains non-space whitespace in indentation. Indentation stripping '
+                  'disabled to avoid incorrect formatting.');
+          return content;
+        }
       }
 
       if (minIndent == null || indentLength < minIndent) {
@@ -557,16 +573,12 @@ mixin DocumentationComment implements Warnable, SourceCode {
       return anyWhitespaceLineChanged ? lines.join('\n') : content;
     }
 
-    return lines.map((line) {
-      if (line.isEmpty) return line;
-      return line.substring(minIndent!);
-    }).join('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      if (line.isNotEmpty) lines[i] = line.substring(minIndent);
+    }
+    return lines.join('\n');
   }
-
-  static final _exampleRegExp = RegExp(
-    r'^[ \t]*\{@example(?:[ \t]+([^}\r\n]*))?\}[ \t]*$',
-    multiLine: true,
-  );
 
   static final _exampleArgParser = ArgParser()
     ..addOption('lang')

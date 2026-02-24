@@ -261,7 +261,8 @@ enum PackageWarning implements Comparable<PackageWarning> {
   missingExampleFile(
     'missing-example-file',
     'example file not found: {0}',
-    shortHelp: 'An example file referenced by a dartdoc directive was not found',
+    shortHelp:
+        'An example file referenced by a dartdoc directive was not found',
   ),
 
   // The message for this warning can contain many punctuation and other
