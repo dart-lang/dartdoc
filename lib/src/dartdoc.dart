@@ -22,7 +22,7 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 const String programName = 'dartdoc';
-// Update when pubspec version changes by running `pub run build_runner build`
+// Update when pubspec version changes by running `dart run build_runner build`
 const String dartdocVersion = packageVersion;
 
 /// Used for the generateDocs:false option.
