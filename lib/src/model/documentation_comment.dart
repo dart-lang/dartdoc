@@ -354,8 +354,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   ///   prevent broken formatting.
   ///
   /// The `lang` parameter specifies the language for the fenced code block. If
-  /// not provided, it defaults to the file extension of `path`, or `dart` if
-  /// the extension is empty.
+  /// not provided, it defaults to the file extension of `path`.
   ///
   /// Example:
   ///
