@@ -10,5 +10,6 @@ const List<String> resourceNames = [
   'play_button.svg',
   'readme.md',
   'search.svg',
+  'search_dark.svg',
   'styles.css',
 ];
