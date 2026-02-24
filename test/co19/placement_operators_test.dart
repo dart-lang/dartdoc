@@ -28,7 +28,7 @@ void main() {
 
 @reflectiveTest
 class PlacementTest extends Co19TestBase {
-  /// Check that doc comments in a class can be recognized before a user-defined
+  /// Check that doc comments in a class can be recognized before user-defined
   /// operators.
   void test_beforeClassOperator1() async {
     var library = await bootPackageWithLibrary('''
@@ -55,7 +55,7 @@ Line 3
 Line 1''');
   }
 
-  /// Check that block-based doc comments in a class can be recognized before a
+  /// Check that block-based doc comments in a class can be recognized before
   /// user-defined operators.
   void test_beforeClassOperator2() async {
     var library = await bootPackageWithLibrary('''
@@ -84,8 +84,8 @@ class C {
     expect(op2.documentation, 'Line 1');
   }
 
-  /// Check that doc comments in a mixin can be recognized before a user-defined
-  /// operator.
+  /// Check that doc comments in a mixin can be recognized before user-defined
+  /// operators.
   void test_beforeMixinOperator1() async {
     var library = await bootPackageWithLibrary('''
 mixin M {
@@ -111,8 +111,8 @@ Line 3
 Line 1''');
   }
 
-  /// Check that block-based doc comments in a mixin can be recognized before a
-  /// user-defined operator.
+  /// Check that block-based doc comments in a mixin can be recognized before
+  /// user-defined operators.
   void test_beforeMixinOperator2() async {
     var library = await bootPackageWithLibrary('''
 mixin M {
@@ -140,8 +140,8 @@ mixin M {
     expect(op2.documentation, 'Line 1');
   }
 
-  /// Check that doc comments in an enum can be recognized before a user-defined
-  /// operator.
+  /// Check that doc comments in an enum can be recognized before user-defined
+  /// operators.
   void test_beforeEnumOperator1() async {
     var library = await bootPackageWithLibrary('''
 enum E {
@@ -168,8 +168,8 @@ Line 3
 Line 1''');
   }
 
-  /// Check that block-based doc comments in an enum can be recognized before a
-  /// user-defined operator.
+  /// Check that block-based doc comments in an enum can be recognized before
+  /// user-defined operators.
   void test_beforeEnumOperator2() async {
     var library = await bootPackageWithLibrary('''
 enum E {
@@ -198,8 +198,8 @@ enum E {
     expect(op2.documentation, 'Line 1');
   }
 
-  /// Check that doc comments in an extension can be recognized before a
-  /// user-defined operator.
+  /// Check that doc comments in an extension can be recognized before
+  /// user-defined operators.
   void test_beforeExtensionOperator1() async {
     var library = await bootPackageWithLibrary('''
 class A {}
@@ -228,7 +228,7 @@ Line 1''');
   }
 
   /// Check that block-based doc comments in an extension can be recognized
-  /// before extension a user-defined operator.
+  /// before user-defined operators.
   void test_beforeExtensionOperator2() async {
     var library = await bootPackageWithLibrary('''
 class A {}
@@ -258,8 +258,8 @@ extension Ext on A {
     expect(op2.documentation, 'Line 1');
   }
 
-  /// Check that doc comments in an extension type can be recognized before a
-  /// user-defined operator.
+  /// Check that doc comments in an extension type can be recognized before
+  /// user-defined operators.
   void test_beforeExtensionTypeOperator1() async {
     var library = await bootPackageWithLibrary('''
 extension type ET(int v) {
@@ -286,7 +286,7 @@ Line 1''');
   }
 
   /// Check that block-based doc comments in an extension type can be recognized
-  /// before a user-defined operator.
+  /// before user-defined operators.
   void test_beforeExtensionTypeOperator2() async {
     var library = await bootPackageWithLibrary('''
 extension type ET(int v) {
