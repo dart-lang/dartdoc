@@ -5,6 +5,7 @@
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -63,4 +64,43 @@ class DocumentationCommentTestBase extends DartdocTestBase {
   }) =>
       writePackageWithCommentedLibraries([('a.dart', comment)],
           additionalArguments: additionalArguments);
+
+  Matcher hasWarning(PackageWarning kind, String message) =>
+      _HasWarning(kind, message);
+}
+
+class _HasWarning extends Matcher {
+  final PackageWarning kind;
+  final String message;
+
+  _HasWarning(this.kind, this.message);
+
+  @override
+  bool matches(Object? actual, Map<Object?, Object?> matchState) {
+    if (actual is ModelElement) {
+      return actual.packageGraph.packageWarningCounter
+          .hasWarning(actual, kind, message);
+    } else {
+      return false;
+    }
+  }
+
+  @override
+  Description describe(Description description) =>
+      description.add('Library to be warned with $kind and message: $message');
+
+  @override
+  Description describeMismatch(Object? actual, Description mismatchDescription,
+      Map<Object?, Object?> matchState, bool verbose) {
+    if (actual is ModelElement) {
+      var warnings = actual
+          .packageGraph.packageWarningCounter.countedWarnings[actual.element];
+      if (warnings == null) {
+        return mismatchDescription.add('has no warnings');
+      }
+      return mismatchDescription.add('has warnings: $warnings');
+    }
+
+    return mismatchDescription.add('is a ${actual.runtimeType}');
+  }
 }

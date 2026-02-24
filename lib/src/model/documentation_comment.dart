@@ -5,6 +5,7 @@
 /// @docImport 'package:dartdoc/src/model/package_graph.dart';
 library;
 
+import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -32,6 +33,13 @@ final _basicToolPattern =
 final _macroRegExp = RegExp(r'{@macro\s+([^\s}][^}]*)}');
 
 final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
+
+final _lineEndingRegExp = RegExp(r'\r\n?');
+
+final _exampleRegExp = RegExp(
+  r'^[ \t]*\{@example(?:[ \t]+([^}\r\n]*))?\}[ \t]*$',
+  multiLine: true,
+);
 
 /// Features for processing directives in a documentation comment.
 ///
@@ -104,6 +112,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
     // The vast, vast majority of doc comments have no directives.
     if (docs.contains('{@')) {
       _checkForUnknownDirectives(docs);
+      docs = _injectExamples(docs);
       docs = _injectYouTube(docs);
       docs = _injectAnimations(docs);
       if (processMacros) {
@@ -180,6 +189,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
     'end-inject-html',
     'end-tool',
     'endtemplate',
+    'example',
     'macro',
     'inject-html',
     'template',
@@ -319,6 +329,259 @@ mixin DocumentationComment implements Warnable, SourceCode {
     return (env..removeWhere((key, value) => value == null))
         .cast<String, String>();
   }
+
+  /// Replace &#123;@example ...&#125; in API comments with a fenced code block
+  /// containing the contents of the specified file.
+  ///
+  /// This is a block-level directive and must appear on its own line.
+  ///
+  /// Syntax:
+  ///
+  ///     &#123;@example <path> [lang=LANGUAGE] [indent=keep|strip]&#125;
+  ///
+  /// The `path` is resolved relative to the current file's path, using the
+  /// package's root as the root path;
+  /// see [resolveExamplePath] for details.
+  ///
+  /// The file content is processed as follows:
+  /// - Line endings are normalized to `\n`.
+  /// - If `indent` is `strip` (the default), common indentation is removed from
+  ///   all lines. Whitespace-only lines are ignored for calculation and
+  ///   normalized to empty lines.
+  /// - If `indent` is `keep`, the indentation is left as-is.
+  /// - If any line has non-space characters in its indentation and `indent` is
+  ///   `strip`, a warning is issued and indentation stripping is skipped to
+  ///   prevent broken formatting.
+  ///
+  /// The `lang` parameter specifies the language for the fenced code block. If
+  /// not provided, it defaults to the file extension of `path`.
+  ///
+  /// Example:
+  ///
+  ///     &#123;@example /examples/my_example.dart&#125;
+  ///     &#123;@example ../subdir/utils.dart lang=dart indent=strip&#125;
+  ///     &#123;@example ../subdir/utils.dart indent=keep&#125;
+  String _injectExamples(String rawDocs) {
+    return rawDocs.replaceAllMapped(_exampleRegExp, (match) {
+      var argsAsString = match[1];
+      if (argsAsString == null) {
+        warn(PackageWarning.invalidParameter,
+            message: 'Must specify a file path for the @example directive.');
+        return '';
+      }
+      var args = _parseArgs(argsAsString, _exampleArgParser, 'example');
+      if (args == null) {
+        // Already warned about an invalid parameter if this happens.
+        return '';
+      }
+      if (args.rest.isEmpty) {
+        warn(PackageWarning.invalidParameter,
+            message: 'Must specify a file path for the @example directive.');
+        return '';
+      }
+
+      if (args.rest.length > 1) {
+        warn(PackageWarning.invalidParameter,
+            message:
+                'The {@example} directive only takes one positional argument (the file path). '
+                'Ignoring extra arguments: ${args.rest.skip(1).join(" ")}');
+      }
+
+      var filepath = args.rest.first;
+      // TODO(zarah): Add support for regions (#region, #endregion).
+
+      var resolvedPath = resolveExamplePath(
+        filepath,
+        packagePath: package.packagePath,
+        sourceFilePath: sourceFileName,
+        pathContext: pathContext,
+        warn: warn,
+      );
+      if (resolvedPath == null) return '';
+
+      var file = packageGraph.resourceProvider.getFile(resolvedPath);
+      if (!file.exists) {
+        warn(PackageWarning.missingExampleFile, message: filepath);
+        return '';
+      }
+
+      var extension = pathContext
+          .extension(resolvedPath)
+          .replaceFirst('.', '')
+          .toLowerCase();
+      var language = args['lang'] ?? extension;
+      var indent = args['indent'] ?? 'strip';
+
+      var content = file.readAsStringSync();
+      // Normalize line endings to \n.
+      content = content.replaceAll(_lineEndingRegExp, '\n');
+
+      if (indent == 'strip') {
+        content = _stripIndentation(content, warn);
+      }
+
+      // Ensure the content ends with exactly one newline before the closing fence.
+      var trailing = content.endsWith('\n') ? '' : '\n';
+
+      return '\n```$language\n$content$trailing```\n';
+    });
+  }
+
+  /// Resolves the given [exampleFilePath] as a URI reference relative to the current
+  /// package root.
+  ///
+  /// The [exampleFilePath] is resolved as follows:
+  /// - If it starts with a leading `/`, it is resolved relative to the package
+  ///   root.
+  /// - Otherwise, it is resolved relative to the file containing the
+  ///   documentation comment (rooted at the package root).
+  /// - Resolution follows URI reference rules, ensuring that `..` segments
+  ///   stop at the package root and never escape it.
+  /// - [exampleFilePath] must be a valid URI path (using `/` as separator), and can
+  ///   include URI-encoded characters (like `%20` for spaces).
+  /// - Absolute URIs (e.g. starting with `https:`) are not supported.
+  ///
+  /// Returns the absolute path of the resolved file, or `null` if
+  /// [exampleFilePath] is not a valid URI reference or has an unsupported scheme.
+  ///
+  /// The [packagePath] is the file system path of the root of the current package,
+  /// in the form used by [pathContext].
+  ///
+  /// The [sourceFilePath] is the file system path of the file containing the example
+  /// link in the form used by [pathContext].
+  /// If provided, it must be within the package root given by [packagePath].
+  /// If absent, the [exampleFilePath] is resolved relative to the package root.
+  ///
+  @visibleForTesting
+  static String? resolveExamplePath(
+    String exampleFilePath, {
+    required String packagePath,
+    required String? sourceFilePath,
+    required p.Context pathContext,
+    required void Function(PackageWarning, {String? message}) warn,
+  }) {
+    assert(sourceFilePath == null ||
+        pathContext.isWithin(packagePath, sourceFilePath));
+
+    // Resolve the path as a URI reference.
+    // 1. Get the relative path of the current file from the package root.
+    var relativePath = sourceFilePath != null
+        ? pathContext.relative(sourceFilePath, from: packagePath)
+        : '';
+
+    // 2. Convert to a URI, rooted at the file system root.
+    // We explicitly join with [pathContext.separator] to create an
+    // absolute-like path (e.g., "\lib\src\foo.dart" on Windows), which [toUri]
+    // converts to a file URI (potentially including a drive letter,
+    // e.g., "file:///C:/lib/...").
+    var baseUri = pathContext
+        .toUri(pathContext.join(pathContext.separator, relativePath));
+
+    // 3. Resolve using [Uri.resolveUri].
+    // [exampleFilePath] is interpreted as a URI reference.
+    String resolvedPath;
+    try {
+      var exampleFileUri = Uri.parse(exampleFilePath);
+      if (exampleFileUri.hasScheme || exampleFileUri.hasAuthority) {
+        warn(PackageWarning.invalidParameter,
+            message:
+                '@example path "$exampleFilePath" must be a local file path. '
+                'Schemes and authorities are not allowed.');
+        return null;
+      }
+      var resolvedUri = baseUri.resolveUri(exampleFileUri);
+
+      // 4. Convert back to a package-relative file path.
+      // [fromUri] returns an absolute path (e.g., "C:\lib\example.dart").
+      // We calculate the path relative to the file system root ([separator])
+      // to strip any drive letters or root prefixes, ensuring we can safely
+      // join it back to [packagePath].
+      var relativeToRoot = pathContext.relative(
+        pathContext.fromUri(resolvedUri),
+        from: pathContext.separator,
+      );
+
+      resolvedPath = pathContext.join(packagePath, relativeToRoot);
+    } on FormatException catch (e) {
+      warn(PackageWarning.invalidParameter,
+          message:
+              'Invalid path for @example directive ($exampleFilePath): ${e.message}');
+      return null;
+    }
+
+    resolvedPath = pathContext.normalize(resolvedPath);
+
+    // Security check: theoretically unreachable due to Uri resolution clamping,
+    // but kept as a safeguard against future refactoring bugs.
+    if (!pathContext.isWithin(packagePath, resolvedPath) &&
+        !pathContext.equals(packagePath, resolvedPath)) {
+      warn(PackageWarning.invalidParameter,
+          message:
+              'Example file $exampleFilePath must be within the package root ($packagePath).');
+      return null;
+    }
+
+    return resolvedPath;
+  }
+
+  /// Strips the common indentation from [content].
+  ///
+  /// Whitespace-only lines are ignored when calculating the common indentation
+  /// and are normalized to empty strings in the output.
+  ///
+  /// If any line has non-space characters in its indentation, a warning is issued
+  /// and the original [content] is returned.
+  static String _stripIndentation(
+      String content, void Function(PackageWarning, {String? message}) warn) {
+    var lines = LineSplitter.split(content).toList();
+    if (lines.isEmpty) return content;
+
+    int? minIndent;
+    var anyWhitespaceLineChanged = false;
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      var trimmed = line.trimLeft();
+      if (trimmed.isEmpty) {
+        // Normalization: Clear whitespace-only lines so they don't count for indent.
+        if (line.isNotEmpty) {
+          lines[i] = '';
+          anyWhitespaceLineChanged = true;
+        }
+        continue;
+      }
+
+      var indentLength = line.length - trimmed.length;
+      var indentation = line.substring(0, indentLength);
+
+      for (var j = 0; j < indentLength; j++) {
+        if (indentation.codeUnitAt(j) != 0x20) {
+          warn(PackageWarning.invalidParameter,
+              message:
+                  'Example contains non-space whitespace in indentation. Indentation stripping '
+                  'disabled to avoid incorrect formatting.');
+          return content;
+        }
+      }
+
+      if (minIndent == null || indentLength < minIndent) {
+        minIndent = indentLength;
+      }
+    }
+
+    if (minIndent == null || minIndent == 0) {
+      return anyWhitespaceLineChanged ? lines.join('\n') : content;
+    }
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      if (line.isNotEmpty) lines[i] = line.substring(minIndent);
+    }
+    return lines.join('\n');
+  }
+
+  static final _exampleArgParser = ArgParser()
+    ..addOption('lang')
+    ..addOption('indent', allowed: ['keep', 'strip'], defaultsTo: 'strip');
 
   /// Matches all youtube directives (even some invalid ones). This is so
   /// we can give good error messages if the directive is malformed, instead of
