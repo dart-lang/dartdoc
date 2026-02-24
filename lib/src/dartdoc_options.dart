@@ -1546,7 +1546,7 @@ List<DartdocOption> createDartdocOptions(
       return packageMeta;
     }, resourceProvider, help: 'PackageMeta object for the default package.'),
     DartdocOptionArgOnly<bool>('useCategories', true, resourceProvider,
-        help: '(deprecated, ignored) Display categories in the sidebar of packages',
+        help: 'Deprecated, has no effect.',
         hide: true),
     DartdocOptionArgOnly<bool>('validateLinks', true, resourceProvider,
         help: 'Runs the built-in link checker to display Dart context aware '
