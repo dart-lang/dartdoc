@@ -302,7 +302,7 @@ MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
   if (nameable == null) {
     return originalResult;
   }
-  var definingNamable = nameable.definingNameable;
+  var definingNameable = nameable.definingNameable;
   return definingNamable == originalResult.nameable
       ? originalResult
       : MatchingLinkResult(definingNamable);
