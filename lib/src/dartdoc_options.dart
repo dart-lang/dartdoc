@@ -1222,8 +1222,6 @@ class DartdocOptionContext extends DartdocOptionContextBase
   PackageMeta get topLevelPackageMeta =>
       optionSet['topLevelPackageMeta'].valueAt(context);
 
-  bool get useCategories => optionSet['useCategories'].valueAt(context);
-
   bool get validateLinks => optionSet['validateLinks'].valueAt(context);
 
   bool isLibraryExcluded(String nameOrPath) => exclude.contains(nameOrPath);
@@ -1548,7 +1546,8 @@ List<DartdocOption> createDartdocOptions(
       return packageMeta;
     }, resourceProvider, help: 'PackageMeta object for the default package.'),
     DartdocOptionArgOnly<bool>('useCategories', true, resourceProvider,
-        help: 'Display categories in the sidebar of packages'),
+        help: 'Deprecated, has no effect.',
+        hide: true),
     DartdocOptionArgOnly<bool>('validateLinks', true, resourceProvider,
         help: 'Runs the built-in link checker to display Dart context aware '
             'warnings for broken links (slow)',
