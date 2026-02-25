@@ -11,7 +11,7 @@ import 'package:dartdoc/src/warnings.dart';
 
 /// A subcategory of a package, containing elements tagged with `{@category}`.
 final class Category extends LibraryContainer
-    with Nameable, Warnable, MarkdownFileDocumentation, TopLevelContainer {
+    with Referable, Warnable, MarkdownFileDocumentation, TopLevelContainer {
   /// The package in which this category is contained.
   ///
   /// All libraries in [libraries] must come from [package].
@@ -174,10 +174,10 @@ final class Category extends LibraryContainer
   Iterable<Class> get exceptions => _exceptions;
 
   @override
-  Map<String, Nameable> get referenceChildren => const {};
+  Map<String, Referable> get referenceChildren => const {};
 
   @override
-  Iterable<Nameable> get referenceParents => const [];
+  Iterable<Referable> get referenceParents => const [];
 }
 
 extension on String? {

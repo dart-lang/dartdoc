@@ -82,7 +82,7 @@ extension IterableOfDocumentableExtension<E extends Documentable>
   Iterable<E> get whereDocumented => where((e) => e.isDocumented).wherePublic;
 }
 
-extension IterableOfNameableExtension<E extends Nameable> on Iterable<E> {
+extension IterableOfReferableExtension<E extends Referable> on Iterable<E> {
   Iterable<E> get wherePublic => where((e) => e.isPublic);
 }
 

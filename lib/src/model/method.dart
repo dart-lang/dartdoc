@@ -126,14 +126,14 @@ class Method extends ModelElement
   @override
   bool get isCovariant => false;
 
-  Map<String, Nameable>? _referenceChildren;
+  Map<String, Referable>? _referenceChildren;
   @override
-  Map<String, Nameable> get referenceChildren {
+  Map<String, Referable> get referenceChildren {
     var from = documentationFrom.first as Method;
     if (!identical(this, from)) {
       return from.referenceChildren;
     }
-    return _referenceChildren ??= <String, Nameable>{
+    return _referenceChildren ??= <String, Referable>{
       // If we want to include all types referred to in the signature of this
       // method, this is woefully incomplete. Notice we don't currently include
       // the element of the returned type itself, nor nested type arguments,

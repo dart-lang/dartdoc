@@ -103,7 +103,7 @@ class Constructor extends ModelElement
   }
 
   @override
-  late final Map<String, Nameable> referenceChildren = () {
+  late final Map<String, Referable> referenceChildren = () {
     // Find the element that [parameter] is _really_ referring to.
     Element? dereferenceParameter(FormalParameterElement? parameter) =>
         switch (parameter) {

@@ -71,5 +71,5 @@ class TopLevelVariable extends ModelElement with GetterSetterCombo, HasLibrary {
   Set<Attribute> get attributes => {...super.attributes, ...comboAttributes};
 
   @override
-  Iterable<Nameable> get referenceParents => [library];
+  Iterable<Referable> get referenceParents => [library];
 }

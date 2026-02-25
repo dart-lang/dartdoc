@@ -30,7 +30,7 @@ class Mixin extends InheritingContainer {
 
   @override
   @visibleForOverriding
-  Map<String, Nameable> get extraReferenceChildren => const {};
+  Map<String, Referable> get extraReferenceChildren => const {};
 
   @override
   bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;

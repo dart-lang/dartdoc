@@ -189,11 +189,11 @@ abstract class Container extends ModelElement with HasLibrary, TypeParameters {
   /// For subclasses to add items after the main pass but before the
   /// parameter-global.
   @visibleForOverriding
-  Map<String, Nameable> get extraReferenceChildren;
+  Map<String, Referable> get extraReferenceChildren;
 
   @override
   @mustCallSuper
-  late final Map<String, Nameable> referenceChildren = {
+  late final Map<String, Referable> referenceChildren = {
     for (var modelElement in allModelElements)
       // Don't complain about references to parameter names, but prefer
       // referring to anything else.
@@ -208,7 +208,7 @@ abstract class Container extends ModelElement with HasLibrary, TypeParameters {
   };
 
   @override
-  Iterable<Nameable> get referenceParents => [library];
+  Iterable<Referable> get referenceParents => [library];
 
   /// The full path of this element's sidebar file.
   String get sidebarPath;

@@ -18,7 +18,7 @@ import 'package:meta/meta.dart';
 
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
-abstract class ElementType with Nameable {
+abstract class ElementType with Referable {
   final DartType type;
   @override
   final PackageGraph packageGraph;
@@ -119,13 +119,13 @@ class UndefinedElementType extends ElementType {
   Iterable<ElementType> get typeArguments => const [];
 
   @override
-  Map<String, Nameable> get referenceChildren => const {};
+  Map<String, Referable> get referenceChildren => const {};
 
   @override
-  Iterable<Nameable> get referenceParents => const [];
+  Iterable<Referable> get referenceParents => const [];
 
   @override
-  Iterable<Nameable>? get referenceGrandparentOverrides => null;
+  Iterable<Referable>? get referenceGrandparentOverrides => null;
 }
 
 /// A [FunctionType] that does not have an underpinning [Element].
@@ -307,18 +307,19 @@ abstract class DefinedElementType extends ElementType {
   Iterable<ElementType> get typeArguments => [];
 
   @override
-  Map<String, Nameable> get referenceChildren => modelElement.referenceChildren;
+  Map<String, Referable> get referenceChildren =>
+      modelElement.referenceChildren;
 
   @override
-  Iterable<Nameable> get referenceParents => modelElement.referenceParents;
+  Iterable<Referable> get referenceParents => modelElement.referenceParents;
 
   @override
-  Iterable<Nameable>? get referenceGrandparentOverrides =>
+  Iterable<Referable>? get referenceGrandparentOverrides =>
       modelElement.referenceGrandparentOverrides;
 
   @internal
   @override
-  Nameable get definingNameable =>
+  Referable get definingReferable =>
       ModelElement.forElement(modelElement.element, packageGraph);
 }
 

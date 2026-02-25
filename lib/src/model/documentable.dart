@@ -12,7 +12,7 @@ import 'model.dart';
 
 /// An interface that bridges the gap between [ModelElement]s, [Category]s, and
 /// [Package]s, all of which have documentation, but in different forms.
-abstract interface class Documentable with Nameable {
+abstract interface class Documentable with Referable {
   /// The documentation, stripped of its comment syntax, like `///` characters,
   /// and with all doc directives processed.
   ///

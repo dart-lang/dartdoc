@@ -144,13 +144,13 @@ class Accessor extends ModelElement with HasLibrary {
   /// Accessors should never be participating directly in comment reference
   /// lookups.
   @override
-  Map<String, Nameable> get referenceChildren =>
+  Map<String, Referable> get referenceChildren =>
       enclosingCombo.referenceChildren;
 
   /// Accessors should never be participating directly in comment reference
   /// lookups.
   @override
-  Iterable<Nameable> get referenceParents => enclosingCombo.referenceParents;
+  Iterable<Referable> get referenceParents => enclosingCombo.referenceParents;
 }
 
 /// A getter or setter that is a member of a [Container].

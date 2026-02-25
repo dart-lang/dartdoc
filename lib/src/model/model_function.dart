@@ -73,13 +73,13 @@ class ModelFunctionTyped extends ModelElement with HasLibrary, TypeParameters {
   bool get isInherited => false;
 
   @override
-  late final Map<String, Nameable> referenceChildren = {
+  late final Map<String, Referable> referenceChildren = {
     ...parameters.explicitOnCollisionWith(this),
     ...typeParameters.explicitOnCollisionWith(this),
   };
 
   @override
-  Iterable<Nameable> get referenceParents => [library];
+  Iterable<Referable> get referenceParents => [library];
 
   late final Callable modelType = getTypeFor(element.type, library) as Callable;
 

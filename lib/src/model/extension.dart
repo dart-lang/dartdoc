@@ -131,9 +131,9 @@ class Extension extends Container {
   String get sidebarPath =>
       '${canonicalLibraryOrThrow.dirName}/$name-extension-sidebar.html';
 
-  Map<String, Nameable>? _referenceChildren;
+  Map<String, Referable>? _referenceChildren;
   @override
-  Map<String, Nameable> get referenceChildren {
+  Map<String, Referable> get referenceChildren {
     return _referenceChildren ??= {
       ...extendedElement.referenceChildren,
       // Override extendedType entries with local items.
@@ -143,7 +143,7 @@ class Extension extends Container {
 
   @override
   @visibleForOverriding
-  Map<String, Nameable> get extraReferenceChildren => const {};
+  Map<String, Referable> get extraReferenceChildren => const {};
 
   @override
   String get relationshipsClass => 'clazz-relationships';

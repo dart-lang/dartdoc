@@ -18,7 +18,7 @@ import 'package:dartdoc/src/model/prefix.dart';
 import 'package:meta/meta.dart';
 
 /// Something that has a name, and can be referenced in a doc comment.
-mixin Nameable {
+mixin Referable {
   String get name;
 
   /// A "fully" qualified name, used for things like for warnings printed in the
@@ -118,7 +118,7 @@ mixin Nameable {
   ElementType getTypeFor(DartType type, Library? library) =>
       ElementType.for_(type, library, packageGraph);
 
-  /// For any [Nameable] where an analyzer [Scope] exists (or can be
+  /// For any [Referable] where an analyzer [Scope] exists (or can be
   /// constructed), implement this.  This will take priority over lookups via
   /// [referenceChildren].  Can be cached.
   @visibleForOverriding
@@ -132,11 +132,11 @@ mixin Nameable {
   /// of `this`. Will skip over results that do not pass a given [filter] and
   /// keep searching.
   @nonVirtual
-  Nameable? referenceBy(
+  Referable? referenceBy(
     List<String> reference, {
-    required bool Function(Nameable?) filter,
+    required bool Function(Referable?) filter,
     bool tryParents = true,
-    Iterable<Nameable>? parentOverrides,
+    Iterable<Referable>? parentOverrides,
   }) {
     parentOverrides ??= referenceParents;
     if (reference.isEmpty) {
@@ -188,11 +188,11 @@ mixin Nameable {
   /// [filter].
   ///
   /// Override if [Scope.lookup] may return elements not corresponding to a
-  /// [Nameable], but you still want to have an implementation of
+  /// [Referable], but you still want to have an implementation of
   /// [scope].
-  Nameable? _lookupViaScope(
+  Referable? _lookupViaScope(
     _ReferenceChildrenLookup referenceLookup, {
-    required bool Function(Nameable?) filter,
+    required bool Function(Referable?) filter,
   }) {
     Element? resultElement;
     final scope = this.scope;
@@ -236,12 +236,12 @@ mixin Nameable {
   /// Given a [result] found in an implementation of [_lookupViaScope] or
   /// [_ReferenceChildrenLookup], recurse through children, skipping over
   /// results that do not match the filter.
-  Nameable? _recurseChildrenAndFilter(
+  Referable? _recurseChildrenAndFilter(
     _ReferenceChildrenLookup referenceLookup,
-    Nameable result, {
-    required bool Function(Nameable?) filter,
+    Referable result, {
+    required bool Function(Referable?) filter,
   }) {
-    Nameable? returnValue = result;
+    Referable? returnValue = result;
     if (referenceLookup.remaining.isNotEmpty) {
       returnValue = result.referenceBy(referenceLookup.remaining,
           tryParents: false, filter: filter);
@@ -272,7 +272,7 @@ mixin Nameable {
   ///
   /// There is no need to duplicate references here that can be found via
   /// [scope].
-  Map<String, Nameable> get referenceChildren;
+  Map<String, Referable> get referenceChildren;
 
   /// Iterable of immediate "parents" to try resolving component parts.
   /// [referenceBy] stops at the first parent where a part is found.
@@ -281,12 +281,12 @@ mixin Nameable {
   // this doesn't duplicate `[enclosingElement]` in many cases.
   // TODO(jcollins-g): Implement comment reference resolution via categories,
   // making the iterable make sense here.
-  Iterable<Nameable> get referenceParents;
+  Iterable<Referable> get referenceParents;
 
   /// Replace the parents of parents.  [referenceBy] ignores whatever might
   /// otherwise be implied by the [referenceParents] of [referenceParents],
   /// replacing them with this.
-  Iterable<Nameable>? get referenceGrandparentOverrides => null;
+  Iterable<Referable>? get referenceGrandparentOverrides => null;
 
   // TODO(jcollins-g): Enforce that reference name is always the same
   // as [ModelElement.name].  Easier/possible after old lookup code is gone.
@@ -295,14 +295,14 @@ mixin Nameable {
   // TODO(jcollins-g): Eliminate need for this in markdown_processor.
   Library? get library => null;
 
-  /// For testing / comparison only, get the [Nameable] from where this
+  /// For testing / comparison only, get the [Referable] from where this
   /// `ElementType` was defined.  Override where an [Element] is available.
   @internal
-  Nameable get definingNameable => this;
+  Referable get definingReferable => this;
 }
 
 /// Compares [a] with [b] by name.
-int byName(Nameable a, Nameable b) {
+int byName(Referable a, Referable b) {
   if (a is Library && b is Library) {
     return compareAsciiLowerCaseNatural(a.displayName, b.displayName);
   }
@@ -321,30 +321,30 @@ int byName(Nameable a, Nameable b) {
   return a.hashCode.compareTo(b.hashCode);
 }
 
-/// A set of utility methods for helping build [Nameable.referenceChildren] out
-/// of collections of other [Nameable]s.
-extension NameableEntryGenerators<T extends Nameable> on Iterable<T> {
+/// A set of utility methods for helping build [Referable.referenceChildren] out
+/// of collections of other [Referable]s.
+extension ReferableEntryGenerators<T extends Referable> on Iterable<T> {
   /// Creates reference entries for this Iterable.
   ///
-  /// If there is a conflict with [nameable], the included [MapEntry] uses
-  /// [nameable]'s [Nameable.referenceName] as a prefix.
-  Map<String, T> explicitOnCollisionWith(Nameable nameable) => {
+  /// If there is a conflict with [referable], the included [MapEntry] uses
+  /// [referable]'s [Referable.referenceName] as a prefix.
+  Map<String, T> explicitOnCollisionWith(Referable referable) => {
         for (var r in this)
-          if (r.referenceName == nameable.referenceName)
-            '${nameable.referenceName}.${r.referenceName}': r
+          if (r.referenceName == referable.referenceName)
+            '${referable.referenceName}.${r.referenceName}': r
           else
             r.referenceName: r,
       };
 
-  /// A mapping from each [Nameable]'s name to itself.
+  /// A mapping from each [Referable]'s name to itself.
   Map<String, T> get asMapByName => {
         for (var r in this) r.referenceName: r,
       };
 
   /// Returns all values not of this type.
   List<T> whereNotType<U>() => [
-        for (var nameable in this)
-          if (nameable is! U) nameable,
+        for (var referable in this)
+          if (referable is! U) referable,
       ];
 }
 

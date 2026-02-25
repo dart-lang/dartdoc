@@ -92,7 +92,7 @@ class Parameter extends ModelElement with HasNoPage {
   Kind get kind => Kind.parameter;
 
   @override
-  late final Map<String, Nameable> referenceChildren = {
+  late final Map<String, Referable> referenceChildren = {
     if (modelType is Callable)
       ...(modelType as Callable)
           .returnType
@@ -104,7 +104,7 @@ class Parameter extends ModelElement with HasNoPage {
   };
 
   @override
-  Iterable<Nameable> get referenceParents {
+  Iterable<Referable> get referenceParents {
     final enclosingElement = this.enclosingElement;
     return [if (enclosingElement != null) enclosingElement];
   }

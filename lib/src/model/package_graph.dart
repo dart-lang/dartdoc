@@ -25,7 +25,7 @@ import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 
-class PackageGraph with Nameable {
+class PackageGraph with Referable {
   /// Dartdoc's configuration flags.
   final DartdocOptionContext config;
 
@@ -910,7 +910,7 @@ class PackageGraph with Nameable {
   }
 
   @override
-  late final Map<String, Nameable> referenceChildren = () {
+  late final Map<String, Referable> referenceChildren = () {
     // We have to use a stable order or otherwise references depending on
     // ambiguous resolution (see below) will change where they resolve based on
     // internal implementation details.
@@ -950,7 +950,7 @@ class PackageGraph with Nameable {
   }();
 
   @override
-  Iterable<Nameable> get referenceParents => const [];
+  Iterable<Referable> get referenceParents => const [];
 }
 
 class ConstructedModelElementsKey {
@@ -990,20 +990,20 @@ extension on Comment {
 
     var referencesData = <String, CommentReferenceData>{};
     for (var reference in references) {
-      var nameable = reference.expression;
+      var referable = reference.expression;
       String name;
       Element? staticElement;
-      if (nameable case PropertyAccess(:var propertyName)) {
-        var target = nameable.target;
+      if (referable case PropertyAccess(:var propertyName)) {
+        var target = referable.target;
         if (target is! PrefixedIdentifier) continue;
         name = '${target.name}.${propertyName.name}';
         staticElement = propertyName.element;
-      } else if (nameable case PrefixedIdentifier(:var identifier)) {
-        name = nameable.name;
+      } else if (referable case PrefixedIdentifier(:var identifier)) {
+        name = referable.name;
         staticElement = identifier.element;
-      } else if (nameable case SimpleIdentifier()) {
-        name = nameable.name;
-        staticElement = nameable.element;
+      } else if (referable case SimpleIdentifier()) {
+        name = referable.name;
+        staticElement = referable.element;
       } else {
         continue;
       }
@@ -1012,8 +1012,8 @@ extension on Comment {
         referencesData[name] = CommentReferenceData(
           staticElement,
           name,
-          nameable.offset,
-          nameable.length,
+          referable.offset,
+          referable.length,
         );
       }
     }

@@ -6,13 +6,13 @@
 library;
 
 import 'package:collection/collection.dart';
-import 'package:dartdoc/src/model/nameable.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:dartdoc/src/model/referable.dart';
 import 'package:test/test.dart';
 
 const _separator = '.';
 
-abstract class Base with Nameable {
+abstract class Base with Referable {
   @override
   PackageGraph get packageGraph => throw UnimplementedError();
 
@@ -25,15 +25,15 @@ abstract class Base with Nameable {
   /// Returns the added (or already existing) [Base].
   Base add(String newName);
 
-  Nameable? lookup<T extends Nameable?>(
+  Referable? lookup<T extends Referable?>(
     String value, {
-    bool Function(Nameable?)? filter,
+    bool Function(Referable?)? filter,
   }) {
     return referenceBy(value.split(_separator), filter: filter ?? (_) => true);
   }
 
   @override
-  Iterable<Nameable>? get referenceGrandparentOverrides => null;
+  Iterable<Referable>? get referenceGrandparentOverrides => null;
 }
 
 class Top extends Base {
@@ -62,11 +62,11 @@ class Top extends Base {
   }
 
   @override
-  Map<String, Nameable> get referenceChildren =>
+  Map<String, Referable> get referenceChildren =>
       Map.fromEntries(children.map((c) => MapEntry(c.name, c)));
 
   @override
-  Iterable<Nameable> get referenceParents => [];
+  Iterable<Referable> get referenceParents => [];
 }
 
 abstract class Child extends Base {
@@ -103,11 +103,11 @@ class TopChild extends Child {
   TopChild(this.name, this.children, this._parent);
 
   @override
-  Map<String, Nameable> get referenceChildren =>
+  Map<String, Referable> get referenceChildren =>
       Map.fromEntries(children.map((c) => MapEntry(c.name, c)));
 
   @override
-  Iterable<Nameable> get referenceParents => [parent];
+  Iterable<Referable> get referenceParents => [parent];
 }
 
 class GenericChild extends Child {
@@ -122,11 +122,11 @@ class GenericChild extends Child {
   GenericChild(this.name, this.children, this._parent);
 
   @override
-  Map<String, Nameable> get referenceChildren =>
+  Map<String, Referable> get referenceChildren =>
       Map.fromEntries(children.map((c) => MapEntry(c.name, c)));
 
   @override
-  Iterable<Nameable> get referenceParents => [parent];
+  Iterable<Referable> get referenceParents => [parent];
 }
 
 class GrandparentOverrider extends GenericChild {
@@ -139,42 +139,42 @@ class GrandparentOverrider extends GenericChild {
 
 void main() {
   group('Basic comment reference lookups', () {
-    late Top nameable;
+    late Top referable;
 
     setUp(() {
-      nameable = Top('top', []);
-      nameable.add('lib1');
-      nameable.add('lib2');
-      nameable.add('lib3');
-      nameable.add('lib1.class1');
-      nameable.add('lib1.class2');
-      nameable.add('lib1.class2.member1');
-      nameable.add('lib2');
-      nameable.add('lib2.class3');
-      nameable.add('lib3.lib3.lib3');
+      referable = Top('top', []);
+      referable.add('lib1');
+      referable.add('lib2');
+      referable.add('lib3');
+      referable.add('lib1.class1');
+      referable.add('lib1.class2');
+      referable.add('lib1.class2.member1');
+      referable.add('lib2');
+      referable.add('lib2.class3');
+      referable.add('lib3.lib3.lib3');
     });
 
     test('Check that basic lookups work', () {
-      expect(nameable.lookup('lib1')?.name, equals('lib1'));
-      expect(nameable.lookup('lib2')?.name, equals('lib2'));
-      expect(nameable.lookup('lib1.class2.member1')?.name, equals('member1'));
-      expect(nameable.lookup('lib2.class3')?.name, equals('class3'));
+      expect(referable.lookup('lib1')?.name, equals('lib1'));
+      expect(referable.lookup('lib2')?.name, equals('lib2'));
+      expect(referable.lookup('lib1.class2.member1')?.name, equals('member1'));
+      expect(referable.lookup('lib2.class3')?.name, equals('class3'));
     });
 
     test('Check that filters work', () {
-      expect(nameable.lookup('lib3'), isA<TopChild>());
-      expect(nameable.lookup('lib3', filter: (r) => r is GenericChild),
+      expect(referable.lookup('lib3'), isA<TopChild>());
+      expect(referable.lookup('lib3', filter: (r) => r is GenericChild),
           isA<GenericChild>());
     });
 
     test('Check that grandparent overrides work', () {
-      nameable.add('lib4');
-      var i1 = nameable.add('lib4.intermediate1');
-      var i1target = nameable.add('lib4.intermediate1.target');
-      nameable.add('lib4.intermediate2');
-      var i2target = nameable.add('lib4.intermediate2.target');
-      var i2other = nameable.add('lib4.intermediate2.other');
-      var i2notFromHere = nameable.add('lib4.intermediate2.notFromHere');
+      referable.add('lib4');
+      var i1 = referable.add('lib4.intermediate1');
+      var i1target = referable.add('lib4.intermediate1.target');
+      referable.add('lib4.intermediate2');
+      var i2target = referable.add('lib4.intermediate2.target');
+      var i2other = referable.add('lib4.intermediate2.other');
+      var i2notFromHere = referable.add('lib4.intermediate2.notFromHere');
       var overrider = GrandparentOverrider('fromHere', [], i2other, [i1]);
       i2other.children.add(overrider);
       expect(i2notFromHere.lookup('target'), i2target);

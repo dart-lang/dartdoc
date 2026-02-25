@@ -2352,7 +2352,7 @@ void main() async {
 
       test('Referring to a renamed library directly works', () {
         expect(
-            (referenceLookup(aFunctionUsingRenamedLib, 'renamedLib').nameable
+            (referenceLookup(aFunctionUsingRenamedLib, 'renamedLib').referable
                     as ModelElement)
                 .canonicalModelElement,
             equals(mylibpub));
@@ -4237,7 +4237,7 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 }
 
-class StringName with Nameable {
+class StringName with Referable {
   @override
   final String name;
 
@@ -4250,13 +4250,13 @@ class StringName with Nameable {
   String toString() => name;
 
   @override
-  Map<String, Nameable> get referenceChildren => throw UnimplementedError();
+  Map<String, Referable> get referenceChildren => throw UnimplementedError();
 
   @override
-  Iterable<Nameable> get referenceParents => throw UnimplementedError();
+  Iterable<Referable> get referenceParents => throw UnimplementedError();
 }
 
-class StringNameHashCode with Nameable {
+class StringNameHashCode with Referable {
   @override
   final String name;
 
@@ -4276,10 +4276,10 @@ class StringNameHashCode with Nameable {
   bool operator ==(Object other) => super == other;
 
   @override
-  Map<String, Nameable> get referenceChildren => throw UnimplementedError();
+  Map<String, Referable> get referenceChildren => throw UnimplementedError();
 
   @override
-  Iterable<Nameable> get referenceParents => throw UnimplementedError();
+  Iterable<Referable> get referenceParents => throw UnimplementedError();
 }
 
 extension on Library {

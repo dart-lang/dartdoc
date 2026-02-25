@@ -64,14 +64,14 @@ abstract class Typedef extends ModelElement with TypeParameters, HasLibrary {
       .toList(growable: false);
 
   @override
-  Iterable<Nameable> get referenceParents => [library];
+  Iterable<Referable> get referenceParents => [library];
 
-  late final Map<String, Nameable> _referenceChildren = {
+  late final Map<String, Referable> _referenceChildren = {
     ...typeParameters.explicitOnCollisionWith(this),
   };
 
   @override
-  Map<String, Nameable> get referenceChildren => _referenceChildren;
+  Map<String, Referable> get referenceChildren => _referenceChildren;
 
   /// Render the the generic type parameters of this typedef.
   String _renderTypeParameters({bool isLinked = false}) {
@@ -113,7 +113,7 @@ class ClassTypedef extends Typedef {
   DefinedElementType get modelType => super.modelType as DefinedElementType;
 
   @override
-  late final Map<String, Nameable> referenceChildren = {
+  late final Map<String, Referable> referenceChildren = {
     ...modelType.modelElement.referenceChildren,
     ...super.referenceChildren,
   };
@@ -134,7 +134,7 @@ class FunctionTypedef extends Typedef {
   Callable get modelType => super.modelType as Callable;
 
   @override
-  late final Map<String, Nameable> referenceChildren = {
+  late final Map<String, Referable> referenceChildren = {
     ...parameters.explicitOnCollisionWith(this),
     ...super.referenceChildren,
   };

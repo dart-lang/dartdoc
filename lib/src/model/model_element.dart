@@ -57,7 +57,7 @@ import 'package:path/path.dart' as p show Context;
 /// ModelElement will reference itself as part of the "wrong" [Library] from the
 /// public interface perspective.
 abstract class ModelElement
-    with Warnable, Nameable, SourceCode, DocumentationComment
+    with Warnable, Referable, SourceCode, DocumentationComment
     implements Comparable<ModelElement>, Documentable {
   /// The [Library] of a model can be `null` in three cases:
   ///
@@ -873,7 +873,7 @@ abstract class ModelElement
 
   @internal
   @override
-  Nameable get definingNameable {
+  Referable get definingReferable {
     return getModelForElement(element);
   }
 

@@ -424,8 +424,8 @@ class Library extends ModelElement with TopLevelContainer {
   ];
 
   @override
-  Map<String, Nameable> get referenceChildren {
-    var referenceChildrenBuilder = <String, Nameable>{};
+  Map<String, Referable> get referenceChildren {
+    var referenceChildrenBuilder = <String, Referable>{};
     var definedNamesModelElements =
         element.exportNamespace.definedNames2.values.map(getModelForElement);
     referenceChildrenBuilder
@@ -447,7 +447,7 @@ class Library extends ModelElement with TopLevelContainer {
   }
 
   @override
-  Iterable<Nameable> get referenceParents => [package];
+  Iterable<Referable> get referenceParents => [package];
 
   /// Checks [canonicalFor] for correctness and warn if it refers to non-
   /// existent elements (or those that this Library can not be canonical for).

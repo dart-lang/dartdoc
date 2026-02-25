@@ -63,8 +63,8 @@ class Prefix extends ModelElement with HasLibrary, HasNoPage {
   Kind get kind => Kind.prefix;
 
   @override
-  Map<String, Nameable> get referenceChildren => {};
+  Map<String, Referable> get referenceChildren => {};
 
   @override
-  Iterable<Nameable> get referenceParents => [library];
+  Iterable<Referable> get referenceParents => [library];
 }

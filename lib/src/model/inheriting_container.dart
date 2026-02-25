@@ -28,7 +28,7 @@ mixin Constructable implements InheritingContainer {
 
   @override
   @visibleForOverriding
-  Map<String, Nameable> get extraReferenceChildren => {
+  Map<String, Referable> get extraReferenceChildren => {
         for (var container in superChain.wherePublic
             .map((t) => t.modelElement)
             .whereType<Container>()) ...{
@@ -47,7 +47,7 @@ mixin Constructable implements InheritingContainer {
   @override
   bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
 
-  static Map<String, Nameable> _mapConstructorsByName(
+  static Map<String, Referable> _mapConstructorsByName(
           Iterable<Constructor> constructors) =>
       {
         for (var constructor in constructors) ...{

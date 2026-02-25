@@ -66,9 +66,9 @@ class ExtensionType extends InheritingContainer with Constructable {
   String get sidebarPath =>
       '${canonicalLibraryOrThrow.dirName}/$name-extension-type-sidebar.html';
 
-  Map<String, Nameable>? _referenceChildren;
+  Map<String, Referable>? _referenceChildren;
   @override
-  Map<String, Nameable> get referenceChildren {
+  Map<String, Referable> get referenceChildren {
     return _referenceChildren ??= {
       ...representationType.referenceChildren,
       // Override `representationType` entries with local items.
@@ -78,7 +78,7 @@ class ExtensionType extends InheritingContainer with Constructable {
 
   @override
   @visibleForOverriding
-  Map<String, Nameable> get extraReferenceChildren => const {};
+  Map<String, Referable> get extraReferenceChildren => const {};
 
   @override
   String get relationshipsClass => 'clazz-relationships';

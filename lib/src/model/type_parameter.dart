@@ -46,14 +46,14 @@ class TypeParameter extends ModelElement with HasNoPage {
       : element.name!;
 
   @override
-  late final Map<String, Nameable> referenceChildren = () {
+  late final Map<String, Referable> referenceChildren = () {
     var boundType = this.boundType;
-    if (boundType == null) return const <String, Nameable>{};
+    if (boundType == null) return const <String, Referable>{};
     return {boundType.name: boundType};
   }();
 
   @override
-  Iterable<Nameable> get referenceParents => [enclosingElement];
+  Iterable<Referable> get referenceParents => [enclosingElement];
 
   @override
   String get referenceName => element.name!;
