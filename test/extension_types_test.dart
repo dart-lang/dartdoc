@@ -62,6 +62,26 @@ class C {}
     );
   }
 
+  void test_member_isNotOverride() async {
+    var library = await bootPackageWithLibrary('''
+abstract class MyInterface {
+  void m();
+  int get sign;
+}
+extension type ET(int it) implements MyInterface {
+  void m() {}
+  int get sign => 1;
+}
+''');
+
+    var et = library.extensionTypes.named('ET');
+    var m = et.instanceMethods.named('m');
+    expect(m.isOverride, isFalse);
+
+    var sign = et.instanceFields.named('sign');
+    expect(sign.isOverride, isFalse);
+  }
+
   void test_referenceToExtensionType() async {
     var library = await bootPackageWithLibrary('''
 extension type ET(int it) {
