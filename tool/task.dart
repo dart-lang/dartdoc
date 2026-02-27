@@ -122,7 +122,7 @@ Future<void> analyzeTestPackages() async {
 }
 
 Future<void> _runFormatter() async {
-  await SubprocessLauncher('formatter').runStreamedDartCommand(['format', '.']);
+  await SubprocessLauncher('format').runStreamedDartCommand(['format', '.']);
 }
 
 Future<void> _buildHelp() async {
