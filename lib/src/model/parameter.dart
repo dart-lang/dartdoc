@@ -54,9 +54,7 @@ class Parameter extends ModelElement with HasNoPage {
     if (enclosingName == 'new') {
       enclosingName = '';
     }
-    if (enclosingElement is GenericFunctionTypeElement) {
-      return 'param-$name';
-    }
+
     if (enclosingName == null || enclosingName.isEmpty) {
       return 'param-$name';
     }
