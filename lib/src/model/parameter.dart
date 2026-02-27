@@ -55,15 +55,7 @@ class Parameter extends ModelElement with HasNoPage {
       enclosingName = '';
     }
     if (enclosingElement is GenericFunctionTypeElement) {
-      // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates
-      // name. Also, allowing null here is allowed as a workaround for
-      // dart-lang/sdk#32005.
-      for (Element e = enclosingElement;
-          e.enclosingElement != null;
-          e = e.enclosingElement!) {
-        enclosingName = e.lookupName;
-        if (enclosingName != null && enclosingName.isNotEmpty) break;
-      }
+      return 'param-$name';
     }
     if (enclosingName == null || enclosingName.isEmpty) {
       return 'param-$name';
