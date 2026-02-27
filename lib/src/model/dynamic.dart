@@ -4,7 +4,6 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -36,10 +35,10 @@ class Dynamic extends ModelElement with HasNoPage {
   String get linkedName => 'dynamic';
 
   @override
-  Map<String, CommentReferable> get referenceChildren => const {};
+  Map<String, Referable> get referenceChildren => const {};
 
   @override
-  Iterable<CommentReferable> get referenceParents => const [];
+  Iterable<Referable> get referenceParents => const [];
 
   @override
   bool operator ==(Object other) => other is Dynamic;

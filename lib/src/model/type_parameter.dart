@@ -4,7 +4,6 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -47,14 +46,14 @@ class TypeParameter extends ModelElement with HasNoPage {
       : element.name!;
 
   @override
-  late final Map<String, CommentReferable> referenceChildren = () {
+  late final Map<String, Referable> referenceChildren = () {
     var boundType = this.boundType;
-    if (boundType == null) return const <String, CommentReferable>{};
+    if (boundType == null) return const <String, Referable>{};
     return {boundType.name: boundType};
   }();
 
   @override
-  Iterable<CommentReferable> get referenceParents => [enclosingElement];
+  Iterable<Referable> get referenceParents => [enclosingElement];
 
   @override
   String get referenceName => element.name!;

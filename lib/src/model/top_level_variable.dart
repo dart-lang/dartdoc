@@ -4,7 +4,6 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/attribute.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -72,5 +71,5 @@ class TopLevelVariable extends ModelElement with GetterSetterCombo, HasLibrary {
   Set<Attribute> get attributes => {...super.attributes, ...comboAttributes};
 
   @override
-  Iterable<CommentReferable> get referenceParents => [library];
+  Iterable<Referable> get referenceParents => [library];
 }

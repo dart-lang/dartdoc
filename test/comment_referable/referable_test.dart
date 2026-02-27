@@ -6,14 +6,13 @@
 library;
 
 import 'package:collection/collection.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
-import 'package:dartdoc/src/model/nameable.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:dartdoc/src/model/referable.dart';
 import 'package:test/test.dart';
 
 const _separator = '.';
 
-abstract class Base with Nameable, CommentReferable {
+abstract class Base with Referable {
   @override
   PackageGraph get packageGraph => throw UnimplementedError();
 
@@ -26,15 +25,15 @@ abstract class Base with Nameable, CommentReferable {
   /// Returns the added (or already existing) [Base].
   Base add(String newName);
 
-  CommentReferable? lookup<T extends CommentReferable?>(
+  Referable? lookup<T extends Referable?>(
     String value, {
-    bool Function(CommentReferable?)? filter,
+    bool Function(Referable?)? filter,
   }) {
     return referenceBy(value.split(_separator), filter: filter ?? (_) => true);
   }
 
   @override
-  Iterable<CommentReferable>? get referenceGrandparentOverrides => null;
+  Iterable<Referable>? get referenceGrandparentOverrides => null;
 }
 
 class Top extends Base {
@@ -63,11 +62,11 @@ class Top extends Base {
   }
 
   @override
-  Map<String, CommentReferable> get referenceChildren =>
+  Map<String, Referable> get referenceChildren =>
       Map.fromEntries(children.map((c) => MapEntry(c.name, c)));
 
   @override
-  Iterable<CommentReferable> get referenceParents => [];
+  Iterable<Referable> get referenceParents => [];
 }
 
 abstract class Child extends Base {
@@ -104,11 +103,11 @@ class TopChild extends Child {
   TopChild(this.name, this.children, this._parent);
 
   @override
-  Map<String, CommentReferable> get referenceChildren =>
+  Map<String, Referable> get referenceChildren =>
       Map.fromEntries(children.map((c) => MapEntry(c.name, c)));
 
   @override
-  Iterable<CommentReferable> get referenceParents => [parent];
+  Iterable<Referable> get referenceParents => [parent];
 }
 
 class GenericChild extends Child {
@@ -123,11 +122,11 @@ class GenericChild extends Child {
   GenericChild(this.name, this.children, this._parent);
 
   @override
-  Map<String, CommentReferable> get referenceChildren =>
+  Map<String, Referable> get referenceChildren =>
       Map.fromEntries(children.map((c) => MapEntry(c.name, c)));
 
   @override
-  Iterable<CommentReferable> get referenceParents => [parent];
+  Iterable<Referable> get referenceParents => [parent];
 }
 
 class GrandparentOverrider extends GenericChild {

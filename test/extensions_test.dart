@@ -276,8 +276,8 @@ class ExtensionMethodsExportTest extends DartdocTestBase {
   void expectReferenceValidFromF(
       String referenceText, ModelElement expected, String href) {
     var fFunction = package.functions.named('f');
-    var reference = getMatchingLinkElement(referenceText, fFunction)
-        .commentReferable as ModelElement;
+    var reference = getMatchingLinkElement(referenceText, fFunction).referable
+        as ModelElement;
     expect(identical(reference.canonicalModelElement, expected), isTrue,
         reason: '$expected (${expected.hashCode}) is not '
             '${reference.canonicalModelElement} '

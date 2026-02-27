@@ -1,41 +1,42 @@
-// Copyright (c) 2020, the Dart project authors.  Please see the AUTHORS file
+// Copyright (c) 2019, the Dart project authors. Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
-
-/// Code for managing comment reference lookups in dartdoc.
-library;
-
-import 'dart:core';
 
 import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/scope.dart';
+import 'package:analyzer/dart/element/type.dart' show DartType;
 import 'package:collection/collection.dart';
+import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/accessor.dart';
+import 'package:dartdoc/src/model/constructor.dart';
+import 'package:dartdoc/src/model/container.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
-import 'package:dartdoc/src/model/nameable.dart';
+import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/model/prefix.dart';
 import 'package:meta/meta.dart';
 
-class _ReferenceChildrenLookup {
-  final String lookup;
-  final List<String> remaining;
+/// Something that has a name, and can be referenced in a doc comment.
+mixin Referable {
+  String get name;
 
-  _ReferenceChildrenLookup(this.lookup, this.remaining);
+  /// A "fully" qualified name, used for things like for warnings printed in the
+  /// terminal; not for display use in rendered HTML.
+  ///
+  /// "Fully" means the name is qualified through the library. For example, a
+  /// method named 'baz' in a class named 'Bar' in a library named 'foo' has a
+  /// fully qualified name of 'foo.Bar.baz'.
+  ///
+  /// As dartdoc can document multiple packages at once, note that such
+  /// qualifying names may not be unique across all documented packages.
+  String get fullyQualifiedName => name;
 
-  @override
-  String toString() =>
-      '$lookup ($lookup${remaining.isNotEmpty ? ".${remaining.join(".")}" : ''})';
-}
+  /// The name to use as text in the rendered documentation.
+  String get displayName => name;
 
-/// Support comment reference lookups on a Nameable object.
-mixin CommentReferable implements Nameable {
-  /// For any [CommentReferable] where an analyzer [Scope] exists (or can
-  /// be constructed), implement this.  This will take priority over
-  /// lookups via [referenceChildren].  Can be cached.
-  Scope? get scope => null;
-
-  String? get href => null;
+  /// The name to use in breadcrumbs in the rendered documentation.
+  String get breadcrumbName => name;
 
   /// The name that should be used in documentation to refer to this object if
   /// not the name that was actually used in the reference.
@@ -52,17 +53,90 @@ mixin CommentReferable implements Nameable {
   /// reference, not "_x".
   String? get documentedName => null;
 
+  /// Whether this is "package-public."
+  ///
+  /// A "package-public" element satisfies the following requirements:
+  /// * is not documented with the `@nodoc` directive,
+  /// * for a library, adheres to the documentation for [Library.isPublic],
+  /// * for a library member, is in a _public_ library's exported namespace, and
+  ///   is not privately named, nor an unnamed extension,
+  /// * for a container (class, enum, extension, extension type, mixin) member,
+  ///   is in a _public_ container, and is not privately named.
+  bool get isPublic => name.isNotEmpty && !name.startsWith('_');
+
+  @override
+  String toString() => name;
+
+  PackageGraph get packageGraph;
+
+  /// Returns the [ModelElement] for [element], instantiating it if needed.
+  ///
+  /// A convenience method for [ModelElement.for_], see its documentation.
+  ModelElement getModelFor(
+    Element element,
+    Library? library, {
+    Container? enclosingContainer,
+  }) =>
+      ModelElement.for_(
+        element,
+        library,
+        packageGraph,
+        enclosingContainer: enclosingContainer,
+      );
+
+  /// Returns the [ModelElement] for [element], instantiating it if needed.
+  ///
+  /// A convenience method for [ModelElement.forElement], see its
+  /// documentation.
+  ModelElement getModelForElement(Element element) =>
+      ModelElement.forElement(element, packageGraph);
+
+  /// Returns the [ModelElement] for [element], instantiating it if needed.
+  ///
+  /// A convenience method for [ModelElement.forPropertyInducingElement], see
+  /// its documentation.
+  // TODO(srawlins): Most callers seem to determine `getter` and `setter`
+  // immediately before calling this method, and I imagine could instead just
+  // call `getModelFor`.
+  ModelElement getModelForPropertyInducingElement(
+    PropertyInducingElement element,
+    Library library, {
+    required Accessor? getter,
+    required Accessor? setter,
+    Container? enclosingContainer,
+  }) =>
+      ModelElement.forPropertyInducingElement(
+        element,
+        library,
+        packageGraph,
+        getter: getter,
+        setter: setter,
+        enclosingContainer: enclosingContainer,
+      );
+
+  /// Returns the [ElementType] for [type], instantiating it if needed.
+  ElementType getTypeFor(DartType type, Library? library) =>
+      ElementType.for_(type, library, packageGraph);
+
+  /// For any [Referable] where an analyzer [Scope] exists (or can be
+  /// constructed), implement this.  This will take priority over lookups via
+  /// [referenceChildren].  Can be cached.
+  @visibleForOverriding
+  Scope? get scope => null;
+
+  String? get href => null;
+
   /// Looks up a comment reference by its component parts.
   ///
   /// If [tryParents] is true, try looking up the same reference in any parents
   /// of `this`. Will skip over results that do not pass a given [filter] and
   /// keep searching.
   @nonVirtual
-  CommentReferable? referenceBy(
+  Referable? referenceBy(
     List<String> reference, {
-    required bool Function(CommentReferable?) filter,
+    required bool Function(Referable?) filter,
     bool tryParents = true,
-    Iterable<CommentReferable>? parentOverrides,
+    Iterable<Referable>? parentOverrides,
   }) {
     parentOverrides ??= referenceParents;
     if (reference.isEmpty) {
@@ -114,11 +188,11 @@ mixin CommentReferable implements Nameable {
   /// [filter].
   ///
   /// Override if [Scope.lookup] may return elements not corresponding to a
-  /// [CommentReferable], but you still want to have an implementation of
+  /// [Referable], but you still want to have an implementation of
   /// [scope].
-  CommentReferable? _lookupViaScope(
+  Referable? _lookupViaScope(
     _ReferenceChildrenLookup referenceLookup, {
-    required bool Function(CommentReferable?) filter,
+    required bool Function(Referable?) filter,
   }) {
     Element? resultElement;
     final scope = this.scope;
@@ -162,12 +236,12 @@ mixin CommentReferable implements Nameable {
   /// Given a [result] found in an implementation of [_lookupViaScope] or
   /// [_ReferenceChildrenLookup], recurse through children, skipping over
   /// results that do not match the filter.
-  CommentReferable? _recurseChildrenAndFilter(
+  Referable? _recurseChildrenAndFilter(
     _ReferenceChildrenLookup referenceLookup,
-    CommentReferable result, {
-    required bool Function(CommentReferable?) filter,
+    Referable result, {
+    required bool Function(Referable?) filter,
   }) {
-    CommentReferable? returnValue = result;
+    Referable? returnValue = result;
     if (referenceLookup.remaining.isNotEmpty) {
       returnValue = result.referenceBy(referenceLookup.remaining,
           tryParents: false, filter: filter);
@@ -198,7 +272,7 @@ mixin CommentReferable implements Nameable {
   ///
   /// There is no need to duplicate references here that can be found via
   /// [scope].
-  Map<String, CommentReferable> get referenceChildren;
+  Map<String, Referable> get referenceChildren;
 
   /// Iterable of immediate "parents" to try resolving component parts.
   /// [referenceBy] stops at the first parent where a part is found.
@@ -207,12 +281,12 @@ mixin CommentReferable implements Nameable {
   // this doesn't duplicate `[enclosingElement]` in many cases.
   // TODO(jcollins-g): Implement comment reference resolution via categories,
   // making the iterable make sense here.
-  Iterable<CommentReferable> get referenceParents;
+  Iterable<Referable> get referenceParents;
 
   /// Replace the parents of parents.  [referenceBy] ignores whatever might
   /// otherwise be implied by the [referenceParents] of [referenceParents],
   /// replacing them with this.
-  Iterable<CommentReferable>? get referenceGrandparentOverrides => null;
+  Iterable<Referable>? get referenceGrandparentOverrides => null;
 
   // TODO(jcollins-g): Enforce that reference name is always the same
   // as [ModelElement.name].  Easier/possible after old lookup code is gone.
@@ -221,30 +295,40 @@ mixin CommentReferable implements Nameable {
   // TODO(jcollins-g): Eliminate need for this in markdown_processor.
   Library? get library => null;
 
-  /// For testing / comparison only, get the comment referable from where this
-  /// `ElementType` was defined.  Override where an [Elemen2] is available.
+  /// For testing / comparison only, get the [Referable] from where this
+  /// `ElementType` was defined.  Override where an [Element] is available.
   @internal
-  CommentReferable get definingCommentReferable => this;
+  Referable get definingReferable => this;
 }
 
-extension on Scope {
-  /// Prefer the getter for a bundled lookup if both exist.
-  Element? lookupPreferGetter(String id) {
-    var result = lookup(id);
-    return result.getter ?? result.setter;
+/// Compares [a] with [b] by name.
+int byName(Referable a, Referable b) {
+  if (a is Library && b is Library) {
+    return compareAsciiLowerCaseNatural(a.displayName, b.displayName);
   }
+
+  if (a is Constructor && b is Constructor) {
+    var aName = a.name.replaceFirst('.new', '');
+    var bName = b.name.replaceFirst('.new', '');
+    return compareAsciiLowerCaseNatural(aName, bName);
+  }
+
+  var stringCompare = compareAsciiLowerCaseNatural(a.name, b.name);
+  if (stringCompare != 0) {
+    return stringCompare;
+  }
+
+  return a.hashCode.compareTo(b.hashCode);
 }
 
-/// A set of utility methods for helping build
-/// [CommentReferable.referenceChildren] out of collections of other
-/// [CommentReferable]s.
-extension CommentReferableEntryGenerators<T extends CommentReferable>
-    on Iterable<T> {
+/// A set of utility methods for helping build [Referable.referenceChildren] out
+/// of collections of other [Referable]s.
+extension ReferableEntryGenerators<T extends Referable> on Iterable<T> {
   /// Creates reference entries for this Iterable.
   ///
   /// If there is a conflict with [referable], the included [MapEntry] uses
-  /// [referable]'s [CommentReferable.referenceName] as a prefix.
-  Map<String, T> explicitOnCollisionWith(CommentReferable referable) => {
+  /// [referable]'s [Referable.referenceName] as a prefix.
+  Map<String, T> explicitOnCollisionWith(Referable referable) => {
         for (var r in this)
           if (r.referenceName == referable.referenceName)
             '${referable.referenceName}.${r.referenceName}': r
@@ -252,7 +336,7 @@ extension CommentReferableEntryGenerators<T extends CommentReferable>
             r.referenceName: r,
       };
 
-  /// A mapping from each [CommentReferable]'s name to itself.
+  /// A mapping from each [Referable]'s name to itself.
   Map<String, T> get asMapByName => {
         for (var r in this) r.referenceName: r,
       };
@@ -262,4 +346,23 @@ extension CommentReferableEntryGenerators<T extends CommentReferable>
         for (var referable in this)
           if (referable is! U) referable,
       ];
+}
+
+class _ReferenceChildrenLookup {
+  final String lookup;
+  final List<String> remaining;
+
+  _ReferenceChildrenLookup(this.lookup, this.remaining);
+
+  @override
+  String toString() =>
+      '$lookup ($lookup${remaining.isNotEmpty ? ".${remaining.join(".")}" : ''})';
+}
+
+extension on Scope {
+  /// Prefer the getter for a bundled lookup if both exist.
+  Element? lookupPreferGetter(String id) {
+    var result = lookup(id);
+    return result.getter ?? result.setter;
+  }
 }

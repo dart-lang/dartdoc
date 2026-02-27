@@ -14,11 +14,11 @@ import 'package:dartdoc/src/model/accessor.dart';
 import 'package:dartdoc/src/model/annotation.dart';
 import 'package:dartdoc/src/model/attribute.dart';
 import 'package:dartdoc/src/model/class.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/constructor.dart';
 import 'package:dartdoc/src/model/enum.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/parameter.dart';
+import 'package:dartdoc/src/model/referable.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:meta/meta.dart';
 
@@ -271,7 +271,7 @@ mixin GetterSetterCombo on ModelElement {
   bool get writeOnly => hasPublicSetter && !hasPublicGetter;
 
   @override
-  late final Map<String, CommentReferable> referenceChildren = {
+  late final Map<String, Referable> referenceChildren = {
     if (hasParameters) ...parameters.explicitOnCollisionWith(this),
     ...modelType.typeArguments.explicitOnCollisionWith(this),
   };

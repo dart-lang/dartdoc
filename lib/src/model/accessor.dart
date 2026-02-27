@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -145,14 +144,13 @@ class Accessor extends ModelElement with HasLibrary {
   /// Accessors should never be participating directly in comment reference
   /// lookups.
   @override
-  Map<String, CommentReferable> get referenceChildren =>
+  Map<String, Referable> get referenceChildren =>
       enclosingCombo.referenceChildren;
 
   /// Accessors should never be participating directly in comment reference
   /// lookups.
   @override
-  Iterable<CommentReferable> get referenceParents =>
-      enclosingCombo.referenceParents;
+  Iterable<Referable> get referenceParents => enclosingCombo.referenceParents;
 }
 
 /// A getter or setter that is a member of a [Container].

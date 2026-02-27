@@ -298,12 +298,12 @@ Future<void> writeDartdocResources(ResourceProvider resourceProvider) async {
 /// code returns canonicalized results and the new lookup code is only
 /// guaranteed to return equivalent results.
 MatchingLinkResult definingLinkResult(MatchingLinkResult originalResult) {
-  var commentReferable = originalResult.commentReferable;
-  if (commentReferable == null) {
+  var referable = originalResult.referable;
+  if (referable == null) {
     return originalResult;
   }
-  var definingReferable = commentReferable.definingCommentReferable;
-  return definingReferable == originalResult.commentReferable
+  var definingReferable = referable.definingReferable;
+  return definingReferable == originalResult.referable
       ? originalResult
       : MatchingLinkResult(definingReferable);
 }

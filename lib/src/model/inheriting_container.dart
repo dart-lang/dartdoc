@@ -6,7 +6,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/model/comment_referable.dart';
 import 'package:dartdoc/src/model/container_modifiers.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/tag.dart';
@@ -29,7 +28,7 @@ mixin Constructable implements InheritingContainer {
 
   @override
   @visibleForOverriding
-  Map<String, CommentReferable> get extraReferenceChildren => {
+  Map<String, Referable> get extraReferenceChildren => {
         for (var container in superChain.wherePublic
             .map((t) => t.modelElement)
             .whereType<Container>()) ...{
@@ -48,7 +47,7 @@ mixin Constructable implements InheritingContainer {
   @override
   bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
 
-  static Map<String, CommentReferable> _mapConstructorsByName(
+  static Map<String, Referable> _mapConstructorsByName(
           Iterable<Constructor> constructors) =>
       {
         for (var constructor in constructors) ...{
