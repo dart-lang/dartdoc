@@ -218,6 +218,9 @@ mixin Referable {
     // If the element was brought in by a @docImport or has an unlinked library
     // fragment, we must drop it gracefully instead of crashing on `library!`.
     // See: https://github.com/dart-lang/sdk/issues/62812
+    // TODO(zarah): Investigate if this bailout is still necessary after the
+    // issue in the analyzer is resolved. We need to determine whether there are
+    // other edge cases that could lead to an element's library not being found.
     if (packageGraph.findButDoNotCreateLibraryFor(resultElement) == null &&
         resultElement.kind != ElementKind.DYNAMIC &&
         resultElement.kind != ElementKind.NEVER) {
