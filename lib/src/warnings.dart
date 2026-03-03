@@ -251,6 +251,12 @@ enum PackageWarning implements Comparable<PackageWarning> {
         'A leftover file exists in the tree that dartdoc did not write in this '
         'pass',
   ),
+  internalError(
+    'internal-error',
+    'internal dartdoc error: {0}',
+    shortHelp: 'An internal error occurred in dartdoc',
+    defaultWarningMode: PackageWarningMode.warn,
+  ),
   missingFromSearchIndex(
     'missing-from-search-index',
     'dartdoc generated a file not in the search index: {0}',

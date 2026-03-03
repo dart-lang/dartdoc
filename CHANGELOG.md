@@ -3,6 +3,8 @@
 * Support specifying experimental features in `dartdoc_options.yaml`.
 * Document using the public name for private named parameters.
 * Deprecate the `--use-categories` option.
+* Gracefully handle missing library elements during comment reference lookup, emitting an `internal-error` warning instead of crashing.
+
 
 ## 9.0.3
 * Require analyzer 10.1.0 APIs.
