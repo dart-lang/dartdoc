@@ -459,6 +459,7 @@ class PackageGraph with Referable {
       PackageWarning.duplicateFile ||
       PackageWarning.orphanedFile ||
       PackageWarning.unknownFile ||
+      PackageWarning.internalError ||
       PackageWarning.missingFromSearchIndex ||
       PackageWarning.missingExampleFile ||
       PackageWarning.typeAsHtml ||

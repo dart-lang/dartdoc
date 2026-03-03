@@ -15,6 +15,7 @@ import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/model/model_element.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/model/prefix.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 
 /// Something that has a name, and can be referenced in a doc comment.
@@ -211,6 +212,20 @@ mixin Referable {
     }
 
     if (resultElement == null) {
+      return null;
+    }
+
+    // If the element was brought in by a @docImport or has an unlinked library
+    // fragment, we must drop it gracefully instead of crashing on `library!`.
+    // See: https://github.com/dart-lang/sdk/issues/62812
+    if (packageGraph.findButDoNotCreateLibraryFor(resultElement) == null &&
+        resultElement.kind != ElementKind.DYNAMIC &&
+        resultElement.kind != ElementKind.NEVER) {
+      packageGraph.warnOnElement(
+        switch (this) { Warnable w => w, _ => null },
+        PackageWarning.internalError,
+        message: 'Unable to find library for element $resultElement',
+      );
       return null;
     }
 
