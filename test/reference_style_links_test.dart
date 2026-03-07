@@ -78,6 +78,7 @@ class C {
       m.documentationAsHtml,
       contains(RegExp('<a href="[^"]+">Platform\\.current</a>')),
     );
-    expect(m.documentationAsHtml, isNot(contains('>Platform.nativePlatform</a>')));
+    expect(
+        m.documentationAsHtml, isNot(contains('>Platform.nativePlatform</a>')));
   }
 }

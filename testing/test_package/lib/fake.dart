@@ -1163,7 +1163,6 @@ class TypeParameterThingsExtendedQ
 void set aSetterWithFunctionParameter(
     bool fParam(int fParamA, String fParamB, String fParamC)) {}
 
-
 class VisualFallbackTarget {
   static int get bar => 0;
 }
