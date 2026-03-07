@@ -261,8 +261,8 @@ class MarkdownDocument extends md.Document {
   /// Creates a document which resolves comment references as stemming from
   /// [element].
   factory MarkdownDocument.withElementLinkResolver(Warnable element) {
-    final linkResolver =
-        (String name, [String? _]) => _makeLinkNode(name, element);
+    md.Node? linkResolver(String name, [String? _]) =>
+        _makeLinkNode(name, element);
     return MarkdownDocument._(
       inlineSyntaxes: _markdownSyntaxes(linkResolver),
       blockSyntaxes: _markdownBlockSyntaxes,
@@ -356,8 +356,8 @@ class _LinkSyntaxWithPreservedReferenceText extends md.LinkSyntax {
     md.InlineParser parser,
     covariant md.SimpleDelimiter opener,
     md.Delimiter? closer, {
-    String? tag,
     required List<md.Node> Function() getChildren,
+    String? tag,
   }) {
     final referenceText = parser.source.substring(opener.endPos, parser.pos);
     final referenceLabelData =
