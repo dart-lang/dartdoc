@@ -233,11 +233,13 @@ class PackageGraph with Referable {
             }
           case EnumDeclaration():
             if (declaration.declaredFragment?.element.isPublic ?? false) {
-              for (var constant in declaration.body.constants) {
-                _populateModelNodeFor(constant);
-              }
-              for (var member in declaration.body.members) {
-                _populateModelNodeFor(member);
+              if (declaration.body case BlockEnumBody body) {
+                for (var constant in body.constants) {
+                  _populateModelNodeFor(constant);
+                }
+                for (var member in body.members) {
+                  _populateModelNodeFor(member);
+                }
               }
             }
           case MixinDeclaration(body: BlockClassBody(:var members)):
@@ -246,8 +248,10 @@ class PackageGraph with Referable {
             }
           case ExtensionDeclaration():
             if (declaration.declaredFragment?.element.isPublic ?? false) {
-              for (var member in declaration.body.members) {
-                _populateModelNodeFor(member);
+              if (declaration.body case BlockClassBody body) {
+                for (var member in body.members) {
+                  _populateModelNodeFor(member);
+                }
               }
             }
           case ExtensionTypeDeclaration():
