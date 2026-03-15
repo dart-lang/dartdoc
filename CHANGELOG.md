@@ -1,3 +1,8 @@
+## 9.0.5-wip
+
+* Require analyzer 12.0.0 APIs.
+
+
 ## 9.0.4
 * Fix a bug where experiment flags passed via command-line were ignored.
 * Support specifying experimental features in `dartdoc_options.yaml`.
