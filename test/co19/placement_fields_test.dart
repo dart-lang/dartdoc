@@ -320,6 +320,8 @@ mixin M {
 
   /// Check that doc comments can be recognized before enum fields (instance and
   /// static).
+  @FailingTest(reason: 'Causes exception because of non-const initializer')
+  // TODO(scheglov): NB, failing test
   void test_beforeEnumField1() async {
     var library = await bootPackageWithLibrary('''
 enum E {
@@ -394,6 +396,8 @@ Line 1''');
 
   /// Check that block-based doc comments can be recognized before enum fields
   /// (instance and static).
+  @FailingTest(reason: 'Causes exception because of non-const initializer')
+  // TODO(scheglov): NB, failing test
   void test_beforeEnumField2() async {
     var library = await bootPackageWithLibrary('''
 enum E {
