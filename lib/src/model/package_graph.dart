@@ -7,6 +7,7 @@ import 'dart:collection';
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/source/source.dart';
 import 'package:analyzer/source/timestamped_data.dart' show TimestampedData;
@@ -14,6 +15,7 @@ import 'package:analyzer/source/timestamped_data.dart' show TimestampedData;
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk, SdkLibrary;
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -381,6 +383,11 @@ class PackageGraph with Referable {
   final Map<String, String> _macros = {};
   final Map<String, String> _htmlFragments = {};
   bool allLibrariesAdded = false;
+
+  /// Cache of [ElementType]s instantiated during documentation generation.
+  ///
+  /// Key is a record of `(DartType, Library?)`.
+  final elementTypeCache = <(DartType, Library?), ElementType>{};
 
   /// Whether the local documentation has been built, which is only complete
   /// after all of the work in [_precacheLocalDocs] is done.
