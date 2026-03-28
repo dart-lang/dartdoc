@@ -32,15 +32,21 @@ abstract class ElementType with Referable {
 
   factory ElementType.for_(
       DartType type, Library? library, PackageGraph packageGraph) {
+    var key = (type, library, type.alias);
+    var cached = packageGraph.elementTypeCache[key];
+    if (cached != null) return cached;
+
     runtimeStats.incrementAccumulator('elementTypeInstantiation');
     var fElement = type.documentableElement;
     if (fElement == null ||
         fElement.kind == ElementKind.DYNAMIC ||
         fElement.kind == ElementKind.NEVER) {
-      return UndefinedElementType._from(type, library, packageGraph);
+      return packageGraph.elementTypeCache[key] =
+          UndefinedElementType._from(type, library, packageGraph);
     }
     var modelElement = packageGraph.getModelForElement(fElement);
-    return DefinedElementType._from(type, modelElement, library, packageGraph);
+    return packageGraph.elementTypeCache[key] =
+        DefinedElementType._from(type, modelElement, library, packageGraph);
   }
 
   bool get isTypedef => false;
