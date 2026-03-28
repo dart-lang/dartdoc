@@ -32,7 +32,7 @@ abstract class ElementType with Referable {
 
   factory ElementType.for_(
       DartType type, Library? library, PackageGraph packageGraph) {
-    var key = (type, library);
+    var key = (type, library, type.alias);
     var cached = packageGraph.elementTypeCache[key];
     if (cached != null) return cached;
 

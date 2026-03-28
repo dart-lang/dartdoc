@@ -386,8 +386,9 @@ class PackageGraph with Referable {
 
   /// Cache of [ElementType]s instantiated during documentation generation.
   ///
-  /// Key is a record of `(DartType, Library?)`.
-  final elementTypeCache = <(DartType, Library?), ElementType>{};
+  /// Key is a record of `(DartType, Library?, InstantiatedTypeAliasElement?)`.
+  final elementTypeCache =
+      <(DartType, Library?, InstantiatedTypeAliasElement?), ElementType>{};
 
   /// Whether the local documentation has been built, which is only complete
   /// after all of the work in [_precacheLocalDocs] is done.
