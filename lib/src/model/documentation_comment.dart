@@ -866,7 +866,17 @@ mixin DocumentationComment implements Warnable, SourceCode {
       var buffer = StringBuffer();
       if (commentData.docImports.isEmpty) return content;
       var firstDocImport = commentData.docImports.first;
-      buffer.write(content.substring(0, firstDocImport.offset - commentOffset));
+
+      var relativeOffset = firstDocImport.offset - commentOffset;
+      if (relativeOffset >= content.length) {
+        // Safe fallback if indices drift due to line ending normalization.
+        warn(PackageWarning.deprecated,
+            message:
+                'Index drift detected when removing doc imports. This is often caused by `// ignore` blocks or `\\r\\n` line endings in your documentation. Convert file to use `\\n` and remove intermediate non-doc comments to ensure doc imports are removed properly.');
+        return content;
+      }
+
+      buffer.write(content.substring(0, relativeOffset));
       var offset = firstDocImport.end - commentOffset;
       for (var docImport in commentData.docImports.skip(1)) {
         buffer
