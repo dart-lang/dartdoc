@@ -116,4 +116,32 @@ String get myGetter => 'hello';
             'wrong_library.myGetter (did you mean'),
         isTrue);
   }
+
+  /// Tests that @canonicalFor suggests close matches when a library name has multiple dots.
+  Future<void> test_canonicalFor_suggestsMatches_multipleDots() async {
+    var packageGraph = await bootPackageFromFiles([
+      d.file('lib/google_cloud.dart', '''
+library google_cloud;
+export 'http_serving.dart';
+'''),
+      d.file('lib/http_serving.dart', '''
+/// {@canonicalFor some.nested.library.myGetter}
+library http_serving;
+export 'src/internal.dart';
+'''),
+      d.file('lib/src/internal.dart', '''
+library internal;
+String get myGetter => 'hello';
+'''),
+    ]);
+
+    var httpServing = packageGraph.libraries.named('http_serving');
+
+    expect(
+        packageGraph.packageWarningCounter.hasWarning(
+            httpServing,
+            PackageWarning.ignoredCanonicalFor,
+            'some.nested.library.myGetter (did you mean'),
+        isTrue);
+  }
 }
