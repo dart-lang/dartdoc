@@ -1,0 +1,16 @@
+# Configuration for Gemini Code Assist on this repository.
+# All fields are optional and have default values.
+
+code_review:
+  # Sets the minimum severity for which Gemini Code Assist posts comments (e.g., HIGH, MEDIUM, LOW).
+  comment_severity_threshold: MEDIUM
+
+  # Set to false to disable automatic pull request reviews (manual trigger only).
+  auto_review: false
+
+memory_config:
+  # If set to true, disables improved response quality for this specific repository.
+  disabled: false
+
+# Enables fun features such as a poem in the initial pull request summary.
+have_fun: true
