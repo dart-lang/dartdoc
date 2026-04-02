@@ -458,7 +458,22 @@ class Library extends ModelElement with TopLevelContainer {
         if (!elementNames.contains(elementName)) elementName,
     };
     for (var notFound in notFoundInAllModelElements) {
-      warn(PackageWarning.ignoredCanonicalFor, message: notFound);
+      var parts = notFound.split('.');
+      if (parts.length == 2) {
+        var elementName = parts[1];
+        var possibleMatches = elementNames
+            .where((name) => name.endsWith('.$elementName'))
+            .toList();
+        if (possibleMatches.isNotEmpty) {
+          warn(PackageWarning.ignoredCanonicalFor,
+              message:
+                  '$notFound (did you mean ${possibleMatches.join(', ')}?)');
+        } else {
+          warn(PackageWarning.ignoredCanonicalFor, message: notFound);
+        }
+      } else {
+        warn(PackageWarning.ignoredCanonicalFor, message: notFound);
+      }
     }
     // TODO(jcollins-g): warn if a macro/tool generates an unexpected
     // canonicalFor?

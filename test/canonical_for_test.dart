@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -86,5 +87,33 @@ void someFunc() {}
 
     expect(someFunc.canonicalLibrary, equals(bCanonical));
     expect(someFunc.href, contains('b_canonical/someFunc.html'));
+  }
+
+  /// Tests that @canonicalFor suggests close matches when a library name is wrong.
+  Future<void> test_canonicalFor_suggestsMatches() async {
+    var packageGraph = await bootPackageFromFiles([
+      d.file('lib/google_cloud.dart', '''
+library google_cloud;
+export 'http_serving.dart';
+'''),
+      d.file('lib/http_serving.dart', '''
+/// {@canonicalFor wrong_library.myGetter}
+library http_serving;
+export 'src/internal.dart';
+'''),
+      d.file('lib/src/internal.dart', '''
+library internal;
+String get myGetter => 'hello';
+'''),
+    ]);
+
+    var httpServing = packageGraph.libraries.named('http_serving');
+
+    expect(
+        packageGraph.packageWarningCounter.hasWarning(
+            httpServing,
+            PackageWarning.ignoredCanonicalFor,
+            'wrong_library.myGetter (did you mean'),
+        isTrue);
   }
 }
