@@ -277,6 +277,95 @@ Three.'''));
     expect(doc, equals(''));
   }
 
+  void skip_test_docImport_overshoot() async {
+    // Force \r\n line endings to simulate index drift if the analyzer normalizes it to \n.
+    // We use many lines to ensure the shift overshoots the string length and throws RangeError.
+    var lines = List.generate(50, (i) => '/// Line $i').join('\n');
+    await writePackageWithCommentedLibrary('''
+$lines
+/// @docImport 'dart:async' as async;
+'''
+        .replaceAll('\n', '\r\n'));
+    var doc = libraryModel.documentation;
+
+    expect(doc, '''
+Line 1
+Line 2''');
+  }
+
+  void test_docImport_ignoreLine() async {
+    await writePackageWithCommentedLibrary('''
+var x = 1;
+/// Line 1
+// ignore: something
+/// Line 2
+/// @docImport 'dart:async' as async;
+''');
+    var doc = libraryModel.documentation;
+
+    expect(doc, '''
+Line 1
+Line 2''');
+  }
+
+  void test_docImport_ignoreLine_justBeforeDocImport() async {
+    await writePackageWithCommentedLibrary('''
+/// Line 1
+/// Line 2
+// ignore: something
+/// @docImport 'dart:async' as async;
+''');
+    var doc = libraryModel.documentation;
+
+    expect(doc, '''
+Line 1
+Line 2''');
+  }
+
+  void test_docImport_ignoreBlock() async {
+    await writePackageWithCommentedLibrary('''
+/// Line 1
+/// Line 2
+/* ignore: something */
+/// @docImport 'dart:async' as async;
+''');
+    var doc = libraryModel.documentation;
+
+    expect(doc, '''
+Line 1
+Line 2''');
+  }
+
+  void test_docImport_blockForm() async {
+    await writePackageWithCommentedLibrary('''
+/** Line 1
+ * Line 2
+ @docImport 'dart:async' as async;
+ */
+''');
+    var doc = libraryModel.documentation;
+
+    expect(doc, '''
+Line 1
+Line 2''');
+  }
+
+  void test_docImport_blockForm_interleavedComment() async {
+    await writePackageWithCommentedLibrary('''
+/** Line 1
+ * Line 2
+ /* ignore: something */
+ @docImport 'dart:async' as async;
+ */
+''');
+    var doc = libraryModel.documentation;
+
+    expect(doc, '''
+Line 1
+Line 2
+/* ignore: something */''');
+  }
+
   void test_animationDirectiveHasFewerThanThreeArguments() async {
     await writePackageWithCommentedLibrary('''
 /// Text.

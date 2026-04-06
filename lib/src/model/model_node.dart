@@ -8,6 +8,7 @@ import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/source/source_range.dart';
 import 'package:meta/meta.dart';
 
 /// Stripped down information derived from [AstNode] containing only information
@@ -22,31 +23,27 @@ class ModelNode {
   final CommentData? commentData;
 
   factory ModelNode(
-    AstNode? sourceNode,
+    AstNode sourceNode,
     Element element,
     AnalysisContext analysisContext, {
-    CommentData? commentData,
+    Comment? comment,
   }) {
-    if (sourceNode == null) {
-      return ModelNode._(element, analysisContext,
-          sourceEnd: -1, sourceOffset: -1);
-    } else {
-      // Get a node higher up the syntax tree that includes the semicolon.
-      // In this case, it is either a [FieldDeclaration] or
-      // [TopLevelVariableDeclaration]. (#2401)
-      if (sourceNode is VariableDeclaration) {
-        sourceNode = sourceNode.parent!.parent!;
-        assert(sourceNode is FieldDeclaration ||
-            sourceNode is TopLevelVariableDeclaration);
-      }
-      return ModelNode._(
-        element,
-        analysisContext,
-        sourceEnd: sourceNode.end,
-        sourceOffset: sourceNode.offset,
-        commentData: commentData,
-      );
+    var commentData = comment?.data;
+    // Get a node higher up the syntax tree that includes the semicolon.
+    // In this case, it is either a [FieldDeclaration] or
+    // [TopLevelVariableDeclaration]. (#2401)
+    if (sourceNode is VariableDeclaration) {
+      sourceNode = sourceNode.parent!.parent!;
+      assert(sourceNode is FieldDeclaration ||
+          sourceNode is TopLevelVariableDeclaration);
     }
+    return ModelNode._(
+      element,
+      analysisContext,
+      sourceEnd: sourceNode.end,
+      sourceOffset: sourceNode.offset,
+      commentData: commentData,
+    );
   }
 
   ModelNode._(
@@ -84,14 +81,17 @@ class ModelNode {
 /// Various comment data is not available on the analyzer's Element model, so we
 /// store it in instances of this class after resolving libraries.
 class CommentData {
-  /// The offset of this comment in the source text.
-  final int offset;
-  final List<CommentDocImportData> docImports;
+  /// The source ranges of this comment's tokens.
+  final List<SourceRange> sourceRanges;
+
+  /// The source ranges of this comment's doc-imports.
+  final List<SourceRange> docImportSourceRanges;
+
   final Map<String, CommentReferenceData> references;
 
   CommentData({
-    required this.offset,
-    required this.docImports,
+    required this.sourceRanges,
+    required this.docImportSourceRanges,
     required this.references,
   });
 }
@@ -201,3 +201,118 @@ final String _escapedSlashStarStar = _escape.convert(_slashStarStar);
 const String _starSlash = '*/';
 
 final String _escapedStarSlash = _escape.convert(_starSlash);
+
+extension on Comment {
+  /// A mapping of all comment references to their various data.
+  CommentData get data {
+    var sourceRanges0 = <SourceRange>[
+      for (var token in tokens)
+        SourceRange(
+            token.offset,
+            switch (token.next) {
+                  var next? => next.offset,
+                  null => token.end,
+                } -
+                token.offset),
+    ];
+    var docImportsData = <CommentDocImportData>[];
+    for (var docImport in docImports) {
+      docImportsData.add(
+        CommentDocImportData(
+            offset: docImport.offset, end: docImport.import.end),
+      );
+    }
+
+    var (:sourceRanges, :docImportSourceRanges) =
+        _normalizeSourceRanges(sourceRanges0, docImportsData);
+
+    var referencesData = <String, CommentReferenceData>{};
+    for (var reference in references) {
+      var referable = reference.expression;
+      String name;
+      Element? staticElement;
+      if (referable case PropertyAccess(:var propertyName)) {
+        var target = referable.target;
+        if (target is! PrefixedIdentifier) continue;
+        name = '${target.name}.${propertyName.name}';
+        staticElement = propertyName.element;
+      } else if (referable case PrefixedIdentifier(:var identifier)) {
+        name = referable.name;
+        staticElement = identifier.element;
+      } else if (referable case SimpleIdentifier()) {
+        name = referable.name;
+        staticElement = referable.element;
+      } else {
+        continue;
+      }
+
+      if (staticElement != null && !referencesData.containsKey(name)) {
+        referencesData[name] = CommentReferenceData(
+          staticElement,
+          name,
+          referable.offset,
+          referable.length,
+        );
+      }
+    }
+    return CommentData(
+      sourceRanges: sourceRanges,
+      docImportSourceRanges: docImportSourceRanges,
+      references: referencesData,
+    );
+  }
+
+  /// Normalizes the comment's source ranges and the doc-import source ranges,
+  /// to be relative to the start of the comment text, and to skip over gaps
+  /// produced by interleaved comments.
+  ({List<SourceRange> sourceRanges, List<SourceRange> docImportSourceRanges})
+      _normalizeSourceRanges(
+    List<SourceRange> sourceRanges,
+    List<CommentDocImportData> docImportsData,
+  ) {
+    // All of the `offset` and `end` properties are offsets from the start of
+    // the file (rather than from `content`). For the purposes of stripping
+    // `@docImport` directives, we need to shift all offsets by this value,
+    // the starting offset of the doc comment.
+    var commentOffset = sourceRanges.first.offset;
+
+    // Adjust the source ranges in two ways:
+    // 1. Change the offsets to be offsets from the start of the comment text,
+    //    instead of the file.
+    // 2. Collapse the offsets between one token's end and the next one's start,
+    //    which accounts for non-comment text between comment tokens.
+    var normalizedSourceRanges = <SourceRange>[];
+    var docImportSourceRanges = <SourceRange>[];
+    var accumulatedGapSize = 0;
+    var docImportIndex = 0;
+    for (var i = 0; i < sourceRanges.length; i++) {
+      var sourceRange = sourceRanges[i];
+      var rangeStart = sourceRange.offset - commentOffset;
+      var rangeEnd = sourceRange.end - commentOffset;
+      var gapSize =
+          i == 0 ? 0 : rangeStart - (sourceRanges[i - 1].end - commentOffset);
+      accumulatedGapSize += gapSize;
+      var rangeStartWithGap = rangeStart - accumulatedGapSize;
+      var rangeEndWithGap = rangeEnd - accumulatedGapSize;
+      normalizedSourceRanges.add(
+          SourceRange(rangeStartWithGap, rangeEndWithGap - rangeStartWithGap));
+
+      while (docImportIndex < docImportsData.length &&
+          docImportsData[docImportIndex].end - commentOffset <= rangeEnd) {
+        var docImportOffset =
+            docImportsData[docImportIndex].offset - commentOffset;
+        var docImportEnd = docImportsData[docImportIndex].end - commentOffset;
+        docImportSourceRanges.add(SourceRange(
+          docImportOffset - accumulatedGapSize,
+          docImportEnd - docImportOffset,
+        ));
+        docImportIndex++;
+      }
+    }
+
+    return (
+      sourceRanges: normalizedSourceRanges,
+      docImportSourceRanges: docImportSourceRanges
+    );
+  }
+}
