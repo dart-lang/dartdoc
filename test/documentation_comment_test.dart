@@ -350,6 +350,21 @@ Line 1
 Line 2''');
   }
 
+  void test_docImport_blockForm2() async {
+    await writePackageWithCommentedLibrary('''
+/** Line 1
+ * Line 2
+ @docImport 'dart:async' as async;
+ @docImport 'dart:math' as math;
+ */
+''');
+    var doc = libraryModel.documentation;
+
+    expect(doc, '''
+Line 1
+Line 2''');
+  }
+
   void test_docImport_blockForm_interleavedComment() async {
     await writePackageWithCommentedLibrary('''
 /** Line 1

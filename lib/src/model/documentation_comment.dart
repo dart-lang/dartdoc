@@ -871,31 +871,18 @@ mixin DocumentationComment implements Warnable, SourceCode {
 
     var buffer = StringBuffer();
     // Track which `@docImport` we are stripping.
-    int? docImportIndex = 0;
+    var docImportIndex = 0;
     for (var sourceRange in sourceRanges) {
       var SourceRange(offset: rangeStart, end: rangeEnd) = sourceRange;
-      var docImportStart = docImportIndex == null
-          ? null
-          : docImportSourceRanges[docImportIndex].offset;
-      if (docImportStart == null || docImportStart > rangeEnd) {
-        buffer.write(content.substring(rangeStart, rangeEnd));
-      } else {
-        // [sourceRange] is a line with a `@docImport`.
-        var offset = rangeStart;
-        while (docImportStart != null && docImportStart < rangeEnd) {
-          buffer.write(content.substring(offset, docImportStart));
-          buffer.write(content.substring(
-              docImportSourceRanges[docImportIndex!].end, rangeEnd));
-          offset = docImportSourceRanges[docImportIndex].end;
-          docImportIndex = docImportIndex + 1;
-          if (docImportIndex >= docImportSourceRanges.length) {
-            docImportIndex = null;
-          }
-          docImportStart = docImportIndex == null
-              ? null
-              : docImportSourceRanges[docImportIndex].offset;
-        }
+      var offset = rangeStart;
+      while (docImportIndex < docImportSourceRanges.length &&
+          docImportSourceRanges[docImportIndex].offset < rangeEnd) {
+        var docImport = docImportSourceRanges[docImportIndex];
+        buffer.write(content.substring(offset, docImport.offset));
+        offset = docImport.end;
+        docImportIndex++;
       }
+      buffer.write(content.substring(offset, rangeEnd));
     }
     return buffer.toString();
   }
