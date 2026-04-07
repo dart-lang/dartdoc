@@ -882,7 +882,9 @@ mixin DocumentationComment implements Warnable, SourceCode {
         offset = docImport.end;
         docImportIndex++;
       }
-      buffer.write(content.substring(offset, rangeEnd));
+      if (offset < rangeEnd) {
+        buffer.write(content.substring(offset, rangeEnd));
+      }
     }
     return buffer.toString();
   }
