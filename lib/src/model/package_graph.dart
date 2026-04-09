@@ -215,14 +215,13 @@ class PackageGraph with Referable {
       for (var directive in unit.directives.whereType<LibraryDirective>()) {
         // There should be only one library directive. If there are more, there
         // is no harm in grabbing ModelNode for each.
-        var commentData = directive.documentationComment?.data;
         _modelNodes.putIfAbsent(
             resolvedLibrary.element,
             () => ModelNode(
                   directive,
                   resolvedLibrary.element,
                   _analysisContext,
-                  commentData: commentData,
+                  comment: directive.documentationComment,
                 ));
       }
 
@@ -270,7 +269,7 @@ class PackageGraph with Referable {
   }
 
   void _populateModelNodeFor(Declaration declaration) {
-    var commentData = declaration.documentationComment?.data;
+    var comment = declaration.documentationComment;
 
     void addModelNode(Declaration declaration) {
       var e = declaration.declaredFragment?.element;
@@ -283,7 +282,7 @@ class PackageGraph with Referable {
           declaration,
           e,
           _analysisContext,
-          commentData: commentData,
+          comment: comment,
         ),
       );
     }
@@ -988,49 +987,4 @@ class InheritableElementsKey {
   final Library library;
 
   InheritableElementsKey(this.element, this.library);
-}
-
-extension on Comment {
-  /// A mapping of all comment references to their various data.
-  CommentData get data {
-    var docImportsData = <CommentDocImportData>[];
-    for (var docImport in docImports) {
-      docImportsData.add(
-        CommentDocImportData(
-            offset: docImport.offset, end: docImport.import.end),
-      );
-    }
-
-    var referencesData = <String, CommentReferenceData>{};
-    for (var reference in references) {
-      var referable = reference.expression;
-      String name;
-      Element? staticElement;
-      if (referable case PropertyAccess(:var propertyName)) {
-        var target = referable.target;
-        if (target is! PrefixedIdentifier) continue;
-        name = '${target.name}.${propertyName.name}';
-        staticElement = propertyName.element;
-      } else if (referable case PrefixedIdentifier(:var identifier)) {
-        name = referable.name;
-        staticElement = identifier.element;
-      } else if (referable case SimpleIdentifier()) {
-        name = referable.name;
-        staticElement = referable.element;
-      } else {
-        continue;
-      }
-
-      if (staticElement != null && !referencesData.containsKey(name)) {
-        referencesData[name] = CommentReferenceData(
-          staticElement,
-          name,
-          referable.offset,
-          referable.length,
-        );
-      }
-    }
-    return CommentData(
-        offset: offset, docImports: docImportsData, references: referencesData);
-  }
 }
