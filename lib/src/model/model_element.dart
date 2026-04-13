@@ -500,16 +500,7 @@ abstract class ModelElement
     // This is not accurate if we are still constructing the Package.
     assert(packageGraph.allLibrariesAdded);
 
-    var definingLibraryElement = element.library;
-    var definingLibrary = definingLibraryElement == null
-        ? null
-        : packageGraph.findButDoNotCreateLibraryFor(definingLibraryElement);
-    var definingLibraryIsLocalPublic = definingLibrary != null &&
-        packageGraph.localPublicLibraries.contains(definingLibrary);
-    var possibleCanonicalLibrary = definingLibraryIsLocalPublic
-        ? library
-        : canonicalLibraryCandidate(this);
-
+    var possibleCanonicalLibrary = canonicalLibraryCandidate(this);
     if (possibleCanonicalLibrary != null) return possibleCanonicalLibrary;
 
     if (this case Inheritable(isInherited: true)) {
