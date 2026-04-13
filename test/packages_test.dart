@@ -342,6 +342,10 @@ class Two extends One {}
         var myTypedef = libraryTwo.typedefs.named('MyTypedef');
         expect(myTypedef.href,
             equals('https://mypub.topdomain/one/0.0.1/one/MyTypedef.html'));
+
+        var oneClass = libraryTwo.classes.named('One');
+        expect(oneClass.href,
+            equals('https://mypub.topdomain/one/0.0.1/one/One-class.html'));
       });
 
       test(
