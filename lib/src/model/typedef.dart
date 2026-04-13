@@ -44,14 +44,6 @@ abstract class Typedef extends ModelElement with TypeParameters, HasLibrary {
   /// without this.
   FunctionTypedef get asCallable => this as FunctionTypedef;
 
-  @override
-  String? get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    return '${package.baseHref}$filePath';
-  }
-
   // Food for mustache.
   bool get isInherited => false;
 

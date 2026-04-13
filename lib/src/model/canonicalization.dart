@@ -14,14 +14,14 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
   var libraryElement = modelElement.element.library;
   if (libraryElement == null) return null;
   var libraryExports = modelElement.packageGraph.libraryExports[libraryElement];
+  var definingLibrary =
+      modelElement.packageGraph.findButDoNotCreateLibraryFor(libraryElement);
   var candidateList = {
     ...?libraryExports,
-    // When the element is defined in a library that is not documented, the
-    // `libraryExports` map will not contain that library. However, we still want
-    // to consider the defining library as a candidate if it happens to be
-    // documented.
     if (modelElement.library case var library?) library,
+    if (definingLibrary != null) definingLibrary,
   };
+
   if (candidateList.isEmpty) {
     return null;
   }

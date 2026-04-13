@@ -36,14 +36,6 @@ class TopLevelVariable extends ModelElement with GetterSetterCombo, HasLibrary {
   String? get belowSidebarPath => null;
 
   @override
-  String? get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    return '${package.baseHref}$filePath';
-  }
-
-  @override
   bool get isConst => element.isConst;
 
   @override
