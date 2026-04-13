@@ -256,6 +256,8 @@ library bar;
 library one;
 
 class One {}
+int topLevelVariable = 0;
+typedef MyTypedef = void Function();
 ''');
         packageOneRoot.getChildAssumingFolder('bin').create();
         packageOneRoot
@@ -305,6 +307,41 @@ dartdoc:
         expect(packageOne.documentedWhere, equals(DocumentLocation.remote));
         expect(classOne.href,
             equals('https://mypub.topdomain/one/0.0.1/one/One-class.html'));
+      });
+
+      test('includes remote elements for re-exported symbols', () async {
+        packageOneRoot
+            .getChildAssumingFile('dartdoc_options.yaml')
+            .writeAsStringSync('''
+dartdoc:
+  linkTo:
+    url: 'https://mypub.topdomain/%n%/%v%'
+''');
+        packageTwoRoot
+            .getChildAssumingFolder('lib')
+            .getChildAssumingFile('two.dart')
+            .writeAsStringSync('''
+/// Documentation comment.
+library two;
+export 'package:one/one.dart';
+
+class Two extends One {}
+''');
+        var packageGraph = await utils.bootBasicPackage(
+            packageTwoRoot.path, packageMetaProvider,
+            additionalArguments: ['--link-to-remote']);
+
+        var packageTwo = packageGraph.defaultPackage;
+        var libraryTwo =
+            packageTwo.allLibraries.lastWhere((l) => l.name == 'two');
+
+        var topLevelVar = libraryTwo.properties.named('topLevelVariable');
+        expect(topLevelVar.href,
+            equals('https://mypub.topdomain/one/0.0.1/one/topLevelVariable.html'));
+
+        var myTypedef = libraryTwo.typedefs.named('MyTypedef');
+        expect(myTypedef.href,
+            equals('https://mypub.topdomain/one/0.0.1/one/MyTypedef.html'));
       });
 
       test(
