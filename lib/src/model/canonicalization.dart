@@ -39,18 +39,28 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
     return null;
   }
 
+  final targetElement = _normalize(topLevelElement);
+
   final candidateLibraries = candidateList.where((l) {
     if (!l.isPublic) return false;
     if (l.package.documentedWhere == DocumentLocation.missing) return false;
     if (modelElement is Library) return true;
     if (l.name == modelElement.library?.name) return true;
     var lookup = l.element.exportNamespace.definedNames2[topLevelElementName];
-    var lookupElement =
-        lookup is PropertyAccessorElement ? lookup.variable : lookup;
-    var targetElement = topLevelElement is PropertyAccessorElement
-        ? topLevelElement.variable
-        : topLevelElement;
-    return targetElement == lookupElement;
+
+    var lookupElement = _normalize(lookup);
+
+    if (targetElement == lookupElement) return true;
+
+    // Fallback: Compare by name and library if == fails
+    // (e.g. for some re-exported elements)
+    if (lookupElement != null &&
+        targetElement?.name == lookupElement.name &&
+        targetElement?.library?.uri == lookupElement.library?.uri) {
+      return true;
+    }
+
+    return false;
   }).toList(growable: true);
 
   if (candidateLibraries.isEmpty) {
@@ -66,6 +76,9 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
   return _Canonicalization(topLevelModelElement)
       .canonicalLibraryCandidate(candidateLibraries);
 }
+
+Element? _normalize(Element? e) =>
+    e is PropertyAccessorElement && !e.isOriginDeclaration ? e.variable : e;
 
 /// Canonicalization support in Dartdoc.
 ///
