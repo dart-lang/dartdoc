@@ -144,4 +144,30 @@ String get myGetter => 'hello';
             'some.nested.library.myGetter (did you mean'),
         isTrue);
   }
+
+  /// Tests that @canonicalFor works for explicit getters even when they are
+  /// re-exported and standard equality checks might fail.
+  Future<void> test_canonicalFor_getter_reexported() async {
+    var packageGraph = await bootPackageFromFiles([
+      d.file('lib/google_cloud.dart', '''
+library google_cloud;
+export 'http_serving.dart';
+'''),
+      d.file('lib/http_serving.dart', '''
+/// {@canonicalFor http_serving.myGetter}
+library http_serving;
+export 'src/internal.dart';
+'''),
+      d.file('lib/src/internal.dart', '''
+library internal;
+String get myGetter => 'hello';
+'''),
+    ]);
+
+    var httpServing = packageGraph.libraries.named('http_serving');
+    var myGetter = httpServing.properties.named('myGetter');
+
+    expect(myGetter.canonicalLibrary, equals(httpServing));
+    expect(myGetter.href, contains('http_serving/myGetter.html'));
+  }
 }

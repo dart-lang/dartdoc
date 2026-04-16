@@ -59,14 +59,6 @@ class ModelFunctionTyped extends ModelElement with HasLibrary, TypeParameters {
   String? get belowSidebarPath => null;
 
   @override
-  String? get href {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.href;
-    }
-    return '${package.baseHref}$filePath';
-  }
-
-  @override
   Kind get kind => Kind.function;
 
   // Food for mustache. TODO(jcollins-g): what about enclosing elements?
