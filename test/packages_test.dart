@@ -336,8 +336,10 @@ class Two extends One {}
             packageTwo.allLibraries.lastWhere((l) => l.name == 'two');
 
         var topLevelVar = libraryTwo.properties.named('topLevelVariable');
-        expect(topLevelVar.href,
-            equals('https://mypub.topdomain/one/0.0.1/one/topLevelVariable.html'));
+        expect(
+            topLevelVar.href,
+            equals(
+                'https://mypub.topdomain/one/0.0.1/one/topLevelVariable.html'));
 
         var myTypedef = libraryTwo.typedefs.named('MyTypedef');
         expect(myTypedef.href,
