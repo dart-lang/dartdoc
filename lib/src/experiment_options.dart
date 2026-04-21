@@ -23,7 +23,8 @@ List<DartdocOption<Object>> createExperimentOptions(
       knownFeatures.map((e) => '    [no-]${e.enableString}: ${e.documentation} '
           '(default: ${e.isEnabledByDefault})');
   return [
-    DartdocOptionArgFile<List<String>>('enable-experiment', [], resourceProvider,
+    DartdocOptionArgFile<List<String>>(
+        'enable-experiment', [], resourceProvider,
         splitCommas: true,
         help: 'Enable or disable listed experiments.\n'
             '${featureHelpTexts.join('\n')}'),

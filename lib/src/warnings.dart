@@ -153,7 +153,7 @@ enum PackageWarning implements Comparable<PackageWarning> {
 
   ignoredCanonicalFor(
     'ignored-canonical-for',
-    "library says it is {@canonicalFor {0}} but {0} can't be canonical "
+    "library says it is {@canonicalFor {0}} but it can't be canonical "
         'there',
     shortHelp:
         'A @canonicalFor tag refers to a library which this symbol can not be '
