@@ -96,11 +96,12 @@ class PrimaryConstructorTest extends DartdocTestBase {
       field2.annotations.single.linkedName,
       '<a href="$dartCoreUrlPrefix/deprecated-constant.html">deprecated</a>',
     );
-    expect(field2.hasDocumentation, true); // Gets docs from parameter.
+    expect(field2.hasDocumentation, true); // Gets annotation from parameter.
     expect(field2.documentation, 'The second parameter.');
 
     var field4 = cClass.instanceFields.named('field4');
-    expect(field4.hasAnnotations, false); // Does not get docs from parameter.
+    expect(field4.hasAnnotations,
+        false); // Does not get annotation from parameter.
     expect(field4.hasDocumentation, false);
   }
 }

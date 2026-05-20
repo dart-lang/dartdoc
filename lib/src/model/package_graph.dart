@@ -275,7 +275,7 @@ class PackageGraph with Referable {
       var e = declaration.declaredFragment?.element;
       if (e == null) {
         // Primary constructor bodies are considered class members,
-        // but the primary constructor heeader declaration itself is
+        // but the primary constructor header declaration itself is
         // what declares the element, and what DartDoc needs.
         if (declaration is PrimaryConstructorBody) return;
         throw StateError("Expected '$declaration' to declare an element");
