@@ -26,7 +26,7 @@ class PrimaryConstructorsTest extends DartdocTestBase {
   void test_fieldInduction_class() async {
     var library = await bootPackageWithLibrary('''
 class C(var int x, final int y, int z);
-class Derived(super.x) extends C;
+class Derived(super.x, super.y, super.z) extends C;
 ''');
 
     var c = library.classes.named('C');
@@ -39,6 +39,50 @@ class Derived(super.x) extends C;
     expect(derived.declaredFields.any((f) => f.name == 'x'), isFalse);
     var constructor = derived.constructors.first;
     expect(constructor.parameters.any((p) => p.name == 'x'), isTrue);
+  }
+
+  void test_fieldInduction_optionalPositional() async {
+    var library = await bootPackageWithLibrary('''
+class C([var int x = 1]);
+''');
+
+    var c = library.classes.named('C');
+    var constructor = c.constructors.first;
+
+    expect(c.instanceFields.any((f) => f.name == 'x'), isTrue);
+
+    var paramX = constructor.parameters.firstWhere((p) => p.name == 'x');
+
+    expect(paramX.isOptionalPositional, isTrue);
+    expect(paramX.defaultValue, equals('1'));
+  }
+
+  void test_fieldInduction_named() async {
+    var library = await bootPackageWithLibrary('''
+class C({final int y = 2});
+''');
+
+    var c = library.classes.named('C');
+    var constructor = c.constructors.first;
+
+    expect(c.instanceFields.any((f) => f.name == 'y'), isTrue);
+
+    var paramY = constructor.parameters.firstWhere((p) => p.name == 'y');
+
+    expect(paramY.isNamed, isTrue);
+    expect(paramY.defaultValue, equals('2'));
+  }
+
+  void test_fieldInduction_typeParameters() async {
+    var library = await bootPackageWithLibrary('''
+class Box<T>(var T value);
+''');
+
+    var box = library.classes.named('Box');
+    var field = box.instanceFields.named('value');
+
+    expect(field, isNotNull);
+    expect(field.modelType.name, equals('T'));
   }
 
   void test_fieldInduction_extensionType() async {
@@ -100,6 +144,7 @@ class C(
     expect(c.instanceFields.named('x').documentation, contains('Doc for x.'));
     expect(c.instanceFields.named('y').documentation, contains('Doc for y.'));
     expect(c.instanceFields.named('z').isDeprecated, isTrue);
+    expect(c.constructors.first.parameters.named('z').isDeprecated, isTrue);
   }
 
   void test_metadata_propagation_enum() async {
