@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartdoc/src/model/model_element.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -175,5 +176,123 @@ extension type Id(
     var field = et.instanceFields.named('value');
     expect(field.documentation, contains('The underlying [value].'));
     expect(field.isDeprecated, isTrue);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Comment References
+  // ---------------------------------------------------------------------------
+
+  @FailingTest(
+      reason: 'dartdoc currently resolves primary constructor parameters'
+          ' from class-level comments')
+  void test_metadata_commentReference_nonDeclaring() async {
+    var library = await bootPackageWithLibrary('''
+/// Points to [x].
+class C(int x);
+''');
+    var c = library.classes.named('C');
+
+    var result = referenceLookup(c, 'x').referable;
+
+    // A class-level comment starts at the class member scope. Since 'x' does
+    // not induce a field, it is not a class member and should fail to resolve.
+    expect(result, isNull);
+  }
+
+  void test_metadata_commentReference_declaring() async {
+    var library = await bootPackageWithLibrary('''
+/// Points to [x].
+class C(var int x);
+''');
+    var c = library.classes.named('C');
+    var xField = c.instanceFields.named('x');
+
+    var result = referenceLookup(c, 'x').referable as ModelElement;
+
+    // TODO(zarah): Update this when Dartdoc's scope resolution aligns with the
+    // Dart Documentation Comment Specification, which states that property
+    // references should resolve to the conceptual property (the field) rather
+    // than the getter.
+    // expect(result.element, equals(xField.element));
+
+    // Dartdoc currently prefers resolving to the getter for properties in
+    // scope.
+    expect(result.element, equals(xField.getter!.element));
+  }
+
+  @FailingTest(
+      reason: 'dartdoc currently resolves primary constructor parameters from '
+          'class-level comments')
+  void test_metadata_commentReference_super_nonDeclaring() async {
+    var library = await bootPackageWithLibrary('''
+class Base(int x);
+/// Points to [x].
+class Derived(super.x) extends Base;
+''');
+    var derived = library.classes.named('Derived');
+
+    var result = referenceLookup(derived, 'x').referable;
+
+    // 'super.x' does not induce a field, so it is not in the class member
+    // scope.
+    expect(result, isNull);
+  }
+
+  void test_metadata_commentReference_super_declaring() async {
+    var library = await bootPackageWithLibrary('''
+class Base(var int x);
+/// Points to [x].
+class Derived(super.x) extends Base;
+''');
+    var derived = library.classes.named('Derived');
+    var baseClass = library.classes.named('Base');
+    var xField = baseClass.instanceFields.named('x');
+
+    var result = referenceLookup(derived, 'x').referable as ModelElement;
+
+    // TODO(zarah): Update this when Dartdoc's scope resolution aligns with the
+    // Dart Documentation Comment Specification, which states that property
+    // references should resolve to the conceptual property (the field) rather
+    // than the getter.
+    // expect(result.element, equals(xField.element));
+
+    // Dartdoc currently prefers resolving to the getter for properties in
+    // scope.
+    expect(result.element, equals(xField.getter!.element));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Primary Constructor Body (this block)
+  // ---------------------------------------------------------------------------
+
+  void test_primaryConstructorBody_documentation() async {
+    var library = await bootPackageWithLibrary('''
+class C(int x) {
+  /// Docs for the primary constructor.
+  this;
+}
+''');
+
+    var c = library.classes.named('C');
+    var constructor = c.constructors.first;
+
+    expect(constructor.documentation,
+        contains('Docs for the primary constructor.'));
+  }
+
+  void test_primaryConstructorBody_commentReference() async {
+    var library = await bootPackageWithLibrary('''
+class C(int x) {
+  /// Points to [x].
+  this;
+}
+''');
+
+    var c = library.classes.named('C');
+    var constructor = c.constructors.first;
+    var xParam = constructor.parameters.first;
+
+    var result = referenceLookup(constructor, 'x').referable as ModelElement;
+    expect(result.element, equals(xParam.element));
   }
 }
