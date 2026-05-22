@@ -49,7 +49,6 @@ abstract class DartdocTestBase {
 
   List<String> get experiments => [
         'enhanced-parts',
-        'wildcard-variables',
         'primary-constructors',
       ];
 

@@ -30,9 +30,7 @@ class Derived(super.x, super.y, super.z) extends C;
 ''');
 
     var c = library.classes.named('C');
-    expect(c.instanceFields.any((f) => f.name == 'x'), isTrue);
-    expect(c.instanceFields.any((f) => f.name == 'y'), isTrue);
-    expect(c.instanceFields.any((f) => f.name == 'z'), isFalse);
+    expect(c.declaredFields.map((f) => f.name), unorderedEquals(['x', 'y']));
 
     // Verify 'x' is not a newly induced field in the subclass
     var derived = library.classes.named('Derived');
