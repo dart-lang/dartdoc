@@ -183,8 +183,8 @@ extension type Id(
   // ---------------------------------------------------------------------------
 
   @FailingTest(
-      reason: 'dartdoc currently resolves primary constructor parameters'
-          ' from class-level comments')
+      reason: 'dartdoc currently resolves primary constructor parameters '
+          'from class-level comments')
   void test_metadata_commentReference_nonDeclaring() async {
     var library = await bootPackageWithLibrary('''
 /// Points to [x].
