@@ -262,6 +262,35 @@ class Derived(super.x) extends Base;
   }
 
   // ---------------------------------------------------------------------------
+  // Private Named Parameters
+  // ---------------------------------------------------------------------------
+
+  void test_privateNamedParameter_becomesPublic() async {
+    var library = await bootPackageWithLibrary(
+      '''
+// @dart=3.12
+class C({
+     /// Points to [_name].
+    required var String _name
+});
+''',
+      libraryPreamble: '// @dart=3.12',
+    );
+
+    var c = library.classes.named('C');
+
+    var field = c.instanceFields.named('_name');
+    expect(field.isPublic, isFalse);
+
+    var constructor = c.constructors.first;
+    var parameter = constructor.parameters.first;
+    expect(parameter.documentedName, equals('name')); // Parameter is public
+
+    var result = referenceLookup(c, '_name').referable as ModelElement;
+    expect(result.element, equals(field.element));
+  }
+
+  // ---------------------------------------------------------------------------
   // Primary Constructor Body (this block)
   // ---------------------------------------------------------------------------
 
