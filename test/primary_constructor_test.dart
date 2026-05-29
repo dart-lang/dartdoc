@@ -323,4 +323,47 @@ class C(int x) {
     var result = referenceLookup(constructor, 'x').referable as ModelElement;
     expect(result.element, equals(xParam.element));
   }
+
+  // ---------------------------------------------------------------------------
+  // Abbreviated Constructors
+  // ---------------------------------------------------------------------------
+
+  void test_secondaryConstructors_new() async {
+    var library = await bootPackageWithLibrary('''
+class MyClass {
+  const new();
+  new name();
+  new redir(): this.name();
+}
+''');
+
+    var c = library.classes.named('MyClass');
+    expect(
+      c.constructors.map((cons) => cons.name),
+      unorderedEquals([
+        'MyClass.new',
+        'MyClass.name',
+        'MyClass.redir',
+      ]),
+    );
+  }
+
+  void test_secondaryConstructors_factory() async {
+    var library = await bootPackageWithLibrary(
+      '''
+class MyClass {
+  const new();
+  factory fact() => .new();
+  const factory redirFact() = MyClass;
+}
+''',
+      libraryPreamble: '// @dart=3.12',
+    );
+
+    var c = library.classes.named('MyClass');
+    expect(
+      c.constructors.map((cons) => cons.name),
+      unorderedEquals(['MyClass.new', 'MyClass.fact', 'MyClass.redirFact']),
+    );
+  }
 }
