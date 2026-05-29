@@ -268,7 +268,6 @@ class Derived(super.x) extends Base;
   void test_privateNamedParameter_becomesPublic() async {
     var library = await bootPackageWithLibrary(
       '''
-// @dart=3.12
 class C({
      /// Points to [_name].
     required var String _name
