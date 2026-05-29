@@ -33,8 +33,14 @@ class Derived(super.x, super.y, super.z) extends C;
     var c = library.classes.named('C');
     expect(c.declaredFields.map((f) => f.name), unorderedEquals(['x', 'y']));
 
+    expect(c.instanceFields.named('x').isFinal, isFalse);
+    expect(c.instanceFields.named('y').isFinal, isTrue);
+
     // Verify 'x' is not a newly induced field in the subclass
     var derived = library.classes.named('Derived');
+    expect(
+        derived.instanceFields.map((f) => f.name), containsAll(['x', 'y']));
+
     expect(derived.declaredFields.any((f) => f.name == 'x'), isFalse);
     var constructor = derived.constructors.first;
     expect(constructor.parameters.any((p) => p.name == 'x'), isTrue);
@@ -322,6 +328,19 @@ class C(int x) {
 
     var result = referenceLookup(constructor, 'x').referable as ModelElement;
     expect(result.element, equals(xParam.element));
+  }
+
+  void test_primaryConstructorBody_annotations() async {
+    var library = await bootPackageWithLibrary('''
+class C(int x) {
+  @deprecated
+  this;
+''');
+
+    var c = library.classes.named('C');
+    var constructor = c.constructors.first;
+
+    expect(constructor.isDeprecated, isTrue);
   }
 
   // ---------------------------------------------------------------------------
