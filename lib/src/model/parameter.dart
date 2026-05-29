@@ -34,8 +34,6 @@ class Parameter extends ModelElement with HasNoPage {
 
   @override
   String? get documentedName {
-    // TODO(rnystrom): Allow private named declaring parameters in primary
-    // constructors here too.
     if (element case FieldFormalParameterElement(privateName: _?)) {
       return element.name;
     }
