@@ -320,15 +320,17 @@ class MyClass {
     );
   }
 
-  @FailingTest(reason: 'https://github.com/dart-lang/sdk/issues/63458')
   void test_secondaryConstructors_factory() async {
-    var library = await bootPackageWithLibrary('''
+    var library = await bootPackageWithLibrary(
+      '''
 class MyClass {
   const new();
   factory fact() => .new();
   const factory redirFact() = MyClass;
 }
-''');
+''',
+      libraryPreamble: '// @dart=3.12',
+    );
 
     var c = library.classes.named('MyClass');
     expect(
