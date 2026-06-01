@@ -335,6 +335,7 @@ class C(int x) {
 class C(int x) {
   @deprecated
   this;
+}
 ''');
 
     var c = library.classes.named('C');
