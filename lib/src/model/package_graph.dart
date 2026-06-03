@@ -526,8 +526,8 @@ class PackageGraph with Referable {
   ///
   /// [alreadyTagged] is used internall to prevent visiting in cycles.
   void _tagExportsFor(
-    final Library publicLibrary,
-    final LibraryElement libraryElement, {
+    Library publicLibrary,
+    LibraryElement libraryElement, {
     Set<(Library, LibraryElement)>? alreadyTagged,
   }) {
     alreadyTagged ??= {};
