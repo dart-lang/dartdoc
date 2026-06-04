@@ -71,7 +71,7 @@ void main(List<String> args) async {
       for (var mIndex = 1; mIndex <= methodCount; mIndex++) {
         content.write('  void m$methodCounter(');
         content.write(
-            List.generate(parameterCount, (var pIndex) => 'int p$pIndex')
+            List.generate(parameterCount, (pIndex) => 'int p$pIndex')
                 .join(', '));
         content.writeln(') {}');
         methodCounter++;
