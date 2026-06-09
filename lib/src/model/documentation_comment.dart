@@ -339,7 +339,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   ///
   /// Syntax:
   ///
-  ///     &#123;@example <path> [lang=LANGUAGE] [indent=keep|strip]&#125;
+  ///     &#123;@example <path>[#<region>] [lang=LANGUAGE] [indent=keep|strip]&#125;
   ///
   /// The `path` is resolved relative to the current file's path, using the
   /// package's root as the root path;
@@ -347,6 +347,18 @@ mixin DocumentationComment implements Warnable, SourceCode {
   ///
   /// The file content is processed as follows:
   /// - Line endings are normalized to `\n`.
+  /// - If a `#<region>` is specified in the path, only the content within that
+  ///   region is extracted. A region is defined by `// #region <region>` and
+  ///   `// #endregion`. Region markers are stripped.
+  /// - Lines containing a `#hide` marker are entirely omitted from the
+  ///   extracted output. This is useful for hiding setup, or assertions, or
+  ///   other code that is necessary for the example to compile but
+  ///   irrelevant to the documentation (e.g., `exit(0); // #hide`).
+  /// - Region extraction uses a best effort approach: if there are unmatched
+  ///   closing tags or unclosed regions, the code is extracted based on the
+  ///   stack ordering and emit a warning for the structural error.
+  /// - If no region is specified, the entire file is included and no markers
+  ///   are stripped.
   /// - If `indent` is `strip` (the default), common indentation is removed from
   ///   all lines. Whitespace-only lines are ignored for calculation and
   ///   normalized to empty lines.
@@ -361,6 +373,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// Example:
   ///
   ///     &#123;@example /examples/my_example.dart&#125;
+  ///     &#123;@example /examples/my_example.dart#my_region&#125;
   ///     &#123;@example ../subdir/utils.dart lang=dart indent=strip&#125;
   ///     &#123;@example ../subdir/utils.dart indent=keep&#125;
   String _injectExamples(String rawDocs) {
@@ -389,8 +402,15 @@ mixin DocumentationComment implements Warnable, SourceCode {
                 'Ignoring extra arguments: ${args.rest.skip(1).join(" ")}');
       }
 
-      var filepath = args.rest.first;
-      // TODO(zarah): Add support for regions (#region, #endregion).
+      var rawPath = args.rest.first;
+      var parsedUri = Uri.tryParse(rawPath);
+      if (parsedUri == null) {
+        warn(PackageWarning.invalidParameter,
+            message: 'Invalid path for @example directive ($rawPath)');
+        return '';
+      }
+      var targetRegion = parsedUri.hasFragment ? parsedUri.fragment : null;
+      var filepath = parsedUri.removeFragment().toString();
 
       var resolvedPath = resolveExamplePath(
         filepath,
@@ -418,6 +438,32 @@ mixin DocumentationComment implements Warnable, SourceCode {
       // Normalize line endings to \n.
       content = content.replaceAll(_lineEndingRegExp, '\n');
 
+      var lines = content.split('\n');
+
+      // Extract the region and filter markers before touching the indentation
+      if (targetRegion != null && targetRegion.isNotEmpty) {
+        var extractedLines = _extractRegion(
+          lines,
+          targetRegion,
+          filepath: filepath,
+          warn: warn,
+        );
+
+        if (extractedLines == null) {
+          warn(PackageWarning.missingExampleRegion,
+              message: '$filepath#$targetRegion');
+          return '';
+        }
+
+        lines = extractedLines;
+      }
+
+      if (lines.isEmpty) {
+        return '```$language\n```';
+      }
+
+      content = lines.join('\n');
+
       if (indent == 'strip') {
         content = _stripIndentation(content, warn);
       }
@@ -425,7 +471,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
       // Ensure the content ends with exactly one newline before the closing fence.
       var trailing = content.endsWith('\n') ? '' : '\n';
 
-      return '\n```$language\n$content$trailing```\n';
+      return '```$language\n$content$trailing```';
     });
   }
 
@@ -1146,4 +1192,96 @@ mixin DocumentationComment implements Warnable, SourceCode {
 
   static final _canonicalForRegExp =
       RegExp(r'[ ]*{@canonicalFor\s([^}]+)}[ ]*\n?');
+
+  /// Extracts the lines for the specified [targetRegion] and removes any
+  /// lines containing `#hide`, `#region`, or `#endregion` markers.
+  /// Validates that all regions are properly opened and closed.
+  ///
+  /// Uses a best effort stack-based approach: if there is a structural error
+  /// (like an extra `#endregion` or an unclosed region), it emits a warning
+  /// but still attempts to extract the code based on the innermost active
+  /// region.
+  ///
+  /// Returns `null` if the target region was never found.
+  static List<String>? _extractRegion(
+    List<String> lines,
+    String targetRegion, {
+    required String filepath,
+    required void Function(PackageWarning, {String? message}) warn,
+  }) {
+    // Defines standard comment markers.
+    // Uses a negative lookbehind `(?<!:)` on the `//` marker to prevent
+    // false positives in URLs (like http://) while still allowing
+    // marker styles like `exit(0);// #hide`.
+    const commentTokens = r'(?:(?<!:)//|#|/\*|--|<!--)';
+
+    // Matches `#region <name>` anywhere in the line, preceded by a comment,
+    // and captures the region name.
+    final regionStartPattern = RegExp(
+      commentTokens + r'.*#region\s+(\S+)',
+      caseSensitive: false,
+    );
+
+    // Matches #endregion anywhere in the line. Any name after it is ignored,
+    // so both "// #endregion" and "// #endregion foo" are valid.
+    final regionEndPattern = RegExp(
+      commentTokens + r'.*#endregion\b',
+      caseSensitive: false,
+    );
+
+    final hidePattern = RegExp(
+      commentTokens + r'.*#hide\b',
+      caseSensitive: false,
+    );
+
+    final result = <String>[];
+    final regionStack = <String>[];
+    var regionFound = false;
+
+    for (var i = 0; i < lines.length; i++) {
+      final line = lines[i];
+      final lineNumber = i + 1;
+
+      final startMatch = regionStartPattern.firstMatch(line);
+      if (startMatch != null) {
+        final regionName = startMatch.group(1)!;
+        regionStack.add(regionName);
+
+        if (regionName == targetRegion) {
+          regionFound = true;
+        }
+        continue;
+      }
+
+      if (regionEndPattern.hasMatch(line)) {
+        if (regionStack.isEmpty) {
+          warn(
+            PackageWarning.invalidParameter,
+            message:
+                'Found #endregion without a matching #region in $filepath at line $lineNumber.',
+          );
+        } else {
+          regionStack.removeLast();
+        }
+        continue;
+      }
+
+      if (hidePattern.hasMatch(line)) {
+        continue;
+      }
+      if (regionStack.contains(targetRegion)) {
+        result.add(line);
+      }
+    }
+
+    if (regionStack.isNotEmpty) {
+      warn(
+        PackageWarning.invalidParameter,
+        message:
+            'Unclosed #region(s) found in $filepath: ${regionStack.join(', ')}',
+      );
+    }
+
+    return regionFound ? result : null;
+  }
 }
