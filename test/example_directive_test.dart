@@ -475,30 +475,33 @@ void main() {
 ```'''));
   }
 
-  void test_processesExampleDirective_region_ignoresFalsePositives() async {
+  void test_processesExampleDirective_region_languageAgnosticMarkers() async {
     await _bootPackage('''
     /// {@example /examples/hello.dart#main} ''', files: {
       'examples/hello.dart': '''
-// #region main
+#region main
 void main() {
-  var url = "http://example.com/api#hide";
-  var regionText = "#region nested";
-  var endText = "#endregion";
+  <!-- #region nested -->
+  print('hello HTML!');
+  <!-- #endregion -->
+
+  var sql = "-- #hide";
+  var python = "# #region python_style";
+  var pythonEnd = "# #endregion";
 }
-// #endregion main''',
+#endregion main''',
     });
 
     var doc = await libraryModel.processComment();
 
     expectNoWarnings();
-    // Verify that strings containing the marker keywords are not stripped,
-    // because they are not preceded by a valid comment marker (like //).
+    // Verify that markers are stripped regardless of the comment style
+    // (or lack thereof) preceding them, making them language-agnostic.
     expect(doc, equals('''
 ```dart
 void main() {
-  var url = "http://example.com/api#hide";
-  var regionText = "#region nested";
-  var endText = "#endregion";
+  print('hello HTML!');
+
 }
 ```'''));
   }

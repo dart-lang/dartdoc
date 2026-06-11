@@ -348,8 +348,8 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// The file content is processed as follows:
   /// - Line endings are normalized to `\n`.
   /// - If a `#<region>` is specified in the path, only the content within that
-  ///   region is extracted. A region is defined by `// #region <region>` and
-  ///   `// #endregion`. Region markers are stripped.
+  ///   region is extracted. A region is defined by `#region <region>` and
+  ///   `#endregion`. Lines containing region markers are stripped.
   /// - Lines containing a `#hide` marker are entirely omitted from the
   ///   extracted output. This is useful for hiding setup, or assertions, or
   ///   other code that is necessary for the example to compile but
@@ -454,7 +454,6 @@ mixin DocumentationComment implements Warnable, SourceCode {
               message: '$filepath#$targetRegion');
           return '';
         }
-
         lines = extractedLines;
       }
 
@@ -1193,8 +1192,16 @@ mixin DocumentationComment implements Warnable, SourceCode {
   static final _canonicalForRegExp =
       RegExp(r'[ ]*{@canonicalFor\s([^}]+)}[ ]*\n?');
 
-  /// Extracts the lines for the specified [targetRegion] and removes any
-  /// lines containing `#hide`, `#region`, or `#endregion` markers.
+  /// Extracts the lines for the specified [targetRegion], retaining only the
+  /// content within the matching `#region` and `#endregion` boundaries.
+  ///
+  /// Any lines containing `#region`, `#endregion`, or `#hide` markers are
+  /// stripped and completely omitted from the result.
+  ///
+  /// The markers do not need to be within a code comment. Any line
+  /// containing `#region <name>`, `#endregion`, or `#hide` will be matched
+  /// and stripped.
+  ///
   /// Validates that all regions are properly opened and closed.
   ///
   /// Uses a best effort stack-based approach: if there is a structural error
@@ -1209,28 +1216,22 @@ mixin DocumentationComment implements Warnable, SourceCode {
     required String filepath,
     required void Function(PackageWarning, {String? message}) warn,
   }) {
-    // Defines standard comment markers.
-    // Uses a negative lookbehind `(?<!:)` on the `//` marker to prevent
-    // false positives in URLs (like http://) while still allowing
-    // marker styles like `exit(0);// #hide`.
-    const commentTokens = r'(?:(?<!:)//|#|/\*|--|<!--)';
-
-    // Matches `#region <name>` anywhere in the line, preceded by a comment,
-    // and captures the region name.
+    // Matches `#region` followed by spaces/tabs (no newlines), and captures
+    // the name (any characters up to the next whitespace or newline).
     final regionStartPattern = RegExp(
-      commentTokens + r'.*#region\s+(\S+)',
+      r'#region[ \t]+([^\s]+)',
       caseSensitive: false,
     );
 
-    // Matches #endregion anywhere in the line. Any name after it is ignored,
-    // so both "// #endregion" and "// #endregion foo" are valid.
+    // Matches `#endregion` anywhere in the line. Any name after it is ignored.
     final regionEndPattern = RegExp(
-      commentTokens + r'.*#endregion\b',
+      r'#endregion\b',
       caseSensitive: false,
     );
 
+    // Matches `#hide` anywhere in the line.
     final hidePattern = RegExp(
-      commentTokens + r'.*#hide\b',
+      r'#hide\b',
       caseSensitive: false,
     );
 
@@ -1269,6 +1270,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
       if (hidePattern.hasMatch(line)) {
         continue;
       }
+
       if (regionStack.contains(targetRegion)) {
         result.add(line);
       }
