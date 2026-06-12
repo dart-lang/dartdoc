@@ -1219,7 +1219,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
     // Matches `#region` followed by spaces/tabs (no newlines), and captures
     // the name (any characters up to the next whitespace or newline).
     final regionStartPattern = RegExp(
-      r'#region[ \t]+([^\s]+)',
+      r'#region[ \t]+(\S+)',
       caseSensitive: false,
     );
 
