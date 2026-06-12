@@ -36,9 +36,9 @@ void main() {
     var file = pathSegments.removeAt(pathSegments.length - 1);
     var directory = projectRoot;
     for (var d in pathSegments) {
-      directory = directory.getChildAssumingFolder(d);
+      directory = directory.getFolder(d);
     }
-    directory.getChildAssumingFile(file).writeAsStringSync(content);
+    directory.getFile(file).writeAsStringSync(content);
   }
 
   setUp(() async {
@@ -61,10 +61,7 @@ void main() {
         optionSet.parseArguments([]);
         projectRoot = utils.writePackage(packageName, resourceProvider);
         projectPath = projectRoot.path;
-        projectRoot
-            .getChildAssumingFolder('lib')
-            .getChildAssumingFile('a.dart')
-            .writeAsStringSync('''
+        projectRoot.getFolder('lib').getFile('a.dart').writeAsStringSync('''
 /// Documentation comment.
 int x;
 ''');
@@ -249,8 +246,8 @@ library bar;
         optionSet.parseArguments(['--link-to-remote']);
         packageOneRoot = utils.writePackage('one', resourceProvider);
         packageOneRoot
-            .getChildAssumingFolder('lib')
-            .getChildAssumingFile('one.dart')
+            .getFolder('lib')
+            .getFile('one.dart')
             .writeAsStringSync('''
 /// Documentation comment.
 library one;
@@ -259,10 +256,10 @@ class One {}
 int topLevelVariable = 0;
 typedef MyTypedef = void Function();
 ''');
-        packageOneRoot.getChildAssumingFolder('bin').create();
+        packageOneRoot.getFolder('bin').create();
         packageOneRoot
-            .getChildAssumingFolder('bin')
-            .getChildAssumingFile('script.dart')
+            .getFolder('bin')
+            .getFile('script.dart')
             .writeAsStringSync('''
 /// Documentation comment.
 library script;
@@ -273,8 +270,8 @@ class Script {}
         packageTwoRoot = utils.writePackage('two', resourceProvider,
             dependencies: {'one': packageOneRoot.path});
         packageTwoRoot
-            .getChildAssumingFolder('lib')
-            .getChildAssumingFile('two.dart')
+            .getFolder('lib')
+            .getFile('two.dart')
             .writeAsStringSync('''
 /// Documentation comment.
 library two;
@@ -286,9 +283,7 @@ class Two extends One {}
 
       test('includes remote elements when linkTo -> url is specified',
           () async {
-        packageOneRoot
-            .getChildAssumingFile('dartdoc_options.yaml')
-            .writeAsStringSync('''
+        packageOneRoot.getFile('dartdoc_options.yaml').writeAsStringSync('''
 dartdoc:
   linkTo:
     url: 'https://mypub.topdomain/%n%/%v%'
@@ -310,16 +305,14 @@ dartdoc:
       });
 
       test('includes remote elements for re-exported symbols', () async {
-        packageOneRoot
-            .getChildAssumingFile('dartdoc_options.yaml')
-            .writeAsStringSync('''
+        packageOneRoot.getFile('dartdoc_options.yaml').writeAsStringSync('''
 dartdoc:
   linkTo:
     url: 'https://mypub.topdomain/%n%/%v%'
 ''');
         packageTwoRoot
-            .getChildAssumingFolder('lib')
-            .getChildAssumingFile('two.dart')
+            .getFolder('lib')
+            .getFile('two.dart')
             .writeAsStringSync('''
 /// Documentation comment.
 library two;
@@ -496,12 +489,12 @@ int x;
         for (var name in names) {
           var root = utils.writePackage(name, resourceProvider);
           root
-              .getChildAssumingFolder('lib')
-              .getChildAssumingFile('$name.dart')
+              .getFolder('lib')
+              .getFile('$name.dart')
               .writeAsStringSync('var a = 1;');
           defaultPackageRoot
-              .getChildAssumingFolder('lib')
-              .getChildAssumingFile('$name.dart')
+              .getFolder('lib')
+              .getFile('$name.dart')
               .writeAsStringSync('''
 import 'package:$name/$name.dart';
 var b = a;

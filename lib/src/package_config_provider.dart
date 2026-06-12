@@ -32,9 +32,8 @@ package_config.PackageConfig? findPackageConfig(Folder folder) {
 /// [`findPackageConfigInDirectory`](https://github.com/dart-lang/tools/blob/52cc9b5bb10e2293a094678815c2b4d13b1a3acf/pkgs/package_config/lib/src/discovery.dart#L119C24-L119C52).
 /// with `checkForPackageConfigJsonFile` inlined.
 package_config.PackageConfig? findPackageConfigInDirectory(Folder folder) {
-  var packageConfigFile = folder
-      .getChildAssumingFolder('.dart_tool')
-      .getChildAssumingFile('package_config.json');
+  var packageConfigFile =
+      folder.getFolder('.dart_tool').getFile('package_config.json');
 
   if (!packageConfigFile.exists) return null;
 

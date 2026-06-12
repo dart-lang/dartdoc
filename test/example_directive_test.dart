@@ -43,11 +43,9 @@ class ExampleDirectiveTest extends DocumentationCommentTestBase {
     var currentFolder = projectRoot;
     for (var i = 0; i < pathParts.length - 1; i++) {
       if (pathParts[i].isEmpty) continue;
-      currentFolder = currentFolder.getChildAssumingFolder(pathParts[i]);
+      currentFolder = currentFolder.getFolder(pathParts[i]);
     }
-    currentFolder
-        .getChildAssumingFile(pathParts.last)
-        .writeAsStringSync(content);
+    currentFolder.getFile(pathParts.last).writeAsStringSync(content);
   }
 
   void test_processesExampleDirective() async {
