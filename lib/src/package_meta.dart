@@ -267,9 +267,8 @@ class _FilePackageMeta extends PubPackageMeta {
   final Map<dynamic, dynamic> _pubspec;
 
   _FilePackageMeta(super.dir, super.resourceProvider)
-      : _pubspec = loadYaml(
-                dir.getChildAssumingFile('pubspec.yaml').readAsStringSync())
-            as YamlMap;
+      : _pubspec =
+            loadYaml(dir.getFile('pubspec.yaml').readAsStringSync()) as YamlMap;
 
   @override
   late final String? hostedAt = () {

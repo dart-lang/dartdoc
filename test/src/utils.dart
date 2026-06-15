@@ -148,8 +148,8 @@ PackageMetaProvider get testPackageMetaProvider {
 ///
 /// Included is a "version" file and an "api_readme.md" file.
 void writeMockSdkFiles(Folder sdkFolder) {
-  sdkFolder.getChildAssumingFile('version').writeAsStringSync('3.10.6');
-  sdkFolder.getChildAssumingFile('api_readme.md').writeAsStringSync(
+  sdkFolder.getFile('version').writeAsStringSync('3.10.6');
+  sdkFolder.getFile('api_readme.md').writeAsStringSync(
       'Welcome to the [Dart](https://dart.dev/) API reference documentation');
 
   _writeMockSdkBinFiles(sdkFolder);
@@ -158,10 +158,10 @@ void writeMockSdkFiles(Folder sdkFolder) {
 /// Dartdoc has a few indicator files it uses to verify that a directory
 /// represents a Dart SDK. These include "bin/dart" and "bin/pub".
 void _writeMockSdkBinFiles(Folder root) {
-  var sdkBinFolder = root.getChildAssumingFolder('bin');
-  sdkBinFolder.getChildAssumingFile('dart').writeAsStringSync('');
-  var sdkIncludeFolder = root.getChildAssumingFolder('include');
-  sdkIncludeFolder.getChildAssumingFile('dart_version.h').writeAsStringSync('');
+  var sdkBinFolder = root.getFolder('bin');
+  sdkBinFolder.getFile('dart').writeAsStringSync('');
+  var sdkIncludeFolder = root.getFolder('include');
+  sdkIncludeFolder.getFile('dart_version.h').writeAsStringSync('');
 }
 
 /// Writes a package named [packageName], with [resourceProvider], to the
@@ -183,10 +183,10 @@ homepage: https://github.com/dart-lang
   var pathContext = resourceProvider.pathContext;
   var projectsFolder = resourceProvider.getFolder(pathContext.canonicalize(
       ResourceProviderExtension(resourceProvider).convertPath('/projects')));
-  var projectFolder = projectsFolder.getChildAssumingFolder(packageName)
+  var projectFolder = projectsFolder.getFolder(packageName)
     ..create();
   projectFolder
-      .getChildAssumingFile('pubspec.yaml')
+      .getFile('pubspec.yaml')
       .writeAsStringSync(pubspecContent);
   var buffer = StringBuffer('''
 {
@@ -217,10 +217,10 @@ homepage: https://github.com/dart-lang
 }
 ''');
   projectFolder
-      .getChildAssumingFolder('.dart_tool')
-      .getChildAssumingFile('package_config.json')
+      .getFolder('.dart_tool')
+      .getFile('package_config.json')
       .writeAsStringSync(buffer.toString());
-  projectFolder.getChildAssumingFolder('lib').create();
+  projectFolder.getFolder('lib').create();
 
   return projectFolder;
 }

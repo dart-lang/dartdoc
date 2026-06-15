@@ -1,3 +1,6 @@
+## 9.0.6-wip
+* Require analyzer 13.0.2 APIs.
+
 ## 9.0.5
 * Cache `ElementType` instantiations in `PackageGraph`, improving overall
   speed by ~6.2% on large packages.
