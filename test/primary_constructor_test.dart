@@ -38,8 +38,7 @@ class Derived(super.x, super.y, super.z) extends C;
 
     // Verify 'x' is not a newly induced field in the subclass
     var derived = library.classes.named('Derived');
-    expect(
-        derived.instanceFields.map((f) => f.name), containsAll(['x', 'y']));
+    expect(derived.instanceFields.map((f) => f.name), containsAll(['x', 'y']));
 
     expect(derived.declaredFields.any((f) => f.name == 'x'), isFalse);
     var constructor = derived.constructors.first;
@@ -150,6 +149,33 @@ class C(
     expect(c.instanceFields.named('y').documentation, contains('Doc for y.'));
     expect(c.instanceFields.named('z').isDeprecated, isTrue);
     expect(c.constructors.first.parameters.named('z').isDeprecated, isTrue);
+  }
+
+  void test_metadata_propagation_override_filtered_on_parameter() async {
+    var library = await bootPackageWithLibrary('''
+class Base {
+  int get x => 0;
+}
+
+class C(
+  /// We are overriding [x].
+  @override
+  var int x
+) extends Base;
+''');
+
+    var c = library.classes.named('C');
+    var xField = c.instanceFields.named('x');
+    var xParam =
+        c.constructors.first.parameters.firstWhere((p) => p.name == 'x');
+
+    expect(xField.hasAnnotations, isTrue);
+    var annotation = xField.annotations.single;
+    expect(annotation.linkedName, contains('override'));
+
+    // Dartdoc should filter out @override from the parameter's annotations list
+    // because it is not applicable on a parameter.
+    expect(xParam.hasAnnotations, isFalse);
   }
 
   void test_metadata_propagation_enum() async {

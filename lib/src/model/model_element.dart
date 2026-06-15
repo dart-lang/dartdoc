@@ -383,7 +383,8 @@ abstract class ModelElement
   late final List<Annotation> annotations = List.unmodifiable([
     if (library case var library?)
       for (var m in element.metadata.annotations)
-        if (m.isVisibleAnnotation) Annotation(m, library, packageGraph)
+        if (m.isVisibleAnnotation && (m.isValidAtElement(element) ?? true))
+          Annotation(m, library, packageGraph)
   ]);
 
   @override
