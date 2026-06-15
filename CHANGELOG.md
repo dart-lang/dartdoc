@@ -1,5 +1,9 @@
-## 9.0.5-wip
-
+## 9.0.5
+* Cache `ElementType` instantiations in `PackageGraph`, improving overall
+  speed by ~6.2% on large packages.
+* Fix canonicalization for explicit top-level getters and prioritize
+  `{@canonicalFor}` tags over the local public library shortcut.
+* Fix link generation for remote and re-exported symbols
 * Require analyzer 12.0.0 APIs.
 
 
