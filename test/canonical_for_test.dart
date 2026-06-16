@@ -89,6 +89,34 @@ void someFunc() {}
     expect(someFunc.href, contains('b_canonical/someFunc.html'));
   }
 
+  /// Tests that @canonicalFor matches the unqualified name that is exported.
+  Future<void> test_canonicalFor_matchesUnqualifiedName() async {
+    var packageGraph = await bootPackageFromFiles([
+      d.file('lib/other.dart', '''
+void someFunc();
+void otherFunc();
+'''),
+      d.file('lib/a_first.dart', '''
+export 'src/internal.dart';
+'''),
+      d.file('lib/b_canonical.dart', '''
+/// {@canonicalFor b_canonical.someFunc}
+library b_canonical;
+export 'src/internal.dart';
+export 'other.dart' show otherFunc; // Hiding other.dart's someFunc.
+'''),
+      d.file('lib/src/internal.dart', '''
+void someFunc() {}
+'''),
+    ]);
+
+    var bCanonical = packageGraph.libraries.named('b_canonical');
+    var someFunc = bCanonical.functions.named('someFunc');
+
+    expect(someFunc.canonicalLibrary, equals(bCanonical));
+    expect(someFunc.href, contains('b_canonical/someFunc.html'));
+  }
+
   /// Tests that @canonicalFor suggests close matches when a library name is wrong.
   Future<void> test_canonicalFor_suggestsMatches() async {
     var packageGraph = await bootPackageFromFiles([

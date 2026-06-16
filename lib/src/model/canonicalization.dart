@@ -13,7 +13,28 @@ const int _separatorChar = 0x3B;
 Library? canonicalLibraryCandidate(ModelElement modelElement) {
   var libraryElement = modelElement.element.library;
   if (libraryElement == null) return null;
-  var libraryExports = modelElement.packageGraph.libraryExports[libraryElement];
+  var libraryExports = modelElement.packageGraph.libraryExports[libraryElement]
+      ?.where((library) {
+    // If element is a member, find its toplevel enclosing declaration,
+    // to see if that's exported by the library.
+    var publicElement = modelElement;
+    while (true) {
+      if (publicElement.enclosingElement case final enclosing?
+          when enclosing is! Library) {
+        publicElement = enclosing;
+      } else {
+        break;
+      }
+    }
+    var exportedElement =
+        library.element.exportNamespace.get2(publicElement.name);
+    if (exportedElement is PropertyAccessorElement) {
+      // Even if original declaration.
+      exportedElement = exportedElement.variable;
+    }
+    return exportedElement == _normalize(publicElement.element);
+  }).toList();
+
   var definingLibrary =
       modelElement.packageGraph.findButDoNotCreateLibraryFor(libraryElement);
   var candidateList = {
@@ -135,9 +156,8 @@ final class _Canonicalization {
         : _modelElement.fullyQualifiedName;
     var scoredCandidates = libraries
         .map((library) => _scoreElementWithLibrary(
-            library, elementQualifiedName, locationPieces,
-            elementQualifiedNameInLibrary:
-                '${library.name}.${_modelElement.qualifiedName}',
+            library,
+            _modelElement.qualifiedName, elementQualifiedName, locationPieces,
             preferredPackage: _modelElement.library?.package,
             preferredLibraryName: _modelElement.element.library?.name,
             preferredLibrary: _modelElement.element.library))
@@ -168,8 +188,9 @@ final class _Canonicalization {
   // package names, etc. Anyways, add more tests, in addition to the
   // `StringName` tests in `model_test.dart`.
   static _ScoredCandidate _scoreElementWithLibrary(Library library,
+      String elementName,
       String elementQualifiedName, Set<String> elementLocationPieces,
-      {required String elementQualifiedNameInLibrary,
+      {
       Package? preferredPackage,
       String? preferredLibraryName,
       LibraryElement? preferredLibrary}) {
@@ -177,8 +198,9 @@ final class _Canonicalization {
 
     // Large boost for `@canonicalFor`, essentially overriding all other
     // concerns.
-    if (library.canonicalFor.contains(elementQualifiedNameInLibrary) ||
-        library.canonicalFor.contains(elementQualifiedName)) {
+    if (library.canonicalFor.contains('${library.name}.$elementName') ||
+        library.canonicalFor.contains(elementQualifiedName) ||
+        library.canonicalFor.contains(elementName)) {
       scoredCandidate._alterScore(10.0, _Reason.canonicalFor);
     }
 

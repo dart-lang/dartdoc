@@ -92,8 +92,9 @@ When that heuristic needs to be overridden, a user can use this directive.
 Example:
 
 ```none
-/// {@canonicalFor some_library.SomeClass}
+/// {@canonicalFor [some_library.]SomeName}
 ```
 
 When this directive is used on a library's doc comment, that library is marked
-as the canonical library for `some_library.SomeClass`.
+as the canonical library for `some_library.SomeName`. If `some_library` is
+omitted, the declaration is the one of that name exported by the current library.
