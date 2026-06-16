@@ -64,11 +64,11 @@ abstract class ElementType with Referable {
 
   @override
   String get displayName =>
-      throw UnimplementedError('Not implmeneted by ElementType');
+      throw UnimplementedError('Not implemented by ElementType');
 
   @override
   String get breadcrumbName =>
-      throw UnimplementedError('Not implmeneted by ElementType');
+      throw UnimplementedError('Not implemented by ElementType');
 
   Iterable<ElementType> get typeArguments;
 
