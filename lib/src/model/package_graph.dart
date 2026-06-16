@@ -477,6 +477,7 @@ class PackageGraph with Referable {
       PackageWarning.internalError ||
       PackageWarning.missingFromSearchIndex ||
       PackageWarning.missingExampleFile ||
+      PackageWarning.missingExampleRegion ||
       PackageWarning.typeAsHtml ||
       PackageWarning.invalidParameter ||
       PackageWarning.toolError ||

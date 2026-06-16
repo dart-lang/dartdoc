@@ -65,11 +65,9 @@ class ExampleDirectiveTest extends DocumentationCommentTestBase {
     expect(doc, equals('''
 Text.
 
-
 ```dart
 void main() => print("hello");
 ```
-
 
 End text.'''));
   }
@@ -85,11 +83,9 @@ End text.'''));
 
     expectNoWarnings();
     expect(doc, equals('''
-
 ```
 hello world
-```
-'''));
+```'''));
   }
 
   void test_processesExampleDirective_withLang() async {
@@ -103,11 +99,9 @@ hello world
 
     expectNoWarnings();
     expect(doc, equals('''
-
 ```text
 hello world
-```
-'''));
+```'''));
   }
 
   void test_processesExampleDirective_withIndentKeep() async {
@@ -121,13 +115,11 @@ hello world
 
     expectNoWarnings();
     expect(doc, equals('''
-
 ```dart
   void main() {
     print("hello");
   }
-```
-'''));
+```'''));
   }
 
   void test_processesExampleDirective_inline_ignored() async {
@@ -156,13 +148,11 @@ This is an inline {@example /examples/hello.dart} directive.'''));
 
     expectNoWarnings();
     expect(doc, equals('''
-
 ```dart
 void main() {
   print("hello");
 }
-```
-'''));
+```'''));
   }
 
   void test_processesExampleDirective_withIndentStrip_mixedWhitespace() async {
@@ -180,13 +170,11 @@ void main() {
           'Example contains non-space whitespace in indentation. Indentation stripping disabled to avoid incorrect formatting.'),
     );
     expect(doc, equals('''
-
 ```dart
   space
 \ttab
   space
-```
-'''));
+```'''));
   }
 
   void test_exampleDirective_missingFile() async {
@@ -233,5 +221,286 @@ void main() {
           'The {@example} directive only takes one positional argument (the file path). '
           'Ignoring extra arguments: extra1 extra2'),
     );
+  }
+
+  void test_processesExampleDirective_region_noRegionSpecified() async {
+    await _bootPackage('''
+/// {@example /examples/hello.dart}
+''', files: {
+      'examples/hello.dart': '''
+// #region main
+void main() {
+  // #region hello
+  print('hello world');
+  // #endregion hello
+  exit(0); // force exit! #hide
+}
+// #endregion main
+''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expectNoWarnings();
+    // Verify that no markers are stripped when embedding the entire file.
+    expect(doc, equals('''
+```dart
+// #region main
+void main() {
+  // #region hello
+  print('hello world');
+  // #endregion hello
+  exit(0); // force exit! #hide
+}
+// #endregion main
+```'''));
+  }
+
+  void test_processesExampleDirective_region_extractsOuterRegion() async {
+    await _bootPackage('''
+    /// {@example /examples/hello.dart#main}
+    ''', files: {
+      'examples/hello.dart': '''
+// #region main
+void main() {
+  // #region hello
+  print('hello world');
+  // #endregion hello
+  exit(0); // force exit! #hide
+}
+// #endregion main
+''',
+    });
+    var doc = await libraryModel.processComment();
+
+    expectNoWarnings();
+// Verify it extracts the outer region and strips the nested markers and hidden
+// lines.
+    expect(doc, equals('''
+```dart
+void main() {
+  print('hello world');
+}
+```'''));
+  }
+
+  void test_processesExampleDirective_region_extractsNestedRegion() async {
+    await _bootPackage('''
+    /// {@example /examples/hello.dart#hello}
+    ''', files: {
+      'examples/hello.dart': '''
+// #region main
+void main() {
+  // #region hello
+  print('hello world');
+  // #endregion hello
+  exit(0); // force exit! #hide
+}
+// #endregion main
+''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expectNoWarnings();
+// Default indentation stripping should remove the 2 spaces from the extracted
+// block.
+    expect(doc, equals('''
+```dart
+print('hello world');
+```'''));
+  }
+
+  void test_processesExampleDirective_region_multipleSequentialRegions() async {
+    await _bootPackage('''
+    /// {@example /examples/hello.dart#first} 
+    /// 
+    /// {@example /examples/hello.dart#second}
+    ''', files: {
+      'examples/hello.dart': '''
+// #region first 
+int a = 1; 
+// #endregion first 
+// #region second 
+int b = 2; 
+// #endregion second ''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expectNoWarnings();
+    expect(doc, equals('''
+```dart
+int a = 1; 
+```
+
+```dart
+int b = 2; 
+```'''));
+  }
+
+  void test_processesExampleDirective_region_notFound() async {
+    await _bootPackage('''
+    /// {@example /examples/hello.dart#non_existent_region} ''', files: {
+      'examples/hello.dart': '''
+  // #region main 
+  void main() {} 
+  // #endregion main ''',
+    });
+
+    var doc = await libraryModel.processComment();
+    expect(
+      libraryModel,
+      hasWarning(
+        PackageWarning.missingExampleRegion,
+        '/examples/hello.dart#non_existent_region',
+      ),
+    );
+
+    expect(doc, equals(''));
+  }
+
+  void test_processesExampleDirective_region_emptyFragment() async {
+    await _bootPackage('''
+/// {@example /examples/hello.dart#}
+''', files: {
+      'examples/hello.dart': '''
+// #region main
+void main() {
+  // #region hello
+  print('hello world');
+  // #endregion hello
+  exit(0); // force exit! #hide
+}
+// #endregion main
+''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expectNoWarnings();
+    // Verify that an empty fragment is treated identically to no fragment at
+    // all, embedding the entire file without stripping any markers.
+    expect(doc, equals('''
+```dart
+// #region main
+void main() {
+  // #region hello
+  print('hello world');
+  // #endregion hello
+  exit(0); // force exit! #hide
+}
+// #endregion main
+```'''));
+  }
+
+  void test_processesExampleDirective_region_empty() async {
+    await _bootPackage('''
+    /// {@example /examples/hello.dart#empty_target} ''', files: {
+      'examples/hello.dart': '''
+          // #region main 
+          void main() {} 
+          // #endregion main 
+          // #region empty_target
+          // #endregion empty_target''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expectNoWarnings();
+    expect(doc, equals('```dart\n```'));
+  }
+
+  void test_processesExampleDirective_region_unmatchedEndRegion() async {
+    await _bootPackage('''
+    /// {@example /examples/hello.dart#main} ''', files: {
+      'examples/hello.dart': '''
+// #region main
+void main() {} 
+// #endregion 
+void f(){}
+// #endregion 
+''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expect(
+      libraryModel,
+      hasWarning(
+        PackageWarning.invalidParameter,
+        'Found #endregion without a matching #region in /examples/hello.dart at line 5.',
+      ),
+    );
+
+    // Verify that the parser used best effort to extract the first closed
+    // region and ignored the trailing code and extra marker.
+    expect(doc, equals('''
+```dart
+void main() {} 
+```'''));
+  }
+
+  void test_processesExampleDirective_region_unclosedRegion() async {
+    await _bootPackage('''
+    /// {@example /examples/hello.dart#main} ''', files: {
+      'examples/hello.dart': '''
+// #region main
+void main() {
+  // #region nested
+  print('hello');
+  // #endregion nested
+// End of file reached without closing the main tag''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expect(
+      libraryModel,
+      hasWarning(
+        PackageWarning.invalidParameter,
+        'Unclosed #region(s) found in /examples/hello.dart: main',
+      ),
+    );
+
+    // Verify that the parser used best effort to extract everything
+    // from the opening tag to the end of the file, skipping the nested marker.
+    expect(doc, equals('''
+```dart
+void main() {
+  print('hello');
+// End of file reached without closing the main tag
+```'''));
+  }
+
+  void test_processesExampleDirective_region_languageAgnosticMarkers() async {
+    await _bootPackage('''
+    /// {@example /examples/hello.dart#main} ''', files: {
+      'examples/hello.dart': '''
+#region main
+void main() {
+  <!-- #region nested -->
+  print('hello HTML!');
+  <!-- #endregion -->
+
+  var sql = "-- #hide";
+  var python = "# #region python_style";
+  var pythonEnd = "# #endregion";
+}
+#endregion main''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expectNoWarnings();
+    // Verify that markers are stripped regardless of the comment style
+    // (or lack thereof) preceding them, making them language-agnostic.
+    expect(doc, equals('''
+```dart
+void main() {
+  print('hello HTML!');
+
+}
+```'''));
   }
 }

@@ -270,6 +270,13 @@ enum PackageWarning implements Comparable<PackageWarning> {
         'An example file referenced by a dartdoc directive was not found',
   ),
 
+  missingExampleRegion(
+    'missing-example-region',
+    'example region not found: {0}',
+    shortHelp:
+        'An example region referenced by a dartdoc directive was not found',
+  ),
+
   // The message for this warning can contain many punctuation and other
   // symbols, so bracket with a triple quote for defense.
   typeAsHtml(
