@@ -525,7 +525,7 @@ class PackageGraph with Referable {
   /// Marks [publicLibrary] as a library that exports [libraryElement] and all
   /// libraries that [libraryElement] transitively exports.
   ///
-  /// [alreadyTagged] is used internall to prevent visiting in cycles.
+  /// [alreadyTagged] is used internally to prevent visiting in cycles.
   void _tagExportsFor(
     Library publicLibrary,
     LibraryElement libraryElement, {
