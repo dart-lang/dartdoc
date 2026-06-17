@@ -97,3 +97,48 @@ Example:
 
 When this directive is used on a library's doc comment, that library is marked
 as the canonical library for `some_library.SomeClass`.
+
+## {@example}
+
+Replaces the `{@example}` directive in API comments with a fenced code block containing the contents of an external file. This is a block-level directive and must appear on its own line.
+
+### Syntax
+
+```markdown
+{@example <path>[#<region>] [lang=LANGUAGE] [indent=keep|strip]}
+```
+
+*   **`<path>`**: The path to the file to inject. If the path starts with a leading `/`, it is resolved relative to the package root. Otherwise, it is resolved relative to the directory of the current file containing the directive.
+*   **`#<region>`** (Optional): A specific region of the file to extract. If omitted, the entire file is included.
+*   **`lang`** (Optional): Specifies the language for the fenced markdown code block. If not provided, it defaults to the file extension of the path.
+*   **`indent`** (Optional): How to handle indentation.
+    *   `strip` (Default): Removes common indentation from all lines. Whitespace-only lines are ignored for calculation and normalized to empty lines. If any line has non-space characters in its indentation, stripping is disabled to prevent broken formatting.
+    *   `keep`: The original indentation is left as-is.
+
+
+### Regions and Hiding Code
+
+You can extract a specific portion of an external file by defining regions and appending `#<region>` to the file path.
+
+*   A region is bounded by `#region <region>` and `#endregion` markers.
+*   When a region is targeted, any lines containing `#region`, `#endregion`, or `#hide` markers are completely omitted from the extracted output.
+*   The `#hide` marker is especially useful for hiding setup, teardown, or assertion code that is necessary for the example to compile, but is irrelevant to the documentation (e.g., `exit(0); // #hide`).
+*   **Format-Agnostic:** The markers do not need to be within a code comment. Any line containing `#region <name>`, `#endregion`, or `#hide` will be matched and stripped. This makes the feature compatible with any language (HTML, SQL, YAML, etc.).
+*   If no region is specified in the directive, the entire file is included and no markers are stripped.
+
+### Examples
+
+**Basic usage:**
+```dart
+/// {@example /examples/my_example.dart}
+```
+
+**Extracting a specific region:**
+```dart
+/// {@example /examples/my_example.dart#my_region}
+```
+
+**Overriding the language and keeping indentation:**
+```dart
+/// {@example ../subdir/utils.txt lang=dart indent=keep}
+```
