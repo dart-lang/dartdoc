@@ -198,4 +198,29 @@ String get myGetter => 'hello';
     expect(myGetter.canonicalLibrary, equals(httpServing));
     expect(myGetter.href, contains('http_serving/myGetter.html'));
   }
+
+  /// Tests that @canonicalFor works for explicit getters even when they are
+  /// re-exported and standard equality checks might fail,
+  /// also when not using the library name in the directive.
+  Future<void> test_canonicalFor_getter_reexported_noLibrary() async {
+    var packageGraph = await bootPackageFromFiles([
+      d.file('lib/google_cloud.dart', '''
+export 'http_serving.dart';
+'''),
+      d.file('lib/http_serving.dart', '''
+/// {@canonicalFor myGetter}
+library http_serving;
+export 'src/internal.dart';
+'''),
+      d.file('lib/src/internal.dart', '''
+String get myGetter => 'hello';
+'''),
+    ]);
+
+    var httpServing = packageGraph.libraries.named('http_serving');
+    var myGetter = httpServing.properties.named('myGetter');
+
+    expect(myGetter.canonicalLibrary, equals(httpServing));
+    expect(myGetter.href, contains('http_serving/myGetter.html'));
+  }
 }

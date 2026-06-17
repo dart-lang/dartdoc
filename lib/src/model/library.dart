@@ -451,27 +451,68 @@ class Library extends ModelElement with TopLevelContainer {
 
   /// Checks [canonicalFor] for correctness and warn if it refers to non-
   /// existent elements (or those that this Library can not be canonical for).
+  ///
+  /// A `{@canonicalFor name}` is valid if it's `name` or `library_name.id`
+  /// where this library exports a declaration named `name`,
+  /// and either there is no library name, the `library_name` is the name
+  /// of this library ([name]), or it's the name of the library where
+  /// the exported declaration is declared.
   void checkCanonicalForIsValid() {
-    var elementNames = _allOriginalModelElementNames;
-    var notFoundInAllModelElements = {
-      for (var elementName in canonicalFor)
-        if (!elementNames.contains(elementName)) elementName,
-    };
-    for (var notFound in notFoundInAllModelElements) {
-      var message = notFound;
-      var lastDot = notFound.lastIndexOf('.');
-      if (lastDot != -1 && lastDot < notFound.length - 1) {
-        var suffix = notFound.substring(lastDot);
-        var possibleMatches =
-            elementNames.where((name) => name.endsWith(suffix));
-        if (possibleMatches.isNotEmpty) {
-          message = '$notFound (did you mean ${possibleMatches.join(', ')}?)';
+    // Element names not exported by this library.
+    // Either the library does not export something with that name,
+    // or it exports more than one thing of that name,
+    // or doesn't export the declaration from a library with the name given
+    // in the `{@canonicalFor library_name.id}` directive.
+    var notExportedElements = <String>{};
+
+    // Helper function to check if [element] was originally declared in
+    // library with name [libraryName].
+    bool hasLibraryName(Element element, String libraryName) {
+      var modelElement = packageGraph.getModelForElement(element);
+      var originalLibraryName = modelElement.originalMember?.library?.name;
+      return libraryName == originalLibraryName;
+    }
+
+    for (var canonicalName in canonicalFor) {
+      var libraryName = '';
+      var memberName = canonicalName;
+      var dotIndex = memberName.lastIndexOf('.');
+      if (dotIndex >= 0) {
+        libraryName = memberName.substring(0, dotIndex);
+        memberName = memberName.substring(dotIndex + 1);
+      }
+
+      var actualElement = element.exportNamespace.get2(memberName);
+      if (libraryName == name) libraryName = ''; // No need to check.
+      if (actualElement == null) {
+        notExportedElements.add(canonicalName);
+      } else if (libraryName.isNotEmpty) {
+        // Exported elements can't be multiply defined.
+        assert(actualElement is! MultiplyDefinedElement);
+        if (!hasLibraryName(element, libraryName)) {
+          /// Is exporting something of the correct name, but not from the
+          /// designated library.
+          notExportedElements.add(canonicalName);
         }
       }
-      warn(PackageWarning.ignoredCanonicalFor, message: message);
     }
-    // TODO(jcollins-g): warn if a macro/tool generates an unexpected
-    // canonicalFor?
+    if (notExportedElements.isNotEmpty) {
+      var elementNames = _allOriginalModelElementNames;
+      for (var notFound in notExportedElements) {
+        var message = notFound;
+        var lastDot = notFound.lastIndexOf('.');
+        if (lastDot < notFound.length - 1) {
+          var suffix =
+              (lastDot < 0) ? '.$notFound' : notFound.substring(lastDot);
+          var possibleMatches =
+              elementNames.where((name) => name.endsWith(suffix));
+          if (possibleMatches.isNotEmpty) {
+            message = '$notFound (did you mean ${possibleMatches.join(', ')}?)';
+          }
+        }
+        warn(PackageWarning.ignoredCanonicalFor, message: message);
+      }
+    }
   }
 
   /// The immediate elements of this library, resolved to their original names.

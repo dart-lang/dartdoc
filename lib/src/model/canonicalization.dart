@@ -28,11 +28,15 @@ Library? canonicalLibraryCandidate(ModelElement modelElement) {
     }
     var exportedElement =
         library.element.exportNamespace.get2(publicElement.name);
+    // Canonicalize accessors to their variables, on both sides.
     if (exportedElement is PropertyAccessorElement) {
-      // Even if original declaration.
       exportedElement = exportedElement.variable;
     }
-    return exportedElement == _normalize(publicElement.element);
+    var element = publicElement.element;
+    if (element is PropertyAccessorElement) {
+      element = element.variable;
+    }
+    return exportedElement == element;
   }).toList();
 
   var definingLibrary =
@@ -155,8 +159,7 @@ final class _Canonicalization {
         ? _modelElement.originalFullyQualifiedName
         : _modelElement.fullyQualifiedName;
     var scoredCandidates = libraries
-        .map((library) => _scoreElementWithLibrary(
-            library,
+        .map((library) => _scoreElementWithLibrary(library,
             _modelElement.qualifiedName, elementQualifiedName, locationPieces,
             preferredPackage: _modelElement.library?.package,
             preferredLibraryName: _modelElement.element.library?.name,
@@ -187,11 +190,12 @@ final class _Canonicalization {
   // because it takes a lot of elements into account, like URIs, differing
   // package names, etc. Anyways, add more tests, in addition to the
   // `StringName` tests in `model_test.dart`.
-  static _ScoredCandidate _scoreElementWithLibrary(Library library,
+  static _ScoredCandidate _scoreElementWithLibrary(
+      Library library,
       String elementName,
-      String elementQualifiedName, Set<String> elementLocationPieces,
-      {
-      Package? preferredPackage,
+      String elementQualifiedName,
+      Set<String> elementLocationPieces,
+      {Package? preferredPackage,
       String? preferredLibraryName,
       LibraryElement? preferredLibrary}) {
     var scoredCandidate = _ScoredCandidate(library);
