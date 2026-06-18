@@ -100,7 +100,7 @@ as the canonical library for `some_library.SomeClass`.
 
 ## {@example}
 
-Replaces the `{@example}` directive in API comments with a fenced code block containing the contents of an external file. This is a block-level directive and must appear on its own line.
+An `{@example}` directive in API comments will be replaced with a fenced code block containing the contents of an external file. This is a block-level directive and must appear on its own line.
 
 ### Syntax
 
