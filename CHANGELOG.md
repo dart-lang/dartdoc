@@ -1,5 +1,5 @@
 ## 9.0.6-wip
-* Require analyzer 13.0.2 APIs.
+* Require analyzer 14.0.0 APIs.
 
 ## 9.0.5
 * Cache `ElementType` instantiations in `PackageGraph`, improving overall
