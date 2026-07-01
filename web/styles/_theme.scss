@@ -58,6 +58,10 @@
   img[src$="#gh-dark-mode-only"] {
     display: none;
   }
+
+  example {
+    background-color: rgb(215, 235, 252);
+  }
 }
 
 .dark-theme {
@@ -108,6 +112,10 @@
   // Hide light-mode only images from GitHub's themable image support.
   img[src$="#gh-light-mode-only"] {
     display: none;
+  }
+
+  example {
+    background-color: rgb(30, 40, 51);
   }
 }
 

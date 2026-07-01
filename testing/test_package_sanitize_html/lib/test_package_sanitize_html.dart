@@ -29,4 +29,9 @@ abstract class SanitizableHtml {
   ///
   /// This is a <a href="javascript:alert('bad-idea');">bad</a> link.
   void inlineHtml();
+
+  /// Tests custom example tags
+  ///
+  /// <example>A fine example</example>
+  void customExampleHtml();
 }

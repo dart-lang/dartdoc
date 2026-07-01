@@ -142,3 +142,23 @@ th,
 td {
   padding: 8px;
 }
+
+example {
+  padding: 10px;
+  overflow: auto;
+  display: block;
+  unicode-bidi: isolate;
+  margin: 1em 0;
+}
+
+example p {
+  margin: 8px 40px 12px 8px;
+}
+
+example pre {
+  margin: 0;
+}
+
+example code.hljs {
+  max-height: 500px;
+}
