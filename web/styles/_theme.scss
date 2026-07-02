@@ -59,9 +59,7 @@
     display: none;
   }
 
-  example {
-    background-color: rgb(215, 235, 252);
-  }
+  --callout-box-bg-color: rgb(215, 235, 252);
 }
 
 .dark-theme {
@@ -114,9 +112,7 @@
     display: none;
   }
 
-  example {
-    background-color: rgb(30, 40, 51);
-  }
+  --callout-box-bg-color: rgb(30, 40, 51);
 }
 
 #theme-button {

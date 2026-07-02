@@ -243,8 +243,8 @@ void main() {
       expect(blockHtml.documentationAsHtml, isNot(contains('bad-idea')));
     });
 
-    test('can have example HTML', () {
-      expect(customExampleHtml.documentationAsHtml, contains('<example>'));
+    test('can have callout-box HTML', () {
+      expect(customExampleHtml.documentationAsHtml, contains('<callout-box>'));
     });
   });
 

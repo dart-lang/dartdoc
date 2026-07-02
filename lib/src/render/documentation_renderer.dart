@@ -206,7 +206,7 @@ final _allowedElements = <String>{
   'SPAN',
   'TIME',
   'WBR',
-  'EXAMPLE',
+  'CALLOUT-BOX',
 };
 
 // Inspired by the set of HTML attributes allowed in GFM.
