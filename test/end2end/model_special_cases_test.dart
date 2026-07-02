@@ -182,6 +182,7 @@ void main() {
     Class classWithHtml;
     late final Method blockHtml;
     late final Method inlineHtml;
+    late final Method customExampleHtml;
     late final PackageGraph packageGraph;
     late final Library exLibrary;
 
@@ -198,6 +199,7 @@ void main() {
       classWithHtml = exLibrary.classes.named('SanitizableHtml');
       blockHtml = classWithHtml.instanceMethods.named('blockHtml');
       inlineHtml = classWithHtml.instanceMethods.named('inlineHtml');
+      customExampleHtml = classWithHtml.instanceMethods.named('customExampleHtml');
       for (var modelElement in packageGraph.localPublicLibraries
           .expand((l) => l.allModelElements)) {
         // Accessing this getter triggers documentation-processing.
@@ -239,6 +241,10 @@ void main() {
 
     test('removes bad block HTML', () {
       expect(blockHtml.documentationAsHtml, isNot(contains('bad-idea')));
+    });
+
+    test('can have callout-box HTML', () {
+      expect(customExampleHtml.documentationAsHtml, contains('<callout-box>'));
     });
   });
 

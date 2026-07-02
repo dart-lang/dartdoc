@@ -1,3 +1,6 @@
+## 9.0.7-wip
+* Add built-in CSS styling for the <example> HTML tag to support highlighted code examples.
+
 ## 9.0.6
 * Require analyzer 13.0.2 APIs.
 * Introduce the {@example} directive for embedding external files, with support for extracting specific code blocks via #region tags.

@@ -142,3 +142,24 @@ th,
 td {
   padding: 8px;
 }
+
+callout-box {
+  padding: 10px;
+  overflow: auto;
+  display: block;
+  unicode-bidi: isolate;
+  margin: 1em 0;
+  background-color: var(--callout-box-bg-color);
+}
+
+callout-box p {
+  margin: 8px 40px 12px 8px;
+}
+
+callout-box pre {
+  margin: 0;
+}
+
+callout-box code.hljs {
+  max-height: 500px;
+}

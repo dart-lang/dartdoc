@@ -58,6 +58,8 @@
   img[src$="#gh-dark-mode-only"] {
     display: none;
   }
+
+  --callout-box-bg-color: rgb(215, 235, 252);
 }
 
 .dark-theme {
@@ -109,6 +111,8 @@
   img[src$="#gh-light-mode-only"] {
     display: none;
   }
+
+  --callout-box-bg-color: rgb(30, 40, 51);
 }
 
 #theme-button {
