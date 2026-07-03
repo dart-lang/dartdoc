@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'copy_button.dart' as copy_button;
 import 'highlight.dart' as highlight;
 import 'search.dart' as search;
 import 'sidebars.dart' as sidebars;
@@ -12,4 +13,5 @@ void main() {
   search.init();
   highlight.init();
   theme.init();
+  copy_button.init();
 }
