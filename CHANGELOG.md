@@ -1,5 +1,5 @@
 ## 9.0.7-wip
-* Add built-in CSS styling for the <example> HTML tag to support highlighted code examples.
+* Add built-in CSS styling for the `<callout-box>` HTML tag.
 
 ## 9.0.6
 * Require analyzer 13.0.2 APIs.

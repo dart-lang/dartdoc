@@ -33,5 +33,5 @@ abstract class SanitizableHtml {
   /// Tests custom callout-box tags
   ///
   /// <callout-box>A fine example</callout-box>
-  void customExampleHtml();
+  void customCalloutBoxHtml();
 }
