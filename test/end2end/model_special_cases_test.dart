@@ -199,7 +199,8 @@ void main() {
       classWithHtml = exLibrary.classes.named('SanitizableHtml');
       blockHtml = classWithHtml.instanceMethods.named('blockHtml');
       inlineHtml = classWithHtml.instanceMethods.named('inlineHtml');
-      customCalloutBoxHtml = classWithHtml.instanceMethods.named('customCalloutBoxHtml');
+      customCalloutBoxHtml =
+          classWithHtml.instanceMethods.named('customCalloutBoxHtml');
       for (var modelElement in packageGraph.localPublicLibraries
           .expand((l) => l.allModelElements)) {
         // Accessing this getter triggers documentation-processing.
@@ -244,7 +245,8 @@ void main() {
     });
 
     test('can have callout-box HTML', () {
-      expect(customCalloutBoxHtml.documentationAsHtml, contains('<callout-box>'));
+      expect(
+          customCalloutBoxHtml.documentationAsHtml, contains('<callout-box>'));
     });
   });
 

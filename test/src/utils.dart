@@ -183,11 +183,8 @@ homepage: https://github.com/dart-lang
   var pathContext = resourceProvider.pathContext;
   var projectsFolder = resourceProvider.getFolder(pathContext.canonicalize(
       ResourceProviderExtension(resourceProvider).convertPath('/projects')));
-  var projectFolder = projectsFolder.getFolder(packageName)
-    ..create();
-  projectFolder
-      .getFile('pubspec.yaml')
-      .writeAsStringSync(pubspecContent);
+  var projectFolder = projectsFolder.getFolder(packageName)..create();
+  projectFolder.getFile('pubspec.yaml').writeAsStringSync(pubspecContent);
   var buffer = StringBuffer('''
 {
   "configVersion": 2,
