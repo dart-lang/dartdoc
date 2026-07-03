@@ -207,19 +207,35 @@ extension on Comment {
   /// A mapping of all comment references to their various data.
   CommentData get data {
     var tokenList = tokens.toList();
+    var tokenContentStarts = List<int>.filled(tokenList.length, 0);
+    var normalizedLengths = List<int>.filled(tokenList.length, 0);
+    var currentContentOffset = 0;
+    for (var i = 0; i < tokenList.length; i++) {
+      tokenContentStarts[i] = currentContentOffset;
+      var token = tokenList[i];
+      var hasTrailingNewline =
+          i + 1 < tokenList.length && tokenList[i + 1].offset > token.end;
+      var normalizedLexemeLength = token.lexeme.replaceAll('\r', '').length;
+      normalizedLengths[i] = normalizedLexemeLength;
+      currentContentOffset +=
+          normalizedLexemeLength + (hasTrailingNewline ? 1 : 0);
+    }
+
     var sourceRanges = <SourceRange>[];
     for (var i = 0; i < tokenList.length; i++) {
-      var start = _fileOffsetToContentOffset(tokenList, tokenList[i].offset);
+      var start = tokenContentStarts[i];
       var end = i + 1 < tokenList.length
-          ? _fileOffsetToContentOffset(tokenList, tokenList[i + 1].offset)
-          : _fileOffsetToContentOffset(tokenList, tokenList[i].end);
+          ? tokenContentStarts[i + 1]
+          : tokenContentStarts[i] + normalizedLengths[i];
       sourceRanges.add(SourceRange(start, end - start));
     }
 
     var docImportSourceRanges = <SourceRange>[];
     for (var docImport in docImports) {
-      var start = _fileOffsetToContentOffset(tokenList, docImport.offset);
-      var end = _fileOffsetToContentOffset(tokenList, docImport.import.end);
+      var start = _fileOffsetToContentOffset(
+          tokenList, tokenContentStarts, normalizedLengths, docImport.offset);
+      var end = _fileOffsetToContentOffset(tokenList, tokenContentStarts,
+          normalizedLengths, docImport.import.end);
       docImportSourceRanges.add(SourceRange(start, end - start));
     }
 
@@ -262,34 +278,42 @@ extension on Comment {
   /// Converts a file offset to an offset within `element.documentationComment`
   /// (`content`), accounting for CRLF line ending normalization and gaps
   /// between comment tokens.
-  int _fileOffsetToContentOffset(List<Token> tokenList, int fileOffset) {
-    var contentOffset = 0;
-    for (var i = 0; i < tokenList.length; i++) {
-      var token = tokenList[i];
-      var tokenStart = token.offset;
-      var hasTrailingNewline = false;
-      if (i + 1 < tokenList.length && tokenList[i + 1].offset > token.end) {
-        hasTrailingNewline = true;
+  int _fileOffsetToContentOffset(
+    List<Token> tokenList,
+    List<int> tokenContentStarts,
+    List<int> normalizedLengths,
+    int fileOffset,
+  ) {
+    var low = 0;
+    var high = tokenList.length - 1;
+    var index = -1;
+    while (low <= high) {
+      var mid = (low + high) >> 1;
+      if (tokenList[mid].offset <= fileOffset) {
+        index = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
       }
-
-      var normalizedLexemeLength = token.lexeme.replaceAll('\r', '').length;
-      var tokenContentLength =
-          normalizedLexemeLength + (hasTrailingNewline ? 1 : 0);
-
-      if (fileOffset <= token.end) {
-        if (fileOffset < tokenStart) {
-          return contentOffset;
-        }
-        var relativeOffset = fileOffset - tokenStart;
-        var rawSlice = token.lexeme.substring(0, relativeOffset);
-        var normalizedSliceLength = rawSlice.replaceAll('\r', '').length;
-        return contentOffset + normalizedSliceLength;
-      } else if (i + 1 < tokenList.length &&
-          fileOffset < tokenList[i + 1].offset) {
-        return contentOffset + tokenContentLength;
-      }
-      contentOffset += tokenContentLength;
     }
-    return contentOffset;
+
+    if (index == -1) {
+      return 0;
+    }
+
+    var token = tokenList[index];
+    var contentOffset = tokenContentStarts[index];
+    if (fileOffset <= token.end) {
+      var relativeOffset = fileOffset - token.offset;
+      var rawSlice = token.lexeme.substring(0, relativeOffset);
+      var normalizedSliceLength = rawSlice.replaceAll('\r', '').length;
+      return contentOffset + normalizedSliceLength;
+    }
+
+    var hasTrailingNewline =
+        index + 1 < tokenList.length && tokenList[index + 1].offset > token.end;
+    return contentOffset +
+        normalizedLengths[index] +
+        (hasTrailingNewline ? 1 : 0);
   }
 }
