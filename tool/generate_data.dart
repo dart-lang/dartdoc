@@ -70,8 +70,9 @@ void main(List<String> args) async {
       content.writeln('class C$classCounter {');
       for (var mIndex = 1; mIndex <= methodCount; mIndex++) {
         content.write('  void m$methodCounter(');
-        content.write(List.generate(parameterCount, (pIndex) => 'int p$pIndex')
-            .join(', '));
+        content.write(
+            List.generate(parameterCount, (pIndex) => 'int p$pIndex')
+                .join(', '));
         content.writeln(') {}');
         methodCounter++;
       }
