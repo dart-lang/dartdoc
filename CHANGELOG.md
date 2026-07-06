@@ -1,5 +1,6 @@
-## 9.0.7-wip
+## 9.0.7
 * Add built-in CSS styling for the `<callout-box>` HTML tag.
+* Add a copy button to all fenced code blocks in generated documentation.
 
 ## 9.0.6
 * Require analyzer 13.0.2 APIs.
