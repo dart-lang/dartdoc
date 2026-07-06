@@ -81,6 +81,10 @@ code {
   transition: color 0.2s;
 }
 
+.copy-button .material-symbols-outlined {
+  font-size: 18px;
+}
+
 .copy-button:hover {
   color: var(--main-text-color);
 }
