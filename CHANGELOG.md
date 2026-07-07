@@ -1,3 +1,6 @@
+## 9.0.8
+* Fix a `RangeError` caused by string offset drift when parsing `@docImport` in files with `\r\n` line endings.
+
 ## 9.0.7
 * Add built-in CSS styling for the `<callout-box>` HTML tag.
 * Add a copy button to all fenced code blocks in generated documentation.
