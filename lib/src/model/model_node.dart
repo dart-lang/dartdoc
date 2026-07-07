@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/source_range.dart';
 import 'package:meta/meta.dart';
@@ -205,26 +206,38 @@ final String _escapedStarSlash = _escape.convert(_starSlash);
 extension on Comment {
   /// A mapping of all comment references to their various data.
   CommentData get data {
-    var sourceRanges0 = <SourceRange>[
-      for (var token in tokens)
-        SourceRange(
-            token.offset,
-            switch (token.next) {
-                  var next? => next.offset,
-                  null => token.end,
-                } -
-                token.offset),
-    ];
-    var docImportsData = <CommentDocImportData>[];
-    for (var docImport in docImports) {
-      docImportsData.add(
-        CommentDocImportData(
-            offset: docImport.offset, end: docImport.import.end),
-      );
+    var tokenList = tokens.toList();
+    var tokenContentStarts = List<int>.filled(tokenList.length, 0);
+    var normalizedLengths = List<int>.filled(tokenList.length, 0);
+    var currentContentOffset = 0;
+    for (var i = 0; i < tokenList.length; i++) {
+      tokenContentStarts[i] = currentContentOffset;
+      var token = tokenList[i];
+      var hasTrailingNewline =
+          i + 1 < tokenList.length && tokenList[i + 1].offset > token.end;
+      var normalizedLexemeLength = token.lexeme.replaceAll('\r', '').length;
+      normalizedLengths[i] = normalizedLexemeLength;
+      currentContentOffset +=
+          normalizedLexemeLength + (hasTrailingNewline ? 1 : 0);
     }
 
-    var (:sourceRanges, :docImportSourceRanges) =
-        _normalizeSourceRanges(sourceRanges0, docImportsData);
+    var sourceRanges = <SourceRange>[];
+    for (var i = 0; i < tokenList.length; i++) {
+      var start = tokenContentStarts[i];
+      var end = i + 1 < tokenList.length
+          ? tokenContentStarts[i + 1]
+          : tokenContentStarts[i] + normalizedLengths[i];
+      sourceRanges.add(SourceRange(start, end - start));
+    }
+
+    var docImportSourceRanges = <SourceRange>[];
+    for (var docImport in docImports) {
+      var start = _fileOffsetToContentOffset(
+          tokenList, tokenContentStarts, normalizedLengths, docImport.offset);
+      var end = _fileOffsetToContentOffset(tokenList, tokenContentStarts,
+          normalizedLengths, docImport.import.end);
+      docImportSourceRanges.add(SourceRange(start, end - start));
+    }
 
     var referencesData = <String, CommentReferenceData>{};
     for (var reference in references) {
@@ -262,57 +275,45 @@ extension on Comment {
     );
   }
 
-  /// Normalizes the comment's source ranges and the doc-import source ranges,
-  /// to be relative to the start of the comment text, and to skip over gaps
-  /// produced by interleaved comments.
-  ({List<SourceRange> sourceRanges, List<SourceRange> docImportSourceRanges})
-      _normalizeSourceRanges(
-    List<SourceRange> sourceRanges,
-    List<CommentDocImportData> docImportsData,
+  /// Converts a file offset to an offset within `element.documentationComment`
+  /// (`content`), accounting for CRLF line ending normalization and gaps
+  /// between comment tokens.
+  int _fileOffsetToContentOffset(
+    List<Token> tokenList,
+    List<int> tokenContentStarts,
+    List<int> normalizedLengths,
+    int fileOffset,
   ) {
-    // All of the `offset` and `end` properties are offsets from the start of
-    // the file (rather than from `content`). For the purposes of stripping
-    // `@docImport` directives, we need to shift all offsets by this value,
-    // the starting offset of the doc comment.
-    var commentOffset = sourceRanges.first.offset;
-
-    // Adjust the source ranges in two ways:
-    // 1. Change the offsets to be offsets from the start of the comment text,
-    //    instead of the file.
-    // 2. Collapse the offsets between one token's end and the next one's start,
-    //    which accounts for non-comment text between comment tokens.
-    var normalizedSourceRanges = <SourceRange>[];
-    var docImportSourceRanges = <SourceRange>[];
-    var accumulatedGapSize = 0;
-    var docImportIndex = 0;
-    for (var i = 0; i < sourceRanges.length; i++) {
-      var sourceRange = sourceRanges[i];
-      var rangeStart = sourceRange.offset - commentOffset;
-      var rangeEnd = sourceRange.end - commentOffset;
-      var gapSize =
-          i == 0 ? 0 : rangeStart - (sourceRanges[i - 1].end - commentOffset);
-      accumulatedGapSize += gapSize;
-      var rangeStartWithGap = rangeStart - accumulatedGapSize;
-      var rangeEndWithGap = rangeEnd - accumulatedGapSize;
-      normalizedSourceRanges.add(
-          SourceRange(rangeStartWithGap, rangeEndWithGap - rangeStartWithGap));
-
-      while (docImportIndex < docImportsData.length &&
-          docImportsData[docImportIndex].end - commentOffset <= rangeEnd) {
-        var docImportOffset =
-            docImportsData[docImportIndex].offset - commentOffset;
-        var docImportEnd = docImportsData[docImportIndex].end - commentOffset;
-        docImportSourceRanges.add(SourceRange(
-          docImportOffset - accumulatedGapSize,
-          docImportEnd - docImportOffset,
-        ));
-        docImportIndex++;
+    var low = 0;
+    var high = tokenList.length - 1;
+    var index = -1;
+    while (low <= high) {
+      var mid = (low + high) >> 1;
+      if (tokenList[mid].offset <= fileOffset) {
+        index = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
       }
     }
 
-    return (
-      sourceRanges: normalizedSourceRanges,
-      docImportSourceRanges: docImportSourceRanges
-    );
+    if (index == -1) {
+      return 0;
+    }
+
+    var token = tokenList[index];
+    var contentOffset = tokenContentStarts[index];
+    if (fileOffset <= token.end) {
+      var relativeOffset = fileOffset - token.offset;
+      var rawSlice = token.lexeme.substring(0, relativeOffset);
+      var normalizedSliceLength = rawSlice.replaceAll('\r', '').length;
+      return contentOffset + normalizedSliceLength;
+    }
+
+    var hasTrailingNewline =
+        index + 1 < tokenList.length && tokenList[index + 1].offset > token.end;
+    return contentOffset +
+        normalizedLengths[index] +
+        (hasTrailingNewline ? 1 : 0);
   }
 }
