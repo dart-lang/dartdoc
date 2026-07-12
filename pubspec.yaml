@@ -16,7 +16,7 @@ dependencies:
   logging: ^1.1.1
   markdown: ^7.2.1
   meta: ^1.9.1
-  package_config: ^2.1.0
+  package_config: ">=2.1.0 <4.0.0"
   path: ^1.8.3
   pub_semver: ^2.1.4
   source_span: ^1.10.0
