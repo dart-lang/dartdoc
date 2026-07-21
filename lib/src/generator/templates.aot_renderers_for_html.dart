@@ -919,12 +919,11 @@ String renderIndex(PackageTemplateData context0) {
         buffer.writeEscaped(context10.name);
         buffer.writeln();
         buffer.write(
-          '''                  <span class="material-symbols-outlined">open_in_new</span>
+            '''                  <span class="material-symbols-outlined">open_in_new</span>
                 </a>
               </span>
             </dt>
-            <dd>''',
-        );
+            <dd>''');
         buffer.writeEscaped(context10.docs);
         buffer.write('''</dd>''');
       }
@@ -2543,10 +2542,9 @@ String _deduplicated__packages(TemplateDataBase context0) {
         buffer.writeEscaped(context11.name);
         buffer.writeln();
         buffer.write(
-          '''            <span class="material-symbols-outlined">open_in_new</span>
+            '''            <span class="material-symbols-outlined">open_in_new</span>
           </a>
-        </li>''',
-        );
+        </li>''');
       }
       var context12 = context9.publicLibrariesSorted;
       for (var context13 in context12) {
@@ -2567,14 +2565,13 @@ String _deduplicated__packages(TemplateDataBase context0) {
 String _deduplicated__search_sidebar(TemplateDataBase context0) {
   final buffer = StringBuffer();
   buffer.write(
-    '''<!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+      '''<!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
 <header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
     <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
 </header>
-<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''',
-  );
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');
   var context1 = context0.navLinks;
   for (var context2 in context1) {
     buffer.writeln();
