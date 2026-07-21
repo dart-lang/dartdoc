@@ -1,3 +1,6 @@
+## 9.0.9-wip
+* Require analyzer 14.1.0 APIs.
+  
 ## 9.0.8
 * Fix a `RangeError` caused by string offset drift when parsing `@docImport` in files with `\r\n` line endings.
 
