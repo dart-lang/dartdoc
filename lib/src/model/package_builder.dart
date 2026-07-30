@@ -20,8 +20,6 @@ import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart'
 import 'package:analyzer/src/dart/sdk/sdk.dart'
     show EmbedderSdk, languageVersionFromSdkVersion, FolderBasedDartSdk;
 // ignore: implementation_imports
-import 'package:analyzer/src/generated/engine.dart' show AnalysisOptionsImpl;
-// ignore: implementation_imports
 import 'package:analyzer/src/generated/sdk.dart' show DartSdk;
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
@@ -68,14 +66,15 @@ class PubPackageBuilder implements PackageBuilder {
       // of handling it ourselves?
       resourceProvider: packageMetaProvider.resourceProvider,
       sdkPath: config.sdkDir,
-      updateAnalysisOptions4: ({
-        required AnalysisOptionsImpl analysisOptions,
+      configureAnalysisOptionsBuilder: ({
+        required analysisOptionsBuilder,
       }) {
-        analysisOptions
+        analysisOptionsBuilder
           ..warning = false
           ..lint = false;
         if (config.enableExperiment.isNotEmpty) {
-          analysisOptions.contextFeatures = FeatureSet.latestLanguageVersion(
+          analysisOptionsBuilder.contextFeatures =
+              FeatureSet.latestLanguageVersion(
             flags: config.enableExperiment,
           );
         }
