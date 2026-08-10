@@ -1,4 +1,4 @@
-## 9.0.9-wip
+## 9.0.9
 * Require analyzer 14.1.0 APIs.
   
 ## 9.0.8
