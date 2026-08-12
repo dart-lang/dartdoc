@@ -1162,3 +1162,11 @@ class TypeParameterThingsExtendedQ
 /// and [fParam.fParamC].
 void set aSetterWithFunctionParameter(
     bool fParam(int fParamA, String fParamB, String fParamC)) {}
+
+class VisualFallbackTarget {
+  static int get bar => 0;
+}
+
+/// Visual fallback link check:
+/// [VisualFallbackTarget.current.bar][VisualFallbackTarget.bar]
+void visualFallbackLinkCheck() {}

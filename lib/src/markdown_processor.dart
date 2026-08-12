@@ -122,13 +122,14 @@ final RegExp _nonHtml =
 
 final HtmlEscape _htmlEscape = const HtmlEscape(HtmlEscapeMode.element);
 
-final List<md.InlineSyntax> _markdownSyntaxes = [
-  _InlineCodeSyntax(),
-  _AutolinkWithoutScheme(),
-  md.InlineHtmlSyntax(),
-  md.StrikethroughSyntax(),
-  md.AutolinkExtensionSyntax(),
-];
+List<md.InlineSyntax> _markdownSyntaxes(md.Resolver linkResolver) => [
+      _InlineCodeSyntax(),
+      _LinkSyntaxWithPreservedReferenceText(linkResolver: linkResolver),
+      _AutolinkWithoutScheme(),
+      md.InlineHtmlSyntax(),
+      md.StrikethroughSyntax(),
+      md.AutolinkExtensionSyntax(),
+    ];
 
 final List<md.BlockSyntax> _markdownBlockSyntaxes = [
   const md.AlertBlockSyntax(),
@@ -260,10 +261,12 @@ class MarkdownDocument extends md.Document {
   /// Creates a document which resolves comment references as stemming from
   /// [element].
   factory MarkdownDocument.withElementLinkResolver(Warnable element) {
+    md.Node? linkResolver(String name, [String? _]) =>
+        _makeLinkNode(name, element);
     return MarkdownDocument._(
-      inlineSyntaxes: _markdownSyntaxes,
+      inlineSyntaxes: _markdownSyntaxes(linkResolver),
       blockSyntaxes: _markdownBlockSyntaxes,
-      linkResolver: (String name, [String? _]) => _makeLinkNode(name, element),
+      linkResolver: linkResolver,
     );
   }
 
@@ -340,6 +343,116 @@ class MarkdownDocument extends md.Document {
           message: referenceText, referredFrom: referredFrom);
       return md.Element.text('code', textContent);
     }
+  }
+}
+
+/// A custom markdown link syntax that preserves first-label text for fallback
+/// doc links of the form `[text][target]`.
+class _LinkSyntaxWithPreservedReferenceText extends md.LinkSyntax {
+  _LinkSyntaxWithPreservedReferenceText({required super.linkResolver});
+
+  @override
+  Iterable<md.Node>? close(
+    md.InlineParser parser,
+    covariant md.SimpleDelimiter opener,
+    md.Delimiter? closer, {
+    required List<md.Node> Function() getChildren,
+    String? tag,
+  }) {
+    final referenceText = parser.source.substring(opener.endPos, parser.pos);
+    final referenceLabelData =
+        _parseFullReferenceLabel(parser.source, parser.pos);
+
+    final nodes = super.close(
+      parser,
+      opener,
+      closer,
+      tag: tag,
+      getChildren: getChildren,
+    );
+
+    if (nodes == null || referenceLabelData == null) {
+      return nodes;
+    }
+
+    final referenceLabel = referenceLabelData.label;
+    if (referenceText == referenceLabel) {
+      return nodes;
+    }
+
+    final rewrittenNodes = nodes.toList(growable: false);
+    if (rewrittenNodes.length != 1) {
+      return rewrittenNodes;
+    }
+
+    final rewrittenNode = rewrittenNodes.single;
+    if (rewrittenNode is! md.Element ||
+        (rewrittenNode.tag != 'a' && rewrittenNode.tag != 'code')) {
+      return rewrittenNodes;
+    }
+
+    final children = rewrittenNode.children;
+    if (children == null || children.length != 1) {
+      return rewrittenNodes;
+    }
+
+    final child = children.single;
+    if (child is! md.Text) {
+      return rewrittenNodes;
+    }
+
+    final escapedReferenceLabel = _htmlEscape.convert(referenceLabel);
+    if (child.text != escapedReferenceLabel) {
+      return rewrittenNodes;
+    }
+
+    children[0] = md.Text(_htmlEscape.convert(referenceText));
+    return rewrittenNodes;
+  }
+
+  ({String label})? _parseFullReferenceLabel(
+      String source, int closingTextBracketPosition) {
+    final openingLabelBracketPosition = closingTextBracketPosition + 1;
+    if (openingLabelBracketPosition >= source.length ||
+        source[openingLabelBracketPosition] != '[') {
+      return null;
+    }
+
+    // `[text][]` (collapsed reference link) is not the full reference form.
+    if (openingLabelBracketPosition + 1 < source.length &&
+        source[openingLabelBracketPosition + 1] == ']') {
+      return null;
+    }
+
+    final buffer = StringBuffer();
+    for (var index = openingLabelBracketPosition + 1;
+        index < source.length;
+        index++) {
+      final char = source[index];
+      if (char == r'\') {
+        index++;
+        if (index >= source.length) {
+          return null;
+        }
+        final escapedChar = source[index];
+        if (escapedChar != r'\' && escapedChar != ']') {
+          buffer.write(r'\');
+        }
+        buffer.write(escapedChar);
+      } else if (char == '[') {
+        return null;
+      } else if (char == ']') {
+        final label = buffer.toString();
+        if (label.trim().isEmpty) {
+          return null;
+        }
+        return (label: label);
+      } else {
+        buffer.write(char);
+      }
+    }
+
+    return null;
   }
 }
 
