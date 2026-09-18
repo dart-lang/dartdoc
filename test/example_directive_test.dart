@@ -503,4 +503,101 @@ void main() {
 }
 ```'''));
   }
+
+  void test_processesExampleDirective_contentContainsCodeFence() async {
+    await _bootPackage('''
+/// {@example /examples/snippet.md}
+///
+/// End text.
+''', files: {
+      'examples/snippet.md': '''
+Install it:
+
+```console
+dart pub add foo
+```''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expectNoWarnings();
+    // The generated fence must be longer than the fence inside the example.
+    // Otherwise the example closes its own code block early, truncating the
+    // example and leaving a dangling fence which swallows the text below.
+    expect(doc, equals('''
+````md
+Install it:
+
+```console
+dart pub add foo
+```
+````
+
+End text.'''));
+  }
+
+  void test_processesExampleDirective_contentContainsLongerCodeFence() async {
+    await _bootPackage('''
+/// {@example /examples/nested.md}
+''', files: {
+      'examples/nested.md': '''
+````md
+```dart
+var x = 1;
+```
+````''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expectNoWarnings();
+    expect(doc, equals('''
+`````md
+````md
+```dart
+var x = 1;
+```
+````
+`````'''));
+  }
+
+  void test_processesExampleDirective_contentContainsInlineBackticks() async {
+    await _bootPackage('''
+/// {@example /examples/inline.md}
+''', files: {
+      'examples/inline.md': 'Pass the `--flag` option, or ``` to fence.',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expectNoWarnings();
+    // Only a run at the start of a line can close a block, so backticks in the
+    // middle of a line must not widen the fence.
+    expect(doc, equals('''
+```md
+Pass the `--flag` option, or ``` to fence.
+```'''));
+  }
+
+  void test_exampleDirective_langWithBacktick() async {
+    await _bootPackage('''
+/// {@example /examples/hello.dart lang=da`rt}
+''', files: {
+      'examples/hello.dart': 'void main() {}',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expect(
+      libraryModel,
+      hasWarning(
+          PackageWarning.invalidParameter,
+          'The `lang` argument of the {@example ...} directive may not contain '
+          'a backtick; ignoring it (da`rt).'),
+    );
+    expect(doc, equals('''
+```dart
+void main() {}
+```'''));
+  }
 }

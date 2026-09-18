@@ -370,6 +370,10 @@ mixin DocumentationComment implements Warnable, SourceCode {
   /// The `lang` parameter specifies the language for the fenced code block. If
   /// not provided, it defaults to the file extension of `path`.
   ///
+  /// The generated fence is always longer than any run of backticks beginning a
+  /// line of the example, so the code block encloses the whole example, code
+  /// fences and all.
+  ///
   /// Example:
   ///
   ///     &#123;@example /examples/my_example.dart&#125;
@@ -431,7 +435,16 @@ mixin DocumentationComment implements Warnable, SourceCode {
           .extension(resolvedPath)
           .replaceFirst('.', '')
           .toLowerCase();
-      var language = args['lang'] ?? extension;
+      var lang = args['lang'] as String?;
+      if (lang != null && lang.contains('`')) {
+        warn(PackageWarning.invalidParameter,
+            message:
+                'The `lang` argument of the {@example ...} directive may not '
+                'contain a backtick; ignoring it ($lang).');
+        lang = null;
+      }
+      var language = lang ?? extension;
+      if (language.contains('`')) language = '';
       var indent = args['indent'] ?? 'strip';
 
       var content = file.readAsStringSync();
@@ -470,7 +483,9 @@ mixin DocumentationComment implements Warnable, SourceCode {
       // Ensure the content ends with exactly one newline before the closing fence.
       var trailing = content.endsWith('\n') ? '' : '\n';
 
-      return '```$language\n$content$trailing```';
+      var fence = _codeFenceFor(content);
+
+      return '$fence$language\n$content$trailing$fence';
     });
   }
 
@@ -624,6 +639,24 @@ mixin DocumentationComment implements Warnable, SourceCode {
       if (line.isNotEmpty) lines[i] = line.substring(minIndent);
     }
     return lines.join('\n');
+  }
+
+  /// Returns a backtick fence which encloses the whole of [content].
+  ///
+  /// A code block ends at a line beginning with as many backticks as opened it,
+  /// so the fence is one backtick longer than the longest run beginning a line
+  /// of [content], and at least three.
+  static String _codeFenceFor(String content) {
+    var longestRun = 0;
+    for (var line in LineSplitter.split(content)) {
+      var trimmed = line.trimLeft();
+      var run = 0;
+      while (run < trimmed.length && trimmed.codeUnitAt(run) == 0x60) {
+        run++;
+      }
+      if (run > longestRun) longestRun = run;
+    }
+    return '`' * (longestRun >= 3 ? longestRun + 1 : 3);
   }
 
   static final _exampleArgParser = ArgParser()
