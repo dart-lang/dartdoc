@@ -1,7 +1,7 @@
 ## 9.0.9-wip
 * Require analyzer 14.1.0 APIs.
-* Fix `{@example}` truncating examples which themselves contain a code fence. The generated fence now adapts to the content of the example.
-  
+* Widen the `{@example}` code fence to enclose examples which themselves contain a code fence.
+
 ## 9.0.8
 * Fix a `RangeError` caused by string offset drift when parsing `@docImport` in files with `\r\n` line endings.
 
