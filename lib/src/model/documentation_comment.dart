@@ -1257,9 +1257,11 @@ mixin DocumentationComment implements Warnable, SourceCode {
       caseSensitive: false,
     );
 
-    // Matches `#endregion` anywhere in the line. Any name after it is ignored.
+    // Matches `#endregion` anywhere in the line. The innermost open region is
+    // the one closed; any name which follows is captured only so that a
+    // mismatch can be reported.
     final regionEndPattern = RegExp(
-      r'#endregion\b',
+      r'#endregion\b(?:[ \t]+(\S+))?',
       caseSensitive: false,
     );
 
@@ -1288,7 +1290,8 @@ mixin DocumentationComment implements Warnable, SourceCode {
         continue;
       }
 
-      if (regionEndPattern.hasMatch(line)) {
+      final endMatch = regionEndPattern.firstMatch(line);
+      if (endMatch != null) {
         if (regionStack.isEmpty) {
           warn(
             PackageWarning.invalidParameter,
@@ -1296,6 +1299,21 @@ mixin DocumentationComment implements Warnable, SourceCode {
                 'Found #endregion without a matching #region in $filepath at line $lineNumber.',
           );
         } else {
+          // Only a label which is itself an open region is worth checking;
+          // anything else is trailing content, such as the `-->` of an HTML
+          // comment.
+          final closedRegion = endMatch.group(1);
+          if (closedRegion != null &&
+              closedRegion != regionStack.last &&
+              regionStack.contains(closedRegion)) {
+            warn(
+              PackageWarning.invalidParameter,
+              message:
+                  'Found #endregion labelled `$closedRegion` in $filepath at '
+                  'line $lineNumber, but it closes `${regionStack.last}`, the '
+                  'innermost open region.',
+            );
+          }
           regionStack.removeLast();
         }
         continue;
