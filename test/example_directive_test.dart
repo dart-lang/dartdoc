@@ -507,6 +507,32 @@ var c = 3;
 ```'''));
   }
 
+  void test_processesExampleDirective_region_unknownEndRegionName() async {
+    await _bootPackage('''
+    /// {@example /examples/hello.dart#outer} ''', files: {
+      'examples/hello.dart': '''
+// #region outer
+var a = 1;
+// #endregion outr''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expect(
+      libraryModel,
+      hasWarning(
+        PackageWarning.invalidParameter,
+        'Found #endregion labelled `outr` in /examples/hello.dart at line 3, '
+        'but it closes `outer`, the innermost open region.',
+      ),
+    );
+
+    expect(doc, equals('''
+```dart
+var a = 1;
+```'''));
+  }
+
   void test_processesExampleDirective_region_languageAgnosticMarkers() async {
     await _bootPackage('''
     /// {@example /examples/hello.dart#main} ''', files: {

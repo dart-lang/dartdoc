@@ -1271,6 +1271,11 @@ mixin DocumentationComment implements Warnable, SourceCode {
       caseSensitive: false,
     );
 
+    // Matches a token which could be a region name. Only such a token is
+    // reported as a mismatched name: markers match anywhere in the line, so
+    // the token after `#endregion` is often a comment closer like `-->`.
+    final regionNamePattern = RegExp(r'^[\w.-]+$');
+
     final result = <String>[];
     final regionStack = <String>[];
     var regionFound = false;
@@ -1299,13 +1304,10 @@ mixin DocumentationComment implements Warnable, SourceCode {
                 'Found #endregion without a matching #region in $filepath at line $lineNumber.',
           );
         } else {
-          // Only a label which is itself an open region is worth checking;
-          // anything else is trailing content, such as the `-->` of an HTML
-          // comment.
           final closedRegion = endMatch.group(1);
           if (closedRegion != null &&
               closedRegion != regionStack.last &&
-              regionStack.contains(closedRegion)) {
+              regionNamePattern.hasMatch(closedRegion)) {
             warn(
               PackageWarning.invalidParameter,
               message:
