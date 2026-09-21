@@ -652,6 +652,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
       var trimmed = line.trimLeft();
       var run = 0;
       while (run < trimmed.length && trimmed.codeUnitAt(run) == 0x60) {
+        // 0x60 = backtick
         run++;
       }
       if (run > longestRun) longestRun = run;
