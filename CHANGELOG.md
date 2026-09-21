@@ -1,8 +1,10 @@
-## 9.0.9
-* Require analyzer 14.1.0 APIs.
+## 9.0.10-wip
 * Widen the `{@example}` code fence to enclose examples which themselves contain a code fence.
 * Warn when the label on an `{@example}` file's `#endregion` names an open region other than the innermost one.
-  
+
+## 9.0.9
+* Require analyzer 14.1.0 APIs.
+
 ## 9.0.8
 * Fix a `RangeError` caused by string offset drift when parsing `@docImport` in files with `\r\n` line endings.
 
