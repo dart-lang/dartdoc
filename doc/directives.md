@@ -127,7 +127,7 @@ When the file is injected, its content is processed as follows:
 
 *   Line endings are normalized to `\n`.
 *   If a `#<region>` is specified in the path, only the content within that region is extracted. A region is defined by `#region <region>` and `#endregion`. Lines containing region markers are stripped.
-*   Regions close innermost first; a name after `#endregion` is a label and is ignored. A warning is emitted when the label does not name the innermost open region. Only a label shaped like a region name is checked, so trailing text such as the `-->` of an HTML comment is not reported.
+*   Regions close innermost first: an `#endregion` always closes the nearest still-open `#region`, and any text after `#endregion` has no effect on *which* region is closed. Its only effect is diagnostic: if that text looks like a region name (letters, digits, `_`, `.` or `-`) and is not identical to the name of the nearest still-open `#region`, a warning is emitted. Text of any other shape, such as the `-->` closing an HTML comment or a `*/`, is not reported.
 *   Lines containing a `#hide` marker are entirely omitted from the extracted output. This is useful for hiding setup, assertions, or other code that is necessary for the example to compile but irrelevant to the documentation (e.g., `exit(0); // #hide`).
 *   Region extraction uses a best effort approach: if there are unmatched closing tags or unclosed regions, the code is extracted based on the stack ordering and emits a warning for the structural error.
 *   **Format-Agnostic:** The markers do not need to be within a code comment. Any line containing `#region <name>`, `#endregion`, or `#hide` will be matched and stripped. This makes the feature compatible with any language (HTML, SQL, YAML, etc.).

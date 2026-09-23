@@ -1295,8 +1295,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
         continue;
       }
 
-      final endMatch = regionEndPattern.firstMatch(line);
-      if (endMatch != null) {
+      if (regionEndPattern.firstMatch(line) case final endMatch?) {
         if (regionStack.isEmpty) {
           warn(
             PackageWarning.invalidParameter,
@@ -1304,7 +1303,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
                 'Found #endregion without a matching #region in $filepath at line $lineNumber.',
           );
         } else {
-          final closedRegion = endMatch.group(1);
+          final closedRegion = endMatch[1];
           if (closedRegion != null &&
               closedRegion != regionStack.last &&
               regionNamePattern.hasMatch(closedRegion)) {
