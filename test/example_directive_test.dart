@@ -473,6 +473,66 @@ void main() {
 ```'''));
   }
 
+  void test_processesExampleDirective_region_mismatchedEndRegionName() async {
+    await _bootPackage('''
+    /// {@example /examples/hello.dart#outer} ''', files: {
+      'examples/hello.dart': '''
+// #region outer
+var a = 1;
+// #region inner
+var b = 2;
+// #endregion outer
+var c = 3;
+// #endregion inner''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expect(
+      libraryModel,
+      hasWarning(
+        PackageWarning.invalidParameter,
+        'Found #endregion labelled `outer` in /examples/hello.dart at line 5, '
+        'but it closes `inner`, the innermost open region.',
+      ),
+    );
+
+    // The label does not select the region to close, so `inner` is closed and
+    // `outer` still runs to the last line.
+    expect(doc, equals('''
+```dart
+var a = 1;
+var b = 2;
+var c = 3;
+```'''));
+  }
+
+  void test_processesExampleDirective_region_unknownEndRegionName() async {
+    await _bootPackage('''
+    /// {@example /examples/hello.dart#outer} ''', files: {
+      'examples/hello.dart': '''
+// #region outer
+var a = 1;
+// #endregion outr''',
+    });
+
+    var doc = await libraryModel.processComment();
+
+    expect(
+      libraryModel,
+      hasWarning(
+        PackageWarning.invalidParameter,
+        'Found #endregion labelled `outr` in /examples/hello.dart at line 3, '
+        'but it closes `outer`, the innermost open region.',
+      ),
+    );
+
+    expect(doc, equals('''
+```dart
+var a = 1;
+```'''));
+  }
+
   void test_processesExampleDirective_region_languageAgnosticMarkers() async {
     await _bootPackage('''
     /// {@example /examples/hello.dart#main} ''', files: {

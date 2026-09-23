@@ -1257,9 +1257,11 @@ mixin DocumentationComment implements Warnable, SourceCode {
       caseSensitive: false,
     );
 
-    // Matches `#endregion` anywhere in the line. Any name after it is ignored.
+    // Matches `#endregion` anywhere in the line. The innermost open region is
+    // the one closed; any name which follows is captured only so that a
+    // mismatch can be reported.
     final regionEndPattern = RegExp(
-      r'#endregion\b',
+      r'#endregion\b(?:[ \t]+(\S+))?',
       caseSensitive: false,
     );
 
@@ -1269,6 +1271,11 @@ mixin DocumentationComment implements Warnable, SourceCode {
       caseSensitive: false,
     );
 
+    // Matches a token which could be a region name. Only such a token is
+    // reported as a mismatched name: markers match anywhere in the line, so
+    // the token after `#endregion` is often a comment closer like `-->`.
+    final regionNamePattern = RegExp(r'^[\w.-]+$');
+
     final result = <String>[];
     final regionStack = <String>[];
     var regionFound = false;
@@ -1277,9 +1284,8 @@ mixin DocumentationComment implements Warnable, SourceCode {
       final line = lines[i];
       final lineNumber = i + 1;
 
-      final startMatch = regionStartPattern.firstMatch(line);
-      if (startMatch != null) {
-        final regionName = startMatch.group(1)!;
+      if (regionStartPattern.firstMatch(line) case final startMatch?) {
+        final regionName = startMatch[1]!;
         regionStack.add(regionName);
 
         if (regionName == targetRegion) {
@@ -1288,7 +1294,7 @@ mixin DocumentationComment implements Warnable, SourceCode {
         continue;
       }
 
-      if (regionEndPattern.hasMatch(line)) {
+      if (regionEndPattern.firstMatch(line) case final endMatch?) {
         if (regionStack.isEmpty) {
           warn(
             PackageWarning.invalidParameter,
@@ -1296,6 +1302,18 @@ mixin DocumentationComment implements Warnable, SourceCode {
                 'Found #endregion without a matching #region in $filepath at line $lineNumber.',
           );
         } else {
+          final closedRegion = endMatch[1];
+          if (closedRegion != null &&
+              closedRegion != regionStack.last &&
+              regionNamePattern.hasMatch(closedRegion)) {
+            warn(
+              PackageWarning.invalidParameter,
+              message:
+                  'Found #endregion labelled `$closedRegion` in $filepath at '
+                  'line $lineNumber, but it closes `${regionStack.last}`, the '
+                  'innermost open region.',
+            );
+          }
           regionStack.removeLast();
         }
         continue;
