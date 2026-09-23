@@ -1284,9 +1284,8 @@ mixin DocumentationComment implements Warnable, SourceCode {
       final line = lines[i];
       final lineNumber = i + 1;
 
-      final startMatch = regionStartPattern.firstMatch(line);
-      if (startMatch != null) {
-        final regionName = startMatch.group(1)!;
+      if (regionStartPattern.firstMatch(line) case final startMatch?) {
+        final regionName = startMatch[1]!;
         regionStack.add(regionName);
 
         if (regionName == targetRegion) {
