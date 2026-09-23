@@ -38,13 +38,11 @@ class C {}
   }
 
   void test_onClass_refersToDocImportedElement() async {
+    const preamble = "/// @docImport 'dart:async';";
     var library = await bootPackageWithLibrary('''
-/// @docImport 'dart:async';
-library;
-
 /// Refers to [FutureOr].
 class C {}
-''');
+''', libraryPreamble: preamble);
     var c = library.classes.named('C');
     expect(c.name, equals('C'));
     var commentReferenceData = c.modelNode!.commentData!.references;
@@ -52,7 +50,11 @@ class C {}
       commentReferenceData['FutureOr'],
       isA<CommentReferenceData>()
           .having((e) => e.name, 'name', 'FutureOr')
-          .having((e) => e.offset, 'offset', realOffsetFor(54))
+          .having(
+            (e) => e.offset,
+            'offset',
+            realOffsetFor(15) + preamble.length,
+          )
           .having((e) => e.length, 'length', 8),
     );
   }
