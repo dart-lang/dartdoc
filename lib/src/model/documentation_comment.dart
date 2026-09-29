@@ -11,6 +11,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/source_range.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart' as crypto;
+import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/category.dart';
 import 'package:dartdoc/src/model/documentation.dart';
 import 'package:dartdoc/src/model/library.dart';
@@ -957,12 +958,20 @@ mixin DocumentationComment implements Warnable, SourceCode {
       while (docImportIndex < docImportSourceRanges.length &&
           docImportSourceRanges[docImportIndex].offset < rangeEnd) {
         var docImport = docImportSourceRanges[docImportIndex];
-        buffer.write(content.substring(offset, docImport.offset));
+        var safeStart = offset.clamp(0, content.length);
+        var safeEnd = docImport.offset.clamp(0, content.length);
+        if (safeStart < safeEnd) {
+          buffer.write(content.substring(safeStart, safeEnd));
+        }
         offset = docImport.end;
         docImportIndex++;
       }
       if (offset < rangeEnd) {
-        buffer.write(content.substring(offset, rangeEnd));
+        var safeStart = offset.clamp(0, content.length);
+        var safeEnd = rangeEnd.clamp(0, content.length);
+        if (safeStart < safeEnd) {
+          buffer.write(content.substring(safeStart, safeEnd));
+        }
       }
     }
     return buffer.toString();
@@ -1081,7 +1090,14 @@ mixin DocumentationComment implements Warnable, SourceCode {
   Future<void> precacheLocalDocs() async {
     assert(_documentationLocal == null,
         'reentrant calls to _buildDocumentation* not allowed');
-    _documentationLocal = await processComment();
+    try {
+      _documentationLocal = await processComment();
+    } catch (e, st) {
+      logWarning(
+          // ignore: invalid_use_of_visible_for_overriding_member
+          'Failed precaching docs for $location ($fullyQualifiedName): $e\n$st');
+      rethrow;
+    }
   }
 
   /// Removes `{@canonicalFor}` from [docs] and checks that they're valid.
