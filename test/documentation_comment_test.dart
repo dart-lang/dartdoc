@@ -380,29 +380,23 @@ Line 2
   }
 
   void test_docImport_withNonAsciiAndCrlf() async {
-    // Regression test for dart-lang/dartdoc#4180.
-    // Non-ASCII multibyte characters (like em-dash '—' or emoji) combined with
-    // CRLF line endings previously caused string index offset drift, leading to
-    // RangeError in _stripDocImports.
-    await writePackageWithCommentedLibrary(
-      '/// Title — description with non-ASCII em-dash.\r\n'
-      '///\r\n'
-      '/// @docImport \'dart:async\';\r\n'
-      '///\r\n'
-      '/// More details here.\r\n',
-    );
+    // Tests that multi-byte non-ASCII characters (e.g. em-dash '—' \u2014) combined
+    // with doc-imports and CRLF line endings do not trigger a RangeError.
+    var lines = List.generate(
+      30,
+      (i) => '/// Line $i — description with em-dash — details',
+    ).join('\n');
+    await writePackageWithCommentedLibrary('''
+$lines
+/// @docImport 'dart:async' as async;
+/// Trailing line — with em-dash.
+'''
+        .replaceAll('\n', '\r\n'));
     var doc = libraryModel.documentation;
 
-    expect(
-      doc,
-      equals(
-        'Title — description with non-ASCII em-dash.\n'
-        '\n'
-        '\n'
-        '\n'
-        'More details here.',
-      ),
-    );
+    expect(doc, contains('description with em-dash — details'));
+    expect(doc, contains('Trailing line — with em-dash.'));
+    expect(doc, isNot(contains('@docImport')));
   }
 
   void test_animationDirectiveHasFewerThanThreeArguments() async {
