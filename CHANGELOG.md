@@ -1,4 +1,6 @@
 ## 9.0.10-wip
+* Fix an unhandled `RangeError` during comment precaching when stripping `@docImport` directives with non-ASCII characters or CRLF line endings.
+* Log element location and exception details when documentation precaching fails.
 * Widen the `{@example}` code fence to enclose examples which themselves contain a code fence.
 * Warn when the label on an `{@example}` file's `#endregion` names an open region other than the innermost one.
 
