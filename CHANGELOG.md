@@ -1,6 +1,7 @@
-## 9.0.10-wip
+## 9.0.10
 * Widen the `{@example}` code fence to enclose examples which themselves contain a code fence.
 * Warn when the label on an `{@example}` file's `#endregion` names an open region other than the innermost one.
+* Require analyzer 14.5.0.
 
 ## 9.0.9
 * Require analyzer 14.1.0 APIs.

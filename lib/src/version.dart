@@ -1,1 +1,1 @@
-const packageVersion = '9.0.10-wip';
+const packageVersion = '9.0.10';
