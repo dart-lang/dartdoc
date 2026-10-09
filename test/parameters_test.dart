@@ -99,6 +99,60 @@ void f(int _) {}
     expect(f.documentationAsHtml, '<p>Text <code>_</code>.</p>');
   }
 
+  void test_formalParameter_functionType() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  void m(int Function(String s) callback) {}
+}
+''');
+    var m = library.method('C', 'm');
+    expect(m.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="m-param-callback">
+          <span class="type-annotation">
+            <a href=".*/dart-core/int-class\.html">int</a>
+            Function
+            <span class="signature">\(
+              <span class="parameter" id="param-s">
+                <span class="type-annotation">
+                  <a href=".*/dart-core/String-class\.html">String</a>
+                </span>
+                <span class="parameter-name">s</span>
+              </span>
+            \)</span>
+          </span>
+          <span class="parameter-name">callback</span>
+        </span>
+      '''));
+  }
+
+  void test_formalParameter_functionTypedParameter() async {
+    var library = await bootPackageWithLibrary('''
+class C {
+  void m(int callback(String s)) {}
+}
+''');
+    var m = library.method('C', 'm');
+    // Always generate docs using the newer function type syntax, even if the
+    // parameter itself uses the old function-typed parameter syntax.
+    expect(m.linkedParams, matchesCompressed(r'''
+        <span class="parameter" id="m-param-callback">
+          <span class="type-annotation">
+            <a href=".*/dart-core/int-class\.html">int</a>
+            Function
+            <span class="signature">\(
+              <span class="parameter" id="callback-param-s">
+                <span class="type-annotation">
+                  <a href=".*/dart-core/String-class\.html">String</a>
+                </span>
+                <span class="parameter-name">s</span>
+              </span>
+            \)</span>
+          </span>
+          <span class="parameter-name">callback</span>
+        </span>
+      '''));
+  }
+
   void test_formalParameter_generic_method() async {
     var library = await bootPackageWithLibrary('''
 class C {
@@ -112,15 +166,16 @@ class C {
         <span class="parameter" id="one-param-f">
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>
+            Function&lt;<wbr>
+            <span class="type-parameter">T</span>
+            &gt;
+            <span class="signature">\(
+              <span class="parameter" id="param-">
+                <span class="type-annotation">T</span>
+              </span>
+            \)</span>\?
           </span>
           <span class="parameter-name">f</span>
-          &lt;<wbr>
-          <span class="type-parameter">T</span>
-          &gt;\(
-          <span class="parameter" id="param-">
-            <span class="type-annotation">T</span>
-          </span>
-          \)\?
         </span>
       '''));
   }
@@ -136,15 +191,16 @@ int one(int Function<T>(T)? f) {
         <span class="parameter" id="one-param-f">
           <span class="type-annotation">
             <a href=".*/dart-core/int-class\.html">int</a>
+            Function&lt;<wbr>
+            <span class="type-parameter">T</span>
+            &gt;
+            <span class="signature">\(
+              <span class="parameter" id="param-">
+                <span class="type-annotation">T</span>
+              </span>
+            \)</span>\?
           </span>
           <span class="parameter-name">f</span>
-          &lt;<wbr>
-          <span class="type-parameter">T</span>
-          &gt;\(
-          <span class="parameter" id="param-">
-            <span class="type-annotation">T</span>
-          </span>
-          \)\?
         </span>
       '''));
   }

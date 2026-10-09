@@ -316,8 +316,10 @@ void main() async {
       expect(listen.isRequiredPositional, isTrue);
       expect(onDone.isNamed, isTrue);
 
-      expect(m3.linkedParamsLines, contains('</ol>)?, '));
-      expect(m3.linkedParamsLines, contains('</ol>}'));
+      expect(m3.linkedParamsLines,
+          contains('</span>?</span> <span class="parameter-name">listen'));
+      expect(m3.linkedParamsLines,
+          contains('</span>?</span> <span class="parameter-name">onDone'));
     });
 
     test('Late final class member test', () {
@@ -2848,10 +2850,10 @@ String? topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           params,
           '<span class="parameter" id="doAComplicatedThing-param-x"><span class="type-annotation">int</span> <span class="parameter-name">x</span>, {</span>'
-          '<span class="parameter" id="doAComplicatedThing-param-doSomething"><span class="type-annotation">void</span> <span class="parameter-name">doSomething</span>(<span class="parameter" id="doSomething-param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span>'
-          '<span class="parameter" id="doSomething-param-anotherThing"><span class="type-annotation">String</span> <span class="parameter-name">anotherThing</span></span>)?, </span>'
-          '<span class="parameter" id="doAComplicatedThing-param-doSomethingElse"><span class="type-annotation">void</span> <span class="parameter-name">doSomethingElse</span>(<span class="parameter" id="doSomethingElse-param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span>'
-          '<span class="parameter" id="doSomethingElse-param-somethingElse"><span class="type-annotation">double</span> <span class="parameter-name">somethingElse</span></span>)?</span>}');
+          '<span class="parameter" id="doAComplicatedThing-param-doSomething"><span class="type-annotation">void Function<span class="signature">(<span class="parameter" id="doSomething-param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span>'
+          '<span class="parameter" id="doSomething-param-anotherThing"><span class="type-annotation">String</span> <span class="parameter-name">anotherThing</span></span>)</span>?</span> <span class="parameter-name">doSomething</span>, </span>'
+          '<span class="parameter" id="doAComplicatedThing-param-doSomethingElse"><span class="type-annotation">void Function<span class="signature">(<span class="parameter" id="doSomethingElse-param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span>'
+          '<span class="parameter" id="doSomethingElse-param-somethingElse"><span class="type-annotation">double</span> <span class="parameter-name">somethingElse</span></span>)</span>?</span> <span class="parameter-name">doSomethingElse</span></span>}');
     });
   });
 
