@@ -50,4 +50,59 @@ int x = 0;
     // There is no link, but also no wrong link or crash.
     expect(x.documentationAsHtml, '<p>Text <code>_</code>.</p>');
   }
+
+  void test_referenced_docImportPrefix() async {
+    var library = await bootPackageWithLibrary(
+      '''
+/// Text [async] and [async.Future].
+int x = 0;
+''',
+      libraryPreamble: '''
+/// @docImport 'dart:async' as async;
+''',
+      additionalArguments: ['--link-to-remote'],
+    );
+    var x = library.properties.named('x');
+    expect(
+      x.documentationAsHtml,
+      '<p>Text <a href="$dartAsyncUrlPrefix/">async</a> and '
+      '<a href="$dartAsyncUrlPrefix/Future-class.html">async.Future</a>.</p>',
+    );
+  }
+
+  void test_referenced_docImportPrefix_inMember() async {
+    var library = await bootPackageWithLibrary(
+      '''
+class C {
+  /// Text [async] and [async.Future].
+  void m() {}
+}
+''',
+      libraryPreamble: '''
+/// @docImport 'dart:async' as async;
+''',
+      additionalArguments: ['--link-to-remote'],
+    );
+    var m = library.classes.named('C').instanceMethods.named('m');
+    expect(
+      m.documentationAsHtml,
+      '<p>Text <a href="$dartAsyncUrlPrefix/">async</a> and '
+      '<a href="$dartAsyncUrlPrefix/Future-class.html">async.Future</a>.</p>',
+    );
+  }
+
+  void test_referenced_docImportPrefix_unresolvedUri() async {
+    var library = await bootPackageWithLibrary(
+      '''
+/// Text [missing].
+int x = 0;
+''',
+      libraryPreamble: '''
+/// @docImport 'package:missing/missing.dart' as missing;
+''',
+    );
+    var x = library.properties.named('x');
+    // There is no link, but also no crash.
+    expect(x.documentationAsHtml, '<p>Text <code>missing</code>.</p>');
+  }
 }

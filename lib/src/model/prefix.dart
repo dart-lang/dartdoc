@@ -22,33 +22,18 @@ class Prefix extends ModelElement with HasLibrary, HasNoPage {
   @override
   bool get isCanonical => false;
 
-  // TODO(jcollins-g): consider connecting PrefixElement to the imported library
-  // in analyzer?
-  late final Library associatedLibrary =
-      getModelForElement(_importedLibraryElement) as Library;
-
-  LibraryElement get _importedLibraryElement {
-    final importLists =
-        library.element.fragments.map((fragment) => fragment.libraryImports);
-    var libraryImport = importLists
-        .expand((import) => import)
-        .firstWhere((i) => i.prefix?.element == element);
-    var importedLibrary = libraryImport.importedLibrary;
-    if (importedLibrary == null) {
-      var message = 'Unexpected null LibraryElement2 for imported library at '
-          '${library.element.firstFragment.source.uri}, at offset '
-          '${libraryImport.importKeywordOffset}';
-      var directiveUri = libraryImport.uri;
-      if (directiveUri is DirectiveUriWithRelativeUriString) {
-        message += 'for import URI: "${directiveUri.relativeUriString}"';
-      }
-      throw StateError(message);
-    }
-    return importedLibrary;
-  }
+  /// The library this prefix refers to, or `null` if no import with this
+  /// prefix resolves to a library.
+  ///
+  /// The prefix can come from a regular import or from a doc import. If several
+  /// imports share the prefix, the first library is used.
+  late final Library? associatedLibrary = switch (element.scopeLibraries) {
+    [var first, ...] => getModelForElement(first) as Library,
+    [] => null,
+  };
 
   @override
-  Library? get canonicalModelElement => associatedLibrary.canonicalLibrary;
+  Library? get canonicalModelElement => associatedLibrary?.canonicalLibrary;
 
   @override
   Scope get scope => element.scope;
