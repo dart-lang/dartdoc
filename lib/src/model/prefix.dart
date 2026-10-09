@@ -22,14 +22,15 @@ class Prefix extends ModelElement with HasLibrary, HasNoPage {
   @override
   bool get isCanonical => false;
 
-  /// The library this prefix refers to, or `null` if no import with this
-  /// prefix resolves to a library.
+  /// The library this prefix refers to, or `null` if the prefix doesn't map to
+  /// exactly one library.
   ///
-  /// The prefix can come from a regular import or from a doc import. If several
-  /// imports share the prefix, the first library is used.
+  /// The prefix can come from a regular import or from a doc import. A prefix
+  /// shared by several imports is ambiguous as a library reference; the
+  /// analyzer reports it as `ambiguous_comment_reference`.
   late final Library? associatedLibrary = switch (element.scopeLibraries) {
-    [var first, ...] => getModelForElement(first) as Library,
-    [] => null,
+    [var single] => getModelForElement(single) as Library,
+    _ => null,
   };
 
   @override

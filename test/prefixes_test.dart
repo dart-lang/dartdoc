@@ -105,4 +105,26 @@ int x = 0;
     // There is no link, but also no crash.
     expect(x.documentationAsHtml, '<p>Text <code>missing</code>.</p>');
   }
+
+  void test_referenced_docImportPrefix_shared() async {
+    var library = await bootPackageWithLibrary(
+      '''
+/// Text [p] and [p.Future].
+int x = 0;
+''',
+      libraryPreamble: '''
+/// @docImport 'dart:async' as p;
+/// @docImport 'dart:math' as p;
+''',
+      additionalArguments: ['--link-to-remote'],
+    );
+    var x = library.properties.named('x');
+    // A bare prefix shared by several libraries is ambiguous and is not
+    // linked. A qualified reference through it still is.
+    expect(
+      x.documentationAsHtml,
+      '<p>Text <code>p</code> and '
+      '<a href="$dartAsyncUrlPrefix/Future-class.html">p.Future</a>.</p>',
+    );
+  }
 }
