@@ -1,3 +1,6 @@
+## 9.0.12-wip
+* Support standalone AOT compilation (`dart install` / `dart build cli`) by resolving the Dart SDK via `package:cli_util` and bundling `lib/resources/` via `hook/build.dart`.
+
 ## 9.0.11
 * Resolve prefixes through `PrefixElement.scopeLibraries`. This fixes a crash on comment references through a prefixed `@docImport`, such as `[widgets]` or `[widgets.Widget]`.
 
