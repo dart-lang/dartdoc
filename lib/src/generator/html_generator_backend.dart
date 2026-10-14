@@ -102,20 +102,18 @@ class HtmlGeneratorBackend extends GeneratorBackend {
   }
 
   Future<void> _copyResources(FileWriter writer) async {
-    var resourcesDir = options.resourcesDir ??
-        (await resourceProvider.getResourceFolder(_dartdocResourcePrefix)).path;
+    var resourcesDir = options.resourcesDir;
     for (var resourceFileName in resources.resourceNames) {
       var destinationPath = _pathJoin('static-assets', resourceFileName);
-      var sourcePath = _pathJoin(resourcesDir, resourceFileName);
-      writer.writeBytes(
-        destinationPath,
-        resourceProvider.getFile(sourcePath).readAsBytesSync(),
-      );
+      var bytes = resourcesDir != null
+          ? resourceProvider
+              .getFile(_pathJoin(resourcesDir, resourceFileName))
+              .readAsBytesSync()
+          : await resourceProvider.loadResourceBytes(resourceFileName);
+      writer.writeBytes(destinationPath, bytes);
     }
   }
 
   String _pathJoin(String a, String b) =>
       resourceProvider.pathContext.join(a, b);
-
-  static const _dartdocResourcePrefix = 'package:dartdoc/resources';
 }

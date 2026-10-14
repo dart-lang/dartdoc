@@ -52,4 +52,50 @@ void main() {
     );
     await process.shouldExit(1);
   });
+
+  test('AOT compiled dartdoc generates docs and static assets', () async {
+    var tempDir =
+        Directory.systemTemp.createTempSync('dartdoc_aot_test.').absolute;
+    addTearDown(() => tempDir.deleteSync(recursive: true));
+
+    var buildDir = path.join(tempDir.path, 'build');
+    var compileResult = await Process.run(
+      Platform.resolvedExecutable,
+      ['build', 'cli', '--target=$_dartdocPath', '--output=$buildDir'],
+    );
+    expect(
+      compileResult.exitCode,
+      0,
+      reason: 'Failed to build dartdoc CLI: ${compileResult.stderr}',
+    );
+    expect(
+      compileResult.stderr.toString(),
+      isNot(contains('File modified during build')),
+    );
+
+    var aotExe = path.join(
+      buildDir,
+      'bundle',
+      'bin',
+      Platform.isWindows ? 'dartdoc.exe' : 'dartdoc',
+    );
+    var packagePath = await d.createPackage(
+      'aot_test_pkg',
+      libFiles: [
+        d.file('lib.dart', '/// A documented class.\nclass Foo {}\n'),
+      ],
+    );
+    var outDir = path.join(tempDir.path, 'doc');
+    var process = await TestProcess.start(
+      aotExe,
+      ['--input=$packagePath', '--output=$outDir'],
+      workingDirectory: tempDir.path,
+    );
+    await process.shouldExit(0);
+    expect(File(path.join(outDir, 'index.html')).existsSync(), isTrue);
+    expect(
+      File(path.join(outDir, 'static-assets', 'docs.dart.js')).existsSync(),
+      isTrue,
+    );
+  });
 }
