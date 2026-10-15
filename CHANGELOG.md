@@ -1,3 +1,8 @@
+## 9.0.12-wip
+* Import `package:analyzer/dart/ast/ast.dart` with explicit `show` names, so
+  that new analyzer AST classes (such as `TopLevelVariable`) do not conflict
+  with dartdoc model classes.
+
 ## 9.0.11
 * Resolve prefixes through `PrefixElement.scopeLibraries`. This fixes a crash on comment references through a prefixed `@docImport`, such as `[widgets]` or `[widgets.Widget]`.
 
