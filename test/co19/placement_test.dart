@@ -18,6 +18,7 @@
 /// - Top-level variables
 /// - Top-level getters or setters
 /// @author sgrekhov22@gmail.com
+
 library;
 
 import 'package:test/test.dart';
@@ -800,7 +801,33 @@ int get g => 0; /** Line 2 */
     expect(g.documentation, 'Line 1');
   }
 
-  // TODO(sgrekhov) Add tests for private getters after https://github.com/dart-lang/dartdoc/issues/4185
+  /// Check that doc comments can be recognized before a getter.
+  void test_beforeGetter3() async {
+    var library = await bootPackageWithLibrary('''
+/// Line 1
+int get _g => 0; /// Line 2
+/// Line 3
+''');
+    var g = library.properties.named('_g');
+    // Doc comments are not generated for private getters, which is allowed.
+    // Verify that these doc comments do not cause parsing errors.
+    g.documentation;
+  }
+
+  /// Check that block-based doc comments can be recognized before a getter.
+  void test_beforeGetter4() async {
+    var library = await bootPackageWithLibrary('''
+/** Line 1
+ */
+int get _g => 0; /** Line 2 */
+/** Line 3
+ */
+''');
+    var g = library.properties.named('_g');
+    // Doc comments are not generated for private getters, which is allowed.
+    // Verify that these doc comments do not cause parsing errors.
+    g.documentation;
+  }
 
   /// Check that doc comments can be recognized before a setter.
   void test_beforeSetter1() async {
@@ -831,5 +858,36 @@ void set s(int _) { /** Line 2 */
     expect(s.documentation, 'Line 1');
   }
 
-  // TODO(sgrekhov) Add tests for private setters after https://github.com/dart-lang/dartdoc/issues/4185
+  /// Check that doc comments can be recognized before a setter.
+  void test_beforeSetter3() async {
+    var library = await bootPackageWithLibrary('''
+/// Line 1
+void set _s(int _) { /// Line 2
+/// Line 3
+}
+/// Line 4
+''');
+    var s = library.properties.named('_s');
+    // Doc comments are not generated for private setters, which is allowed.
+    // Verify that these doc comments do not cause parsing errors.
+    s.documentation;
+  }
+
+  /// Check that block-based doc comments can be recognized before a setter.
+  void test_beforeSetter4() async {
+    var library = await bootPackageWithLibrary('''
+/** Line 1
+ */
+void set _s(int _) { /** Line 2 */
+/** Line 3
+ */
+}
+/** Line 4
+ */
+''');
+    var s = library.properties.named('_s');
+    // Doc comments are not generated for private setters, which is allowed.
+    // Verify that these doc comments do not cause parsing errors.
+    s.documentation;
+  }
 }

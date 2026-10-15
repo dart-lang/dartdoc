@@ -12,6 +12,8 @@
 /// - Fields (instance, static)
 /// - Getters or setters
 /// @author sgrekhov22@gmail.com
+/// @issue 62855
+
 library;
 
 import 'package:test/test.dart';
@@ -321,7 +323,7 @@ mixin M {
   /// Check that doc comments can be recognized before enum fields (instance and
   /// static).
   @FailingTest(reason: 'Causes exception because of non-const initializer')
-  // TODO(scheglov): NB, failing test
+  // TODO(scheglov): NB, failing test. SDK issue #62855
   void test_beforeEnumField1() async {
     var library = await bootPackageWithLibrary('''
 enum E {
