@@ -5,7 +5,20 @@
 import 'dart:collection';
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
-import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/ast.dart'
+    show
+        BlockClassBody,
+        BlockEnumBody,
+        ClassDeclaration,
+        Declaration,
+        EnumDeclaration,
+        ExtensionDeclaration,
+        ExtensionTypeDeclaration,
+        FieldDeclaration,
+        LibraryDirective,
+        MixinDeclaration,
+        PrimaryConstructorBody,
+        TopLevelVariableDeclaration;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/file_system.dart';
