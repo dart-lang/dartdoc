@@ -123,6 +123,26 @@ class C {
           <span class="parameter-name">callback</span>
         </span>
       '''));
+    expect(m.linkedParamsLines, matchesCompressed(r'''
+        <ol class="parameter-list single-line">
+          <li>
+            <span class="parameter" id="m-param-callback">
+              <span class="type-annotation">
+                <a href=".*/dart-core/int-class.html">int</a>
+                Function<span class="signature">\(
+                  <span class="parameter" id="param-s">
+                    <span class="type-annotation">
+                      <a href=".*/dart-core/String-class.html">String</a>
+                    </span>
+                    <span class="parameter-name">s</span>
+                  </span>\)
+                </span>
+              </span>
+              <span class="parameter-name">callback</span>
+            </span>
+          </li>
+        </ol>
+        '''));
   }
 
   void test_formalParameter_functionTypedParameter() async {
@@ -151,6 +171,27 @@ class C {
           <span class="parameter-name">callback</span>
         </span>
       '''));
+    expect(m.linkedParamsLines, matchesCompressed(r'''
+        <ol class="parameter-list single-line">
+          <li>
+            <span class="parameter" id="m-param-callback">
+              <span class="type-annotation">
+                <a href=".*/dart-core/int-class.html">int</a>
+                Function
+                <span class="signature">\(
+                  <span class="parameter" id="callback-param-s">
+                    <span class="type-annotation">
+                      <a href=".*/dart-core/String-class.html">String</a>
+                    </span>
+                    <span class="parameter-name">s</span>
+                  </span>\)
+                </span>
+              </span>
+              <span class="parameter-name">callback</span>
+            </span>
+          </li>
+        </ol>
+        '''));
   }
 
   void test_formalParameter_generic_method() async {

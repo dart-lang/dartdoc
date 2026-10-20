@@ -1,7 +1,8 @@
-## 9.0.12-wip
+## 9.1.0-wip
 * Import `package:analyzer/dart/ast/ast.dart` with explicit `show` names, so
   that new analyzer AST classes (such as `TopLevelVariable`) do not conflict
   with dartdoc model classes.
+* Use function type syntax for parameters whose type is a function instead of the older "function-typed parameter" syntax.
 
 ## 9.0.11
 * Resolve prefixes through `PrefixElement.scopeLibraries`. This fixes a crash on comment references through a prefixed `@docImport`, such as `[widgets]` or `[widgets.Widget]`.
@@ -9,7 +10,6 @@
 ## 9.0.10
 * Widen the `{@example}` code fence to enclose examples which themselves contain a code fence.
 * Warn when the label on an `{@example}` file's `#endregion` names an open region other than the innermost one.
-* Use function type syntax for parameters whose type is a function instead of the older "function-typed parameter" syntax.
 * Require analyzer 14.5.0.
 
 ## 9.0.9
