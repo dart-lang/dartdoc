@@ -409,10 +409,10 @@ void foo<
 ''');
     var c = library.classes.named('C');
     expect(c.typeParameters.named('T').documentation, isEmpty);
-    expect(c.typeParameters.named('U extends num').documentation, isEmpty);
+    expect(c.typeParameters.named('U').documentation, isEmpty);
     var foo = library.functions.named('foo');
     expect(foo.typeParameters.named('T').documentation, isEmpty);
-    expect(foo.typeParameters.named('U extends num').documentation, isEmpty);
+    expect(foo.typeParameters.named('U').documentation, isEmpty);
   }
 
   /// Check that block-based doc comments placed before type parameters are
@@ -433,9 +433,9 @@ void foo<
 ''');
     var c = library.classes.named('C');
     expect(c.typeParameters.named('T').documentation, isEmpty);
-    expect(c.typeParameters.named('U extends num').documentation, isEmpty);
+    expect(c.typeParameters.named('U').documentation, isEmpty);
     var foo = library.functions.named('foo');
     expect(foo.typeParameters.named('T').documentation, isEmpty);
-    expect(foo.typeParameters.named('U extends num').documentation, isEmpty);
+    expect(foo.typeParameters.named('U').documentation, isEmpty);
   }
 }
