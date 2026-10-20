@@ -22,33 +22,19 @@ class Prefix extends ModelElement with HasLibrary, HasNoPage {
   @override
   bool get isCanonical => false;
 
-  // TODO(jcollins-g): consider connecting PrefixElement to the imported library
-  // in analyzer?
-  late final Library associatedLibrary =
-      getModelForElement(_importedLibraryElement) as Library;
-
-  LibraryElement get _importedLibraryElement {
-    final importLists =
-        library.element.fragments.map((fragment) => fragment.libraryImports);
-    var libraryImport = importLists
-        .expand((import) => import)
-        .firstWhere((i) => i.prefix?.element == element);
-    var importedLibrary = libraryImport.importedLibrary;
-    if (importedLibrary == null) {
-      var message = 'Unexpected null LibraryElement2 for imported library at '
-          '${library.element.firstFragment.source.uri}, at offset '
-          '${libraryImport.importKeywordOffset}';
-      var directiveUri = libraryImport.uri;
-      if (directiveUri is DirectiveUriWithRelativeUriString) {
-        message += 'for import URI: "${directiveUri.relativeUriString}"';
-      }
-      throw StateError(message);
-    }
-    return importedLibrary;
-  }
+  /// The library this prefix refers to, or `null` if the prefix doesn't map to
+  /// exactly one library.
+  ///
+  /// The prefix can come from a regular import or from a doc import. A prefix
+  /// shared by several imports is ambiguous as a library reference; the
+  /// analyzer reports it as `ambiguous_comment_reference`.
+  late final Library? associatedLibrary = switch (element.scopeLibraries) {
+    [var single] => getModelForElement(single) as Library,
+    _ => null,
+  };
 
   @override
-  Library? get canonicalModelElement => associatedLibrary.canonicalLibrary;
+  Library? get canonicalModelElement => associatedLibrary?.canonicalLibrary;
 
   @override
   Scope get scope => element.scope;
