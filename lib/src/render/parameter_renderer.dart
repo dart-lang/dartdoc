@@ -4,7 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/parameter.dart';
 
 /// Render HTML in an extended vertical format using an `<ol>` tag.
@@ -203,57 +202,15 @@ abstract class ParameterRenderer {
     if (param.isCovariant) {
       buffer.write('${covariant('covariant')} ');
     }
-    if (modelType is Callable) {
-      final returnTypeName = modelType.isTypedef
-          ? modelType.linkedName
-          : modelType.returnType.linkedName;
-      buffer.write(typeName(returnTypeName));
-      buffer.write(' ${parameterName(param.documentedName ?? param.name)}');
-
-      // Writes out the generic type parameters for a function type.
-      // TODO(kallentu): Pull this type parameter generation into a helper for
-      // other renderers that also do this same work.
-      if (modelType is FunctionTypeElementType) {
-        if (modelType.typeFormals.isNotEmpty) {
-          if (!modelType.typeFormals.every((t) => t.name == 'dynamic')) {
-            buffer
-              ..write('&lt;<wbr><span class="type-parameter">')
-              ..writeAll(modelType.typeFormals.map((t) => t.name),
-                  '</span>, <span class="type-parameter">')
-              ..write('</span>&gt;');
-          }
-        }
-      }
-
-      if (!modelType.isTypedef && modelType is DefinedElementType) {
-        buffer.write('(');
-        buffer.write(renderLinkedParams(
-          (modelType as DefinedElementType).modelElement.parameters,
-          showMetadata: showMetadata,
-        ));
-        buffer.write(')');
-        buffer.write(modelType.nullabilitySuffix);
-      }
-      if (!modelType.isTypedef) {
-        buffer.write('(');
-        buffer.write(renderLinkedParams(
-          modelType.parameters,
-          showMetadata: showMetadata,
-        ));
-        buffer.write(')');
-        buffer.write(modelType.nullabilitySuffix);
-      }
-    } else {
-      final linkedTypeName = modelType.linkedName;
-      if (linkedTypeName.isNotEmpty) {
-        buffer.write(typeName(linkedTypeName));
-        if (param.name.isNotEmpty) {
-          buffer.write(' ');
-        }
-      }
+    final linkedTypeName = modelType.linkedName;
+    if (linkedTypeName.isNotEmpty) {
+      buffer.write(typeName(linkedTypeName));
       if (param.name.isNotEmpty) {
-        buffer.write(parameterName(param.documentedName ?? param.name));
+        buffer.write(' ');
       }
+    }
+    if (param.name.isNotEmpty) {
+      buffer.write(parameterName(param.documentedName ?? param.name));
     }
 
     if (param.hasDefaultValue) {
