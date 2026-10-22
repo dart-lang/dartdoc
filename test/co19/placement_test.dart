@@ -809,9 +809,9 @@ int get _g => 0; /// Line 2
 /// Line 3
 ''');
     var g = library.properties.named('_g');
-    // Doc comments are not generated for private getters, which is allowed.
-    // Verify that these doc comments do not cause parsing errors.
-    g.documentation;
+    // dartdoc does not surface docs of private accessors on the property
+    // (see #4185), so check the accessor directly.
+    expect(g.getter!.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a getter.
@@ -824,9 +824,9 @@ int get _g => 0; /** Line 2 */
  */
 ''');
     var g = library.properties.named('_g');
-    // Doc comments are not generated for private getters, which is allowed.
-    // Verify that these doc comments do not cause parsing errors.
-    g.documentation;
+    // dartdoc does not surface docs of private accessors on the property
+    // (see #4185), so check the accessor directly.
+    expect(g.getter!.documentation, 'Line 1');
   }
 
   /// Check that doc comments can be recognized before a setter.
@@ -868,9 +868,9 @@ void set _s(int _) { /// Line 2
 /// Line 4
 ''');
     var s = library.properties.named('_s');
-    // Doc comments are not generated for private setters, which is allowed.
-    // Verify that these doc comments do not cause parsing errors.
-    s.documentation;
+    // dartdoc does not surface docs of private accessors on the property
+    // (see #4185), so check the accessor directly.
+    expect(s.setter!.documentation, 'Line 1');
   }
 
   /// Check that block-based doc comments can be recognized before a setter.
@@ -886,8 +886,8 @@ void set _s(int _) { /** Line 2 */
  */
 ''');
     var s = library.properties.named('_s');
-    // Doc comments are not generated for private setters, which is allowed.
-    // Verify that these doc comments do not cause parsing errors.
-    s.documentation;
+    // dartdoc does not surface docs of private accessors on the property
+    // (see #4185), so check the accessor directly.
+    expect(s.setter!.documentation, 'Line 1');
   }
 }
