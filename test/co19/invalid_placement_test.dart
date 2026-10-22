@@ -24,7 +24,7 @@ void main() {
 class InvalidPlacementTest extends Co19TestBase {
   /// Check that doc comments placed before `import` and `export` directives
   /// are ignored.
-  void test_beforeDirectives() async {
+  void test_beforeDirectives1() async {
     var library = await bootPackageWithLibrary('''
 /// Line 1
 import 'dart:core';
@@ -40,8 +40,45 @@ class C {}
 
   /// Check that block-based doc comments placed before `import` and `export`
   /// directives are ignored.
-  void test_blockBeforeDirectives() async {
+  void test_blockBeforeDirectives1() async {
     var library = await bootPackageWithLibrary('''
+/** Line 1
+ */
+import 'dart:core';
+/** Line 2 */
+export 'dart:core' show int;
+
+class C {}
+''');
+    expect(library.documentation, isEmpty);
+    var c = library.classes.named('C');
+    expect(c.documentation, isEmpty);
+  }
+
+  /// Check that doc comments placed before `import` and `export` directives
+  /// are ignored. Test the case when there is no 'library' directive.
+  @FailingTest(
+      reason: 'The first doc comment is treated as a library doc comment.')
+  void test_beforeDirectives2() async {
+    var library = await bootLibrary('''
+/// Line 1
+import 'dart:core';
+/// Line 2
+export 'dart:core' show int;
+
+class C {}
+''');
+    expect(library.documentation, isEmpty);
+    var c = library.classes.named('C');
+    expect(c.documentation, isEmpty);
+  }
+
+  /// Check that block-based doc comments placed before `import` and `export`
+  /// directives are ignored. Test the case when there is no 'library' directive.
+  @FailingTest(
+      reason: 'The first doc comment is treated as a library doc comment.')
+  void test_blockBeforeDirectives2() async {
+    var library = await bootLibrary('''
 /** Line 1
  */
 import 'dart:core';
