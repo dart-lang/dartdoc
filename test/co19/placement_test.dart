@@ -6,8 +6,6 @@
 /// follows them. They are only considered valid when placed directly before the
 /// following types of declarations:
 /// ...
-/// - `library` directives.
-/// ...
 /// - class
 /// - mixin
 /// - enum
@@ -18,6 +16,7 @@
 /// - Top-level variables
 /// - Top-level getters or setters
 /// @author sgrekhov22@gmail.com
+
 library;
 
 import 'package:test/test.dart';
@@ -37,27 +36,6 @@ void main() {
 /// ignored.
 @reflectiveTest
 class PlacementTest extends Co19TestBase {
-  /// Check that doc comments can be recognized before `library` directive
-  void test_beforeLibrary1() async {
-    await writePackageWithCommentedLibrary('''
-/// Line 1
-library; /// Line 2
-/// Line 3
-''');
-    expectDocComment('Line 1');
-  }
-
-  /// Check that doc comments can be recognized before `library` directive
-  void test_beforeLibrary2() async {
-    await writePackageWithCommentedLibrary('''
-/** Line 1
- */
-library; /** Line 2 */
-/** Line 3 */
-''');
-    expectDocComment('Line 1');
-  }
-
   /// Check that doc comments can be recognized before a class.
   void test_beforeClass1() async {
     var library = await bootPackageWithLibrary('''
