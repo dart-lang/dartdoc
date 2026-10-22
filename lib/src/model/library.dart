@@ -25,9 +25,7 @@ class Library extends ModelElement with TopLevelContainer {
 
   final String _restoredUri;
 
-  /// Whether this library's defining compilation unit has a `library`
-  /// directive, or `true` if no compilation units were resolved for this
-  /// library.
+  /// Whether the library's defining compilation unit has a `library` directive.
   final bool _hasLibraryDirective;
 
   @override
