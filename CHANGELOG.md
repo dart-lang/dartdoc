@@ -3,6 +3,12 @@
   that new analyzer AST classes (such as `TopLevelVariable`) do not conflict
   with dartdoc model classes.
 * Use function type syntax for parameters whose type is a function instead of the older "function-typed parameter" syntax.
+* Breaking change: A doc comment is treated as library documentation only
+  when it is placed before a `library` directive, as required by the Dart
+  documentation comment specification. A doc comment before the first `import`,
+  `export`, or `part` directive of a library without a `library` directive is
+  now ignored. Add a `library` directive to keep such documentation (the
+  `dangling_library_doc_comments` lint reports these cases).
 
 ## 9.0.11
 * Resolve prefixes through `PrefixElement.scopeLibraries`. This fixes a crash on comment references through a prefixed `@docImport`, such as `[widgets]` or `[widgets.Widget]`.
