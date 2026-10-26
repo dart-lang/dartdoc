@@ -90,10 +90,17 @@ class CommentData {
 
   final Map<String, CommentReferenceData> references;
 
+  /// The names of this comment's references which the analyzer could not
+  /// resolve.
+  ///
+  /// These are the references reported by the `comment_references` lint.
+  final Set<String> unresolvedReferences;
+
   CommentData({
     required this.sourceRanges,
     required this.docImportSourceRanges,
     required this.references,
+    this.unresolvedReferences = const {},
   });
 }
 
@@ -240,6 +247,7 @@ extension on Comment {
     }
 
     var referencesData = <String, CommentReferenceData>{};
+    var unresolvedReferences = <String>{};
     for (var reference in references) {
       var referable = reference.expression;
       String name;
@@ -259,7 +267,12 @@ extension on Comment {
         continue;
       }
 
-      if (staticElement != null && !referencesData.containsKey(name)) {
+      if (staticElement == null) {
+        // Mirror the `comment_references` lint, which skips synthetic nodes.
+        if (!reference.isSynthetic && !referable.isSynthetic) {
+          unresolvedReferences.add(name);
+        }
+      } else if (!referencesData.containsKey(name)) {
         referencesData[name] = CommentReferenceData(
           staticElement,
           name,
@@ -272,6 +285,7 @@ extension on Comment {
       sourceRanges: sourceRanges,
       docImportSourceRanges: docImportSourceRanges,
       references: referencesData,
+      unresolvedReferences: unresolvedReferences,
     );
   }
 

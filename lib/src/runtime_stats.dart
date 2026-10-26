@@ -6,6 +6,10 @@ class _RuntimeStats {
   int totalReferences = 0;
   int resolvedReferences = 0;
 
+  /// The number of references resolved by dartdoc which the analyzer could not
+  /// resolve.
+  int unscopedReferences = 0;
+
   final List<_PerfTask> perfTasks = [];
   final List<_PerfTask> taskQueue = [];
 
@@ -56,6 +60,8 @@ class _RuntimeStats {
     report.writeln('  total references: $totalReferences');
     report.writeln('  resolved references:  '
         '${_valueAndPercent(resolvedReferences)}');
+    report.writeln('  resolved, but not in scope for the analyzer:  '
+        '${_valueAndPercent(unscopedReferences)}');
 
     if (perfTasks.isNotEmpty) {
       report.writeln('\nRuntime performance:');

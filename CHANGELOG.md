@@ -3,6 +3,7 @@
   that new analyzer AST classes (such as `TopLevelVariable`) do not conflict
   with dartdoc model classes.
 * Use function type syntax for parameters whose type is a function instead of the older "function-typed parameter" syntax.
+* Add the `unscoped-doc-reference` warning, off by default, for comment references that dartdoc resolves but the analyzer does not.
 
 ## 9.0.11
 * Resolve prefixes through `PrefixElement.scopeLibraries`. This fixes a crash on comment references through a prefixed `@docImport`, such as `[widgets]` or `[widgets.Widget]`.
