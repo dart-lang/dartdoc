@@ -481,6 +481,7 @@ class PackageGraph with Referable {
       PackageWarning.ignoredCanonicalFor ||
       PackageWarning.packageOrderGivesMissingPackageName ||
       PackageWarning.unresolvedDocReference ||
+      PackageWarning.unscopedDocReference ||
       PackageWarning.unknownMacro ||
       PackageWarning.unknownHtmlFragment ||
       PackageWarning.brokenLink ||

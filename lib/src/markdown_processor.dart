@@ -312,7 +312,18 @@ class MarkdownDocument extends md.Document {
     var result = getMatchingLinkElement(referenceText, element);
     var textContent = _htmlEscape.convert(referenceText);
     var linkedElement = result.referable;
+    // Avoid claiming documentation is inherited when it comes from the
+    // current element.
+    Set<Warnable> referredFrom() => {
+          if (element is ModelElement) ...element.documentationFrom
+        }..remove(element);
     if (linkedElement != null) {
+      if (_isUnresolvedByAnalyzer(referenceText, element)) {
+        runtimeStats.unscopedReferences++;
+        element.warn(PackageWarning.unscopedDocReference,
+            message: referenceText, referredFrom: referredFrom());
+      }
+
       // If the element has a separate name to use in documentation, prefer it.
       if (linkedElement.documentedName case var name?) {
         textContent = name;
@@ -331,15 +342,28 @@ class MarkdownDocument extends md.Document {
         return md.Element.text('code', textContent);
       }
     } else {
-      // Avoid claiming documentation is inherited when it comes from the
-      // current element.
-      var referredFrom = {
-        if (element is ModelElement) ...element.documentationFrom
-      }..remove(element);
       element.warn(PackageWarning.unresolvedDocReference,
-          message: referenceText, referredFrom: referredFrom);
+          message: referenceText, referredFrom: referredFrom());
       return md.Element.text('code', textContent);
     }
+  }
+
+  /// Whether the analyzer could not resolve [referenceText] in the doc comment
+  /// rendered for [element].
+  ///
+  /// [element] is the element whose documentation is being rendered; the
+  /// comment itself may be inherited from another element. These are the
+  /// references that the `comment_references` lint reports.
+  static bool _isUnresolvedByAnalyzer(String referenceText, Warnable element) {
+    if (element is! ModelElement) return false;
+    // Prefer the element's own comment data. If it has none, the rendered doc
+    // comment may be inherited from another element.
+    var commentData = element.modelNode?.commentData ??
+        element.documentationFrom.firstOrNull?.modelNode?.commentData;
+    var unresolved = commentData?.unresolvedReferences;
+    if (unresolved == null || unresolved.isEmpty) return false;
+    var name = ModelCommentReference(referenceText).referenceBy.join('.');
+    return unresolved.contains(name);
   }
 }
 
