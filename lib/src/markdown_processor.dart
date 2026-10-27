@@ -424,11 +424,18 @@ class MarkdownDocument extends md.Document {
       };
 
   /// A short description of [element] for a warning message: its library URI
-  /// and its qualified name within the library.
+  /// and its qualified name within the library, or, for a prefix, its name and
+  /// the libraries it imports.
   static String _describe(Element element) {
+    if (element is PrefixElement) {
+      var libraries = element.scopeLibraries.map((l) => l.uri).join(', ');
+      return 'prefix ${element.displayName} ($libraries)';
+    }
     var names = <String>[];
     for (Element? e = element; e != null; e = e.enclosingElement) {
-      if (e is LibraryElement) return '${e.uri} ${names.join('.')}';
+      if (e is LibraryElement) {
+        return '${e.uri} ${names.join('.')}'.trimRight();
+      }
       names.insert(0, e.displayName);
     }
     return names.join('.');
