@@ -8,9 +8,11 @@ library;
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/prefix.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -322,6 +324,14 @@ class MarkdownDocument extends md.Document {
         runtimeStats.unscopedReferences++;
         element.warn(PackageWarning.unscopedDocReference,
             message: referenceText, referredFrom: referredFrom());
+      } else if (_differingAnalyzerTarget(referenceText, element, linkedElement)
+          case var analyzerTarget?) {
+        runtimeStats.differentTargetReferences++;
+        element.warn(PackageWarning.docReferenceTargetDiffers,
+            message: '[$referenceText] links to '
+                '${linkedElement.fullyQualifiedName}, the analyzer resolves '
+                'it to ${_describe(analyzerTarget)}',
+            referredFrom: referredFrom());
       }
 
       // If the element has a separate name to use in documentation, prefer it.
@@ -355,15 +365,73 @@ class MarkdownDocument extends md.Document {
   /// comment itself may be inherited from another element. These are the
   /// references that the `comment_references` lint reports.
   static bool _isUnresolvedByAnalyzer(String referenceText, Warnable element) {
-    if (element is! ModelElement) return false;
-    // Prefer the element's own comment data. If it has none, the rendered doc
-    // comment may be inherited from another element.
-    var commentData = element.modelNode?.commentData ??
-        element.documentationFrom.firstOrNull?.modelNode?.commentData;
-    var unresolved = commentData?.unresolvedReferences;
+    var unresolved = _commentDataFor(element)?.unresolvedReferences;
     if (unresolved == null || unresolved.isEmpty) return false;
-    var name = ModelCommentReference(referenceText).referenceBy.join('.');
-    return unresolved.contains(name);
+    return unresolved.contains(_analyzerNameOf(referenceText));
+  }
+
+  /// The element the analyzer resolved [referenceText] to in the doc comment
+  /// rendered for [element], if it differs from [linkedElement], which dartdoc
+  /// resolved it to.
+  ///
+  /// Returns `null` when the analyzer did not resolve the reference, or when
+  /// both resolve it to the same element.
+  static Element? _differingAnalyzerTarget(
+      String referenceText, Warnable element, Referable linkedElement) {
+    var references = _commentDataFor(element)?.references;
+    if (references == null || references.isEmpty) return null;
+    var analyzerTarget = references[_analyzerNameOf(referenceText)]?.element;
+    if (analyzerTarget == null) return null;
+    var dartdocTarget = switch (linkedElement) {
+      // A prefix links to its library, so compare the library's element. This
+      // case must precede the general one: a `Prefix` is a `ModelElement`.
+      Prefix(:var associatedLibrary) => associatedLibrary?.element,
+      ModelElement(:var element) => element,
+      // Not backed by an analyzer element, such as a category.
+      _ => null,
+    };
+    if (dartdocTarget == null) return null;
+    if (_normalize(analyzerTarget) == _normalize(dartdocTarget)) return null;
+    return analyzerTarget;
+  }
+
+  /// The comment data of the doc comment rendered for [element].
+  ///
+  /// Prefers the element's own comment data. If it has none, the rendered doc
+  /// comment may be inherited from another element.
+  static CommentData? _commentDataFor(Warnable element) {
+    if (element is! ModelElement) return null;
+    return element.modelNode?.commentData ??
+        element.documentationFrom.firstOrNull?.modelNode?.commentData;
+  }
+
+  /// [referenceText] in the form used as a key in [CommentData.references].
+  static String _analyzerNameOf(String referenceText) =>
+      ModelCommentReference(referenceText).referenceBy.join('.');
+
+  /// Maps [element] to the element dartdoc's model would represent it with, so
+  /// that an analyzer element and a dartdoc target can be compared.
+  ///
+  /// The analyzer resolves a bare prefix to the `PrefixElement` and a field to
+  /// its implicit getter, while dartdoc links the prefix's library and the
+  /// field itself. Both are mapped to the element dartdoc links.
+  static Element? _normalize(Element element) => switch (element) {
+        PrefixElement(:var scopeLibraries) => scopeLibraries.singleOrNull,
+        PropertyAccessorElement(:var variable)
+            when variable.isOriginDeclaration =>
+          variable,
+        _ => element,
+      };
+
+  /// A short description of [element] for a warning message: its library URI
+  /// and its qualified name within the library.
+  static String _describe(Element element) {
+    var names = <String>[];
+    for (Element? e = element; e != null; e = e.enclosingElement) {
+      if (e is LibraryElement) return '${e.uri} ${names.join('.')}';
+      names.insert(0, e.displayName);
+    }
+    return names.join('.');
   }
 }
 

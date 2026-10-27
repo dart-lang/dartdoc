@@ -4,6 +4,7 @@
   with dartdoc model classes.
 * Use function type syntax for parameters whose type is a function instead of the older "function-typed parameter" syntax.
 * Add the `unscoped-doc-reference` warning, off by default, for comment references that dartdoc resolves but the analyzer does not.
+* Add the `doc-reference-target-differs` warning, off by default, for comment references that dartdoc and the analyzer resolve to different elements.
 
 ## 9.0.11
 * Resolve prefixes through `PrefixElement.scopeLibraries`. This fixes a crash on comment references through a prefixed `@docImport`, such as `[widgets]` or `[widgets.Widget]`.

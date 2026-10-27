@@ -10,6 +10,10 @@ class _RuntimeStats {
   /// resolve.
   int unscopedReferences = 0;
 
+  /// The number of references which dartdoc and the analyzer resolve to
+  /// different elements.
+  int differentTargetReferences = 0;
+
   final List<_PerfTask> perfTasks = [];
   final List<_PerfTask> taskQueue = [];
 
@@ -62,6 +66,8 @@ class _RuntimeStats {
         '${_valueAndPercent(resolvedReferences)}');
     report.writeln('  resolved, but not in scope for the analyzer:  '
         '${_valueAndPercent(unscopedReferences)}');
+    report.writeln('  resolved to a different element than the analyzer:  '
+        '${_valueAndPercent(differentTargetReferences)}');
 
     if (perfTasks.isNotEmpty) {
       report.writeln('\nRuntime performance:');
