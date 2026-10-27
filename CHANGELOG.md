@@ -9,6 +9,7 @@
   `export`, or `part` directive of a library without a `library` directive is
   now ignored. Add a `library` directive to keep such documentation (the
   `dangling_library_doc_comments` lint reports these cases).
+* Add the `unscoped-doc-reference` warning, off by default, for comment references that dartdoc resolves but the analyzer does not.
 
 ## 9.0.11
 * Resolve prefixes through `PrefixElement.scopeLibraries`. This fixes a crash on comment references through a prefixed `@docImport`, such as `[widgets]` or `[widgets.Widget]`.
