@@ -103,3 +103,14 @@ sup.muted {
   font-style: italic;
   padding: 2px;
 }
+
+/* "Documentation inherited from X" note under inherited documentation. */
+.inherited-documentation {
+  color: var(--main-sidebar-color);
+  font-size: 0.85em;
+  font-style: italic;
+
+  span:not(:last-of-type)::after {
+    content: ", ";
+  }
+}

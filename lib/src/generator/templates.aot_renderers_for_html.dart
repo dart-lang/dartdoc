@@ -2191,6 +2191,19 @@ String _deduplicated__documentation(Warnable context0) {
     buffer.writeln();
     buffer.write('''</section>''');
   }
+  if (context0.hasInheritedDocumentation) {
+    buffer.writeln();
+    buffer.write('''<p class="inherited-documentation">
+  Documentation inherited from ''');
+    var context1 = context0.inheritedDocumentationFrom;
+    for (var context2 in context1) {
+      buffer.write('''<span>''');
+      buffer.write(context2.linkedQualifiedName);
+      buffer.write('''</span>''');
+    }
+    buffer.write('''.
+</p>''');
+  }
   buffer.writeln();
 
   return buffer.toString();
