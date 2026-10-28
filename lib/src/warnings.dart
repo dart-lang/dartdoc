@@ -219,6 +219,21 @@ enum PackageWarning implements Comparable<PackageWarning> {
     referredFromPrefix: 'in documentation inherited from',
     defaultWarningMode: PackageWarningMode.ignore,
   ),
+  docReferenceTargetDiffers(
+    'doc-reference-target-differs',
+    'doc reference {0}',
+    shortHelp:
+        'A comment reference was resolved by dartdoc to a different element '
+        'than the analyzer resolves it to',
+    longHelp: "Dartdoc's own lookup links the reference to one element, but "
+        'the analyzer resolves the same reference, in the scope where the '
+        'comment is written, to another. This happens for example when '
+        'inherited documentation names a member that the inheriting class '
+        'overrides, or when a name in an enclosing scope shadows the intended '
+        'one. Qualify the reference to name the intended element.',
+    referredFromPrefix: 'in documentation inherited from',
+    defaultWarningMode: PackageWarningMode.ignore,
+  ),
   unknownMacro(
     'unknown-macro',
     'undefined macro [{0}]',
@@ -405,6 +420,7 @@ enum PackageWarningMode {
 const Set<PackageWarning> skipWarningIfNotDocumentedFor = {
   PackageWarning.unresolvedDocReference,
   PackageWarning.unscopedDocReference,
+  PackageWarning.docReferenceTargetDiffers,
   PackageWarning.typeAsHtml
 };
 

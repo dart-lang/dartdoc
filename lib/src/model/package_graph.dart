@@ -482,6 +482,7 @@ class PackageGraph with Referable {
       PackageWarning.packageOrderGivesMissingPackageName ||
       PackageWarning.unresolvedDocReference ||
       PackageWarning.unscopedDocReference ||
+      PackageWarning.docReferenceTargetDiffers ||
       PackageWarning.unknownMacro ||
       PackageWarning.unknownHtmlFragment ||
       PackageWarning.brokenLink ||
