@@ -57,8 +57,6 @@ class C {}
 
   /// Check that doc comments placed before `import` and `export` directives
   /// are ignored. Test the case when there is no 'library' directive.
-  @FailingTest(
-      reason: 'The first doc comment is treated as a library doc comment.')
   void test_beforeDirectives2() async {
     var library = await bootLibrary('''
 /// Line 1
@@ -75,8 +73,6 @@ class C {}
 
   /// Check that block-based doc comments placed before `import` and `export`
   /// directives are ignored. Test the case when there is no 'library' directive.
-  @FailingTest(
-      reason: 'The first doc comment is treated as a library doc comment.')
   void test_blockBeforeDirectives2() async {
     var library = await bootLibrary('''
 /** Line 1
