@@ -10,12 +10,9 @@
 /// @author sgrekhov22@gmail.com
 library;
 
-import 'package:dartdoc/src/model/model.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
-import '../src/test_descriptor_utils.dart' as d;
-import '../src/utils.dart';
 import 'co19_test_base.dart';
 
 void main() {
@@ -28,13 +25,6 @@ void main() {
 /// treated as the documentation of the library.
 @reflectiveTest
 class PlacementLibraryTest extends Co19TestBase {
-  /// Boots a package with the single library file `lib/co19.dart` whose
-  /// content is exactly [content].
-  Future<Library> bootLibrary(String content) async =>
-      (await bootPackageFromFiles([d.file('lib/co19.dart', content)]))
-          .libraries
-          .named(libraryName);
-
   /// Check that doc comments can be placed before a named `library` directive.
   void test_beforeNamedLibrary1() async {
     var library = await bootLibrary('''
