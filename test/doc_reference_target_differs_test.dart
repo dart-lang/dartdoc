@@ -141,6 +141,48 @@ class C {
     expect(_hasDiffersWarning(m, 'getter'), isFalse);
   }
 
+  void test_inheritedDocumentation_inheritedGetter_doesNotWarn() async {
+    var library = await bootPackageWithLibrary('''
+class A {
+  int get getter => 0;
+
+  /// Text [getter].
+  void m() {}
+}
+
+class B extends A {
+  @override
+  void m() {}
+}
+''');
+    var bM = library.classes.named('B').instanceMethods.named('m');
+    // Rendered in `B`, the inherited comment is re-resolved through the
+    // children of `B`, linking the synthetic field of the inherited getter;
+    // the analyzer resolved `[getter]` to the getter itself.
+    expect(bM.documentationAsHtml, contains('getter.html'));
+    expect(_hasDiffersWarning(bM, 'getter'), isFalse);
+  }
+
+  void test_memberOfGenericSupertype_doesNotWarn() async {
+    var library = await bootPackageWithLibrary('''
+class Base<T> {
+  T get value => throw '';
+
+  void run() {}
+}
+
+/// Text [value] and [run].
+class Sub extends Base<int> {}
+''');
+    var sub = library.classes.named('Sub');
+    // The analyzer resolves members inherited from `Base<int>` to substituted
+    // copies of the declarations in `Base<T>`; dartdoc links the declarations.
+    expect(sub.documentationAsHtml, contains('value.html'));
+    expect(sub.documentationAsHtml, contains('run.html'));
+    expect(_hasDiffersWarning(sub, 'value'), isFalse);
+    expect(_hasDiffersWarning(sub, 'run'), isFalse);
+  }
+
   void test_docImportPrefix_doesNotWarn() async {
     var library = await bootPackageWithLibrary(
       '''

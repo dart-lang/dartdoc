@@ -412,16 +412,25 @@ class MarkdownDocument extends md.Document {
   /// Maps [element] to the element dartdoc's model would represent it with, so
   /// that an analyzer element and a dartdoc target can be compared.
   ///
-  /// The analyzer resolves a bare prefix to the `PrefixElement` and a field to
-  /// its implicit getter, while dartdoc links the prefix's library and the
-  /// field itself. Both are mapped to the element dartdoc links.
-  static Element? _normalize(Element element) => switch (element) {
-        PrefixElement(:var scopeLibraries) => scopeLibraries.singleOrNull,
-        PropertyAccessorElement(:var variable)
-            when variable.isOriginDeclaration =>
-          variable,
-        _ => element,
-      };
+  /// The two can denote the same declaration through different elements:
+  ///
+  /// * A member reached through a generic supertype is a substituted copy of
+  ///   its declaration on the analyzer side; dartdoc holds the declaration.
+  ///   Both are mapped to the declaration, [Element.baseElement].
+  /// * A bare prefix is a `PrefixElement` on the analyzer side; dartdoc links
+  ///   the library it imports. Both are mapped to the library.
+  /// * A property is one of its accessors on the analyzer side, either the
+  ///   implicit getter of a field or an explicit getter or setter; dartdoc
+  ///   links the variable, which is synthetic when an accessor is the
+  ///   declaration. Both are mapped to the variable.
+  static Element? _normalize(Element element) {
+    var base = element.baseElement;
+    return switch (base) {
+      PrefixElement(:var scopeLibraries) => scopeLibraries.singleOrNull,
+      PropertyAccessorElement(:var variable) => variable,
+      _ => base,
+    };
+  }
 
   /// A short description of [element] for a warning message: its library URI
   /// and its qualified name within the library, or, for a prefix, its name and
