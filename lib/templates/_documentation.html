@@ -3,3 +3,8 @@
   {{{ documentationAsHtml }}}
 </section>
 {{/hasDocumentation}}
+{{#hasInheritedDocumentation}}
+<p class="inherited-documentation">
+  Documentation inherited from {{#inheritedDocumentationFrom}}<span>{{{ linkedQualifiedName }}}</span>{{/inheritedDocumentationFrom}}.
+</p>
+{{/hasInheritedDocumentation}}

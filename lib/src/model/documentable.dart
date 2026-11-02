@@ -24,6 +24,14 @@ abstract interface class Documentable with Referable {
 
   bool get hasDocumentation;
 
+  /// Whether the displayed documentation is inherited from another element.
+  bool get hasInheritedDocumentation;
+
+  /// The elements from which the displayed documentation is inherited.
+  ///
+  /// Empty if [hasInheritedDocumentation] is `false`.
+  List<ModelElement> get inheritedDocumentationFrom;
+
   @override
   PackageGraph get packageGraph;
 
@@ -76,6 +84,13 @@ mixin MarkdownFileDocumentation implements Documentable, Warnable {
 
   @override
   bool get hasDocumentation => documentation?.isNotEmpty == true;
+
+  /// Documentation from a markdown file is never inherited.
+  @override
+  bool get hasInheritedDocumentation => false;
+
+  @override
+  List<ModelElement> get inheritedDocumentationFrom => const [];
 
   @override
   bool get isDocumented;
