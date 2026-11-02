@@ -203,6 +203,37 @@ enum PackageWarning implements Comparable<PackageWarning> {
         'library with the package',
     referredFromPrefix: 'in documentation inherited from',
   ),
+  unscopedDocReference(
+    'unscoped-doc-reference',
+    'doc reference [{0}] is not in scope',
+    shortHelp:
+        'A comment reference was resolved by dartdoc, but is not in scope '
+        'according to the analyzer',
+    longHelp: "The reference is only resolved by dartdoc's own lookup, which "
+        'also searches beyond Dart scope (for example, all documented '
+        'libraries, and the parameters of other members). The analyzer, and '
+        'the comment_references lint, do not resolve it. Make the name '
+        'visible in scope, for example with an import or a `@docImport`, or '
+        'qualify the reference. Parameters are never linked; write them in '
+        'backticks instead.',
+    referredFromPrefix: 'in documentation inherited from',
+    defaultWarningMode: PackageWarningMode.ignore,
+  ),
+  docReferenceTargetDiffers(
+    'doc-reference-target-differs',
+    'doc reference {0}',
+    shortHelp:
+        'A comment reference was resolved by dartdoc to a different element '
+        'than the analyzer resolves it to',
+    longHelp: "Dartdoc's own lookup links the reference to one element, but "
+        'the analyzer resolves the same reference, in the scope where the '
+        'comment is written, to another. This happens for example when '
+        'inherited documentation names a member that the inheriting class '
+        'overrides, or when a name in an enclosing scope shadows the intended '
+        'one. Qualify the reference to name the intended element.',
+    referredFromPrefix: 'in documentation inherited from',
+    defaultWarningMode: PackageWarningMode.ignore,
+  ),
   unknownMacro(
     'unknown-macro',
     'undefined macro [{0}]',
@@ -388,6 +419,8 @@ enum PackageWarningMode {
 /// check.
 const Set<PackageWarning> skipWarningIfNotDocumentedFor = {
   PackageWarning.unresolvedDocReference,
+  PackageWarning.unscopedDocReference,
+  PackageWarning.docReferenceTargetDiffers,
   PackageWarning.typeAsHtml
 };
 

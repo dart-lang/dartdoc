@@ -2,10 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:convert';
-import 'dart:io' show zlib;
-
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:dartdoc/src/generator/html_resources.g.dart' as resources;
 import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:test/test.dart';
@@ -35,15 +33,14 @@ void main() {
       expect(bytes, isNotEmpty);
     });
 
-    test('decodeCompressedResources round-trips resource map', () {
-      var original = <String, String>{
-        'favicon.png': base64.encode([1, 2, 3, 4]),
-        'styles.css': base64.encode(utf8.encode('body {}')),
-      };
-      var compressed = zlib.encode(utf8.encode(json.encode(original)));
-      var decoded = decodeCompressedResources(compressed);
-      expect(decoded['favicon.png'], equals([1, 2, 3, 4]));
-      expect(utf8.decode(decoded['styles.css']!), equals('body {}'));
+    test('loadBundledResourceBytes matches all files in lib/resources',
+        () async {
+      var provider = PhysicalResourceProvider.INSTANCE;
+      for (var name in resources.resourceNames) {
+        var diskBytes = await provider.loadResourceBytes(name);
+        var bundledBytes = loadBundledResourceBytes(name);
+        expect(bundledBytes, equals(diskBytes), reason: 'Mismatch for $name');
+      }
     });
   });
 

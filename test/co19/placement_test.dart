@@ -6,8 +6,6 @@
 /// follows them. They are only considered valid when placed directly before the
 /// following types of declarations:
 /// ...
-/// - `library` directives.
-/// ...
 /// - class
 /// - mixin
 /// - enum
@@ -18,6 +16,7 @@
 /// - Top-level variables
 /// - Top-level getters or setters
 /// @author sgrekhov22@gmail.com
+
 library;
 
 import 'package:test/test.dart';
@@ -37,27 +36,6 @@ void main() {
 /// ignored.
 @reflectiveTest
 class PlacementTest extends Co19TestBase {
-  /// Check that doc comments can be recognized before `library` directive
-  void test_beforeLibrary1() async {
-    await writePackageWithCommentedLibrary('''
-/// Line 1
-library; /// Line 2
-/// Line 3
-''');
-    expectDocComment('Line 1');
-  }
-
-  /// Check that doc comments can be recognized before `library` directive
-  void test_beforeLibrary2() async {
-    await writePackageWithCommentedLibrary('''
-/** Line 1
- */
-library; /** Line 2 */
-/** Line 3 */
-''');
-    expectDocComment('Line 1');
-  }
-
   /// Check that doc comments can be recognized before a class.
   void test_beforeClass1() async {
     var library = await bootPackageWithLibrary('''
@@ -800,7 +778,33 @@ int get g => 0; /** Line 2 */
     expect(g.documentation, 'Line 1');
   }
 
-  // TODO(sgrekhov) Add tests for private getters after https://github.com/dart-lang/dartdoc/issues/4185
+  /// Check that doc comments can be recognized before a getter.
+  void test_beforeGetter3() async {
+    var library = await bootPackageWithLibrary('''
+/// Line 1
+int get _g => 0; /// Line 2
+/// Line 3
+''');
+    var g = library.properties.named('_g');
+    // dartdoc does not surface docs of private accessors on the property
+    // (see #4185), so check the accessor directly.
+    expect(g.getter!.documentation, 'Line 1');
+  }
+
+  /// Check that block-based doc comments can be recognized before a getter.
+  void test_beforeGetter4() async {
+    var library = await bootPackageWithLibrary('''
+/** Line 1
+ */
+int get _g => 0; /** Line 2 */
+/** Line 3
+ */
+''');
+    var g = library.properties.named('_g');
+    // dartdoc does not surface docs of private accessors on the property
+    // (see #4185), so check the accessor directly.
+    expect(g.getter!.documentation, 'Line 1');
+  }
 
   /// Check that doc comments can be recognized before a setter.
   void test_beforeSetter1() async {
@@ -831,5 +835,36 @@ void set s(int _) { /** Line 2 */
     expect(s.documentation, 'Line 1');
   }
 
-  // TODO(sgrekhov) Add tests for private setters after https://github.com/dart-lang/dartdoc/issues/4185
+  /// Check that doc comments can be recognized before a setter.
+  void test_beforeSetter3() async {
+    var library = await bootPackageWithLibrary('''
+/// Line 1
+void set _s(int _) { /// Line 2
+/// Line 3
+}
+/// Line 4
+''');
+    var s = library.properties.named('_s');
+    // dartdoc does not surface docs of private accessors on the property
+    // (see #4185), so check the accessor directly.
+    expect(s.setter!.documentation, 'Line 1');
+  }
+
+  /// Check that block-based doc comments can be recognized before a setter.
+  void test_beforeSetter4() async {
+    var library = await bootPackageWithLibrary('''
+/** Line 1
+ */
+void set _s(int _) { /** Line 2 */
+/** Line 3
+ */
+}
+/** Line 4
+ */
+''');
+    var s = library.properties.named('_s');
+    // dartdoc does not surface docs of private accessors on the property
+    // (see #4185), so check the accessor directly.
+    expect(s.setter!.documentation, 'Line 1');
+  }
 }

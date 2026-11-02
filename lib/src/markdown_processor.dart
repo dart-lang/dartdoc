@@ -8,9 +8,11 @@ library;
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/comment_references/model_comment_reference.dart';
 import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/model/prefix.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -312,7 +314,26 @@ class MarkdownDocument extends md.Document {
     var result = getMatchingLinkElement(referenceText, element);
     var textContent = _htmlEscape.convert(referenceText);
     var linkedElement = result.referable;
+    // Avoid claiming documentation is inherited when it comes from the
+    // current element.
+    Set<Warnable> referredFrom() => {
+          if (element is ModelElement) ...element.documentationFrom
+        }..remove(element);
     if (linkedElement != null) {
+      if (_isUnresolvedByAnalyzer(referenceText, element)) {
+        runtimeStats.unscopedReferences++;
+        element.warn(PackageWarning.unscopedDocReference,
+            message: referenceText, referredFrom: referredFrom());
+      } else if (_differingAnalyzerTarget(referenceText, element, linkedElement)
+          case var analyzerTarget?) {
+        runtimeStats.differentTargetReferences++;
+        element.warn(PackageWarning.docReferenceTargetDiffers,
+            message: '[$referenceText] links to '
+                '${linkedElement.fullyQualifiedName}, the analyzer resolves '
+                'it to ${_describe(analyzerTarget)}',
+            referredFrom: referredFrom());
+      }
+
       // If the element has a separate name to use in documentation, prefer it.
       if (linkedElement.documentedName case var name?) {
         textContent = name;
@@ -331,15 +352,102 @@ class MarkdownDocument extends md.Document {
         return md.Element.text('code', textContent);
       }
     } else {
-      // Avoid claiming documentation is inherited when it comes from the
-      // current element.
-      var referredFrom = {
-        if (element is ModelElement) ...element.documentationFrom
-      }..remove(element);
       element.warn(PackageWarning.unresolvedDocReference,
-          message: referenceText, referredFrom: referredFrom);
+          message: referenceText, referredFrom: referredFrom());
       return md.Element.text('code', textContent);
     }
+  }
+
+  /// Whether the analyzer could not resolve [referenceText] in the doc comment
+  /// rendered for [element].
+  ///
+  /// [element] is the element whose documentation is being rendered; the
+  /// comment itself may be inherited from another element. These are the
+  /// references that the `comment_references` lint reports.
+  static bool _isUnresolvedByAnalyzer(String referenceText, Warnable element) {
+    var unresolved = _commentDataFor(element)?.unresolvedReferences;
+    if (unresolved == null || unresolved.isEmpty) return false;
+    return unresolved.contains(_analyzerNameOf(referenceText));
+  }
+
+  /// The element the analyzer resolved [referenceText] to in the doc comment
+  /// rendered for [element], if it differs from [linkedElement], which dartdoc
+  /// resolved it to.
+  ///
+  /// Returns `null` when the analyzer did not resolve the reference, or when
+  /// both resolve it to the same element.
+  static Element? _differingAnalyzerTarget(
+      String referenceText, Warnable element, Referable linkedElement) {
+    var references = _commentDataFor(element)?.references;
+    if (references == null || references.isEmpty) return null;
+    var analyzerTarget = references[_analyzerNameOf(referenceText)]?.element;
+    if (analyzerTarget == null) return null;
+    var dartdocTarget = switch (linkedElement) {
+      // A prefix links to its library, so compare the library's element. This
+      // case must precede the general one: a `Prefix` is a `ModelElement`.
+      Prefix(:var associatedLibrary) => associatedLibrary?.element,
+      ModelElement(:var element) => element,
+      // Not backed by an analyzer element, such as a category.
+      _ => null,
+    };
+    if (dartdocTarget == null) return null;
+    if (_normalize(analyzerTarget) == _normalize(dartdocTarget)) return null;
+    return analyzerTarget;
+  }
+
+  /// The comment data of the doc comment rendered for [element].
+  ///
+  /// Prefers the element's own comment data. If it has none, the rendered doc
+  /// comment may be inherited from another element.
+  static CommentData? _commentDataFor(Warnable element) {
+    if (element is! ModelElement) return null;
+    return element.modelNode?.commentData ??
+        element.documentationFrom.firstOrNull?.modelNode?.commentData;
+  }
+
+  /// [referenceText] in the form used as a key in [CommentData.references].
+  static String _analyzerNameOf(String referenceText) =>
+      ModelCommentReference(referenceText).referenceBy.join('.');
+
+  /// Maps [element] to the element dartdoc's model would represent it with, so
+  /// that an analyzer element and a dartdoc target can be compared.
+  ///
+  /// The two can denote the same declaration through different elements:
+  ///
+  /// * A member reached through a generic supertype is a substituted copy of
+  ///   its declaration on the analyzer side; dartdoc holds the declaration.
+  ///   Both are mapped to the declaration, [Element.baseElement].
+  /// * A bare prefix is a `PrefixElement` on the analyzer side; dartdoc links
+  ///   the library it imports. Both are mapped to the library.
+  /// * A property is one of its accessors on the analyzer side, either the
+  ///   implicit getter of a field or an explicit getter or setter; dartdoc
+  ///   links the variable, which is synthetic when an accessor is the
+  ///   declaration. Both are mapped to the variable.
+  static Element? _normalize(Element element) {
+    var base = element.baseElement;
+    return switch (base) {
+      PrefixElement(:var scopeLibraries) => scopeLibraries.singleOrNull,
+      PropertyAccessorElement(:var variable) => variable,
+      _ => base,
+    };
+  }
+
+  /// A short description of [element] for a warning message: its library URI
+  /// and its qualified name within the library, or, for a prefix, its name and
+  /// the libraries it imports.
+  static String _describe(Element element) {
+    if (element is PrefixElement) {
+      var libraries = element.scopeLibraries.map((l) => l.uri).join(', ');
+      return 'prefix ${element.displayName} ($libraries)';
+    }
+    var names = <String>[];
+    for (Element? e = element; e != null; e = e.enclosingElement) {
+      if (e is LibraryElement) {
+        return '${e.uri} ${names.join('.')}'.trimRight();
+      }
+      names.insert(0, e.displayName);
+    }
+    return names.join('.');
   }
 }
 

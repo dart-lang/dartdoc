@@ -213,6 +213,103 @@ export 'src/library.dart';
     expect(library.name, 'libraries');
     expect(library.href, '${placeholder}public/');
   }
+
+  void test_documentationComment_beforeLibraryDirective() async {
+    var library = (await bootPackageFromFiles([
+      d.file('lib/lib1.dart', '''
+/// Docs for the library.
+library;
+
+/// Not library docs.
+import 'dart:async';
+'''),
+    ]))
+        .libraries
+        .named('lib1');
+
+    expect(library.hasDocumentationComment, isTrue);
+    expect(library.documentation, 'Docs for the library.');
+  }
+
+  void test_documentationComment_beforeNamedLibraryDirective() async {
+    var library = (await bootPackageFromFiles([
+      d.file('lib/lib1.dart', '''
+/// Docs for the library.
+library lib1;
+'''),
+    ]))
+        .libraries
+        .named('lib1');
+
+    expect(library.documentation, 'Docs for the library.');
+  }
+
+  /// Without a `library` directive, the analyzer attaches the doc comment of
+  /// the first directive to the library. The documentation comment
+  /// specification does not recognize that placement, so dartdoc ignores it.
+  void test_documentationComment_noLibraryDirective_beforeImport() async {
+    var library = (await bootPackageFromFiles([
+      d.file('lib/lib1.dart', '''
+/// Not library docs.
+import 'dart:async';
+
+class C {}
+'''),
+    ]))
+        .libraries
+        .named('lib1');
+
+    expect(library.hasDocumentationComment, isFalse);
+    expect(library.documentationComment, isNull);
+    expect(library.documentation, isEmpty);
+    expect(library.classes.named('C').documentation, isEmpty);
+  }
+
+  void test_documentationComment_noLibraryDirective_beforeExport() async {
+    var library = (await bootPackageFromFiles([
+      d.file('lib/lib1.dart', '''
+/** Not library docs. */
+export 'dart:async' show Future;
+'''),
+    ]))
+        .libraries
+        .named('lib1');
+
+    expect(library.hasDocumentationComment, isFalse);
+    expect(library.documentation, isEmpty);
+  }
+
+  void test_documentationComment_noLibraryDirective_beforePart() async {
+    var library = (await bootPackageFromFiles([
+      d.file('lib/lib1.dart', '''
+/// Not library docs.
+part 'lib1_part.dart';
+'''),
+      d.file('lib/lib1_part.dart', '''
+part of 'lib1.dart';
+'''),
+    ]))
+        .libraries
+        .named('lib1');
+
+    expect(library.hasDocumentationComment, isFalse);
+    expect(library.documentation, isEmpty);
+  }
+
+  void test_documentationComment_noDirectives() async {
+    var library = (await bootPackageFromFiles([
+      d.file('lib/lib1.dart', '''
+/// Docs for C.
+class C {}
+'''),
+    ]))
+        .libraries
+        .named('lib1');
+
+    expect(library.hasDocumentationComment, isFalse);
+    expect(library.documentation, isEmpty);
+    expect(library.classes.named('C').documentation, 'Docs for C.');
+  }
 }
 
 @reflectiveTest

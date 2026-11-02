@@ -1,5 +1,5 @@
 name: dartdoc
-version: 9.0.12-wip
+version: 9.1.0-wip
 description: A non-interactive HTML documentation generator for Dart source code.
 repository: https://github.com/dart-lang/dartdoc
 
@@ -13,12 +13,10 @@ dependencies:
   collection: ^1.17.0
   crypto: ^3.0.3
   glob: ^2.1.1
-  hooks: ^2.2.0
   html: ^0.15.3
   logging: ^1.1.1
   markdown: ^7.2.1
   meta: ^1.9.1
-  native_toolchain_c: ^0.19.5
   package_config: ^2.1.0
   path: ^1.8.3
   pub_semver: ^2.1.4
@@ -35,7 +33,7 @@ dev_dependencies:
   test: ^1.24.2
   test_descriptor: ^2.0.1
   test_process: ^2.0.3
-  test_reflective_loader: ">=0.2.2 <0.5.0"
+  test_reflective_loader: ">=0.2.2 <0.7.0"
   web: ^1.1.0
 
 executables:

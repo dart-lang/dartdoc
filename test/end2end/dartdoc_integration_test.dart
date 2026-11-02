@@ -58,27 +58,20 @@ void main() {
         Directory.systemTemp.createTempSync('dartdoc_aot_test.').absolute;
     addTearDown(() => tempDir.deleteSync(recursive: true));
 
-    var buildDir = path.join(tempDir.path, 'build');
+    var aotExe = path.join(
+      tempDir.path,
+      Platform.isWindows ? 'dartdoc.exe' : 'dartdoc',
+    );
     var compileResult = await Process.run(
       Platform.resolvedExecutable,
-      ['build', 'cli', '--target=$_dartdocPath', '--output=$buildDir'],
+      ['compile', 'exe', '-o', aotExe, _dartdocPath],
     );
     expect(
       compileResult.exitCode,
       0,
-      reason: 'Failed to build dartdoc CLI: ${compileResult.stderr}',
-    );
-    expect(
-      compileResult.stderr.toString(),
-      isNot(contains('File modified during build')),
+      reason: 'Failed to compile dartdoc executable: ${compileResult.stderr}',
     );
 
-    var aotExe = path.join(
-      buildDir,
-      'bundle',
-      'bin',
-      Platform.isWindows ? 'dartdoc.exe' : 'dartdoc',
-    );
     var packagePath = await d.createPackage(
       'aot_test_pkg',
       libFiles: [

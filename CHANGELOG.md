@@ -1,5 +1,17 @@
-## 9.0.12-wip
-* Support standalone AOT compilation (`dart install` / `dart build cli`) by resolving the Dart SDK via `package:cli_util` and bundling `lib/resources/` via `hook/build.dart`.
+## 9.1.0-wip
+* Support standalone AOT compilation (`dart install` / `dart compile exe`) by resolving the Dart SDK via `package:cli_util` and embedding `lib/resources/` in `html_resources.g.dart`.
+* Import `package:analyzer/dart/ast/ast.dart` with explicit `show` names, so
+  that new analyzer AST classes (such as `TopLevelVariable`) do not conflict
+  with dartdoc model classes.
+* Use function type syntax for parameters whose type is a function instead of the older "function-typed parameter" syntax.
+* Breaking change: A doc comment is treated as library documentation only
+  when it is placed before a `library` directive, as required by the Dart
+  documentation comment specification. A doc comment before the first `import`,
+  `export`, or `part` directive of a library without a `library` directive is
+  now ignored. Add a `library` directive to keep such documentation (the
+  `dangling_library_doc_comments` lint reports these cases).
+* Add the `unscoped-doc-reference` warning, off by default, for comment references that dartdoc resolves but the analyzer does not.
+* Add the `doc-reference-target-differs` warning, off by default, for comment references that dartdoc and the analyzer resolve to different elements.
 
 ## 9.0.11
 * Resolve prefixes through `PrefixElement.scopeLibraries`. This fixes a crash on comment references through a prefixed `@docImport`, such as `[widgets]` or `[widgets.Widget]`.

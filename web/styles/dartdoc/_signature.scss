@@ -44,7 +44,8 @@
   font-size: 17px;
   color: #727272;
 
-  .type-parameter .parameter {
+  .type-parameter .parameter,
+  .type-annotation .parameter {
     margin-left: 0;
     display: unset;
   }

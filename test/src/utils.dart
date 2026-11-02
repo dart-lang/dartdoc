@@ -36,6 +36,20 @@ final _pathContext = _resourceProvider.pathContext;
 final String platformVersionString = Platform.version.split(' ').first;
 final Version platformVersion = Version.parse(platformVersionString);
 
+/// The URL prefix of the links dartdoc generates into the SDK API docs, given
+/// the mock SDK's version.
+///
+/// This mirrors how [Package] expands `%b%/%v%` in the SDK's default
+/// [DartdocOptionContext.linkToUrl]: `stable` for a release, otherwise the
+/// prerelease tag, such as `dev`, then the version. If that rule changes, this
+/// must change with it.
+final String sdkDocsUrlPrefix = () {
+  var tag = platformVersion.isPreRelease
+      ? platformVersion.preRelease.whereType<String>().first
+      : 'stable';
+  return 'https://api.dart.dev/$tag/$platformVersionString';
+}();
+
 final Folder testPackageToolError = _resourceProvider.getFolder(_pathContext
     .absolute(_pathContext.normalize('testing/test_package_tool_error')));
 
@@ -146,9 +160,11 @@ PackageMetaProvider get testPackageMetaProvider {
 
 /// Writes additional files for a mock SDK.
 ///
-/// Included is a "version" file and an "api_readme.md" file.
+/// Included is a "version" file and an "api_readme.md" file. The version is
+/// that of the SDK running the tests, because the analyzer rejects
+/// `// @dart=X.Y` overrides newer than the host SDK.
 void writeMockSdkFiles(Folder sdkFolder) {
-  sdkFolder.getFile('version').writeAsStringSync('3.10.6');
+  sdkFolder.getFile('version').writeAsStringSync(platformVersionString);
   sdkFolder.getFile('api_readme.md').writeAsStringSync(
       'Welcome to the [Dart](https://dart.dev/) API reference documentation');
 
@@ -183,11 +199,8 @@ homepage: https://github.com/dart-lang
   var pathContext = resourceProvider.pathContext;
   var projectsFolder = resourceProvider.getFolder(pathContext.canonicalize(
       ResourceProviderExtension(resourceProvider).convertPath('/projects')));
-  var projectFolder = projectsFolder.getFolder(packageName)
-    ..create();
-  projectFolder
-      .getFile('pubspec.yaml')
-      .writeAsStringSync(pubspecContent);
+  var projectFolder = projectsFolder.getFolder(packageName)..create();
+  projectFolder.getFile('pubspec.yaml').writeAsStringSync(pubspecContent);
   var buffer = StringBuffer('''
 {
   "configVersion": 2,
