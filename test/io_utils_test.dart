@@ -2,6 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:dartdoc/src/generator/html_resources.g.dart' as resources;
+import 'package:dartdoc/src/generator/resource_loader.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:test/test.dart';
 
@@ -13,6 +16,31 @@ void main() {
 
     test('converts . to -', () {
       expect(getFileNameFor('dartdoc.generator'), 'dartdoc-generator.html');
+    });
+
+    test('resolvedExecutable locates a valid Dart executable', () {
+      var executable = PhysicalResourceProvider.INSTANCE.resolvedExecutable;
+      expect(executable, isNotEmpty);
+      expect(
+        PhysicalResourceProvider.INSTANCE.getFile(executable).exists,
+        isTrue,
+      );
+    });
+
+    test('loadResourceBytes loads package:dartdoc/resources files', () async {
+      var provider = PhysicalResourceProvider.INSTANCE;
+      var bytes = await provider.loadResourceBytes('docs.dart.js');
+      expect(bytes, isNotEmpty);
+    });
+
+    test('loadBundledResourceBytes matches all files in lib/resources',
+        () async {
+      var provider = PhysicalResourceProvider.INSTANCE;
+      for (var name in resources.resourceNames) {
+        var diskBytes = await provider.loadResourceBytes(name);
+        var bundledBytes = loadBundledResourceBytes(name);
+        expect(bundledBytes, equals(diskBytes), reason: 'Mismatch for $name');
+      }
     });
   });
 

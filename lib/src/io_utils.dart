@@ -12,6 +12,7 @@ import 'dart:io' as io;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:path/path.dart' as p show Context;
 
 const Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
@@ -53,7 +54,7 @@ extension ResourceProviderExtensions on ResourceProvider {
 
   String get resolvedExecutable {
     if (this is PhysicalResourceProvider) {
-      return io.Platform.resolvedExecutable;
+      return cli_util.dartExecutable ?? io.Platform.resolvedExecutable;
     } else {
       throw UnimplementedError('resolvedExecutable not implemented');
     }

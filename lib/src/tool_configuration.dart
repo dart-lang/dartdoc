@@ -119,7 +119,7 @@ class ToolConfiguration {
             pathContext.join(canonicalYamlPath, setupExecutableRelativePath));
         // Setup commands aren't snapshotted, since they're only run once.
         setupCommand = [
-          if (isDartSetupScript) Platform.resolvedExecutable,
+          if (isDartSetupScript) resourceProvider.resolvedExecutable,
           setupExecutable,
           ...setupCommand,
         ];

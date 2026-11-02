@@ -4,7 +4,7 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Platform, exitCode, stderr;
+import 'dart:io' show exitCode, stderr;
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
@@ -289,5 +289,4 @@ class DartdocResults {
   DartdocResults(this.packageMeta, this.packageGraph, this.outDir);
 }
 
-String get _dartdocFailedMessage =>
-    'dartdoc $packageVersion (${Platform.script.path}) failed';
+String get _dartdocFailedMessage => 'dartdoc $packageVersion failed';
