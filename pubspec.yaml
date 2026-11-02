@@ -39,5 +39,8 @@ dev_dependencies:
 executables:
   dartdoc: null
 
+# Needed until `cli_pkg` 2.16.1 (https://github.com/google/dart_cli_pkg/pull/268)
+# is published, as dev_dependency `sass` -> `cli_pkg` 2.16.0 constrains
+# `cli_util` to `^0.5.0`.
 dependency_overrides:
   cli_util: ^0.6.0
