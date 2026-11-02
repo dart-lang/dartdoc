@@ -8,6 +8,7 @@
 /// @author sgrekhov22@gmail.com
 library;
 
+import 'package:dartdoc/src/model/model.dart';
 import 'package:test/test.dart';
 import 'package:test_reflective_loader/test_reflective_loader.dart';
 
@@ -22,100 +23,63 @@ void main() {
 
 @reflectiveTest
 class PlacementTypeParametersTest extends Co19TestBase {
-  /// Check that doc comments placed inside a type parameter list are not
-  /// associated with the class or function.
-  void test_insideTypeParameterList1() async {
+  /// Checks that none of the [typeParameters] has documentation.
+  void expectNoTypeParameterDocs(List<TypeParameter> typeParameters) {
+    expect(typeParameters, hasLength(2));
+    for (var t in typeParameters) {
+      expect(t.documentation, isEmpty);
+    }
+  }
+
+  /// Check that doc comments placed inside a type parameter list of a class or
+  /// function are not associated with the class or function or with its type
+  /// parameters.
+  void test_insideTypeParameterList() async {
     var library = await bootLibrary('''
 class C</// Line 1
   T,
   /// Line 2
   U extends num> {}
 
-void foo<
-  /// Line 3
-  T,
-  /// Line 4
-  U extends num>() {}
-''');
-    var c = library.classes.named('C');
-    expect(c.documentation, isEmpty);
-    var foo = library.functions.named('foo');
-    expect(foo.documentation, isEmpty);
-  }
-
-  /// Check that block-based doc comments placed inside a type parameter list
-  /// are not associated with the class or function.
-  void test_blockInsideTypeParameterList1() async {
-    var library = await bootLibrary('''
-class C</** Line 1 */ T,
-  /** Line 2
-   */
-  U extends num> {}
-
-void foo<
-  /** Line 3 */
-  T,
-  /** Line 4
-   */
-  U extends num>() {}
-''');
-    var c = library.classes.named('C');
-    expect(c.documentation, isEmpty);
-    var foo = library.functions.named('foo');
-    expect(foo.documentation, isEmpty);
-  }
-
-  /// Check that doc comments placed before type parameters are ignored.
-  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/4302')
-  void test_insideTypeParameterList2() async {
-    var library = await bootLibrary('''
-class C</// Line 1
+void foo</// Line 1
   T,
   /// Line 2
-  U extends num> {}
-
-void foo<
-  /// Line 3
-  T,
-  /// Line 4
   U extends num>() {}
 ''');
     var c = library.classes.named('C');
-    expect(c.typeParameters.named('T').documentation, isEmpty);
-    expect(c.typeParameters.named('U').documentation, isEmpty);
+    expect(c.documentation, isEmpty);
+    expectNoTypeParameterDocs(c.typeParameters);
     var foo = library.functions.named('foo');
-    expect(foo.typeParameters.named('T').documentation, isEmpty);
-    expect(foo.typeParameters.named('U').documentation, isEmpty);
+    expect(foo.documentation, isEmpty);
+    expectNoTypeParameterDocs(foo.typeParameters);
   }
 
-  /// Check that block-based doc comments placed before type parameters are
-  /// ignored.
-  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/4302')
-  void test_blockInsideTypeParameterList2() async {
+  /// Check that block-based doc comments placed inside a type parameter list of
+  /// a class or function are not associated with the class or function or with
+  /// its type parameters.
+  void test_blockInsideTypeParameterList() async {
     var library = await bootLibrary('''
 class C</** Line 1 */ T,
   /** Line 2
    */
   U extends num> {}
 
-void foo<
-  /** Line 3 */
-  T,
-  /** Line 4
+void foo</** Line 1 */ T,
+  /** Line 2
    */
   U extends num>() {}
 ''');
     var c = library.classes.named('C');
-    expect(c.typeParameters.named('T').documentation, isEmpty);
-    expect(c.typeParameters.named('U').documentation, isEmpty);
+    expect(c.documentation, isEmpty);
+    expectNoTypeParameterDocs(c.typeParameters);
     var foo = library.functions.named('foo');
-    expect(foo.typeParameters.named('T').documentation, isEmpty);
-    expect(foo.typeParameters.named('U').documentation, isEmpty);
+    expect(foo.documentation, isEmpty);
+    expectNoTypeParameterDocs(foo.typeParameters);
   }
 
   /// Check that doc comments placed inside a type parameter list of a mixin are
-  /// not associated with the mixin.
-  void test_insideMixinTypeParameterList1() async {
+  /// not associated with the mixin or with its type parameters.
+  void test_insideMixinTypeParameterList() async {
     var library = await bootLibrary('''
 mixin M</// Line 1
   T,
@@ -124,11 +88,12 @@ mixin M</// Line 1
 ''');
     var mixinM = library.mixins.named('M');
     expect(mixinM.documentation, isEmpty);
+    expectNoTypeParameterDocs(mixinM.typeParameters);
   }
 
   /// Check that block-based doc comments placed inside a type parameter list of
-  /// a mixin are not associated with the mixin.
-  void test_blockInsideMixinTypeParameterList1() async {
+  /// a mixin are not associated with the mixin or with its type parameters.
+  void test_blockInsideMixinTypeParameterList() async {
     var library = await bootLibrary('''
 mixin M</** Line 1 */ T,
   /** Line 2
@@ -137,41 +102,12 @@ mixin M</** Line 1 */ T,
 ''');
     var mixinM = library.mixins.named('M');
     expect(mixinM.documentation, isEmpty);
-  }
-
-  /// Check that doc comments placed before type parameters of a mixin are
-  /// ignored.
-  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/4302')
-  void test_insideMixinTypeParameterList2() async {
-    var library = await bootLibrary('''
-mixin M</// Line 1
-  T,
-  /// Line 2
-  U extends num> {}
-''');
-    var mixinM = library.mixins.named('M');
-    expect(mixinM.typeParameters.named('T').documentation, isEmpty);
-    expect(mixinM.typeParameters.named('U').documentation, isEmpty);
-  }
-
-  /// Check that block-based doc comments placed before type parameters of a
-  /// mixin are ignored.
-  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/4302')
-  void test_blockInsideMixinTypeParameterList2() async {
-    var library = await bootLibrary('''
-mixin M</** Line 1 */ T,
-  /** Line 2
-   */
-  U extends num> {}
-''');
-    var mixinM = library.mixins.named('M');
-    expect(mixinM.typeParameters.named('T').documentation, isEmpty);
-    expect(mixinM.typeParameters.named('U').documentation, isEmpty);
+    expectNoTypeParameterDocs(mixinM.typeParameters);
   }
 
   /// Check that doc comments placed inside a type parameter list of a mixin
-  /// class are not associated with the mixin class.
-  void test_insideMixinClassTypeParameterList1() async {
+  /// class are not associated with the mixin class or with its type parameters.
+  void test_insideMixinClassTypeParameterList() async {
     var library = await bootLibrary('''
 mixin class MC</// Line 1
   T,
@@ -180,11 +116,13 @@ mixin class MC</// Line 1
 ''');
     var mc = library.classes.named('MC');
     expect(mc.documentation, isEmpty);
+    expectNoTypeParameterDocs(mc.typeParameters);
   }
 
   /// Check that block-based doc comments placed inside a type parameter list of
-  /// a mixin class are not associated with the mixin class.
-  void test_blockInsideMixinClassTypeParameterList1() async {
+  /// a mixin class are not associated with the mixin class or with its type
+  /// parameters.
+  void test_blockInsideMixinClassTypeParameterList() async {
     var library = await bootLibrary('''
 mixin class MC</** Line 1 */ T,
   /** Line 2
@@ -193,41 +131,12 @@ mixin class MC</** Line 1 */ T,
 ''');
     var mc = library.classes.named('MC');
     expect(mc.documentation, isEmpty);
-  }
-
-  /// Check that doc comments placed before type parameters of a mixin class are
-  /// ignored.
-  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/4302')
-  void test_insideMixinClassTypeParameterList2() async {
-    var library = await bootLibrary('''
-mixin class MC</// Line 1
-  T,
-  /// Line 2
-  U extends num> {}
-''');
-    var mc = library.classes.named('MC');
-    expect(mc.typeParameters.named('T').documentation, isEmpty);
-    expect(mc.typeParameters.named('U').documentation, isEmpty);
-  }
-
-  /// Check that block-based doc comments placed before type parameters of a
-  /// mixin class are ignored.
-  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/4302')
-  void test_blockInsideMixinClassTypeParameterList2() async {
-    var library = await bootLibrary('''
-mixin class MC</** Line 1 */ T,
-  /** Line 2
-   */
-  U extends num> {}
-''');
-    var mc = library.classes.named('MC');
-    expect(mc.typeParameters.named('T').documentation, isEmpty);
-    expect(mc.typeParameters.named('U').documentation, isEmpty);
+    expectNoTypeParameterDocs(mc.typeParameters);
   }
 
   /// Check that doc comments placed inside a type parameter list of an enum are
-  /// not associated with the enum.
-  void test_insideEnumTypeParameterList1() async {
+  /// not associated with the enum or with its type parameters.
+  void test_insideEnumTypeParameterList() async {
     var library = await bootLibrary('''
 enum E</// Line 1
   T,
@@ -238,11 +147,12 @@ enum E</// Line 1
 ''');
     var e = library.enums.named('E');
     expect(e.documentation, isEmpty);
+    expectNoTypeParameterDocs(e.typeParameters);
   }
 
   /// Check that block-based doc comments placed inside a type parameter list of
-  /// an enum are not associated with the enum.
-  void test_blockInsideEnumTypeParameterList1() async {
+  /// an enum are not associated with the enum or with its type parameters.
+  void test_blockInsideEnumTypeParameterList() async {
     var library = await bootLibrary('''
 enum E</** Line 1 */ T,
   /** Line 2
@@ -253,45 +163,13 @@ enum E</** Line 1 */ T,
 ''');
     var e = library.enums.named('E');
     expect(e.documentation, isEmpty);
-  }
-
-  /// Check that doc comments placed before type parameters of an enum are
-  /// ignored.
-  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/4302')
-  void test_insideEnumTypeParameterList2() async {
-    var library = await bootLibrary('''
-enum E</// Line 1
-  T,
-  /// Line 2
-  U extends num> {
-  e0;
-}
-''');
-    var e = library.enums.named('E');
-    expect(e.typeParameters.named('T').documentation, isEmpty);
-    expect(e.typeParameters.named('U').documentation, isEmpty);
-  }
-
-  /// Check that block-based doc comments placed before type parameters of an
-  /// enum are ignored.
-  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/4302')
-  void test_blockInsideEnumTypeParameterList2() async {
-    var library = await bootLibrary('''
-enum E</** Line 1 */ T,
-  /** Line 2
-   */
-  U extends num> {
-  e0;
-}
-''');
-    var e = library.enums.named('E');
-    expect(e.typeParameters.named('T').documentation, isEmpty);
-    expect(e.typeParameters.named('U').documentation, isEmpty);
+    expectNoTypeParameterDocs(e.typeParameters);
   }
 
   /// Check that doc comments placed inside a type parameter list of an
-  /// extension are not associated with the extension.
-  void test_insideExtensionTypeParameterList1() async {
+  /// extension are not associated with the extension or with its type
+  /// parameters.
+  void test_insideExtensionTypeParameterList() async {
     var library = await bootLibrary('''
 extension Ext</// Line 1
   T,
@@ -300,11 +178,13 @@ extension Ext</// Line 1
 ''');
     var ext = library.extensions.named('Ext');
     expect(ext.documentation, isEmpty);
+    expectNoTypeParameterDocs(ext.typeParameters);
   }
 
   /// Check that block-based doc comments placed inside a type parameter list of
-  /// an extension are not associated with the extension.
-  void test_blockInsideExtensionTypeParameterList1() async {
+  /// an extension are not associated with the extension or with its type
+  /// parameters.
+  void test_blockInsideExtensionTypeParameterList() async {
     var library = await bootLibrary('''
 extension Ext</** Line 1 */ T,
   /** Line 2
@@ -313,41 +193,13 @@ extension Ext</** Line 1 */ T,
 ''');
     var ext = library.extensions.named('Ext');
     expect(ext.documentation, isEmpty);
-  }
-
-  /// Check that doc comments placed before type parameters of an extension are
-  /// ignored.
-  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/4302')
-  void test_insideExtensionTypeParameterList2() async {
-    var library = await bootLibrary('''
-extension Ext</// Line 1
-  T,
-  /// Line 2
-  U extends num> on List<T> {}
-''');
-    var ext = library.extensions.named('Ext');
-    expect(ext.typeParameters.named('T').documentation, isEmpty);
-    expect(ext.typeParameters.named('U').documentation, isEmpty);
-  }
-
-  /// Check that block-based doc comments placed before type parameters of an
-  /// extension are ignored.
-  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/4302')
-  void test_blockInsideExtensionTypeParameterList2() async {
-    var library = await bootLibrary('''
-extension Ext</** Line 1 */ T,
-  /** Line 2
-   */
-  U extends num> on List<T> {}
-''');
-    var ext = library.extensions.named('Ext');
-    expect(ext.typeParameters.named('T').documentation, isEmpty);
-    expect(ext.typeParameters.named('U').documentation, isEmpty);
+    expectNoTypeParameterDocs(ext.typeParameters);
   }
 
   /// Check that doc comments placed inside a type parameter list of an
-  /// extension type are not associated with the extension type.
-  void test_insideExtensionTypeTypeParameterList1() async {
+  /// extension type are not associated with the extension type or with its type
+  /// parameters.
+  void test_insideExtensionTypeTypeParameterList() async {
     var library = await bootLibrary('''
 extension type ET</// Line 1
   T,
@@ -356,11 +208,13 @@ extension type ET</// Line 1
 ''');
     var et = library.extensionTypes.named('ET');
     expect(et.documentation, isEmpty);
+    expectNoTypeParameterDocs(et.typeParameters);
   }
 
   /// Check that block-based doc comments placed inside a type parameter list of
-  /// an extension type are not associated with the extension type.
-  void test_blockInsideExtensionTypeTypeParameterList1() async {
+  /// an extension type are not associated with the extension type or with its
+  /// type parameters.
+  void test_blockInsideExtensionTypeTypeParameterList() async {
     var library = await bootLibrary('''
 extension type ET</** Line 1 */ T,
   /** Line 2
@@ -369,35 +223,100 @@ extension type ET</** Line 1 */ T,
 ''');
     var et = library.extensionTypes.named('ET');
     expect(et.documentation, isEmpty);
+    expectNoTypeParameterDocs(et.typeParameters);
   }
 
-  /// Check that doc comments placed before type parameters of an extension type
-  /// are ignored.
-  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/4302')
-  void test_insideExtensionTypeTypeParameterList2() async {
+  /// Check that doc comments placed inside a type parameter list of a method
+  /// are not associated with the method or with its type parameters.
+  void test_insideMethodTypeParameterList() async {
     var library = await bootLibrary('''
-extension type ET</// Line 1
+class C {
+  void instanceMethod</// Line 1
   T,
   /// Line 2
-  U extends num>(int id) {}
+  U extends num>() {}
+
+  static void staticMethod</// Line 1
+  T,
+  /// Line 2
+  U extends num>() {}
+}
 ''');
-    var et = library.extensionTypes.named('ET');
-    expect(et.typeParameters.named('T').documentation, isEmpty);
-    expect(et.typeParameters.named('U').documentation, isEmpty);
+    var c = library.classes.named('C');
+    var m = c.instanceMethods.named('instanceMethod');
+    expect(m.documentation, isEmpty);
+    expectNoTypeParameterDocs(m.typeParameters);
+    var s = c.staticMethods.named('staticMethod');
+    expect(s.documentation, isEmpty);
+    expectNoTypeParameterDocs(s.typeParameters);
   }
 
-  /// Check that block-based doc comments placed before type parameters of an
-  /// extension type are ignored.
-  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/4302')
-  void test_blockInsideExtensionTypeTypeParameterList2() async {
+  /// Check that block-based doc comments placed inside a type parameter list of
+  /// a method are not associated with the method or with its type parameters.
+  void test_blockInsideMethodTypeParameterList() async {
     var library = await bootLibrary('''
-extension type ET</** Line 1 */ T,
+class C {
+  void instanceMethod</** Line 1 */ T,
   /** Line 2
    */
-  U extends num>(int id) {}
+  U extends num>() {}
+
+  static void staticMethod</** Line 1 */ T,
+  /** Line 2
+   */
+  U extends num>() {}
+}
 ''');
-    var et = library.extensionTypes.named('ET');
-    expect(et.typeParameters.named('T').documentation, isEmpty);
-    expect(et.typeParameters.named('U').documentation, isEmpty);
+    var c = library.classes.named('C');
+    var m = c.instanceMethods.named('instanceMethod');
+    expect(m.documentation, isEmpty);
+    expectNoTypeParameterDocs(m.typeParameters);
+    var s = c.staticMethods.named('staticMethod');
+    expect(s.documentation, isEmpty);
+    expectNoTypeParameterDocs(s.typeParameters);
+  }
+
+  /// Check that doc comments placed inside a type parameter list of a typedef
+  /// are not associated with the typedef or with its type parameters.
+  void test_insideTypedefTypeParameterList() async {
+    var library = await bootLibrary('''
+typedef F</// Line 1
+  T,
+  /// Line 2
+  U extends num> = void Function(T, U);
+
+typedef void G</// Line 1
+  T,
+  /// Line 2
+  U extends num>(T t, U u);
+''');
+    var f = library.typedefs.named('F');
+    expect(f.documentation, isEmpty);
+    expectNoTypeParameterDocs(f.typeParameters);
+    var g = library.typedefs.named('G');
+    expect(g.documentation, isEmpty);
+    expectNoTypeParameterDocs(g.typeParameters);
+  }
+
+  /// Check that block-based doc comments placed inside a type parameter list of
+  /// a typedef are not associated with the typedef or with its type parameters.
+  void test_blockInsideTypedefTypeParameterList() async {
+    var library = await bootLibrary('''
+typedef F</** Line 1 */ T,
+  /** Line 2
+   */
+  U extends num> = void Function(T, U);
+
+typedef void G</** Line 1 */ T,
+  /** Line 2
+   */
+  U extends num>(T t, U u);
+''');
+    var f = library.typedefs.named('F');
+    expect(f.documentation, isEmpty);
+    expectNoTypeParameterDocs(f.typeParameters);
+    var g = library.typedefs.named('G');
+    expect(g.documentation, isEmpty);
+    expectNoTypeParameterDocs(g.typeParameters);
   }
 }
