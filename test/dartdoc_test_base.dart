@@ -38,7 +38,7 @@ abstract class DartdocTestBase {
 
   String get dartCoreUrlPrefix => '$dartSdkUrlPrefix/dart-core';
 
-  String get dartSdkUrlPrefix => 'https://api.dart.dev/stable/3.10.6';
+  String get dartSdkUrlPrefix => sdkDocsUrlPrefix;
 
   String get sdkConstraint => '>=3.7.0 <4.0.0';
 

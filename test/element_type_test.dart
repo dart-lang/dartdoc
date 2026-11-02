@@ -16,10 +16,10 @@ void main() async {
   const placeholder = '%%__HTMLBASE_dartdoc_internal__%%';
   const linkPrefix = '$placeholder$libraryName';
 
-  const intLink =
-      '<a href="https://api.dart.dev/stable/3.10.6/dart-core/int-class.html">int</a>';
-  const stringLink =
-      '<a href="https://api.dart.dev/stable/3.10.6/dart-core/String-class.html">String</a>';
+  final intLink =
+      '<a href="$sdkDocsUrlPrefix/dart-core/int-class.html">int</a>';
+  final stringLink =
+      '<a href="$sdkDocsUrlPrefix/dart-core/String-class.html">String</a>';
 
   final packageMetaProvider = testPackageMetaProvider;
   final resourceProvider =
