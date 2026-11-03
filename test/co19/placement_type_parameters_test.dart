@@ -39,7 +39,17 @@ class PlacementTypeParametersTest extends Co19TestBase {
 class C</// Line 1
   T,
   /// Line 2
-  U extends num> {}
+  U extends num> {
+  void instanceMethod</// Line 1
+    T,
+    /// Line 2
+    U extends num>() {}
+
+  static void staticMethod</// Line 1
+    T,
+    /// Line 2
+    U extends num>() {}
+}
 
 void foo</// Line 1
   T,
@@ -49,6 +59,12 @@ void foo</// Line 1
     var c = library.classes.named('C');
     expect(c.documentation, isEmpty);
     expectNoTypeParameterDocs(c.typeParameters);
+    var cM = c.instanceMethods.named('instanceMethod');
+    expect(cM.documentation, isEmpty);
+    expectNoTypeParameterDocs(cM.typeParameters);
+    var cS = c.staticMethods.named('staticMethod');
+    expect(cS.documentation, isEmpty);
+    expectNoTypeParameterDocs(cS.typeParameters);
     var foo = library.functions.named('foo');
     expect(foo.documentation, isEmpty);
     expectNoTypeParameterDocs(foo.typeParameters);
@@ -62,7 +78,17 @@ void foo</// Line 1
 class C</** Line 1 */ T,
   /** Line 2
    */
-  U extends num> {}
+  U extends num> {
+  void instanceMethod</** Line 1 */ T,
+    /** Line 2
+     */
+    U extends num>() {}
+
+  static void staticMethod</** Line 1 */ T,
+    /** Line 2
+     */
+    U extends num>() {}
+}
 
 void foo</** Line 1 */ T,
   /** Line 2
@@ -72,6 +98,12 @@ void foo</** Line 1 */ T,
     var c = library.classes.named('C');
     expect(c.documentation, isEmpty);
     expectNoTypeParameterDocs(c.typeParameters);
+    var cM = c.instanceMethods.named('instanceMethod');
+    expect(cM.documentation, isEmpty);
+    expectNoTypeParameterDocs(cM.typeParameters);
+    var cS = c.staticMethods.named('staticMethod');
+    expect(cS.documentation, isEmpty);
+    expectNoTypeParameterDocs(cS.typeParameters);
     var foo = library.functions.named('foo');
     expect(foo.documentation, isEmpty);
     expectNoTypeParameterDocs(foo.typeParameters);
@@ -84,11 +116,27 @@ void foo</** Line 1 */ T,
 mixin M</// Line 1
   T,
   /// Line 2
-  U extends num> {}
+  U extends num> {
+  void instanceMethod</// Line 1
+    T,
+    /// Line 2
+    U extends num>() {}
+
+  static void staticMethod</// Line 1
+    T,
+    /// Line 2
+    U extends num>() {}
+}
 ''');
     var mixinM = library.mixins.named('M');
     expect(mixinM.documentation, isEmpty);
     expectNoTypeParameterDocs(mixinM.typeParameters);
+    var mixinMM = mixinM.instanceMethods.named('instanceMethod');
+    expect(mixinMM.documentation, isEmpty);
+    expectNoTypeParameterDocs(mixinMM.typeParameters);
+    var mixinMS = mixinM.staticMethods.named('staticMethod');
+    expect(mixinMS.documentation, isEmpty);
+    expectNoTypeParameterDocs(mixinMS.typeParameters);
   }
 
   /// Check that block-based doc comments placed inside a type parameter list of
@@ -98,11 +146,27 @@ mixin M</// Line 1
 mixin M</** Line 1 */ T,
   /** Line 2
    */
-  U extends num> {}
+  U extends num> {
+  void instanceMethod</** Line 1 */ T,
+    /** Line 2
+     */
+    U extends num>() {}
+
+  static void staticMethod</** Line 1 */ T,
+    /** Line 2
+     */
+    U extends num>() {}
+}
 ''');
     var mixinM = library.mixins.named('M');
     expect(mixinM.documentation, isEmpty);
     expectNoTypeParameterDocs(mixinM.typeParameters);
+    var mixinMM = mixinM.instanceMethods.named('instanceMethod');
+    expect(mixinMM.documentation, isEmpty);
+    expectNoTypeParameterDocs(mixinMM.typeParameters);
+    var mixinMS = mixinM.staticMethods.named('staticMethod');
+    expect(mixinMS.documentation, isEmpty);
+    expectNoTypeParameterDocs(mixinMS.typeParameters);
   }
 
   /// Check that doc comments placed inside a type parameter list of a mixin
@@ -112,11 +176,27 @@ mixin M</** Line 1 */ T,
 mixin class MC</// Line 1
   T,
   /// Line 2
-  U extends num> {}
+  U extends num> {
+  void instanceMethod</// Line 1
+    T,
+    /// Line 2
+    U extends num>() {}
+
+  static void staticMethod</// Line 1
+    T,
+    /// Line 2
+    U extends num>() {}
+}
 ''');
     var mc = library.classes.named('MC');
     expect(mc.documentation, isEmpty);
     expectNoTypeParameterDocs(mc.typeParameters);
+    var mcM = mc.instanceMethods.named('instanceMethod');
+    expect(mcM.documentation, isEmpty);
+    expectNoTypeParameterDocs(mcM.typeParameters);
+    var mcS = mc.staticMethods.named('staticMethod');
+    expect(mcS.documentation, isEmpty);
+    expectNoTypeParameterDocs(mcS.typeParameters);
   }
 
   /// Check that block-based doc comments placed inside a type parameter list of
@@ -127,11 +207,27 @@ mixin class MC</// Line 1
 mixin class MC</** Line 1 */ T,
   /** Line 2
    */
-  U extends num> {}
+  U extends num> {
+  void instanceMethod</** Line 1 */ T,
+    /** Line 2
+     */
+    U extends num>() {}
+
+  static void staticMethod</** Line 1 */ T,
+    /** Line 2
+     */
+    U extends num>() {}
+}
 ''');
     var mc = library.classes.named('MC');
     expect(mc.documentation, isEmpty);
     expectNoTypeParameterDocs(mc.typeParameters);
+    var mcM = mc.instanceMethods.named('instanceMethod');
+    expect(mcM.documentation, isEmpty);
+    expectNoTypeParameterDocs(mcM.typeParameters);
+    var mcS = mc.staticMethods.named('staticMethod');
+    expect(mcS.documentation, isEmpty);
+    expectNoTypeParameterDocs(mcS.typeParameters);
   }
 
   /// Check that doc comments placed inside a type parameter list of an enum are
@@ -143,11 +239,27 @@ enum E</// Line 1
   /// Line 2
   U extends num> {
   e0;
+
+  void instanceMethod</// Line 1
+    T,
+    /// Line 2
+    U extends num>() {}
+
+  static void staticMethod</// Line 1
+    T,
+    /// Line 2
+    U extends num>() {}
 }
 ''');
     var e = library.enums.named('E');
     expect(e.documentation, isEmpty);
     expectNoTypeParameterDocs(e.typeParameters);
+    var eM = e.instanceMethods.named('instanceMethod');
+    expect(eM.documentation, isEmpty);
+    expectNoTypeParameterDocs(eM.typeParameters);
+    var eS = e.staticMethods.named('staticMethod');
+    expect(eS.documentation, isEmpty);
+    expectNoTypeParameterDocs(eS.typeParameters);
   }
 
   /// Check that block-based doc comments placed inside a type parameter list of
@@ -159,11 +271,27 @@ enum E</** Line 1 */ T,
    */
   U extends num> {
   e0;
+
+  void instanceMethod</** Line 1 */ T,
+    /** Line 2
+     */
+    U extends num>() {}
+
+  static void staticMethod</** Line 1 */ T,
+    /** Line 2
+     */
+    U extends num>() {}
 }
 ''');
     var e = library.enums.named('E');
     expect(e.documentation, isEmpty);
     expectNoTypeParameterDocs(e.typeParameters);
+    var eM = e.instanceMethods.named('instanceMethod');
+    expect(eM.documentation, isEmpty);
+    expectNoTypeParameterDocs(eM.typeParameters);
+    var eS = e.staticMethods.named('staticMethod');
+    expect(eS.documentation, isEmpty);
+    expectNoTypeParameterDocs(eS.typeParameters);
   }
 
   /// Check that doc comments placed inside a type parameter list of an
@@ -174,11 +302,27 @@ enum E</** Line 1 */ T,
 extension Ext</// Line 1
   T,
   /// Line 2
-  U extends num> on List<T> {}
+  U extends num> on List<T> {
+  void instanceMethod</// Line 1
+    T,
+    /// Line 2
+    U extends num>() {}
+
+  static void staticMethod</// Line 1
+    T,
+    /// Line 2
+    U extends num>() {}
+}
 ''');
     var ext = library.extensions.named('Ext');
     expect(ext.documentation, isEmpty);
     expectNoTypeParameterDocs(ext.typeParameters);
+    var extM = ext.instanceMethods.named('instanceMethod');
+    expect(extM.documentation, isEmpty);
+    expectNoTypeParameterDocs(extM.typeParameters);
+    var extS = ext.staticMethods.named('staticMethod');
+    expect(extS.documentation, isEmpty);
+    expectNoTypeParameterDocs(extS.typeParameters);
   }
 
   /// Check that block-based doc comments placed inside a type parameter list of
@@ -189,11 +333,27 @@ extension Ext</// Line 1
 extension Ext</** Line 1 */ T,
   /** Line 2
    */
-  U extends num> on List<T> {}
+  U extends num> on List<T> {
+  void instanceMethod</** Line 1 */ T,
+    /** Line 2
+     */
+    U extends num>() {}
+
+  static void staticMethod</** Line 1 */ T,
+    /** Line 2
+     */
+    U extends num>() {}
+}
 ''');
     var ext = library.extensions.named('Ext');
     expect(ext.documentation, isEmpty);
     expectNoTypeParameterDocs(ext.typeParameters);
+    var extM = ext.instanceMethods.named('instanceMethod');
+    expect(extM.documentation, isEmpty);
+    expectNoTypeParameterDocs(extM.typeParameters);
+    var extS = ext.staticMethods.named('staticMethod');
+    expect(extS.documentation, isEmpty);
+    expectNoTypeParameterDocs(extS.typeParameters);
   }
 
   /// Check that doc comments placed inside a type parameter list of an
@@ -204,11 +364,27 @@ extension Ext</** Line 1 */ T,
 extension type ET</// Line 1
   T,
   /// Line 2
-  U extends num>(int id) {}
+  U extends num>(int id) {
+  void instanceMethod</// Line 1
+    T,
+    /// Line 2
+    U extends num>() {}
+
+  static void staticMethod</// Line 1
+    T,
+    /// Line 2
+    U extends num>() {}
+}
 ''');
     var et = library.extensionTypes.named('ET');
     expect(et.documentation, isEmpty);
     expectNoTypeParameterDocs(et.typeParameters);
+    var etM = et.instanceMethods.named('instanceMethod');
+    expect(etM.documentation, isEmpty);
+    expectNoTypeParameterDocs(etM.typeParameters);
+    var etS = et.staticMethods.named('staticMethod');
+    expect(etS.documentation, isEmpty);
+    expectNoTypeParameterDocs(etS.typeParameters);
   }
 
   /// Check that block-based doc comments placed inside a type parameter list of
@@ -219,61 +395,27 @@ extension type ET</// Line 1
 extension type ET</** Line 1 */ T,
   /** Line 2
    */
-  U extends num>(int id) {}
+  U extends num>(int id) {
+  void instanceMethod</** Line 1 */ T,
+    /** Line 2
+     */
+    U extends num>() {}
+
+  static void staticMethod</** Line 1 */ T,
+    /** Line 2
+     */
+    U extends num>() {}
+}
 ''');
     var et = library.extensionTypes.named('ET');
     expect(et.documentation, isEmpty);
     expectNoTypeParameterDocs(et.typeParameters);
-  }
-
-  /// Check that doc comments placed inside a type parameter list of a method
-  /// are not associated with the method or with its type parameters.
-  void test_insideMethodTypeParameterList() async {
-    var library = await bootLibrary('''
-class C {
-  void instanceMethod</// Line 1
-  T,
-  /// Line 2
-  U extends num>() {}
-
-  static void staticMethod</// Line 1
-  T,
-  /// Line 2
-  U extends num>() {}
-}
-''');
-    var c = library.classes.named('C');
-    var m = c.instanceMethods.named('instanceMethod');
-    expect(m.documentation, isEmpty);
-    expectNoTypeParameterDocs(m.typeParameters);
-    var s = c.staticMethods.named('staticMethod');
-    expect(s.documentation, isEmpty);
-    expectNoTypeParameterDocs(s.typeParameters);
-  }
-
-  /// Check that block-based doc comments placed inside a type parameter list of
-  /// a method are not associated with the method or with its type parameters.
-  void test_blockInsideMethodTypeParameterList() async {
-    var library = await bootLibrary('''
-class C {
-  void instanceMethod</** Line 1 */ T,
-  /** Line 2
-   */
-  U extends num>() {}
-
-  static void staticMethod</** Line 1 */ T,
-  /** Line 2
-   */
-  U extends num>() {}
-}
-''');
-    var c = library.classes.named('C');
-    var m = c.instanceMethods.named('instanceMethod');
-    expect(m.documentation, isEmpty);
-    expectNoTypeParameterDocs(m.typeParameters);
-    var s = c.staticMethods.named('staticMethod');
-    expect(s.documentation, isEmpty);
-    expectNoTypeParameterDocs(s.typeParameters);
+    var etM = et.instanceMethods.named('instanceMethod');
+    expect(etM.documentation, isEmpty);
+    expectNoTypeParameterDocs(etM.typeParameters);
+    var etS = et.staticMethods.named('staticMethod');
+    expect(etS.documentation, isEmpty);
+    expectNoTypeParameterDocs(etS.typeParameters);
   }
 
   /// Check that doc comments placed inside a type parameter list of a typedef
