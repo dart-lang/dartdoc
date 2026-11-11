@@ -151,4 +151,260 @@ class C {
     var c3 = c.constructors.named('C.factory');
     expect(c3.parameters.named('x').documentation, isEmpty);
   }
+
+  /// Check that doc comments placed inside a parameter list of an enum
+  /// constructor are not associated with the constructor.
+  void test_enumConstructorParameters1() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  e0(0);
+  final int z;
+
+  const E(/// Line 1
+    int x, [
+    /// Line 2
+    this.z = 0]);
+
+  const E.named({
+    /// Line 3
+    int x = 0,
+    /// Line 4
+    required this.z});
+
+  factory E.factory(/// Line 5
+    int x) => E.e0;
+}
+''');
+    var e = library.enums.named('E');
+    var c1 = e.constructors.named('E.new');
+    expect(c1.documentation, isEmpty);
+    var c2 = e.constructors.named('E.named');
+    expect(c2.documentation, isEmpty);
+    var c3 = e.constructors.named('E.factory');
+    expect(c3.documentation, isEmpty);
+  }
+
+  /// Check that doc comments placed inside a parameter list of an enum
+  /// constructor are ignored.
+  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/1259')
+  void test_enumConstructorParameters2() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  e0(0);
+  final int z;
+
+  const E(/// Line 1
+    int x, [
+    /// Line 2
+    this.z = 0]);
+
+  const E.named({
+    /// Line 3
+    int x = 0,
+    /// Line 4
+    required this.z});
+
+  factory E.factory(/// Line 5
+    int x) => E.e0;
+}
+''');
+    var e = library.enums.named('E');
+    var c1 = e.constructors.named('E.new');
+    expect(c1.parameters.named('x').documentation, isEmpty);
+    expect(c1.parameters.named('z').documentation, isEmpty);
+    var c2 = e.constructors.named('E.named');
+    expect(c2.parameters.named('x').documentation, isEmpty);
+    expect(c2.parameters.named('z').documentation, isEmpty);
+    var c3 = e.constructors.named('E.factory');
+    expect(c3.parameters.named('x').documentation, isEmpty);
+  }
+
+  /// Check that block-based doc comments placed inside a parameter list of an
+  /// enum constructor are not associated with the constructor.
+  void test_blockEnumConstructorParameters1() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  e0(0);
+  final int z;
+
+  const E(/** Line 1 */ int x, [
+    /** Line 2
+     */
+    this.z = 0]);
+
+  const E.named({
+    /** Line 3 */
+    int x = 0,
+    /** Line 4
+     */
+    required this.z});
+
+  factory E.factory(/** Line 5 */ int x) => E.e0;
+}
+''');
+    var e = library.enums.named('E');
+    var c1 = e.constructors.named('E.new');
+    expect(c1.documentation, isEmpty);
+    var c2 = e.constructors.named('E.named');
+    expect(c2.documentation, isEmpty);
+    var c3 = e.constructors.named('E.factory');
+    expect(c3.documentation, isEmpty);
+  }
+
+  /// Check that block-based doc comments placed inside a parameter list of an
+  /// enum constructor are ignored.
+  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/1259')
+  void test_blockEnumConstructorParameters2() async {
+    var library = await bootPackageWithLibrary('''
+enum E {
+  e0(0);
+  final int z;
+
+  const E(/** Line 1 */ int x, [
+    /** Line 2
+     */
+    this.z = 0]);
+
+  const E.named({
+    /** Line 3 */
+    int x = 0,
+    /** Line 4
+     */
+    required this.z});
+
+  factory E.factory(/** Line 5 */ int x) => E.e0;
+}
+''');
+    var e = library.enums.named('E');
+    var c1 = e.constructors.named('E.new');
+    expect(c1.parameters.named('x').documentation, isEmpty);
+    expect(c1.parameters.named('z').documentation, isEmpty);
+    var c2 = e.constructors.named('E.named');
+    expect(c2.parameters.named('x').documentation, isEmpty);
+    expect(c2.parameters.named('z').documentation, isEmpty);
+    var c3 = e.constructors.named('E.factory');
+    expect(c3.parameters.named('x').documentation, isEmpty);
+  }
+
+  /// Check that doc comments placed inside a parameter list of an extension
+  /// type constructor are not associated with the constructor.
+  void test_extensionTypeConstructorParameters1() async {
+    var library = await bootPackageWithLibrary('''
+extension type ET._(int z) {
+  ET(/// Line 1
+    int x, [
+    /// Line 2
+    this.z = 0]);
+
+  ET.named({
+    /// Line 3
+    int x = 0,
+    /// Line 4
+    required this.z});
+
+  factory ET.factory(/// Line 5
+    int x) => ET(x);
+}
+''');
+    var et = library.extensionTypes.named('ET');
+    var c1 = et.constructors.named('ET.new');
+    expect(c1.documentation, isEmpty);
+    var c2 = et.constructors.named('ET.named');
+    expect(c2.documentation, isEmpty);
+    var c3 = et.constructors.named('ET.factory');
+    expect(c3.documentation, isEmpty);
+  }
+
+  /// Check that doc comments placed inside a parameter list of an extension
+  /// type constructor are ignored.
+  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/1259')
+  void test_extensionTypeConstructorParameters2() async {
+    var library = await bootPackageWithLibrary('''
+extension type ET._(int z) {
+  ET(/// Line 1
+    int x, [
+    /// Line 2
+    this.z = 0]);
+
+  ET.named({
+    /// Line 3
+    int x = 0,
+    /// Line 4
+    required this.z});
+
+  factory ET.factory(/// Line 5
+    int x) => ET(x);
+}
+''');
+    var et = library.extensionTypes.named('ET');
+    var c1 = et.constructors.named('ET.new');
+    expect(c1.parameters.named('x').documentation, isEmpty);
+    expect(c1.parameters.named('z').documentation, isEmpty);
+    var c2 = et.constructors.named('ET.named');
+    expect(c2.parameters.named('x').documentation, isEmpty);
+    expect(c2.parameters.named('z').documentation, isEmpty);
+    var c3 = et.constructors.named('ET.factory');
+    expect(c3.parameters.named('x').documentation, isEmpty);
+  }
+
+  /// Check that block-based doc comments placed inside a parameter list of an
+  /// extension type constructor are not associated with the constructor.
+  void test_blockExtensionTypeConstructorParameters1() async {
+    var library = await bootPackageWithLibrary('''
+extension type ET._(int z) {
+  ET(/** Line 1 */ int x, [
+    /** Line 2
+     */
+    this.z = 0]);
+
+  ET.named({
+    /** Line 3 */
+    int x = 0,
+    /** Line 4
+     */
+    required this.z});
+
+  factory ET.factory(/** Line 5 */ int x) => ET(x);
+}
+''');
+    var et = library.extensionTypes.named('ET');
+    var c1 = et.constructors.named('ET.new');
+    expect(c1.documentation, isEmpty);
+    var c2 = et.constructors.named('ET.named');
+    expect(c2.documentation, isEmpty);
+    var c3 = et.constructors.named('ET.factory');
+    expect(c3.documentation, isEmpty);
+  }
+
+  /// Check that block-based doc comments placed inside a parameter list of an
+  /// extension type constructor are ignored.
+  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/1259')
+  void test_blockExtensionTypeConstructorParameters2() async {
+    var library = await bootPackageWithLibrary('''
+extension type ET._(int z) {
+  ET(/** Line 1 */ int x, [
+    /** Line 2
+     */
+    this.z = 0]);
+
+  ET.named({
+    /** Line 3 */
+    int x = 0,
+    /** Line 4
+     */
+    required this.z});
+
+  factory ET.factory(/** Line 5 */ int x) => ET(x);
+}
+''');
+    var et = library.extensionTypes.named('ET');
+    var c1 = et.constructors.named('ET.new');
+    expect(c1.parameters.named('x').documentation, isEmpty);
+    expect(c1.parameters.named('z').documentation, isEmpty);
+    var c2 = et.constructors.named('ET.named');
+    expect(c2.parameters.named('x').documentation, isEmpty);
+    expect(c2.parameters.named('z').documentation, isEmpty);
+    var c3 = et.constructors.named('ET.factory');
+    expect(c3.parameters.named('x').documentation, isEmpty);
+  }
 }
