@@ -113,4 +113,74 @@ void bar({
     expect(bar.parameters.named('x').documentation, isEmpty);
     expect(bar.parameters.named('y').documentation, isEmpty);
   }
+
+  /// Check that doc comments placed inside a parameter list of a top-level
+  /// setter are not associated with the setter.
+  void test_setterParameters1() async {
+    var library = await bootPackageWithLibrary('''
+set foo(/// Line 1
+  int x) {}
+
+set bar(
+  /// Line 2
+  int x) {}
+''');
+    var foo = library.properties.named('foo');
+    expect(foo.documentation, isEmpty);
+    var bar = library.properties.named('bar');
+    expect(bar.documentation, isEmpty);
+  }
+
+  /// Check that doc comments placed inside a parameter list of a top-level
+  /// setter are ignored.
+  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/1259')
+  void test_setterParameters2() async {
+    var library = await bootPackageWithLibrary('''
+set foo(/// Line 1
+  int x) {}
+
+set bar(
+  /// Line 2
+  int x) {}
+''');
+    var foo = library.properties.named('foo');
+    expect(foo.parameters.named('x').documentation, isEmpty);
+    var bar = library.properties.named('bar');
+    expect(bar.parameters.named('x').documentation, isEmpty);
+  }
+
+  /// Check that block-based doc comments placed inside a parameter list of a
+  /// top-level setter are not associated with the setter.
+  void test_blockSetterParameters1() async {
+    var library = await bootPackageWithLibrary('''
+set foo(/** Line 1 */ int x) {}
+
+set bar(
+  /** Line 2
+   */
+  int x) {}
+''');
+    var foo = library.properties.named('foo');
+    expect(foo.documentation, isEmpty);
+    var bar = library.properties.named('bar');
+    expect(bar.documentation, isEmpty);
+  }
+
+  /// Check that block-based doc comments placed inside a parameter list of a
+  /// top-level setter are ignored.
+  @FailingTest(reason: 'https://github.com/dart-lang/dartdoc/issues/1259')
+  void test_blockSetterParameters2() async {
+    var library = await bootPackageWithLibrary('''
+set foo(/** Line 1 */ int x) {}
+
+set bar(
+  /** Line 2
+   */
+  int x) {}
+''');
+    var foo = library.properties.named('foo');
+    expect(foo.parameters.named('x').documentation, isEmpty);
+    var bar = library.properties.named('bar');
+    expect(bar.parameters.named('x').documentation, isEmpty);
+  }
 }
