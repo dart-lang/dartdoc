@@ -47,6 +47,29 @@ mixin ContainerMember on ModelElement {
   Container? computeCanonicalEnclosingContainer() =>
       packageGraph.findCanonicalModelElementFor(enclosingElement) as Container?;
 
+  /// The model element to link to for a reference to this member, where
+  /// [container] is the class the reference names, as `C` in `[C.m]`, or the
+  /// class whose documentation contains an unqualified reference.
+  ///
+  /// Usually this is the member itself. A member whose declaring class has no
+  /// page, as for a private class, is documented on the public classes that
+  /// inherit it. For such a member the result is the model element on
+  /// [container], or on the nearest superclass of [container] that documents
+  /// the member. If there is none, as when [container] overrides the member,
+  /// this member is returned and still has no page.
+  ContainerMember documentedOn(InheritingContainer? container) {
+    if (canonicalModelElement != null) return this;
+    // Inheritance happens among classes, mixins, enums and extension types,
+    // the [InheritingContainer]s. An extension member is never inherited, so
+    // it has no copy elsewhere, and for one without a page
+    // `findCanonicalModelElementFor` would construct a model on [container]
+    // rather than find one.
+    if (definingEnclosingContainer is! InheritingContainer) return this;
+    var documented = packageGraph.findCanonicalModelElementFor(this,
+        preferredClass: container);
+    return documented is ContainerMember ? documented : this;
+  }
+
   @override
   // TODO(jcollins-g): dart-lang/dartdoc#2693.
   Iterable<Container> get referenceParents =>

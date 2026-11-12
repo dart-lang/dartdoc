@@ -176,8 +176,47 @@ MatchingLinkResult _getMatchingLinkElement(
   var lookupResult =
       element.referenceBy(commentReference.referenceBy, filter: filter);
 
+  if (lookupResult is ContainerMember &&
+      lookupResult.canonicalModelElement == null &&
+      element is ModelElement) {
+    // The lookup may land on a declaration in a class without a page, e.g.
+    // a private class. The member is then documented on the classes that
+    // inherit it. Link the copy on the class the reference was reached
+    // through: the class a qualified reference names, or else the class whose
+    // documentation the reference appears in.
+    lookupResult =
+        lookupResult.documentedOn(_qualifierOf(commentReference, element) ??
+            switch (element.enclosingElement) {
+              InheritingContainer c => c,
+              _ => null,
+            });
+  }
+
   // TODO(jcollins-g): Consider prioritizing analyzer resolution before custom.
   return MatchingLinkResult(lookupResult);
+}
+
+/// The container that a qualified [commentReference] names, such as `C` in
+/// `[C.member]`, looked up from [element], or `null` for an unqualified
+/// reference or one whose qualifier is not a container. A typedef names the
+/// class it aliases.
+// TODO(zarah): Remove once references are resolved through the analyzer
+// (https://github.com/dart-lang/dartdoc/issues/4283); the analyzer's
+// resolution of the reference provides the qualifier.
+InheritingContainer? _qualifierOf(
+    ModelCommentReference commentReference, ModelElement element) {
+  var parts = commentReference.referenceBy;
+  if (parts.length < 2) return null;
+  // Look the qualifier up as the reference `[C]` would be looked up: with the
+  // filter for a reference without a callable hint, so that `C` resolves to
+  // the class rather than to its unnamed constructor.
+  var qualifier = element.referenceBy(parts.sublist(0, parts.length - 1),
+      filter: _rejectUnnamedAndShadowingConstructors);
+  var container = switch (qualifier) {
+    ClassTypedef(:var modelType) => modelType.modelElement,
+    _ => qualifier,
+  };
+  return container is InheritingContainer ? container : null;
 }
 
 /// Creates a [MatchingLinkResult] for [referenceText], the text of a doc
