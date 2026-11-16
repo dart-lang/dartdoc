@@ -6,6 +6,7 @@ import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/utils.dart';
 import 'package:meta/meta.dart';
 
 class Enum extends InheritingContainer with Constructable, MixedInTypes {
@@ -114,7 +115,8 @@ class EnumField extends Field {
   @override
   String get linkedName {
     var cssClass = isDeprecated ? ' class="deprecated"' : '';
-    return '<a$cssClass href="$href#$htmlId">$name</a>';
+    var href = htmlAttributeEscape.convert('${this.href}#$htmlId');
+    return '<a$cssClass href="$href">$name</a>';
   }
 
   @override

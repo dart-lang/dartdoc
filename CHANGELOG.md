@@ -1,4 +1,8 @@
 ## 9.1.0-wip
+* The URL produced by `linkTo.url` must now be a plain `http(s)` URL, and is
+  HTML-escaped when written into links to a package's elements. An invalid URL
+  is ignored with an `invalid-url` warning, and no links to the package are
+  generated.
 * The URL produced by `linkToSource.uriTemplate` must now be a plain `http(s)`
   URL, and is HTML-escaped when written into the "view source" link. An invalid
   URL is ignored with a new `invalid-url` warning.
