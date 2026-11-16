@@ -1,4 +1,6 @@
 ## 9.1.0-wip
+* Link Dart SDK API references to unversioned `https://api.dart.dev` URLs by
+  default, subset Material Symbols icons, and defer page scripts.
 * Support standalone AOT compilation (`dart install` / `dart compile exe`) by resolving the Dart SDK via `package:cli_util` and embedding `lib/resources/` in `html_resources.g.dart`.
 * Import `package:analyzer/dart/ast/ast.dart` with explicit `show` names, so
   that new analyzer AST classes (such as `TopLevelVariable`) do not conflict
