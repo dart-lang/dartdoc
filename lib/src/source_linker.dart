@@ -8,6 +8,8 @@ library;
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/utils.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 
 final _uriTemplateRegExp = RegExp(r'(%[frl]%)');
@@ -65,6 +67,9 @@ class SourceLinker {
   final String? root;
   final String? uriTemplate;
 
+  /// Called with the URL when [href] rejects it as not a plain http(s) URL.
+  final void Function(String url)? onInvalidUrl;
+
   /// Most users of this class should use the [SourceLinker.fromElement] factory
   /// instead.  This constructor is public for testing.
   SourceLinker(
@@ -73,7 +78,8 @@ class SourceLinker {
       required this.sourceFileName,
       this.revision,
       this.root,
-      this.uriTemplate}) {
+      this.uriTemplate,
+      this.onInvalidUrl}) {
     if (revision != null || root != null || uriTemplate != null) {
       if (root == null || uriTemplate == null) {
         throw DartdocOptionError(
@@ -102,9 +108,24 @@ class SourceLinker {
       revision: config.linkToSourceRevision,
       root: config.linkToSourceRoot,
       uriTemplate: config.linkToSourceUriTemplate,
+      // Warn on the default package, not on `element.package`: warnings on
+      // non-local packages are hidden by default, but this one affects the
+      // output of the package being documented. Leaving the element out of the
+      // message deduplicates the warning to once per package.
+      onInvalidUrl: (url) =>
+          element.packageGraph.defaultPackage.warn(PackageWarning.invalidUrl,
+              message: 'linkToSource.uriTemplate '
+                  "'${config.linkToSourceUriTemplate}' "
+                  'in package:${element.package.name}'),
     );
   }
 
+  /// The URL of the source of [sourceFileName] at [lineNumber], or the empty
+  /// string if there is none.
+  ///
+  /// [uriTemplate] comes from a `dartdoc_options.yaml`, possibly a dependency's,
+  /// and the result is written into an `href` attribute, so anything that is
+  /// not a plain http(s) URL is rejected (see [isSafeHttpUrl]).
   String href() {
     var root = this.root;
     var uriTemplate = this.uriTemplate;
@@ -116,7 +137,7 @@ class SourceLinker {
             .any((String exclude) => path.isWithin(exclude, sourceFileName))) {
       return '';
     }
-    return uriTemplate.replaceAllMapped(_uriTemplateRegExp, (match) {
+    var href = uriTemplate.replaceAllMapped(_uriTemplateRegExp, (match) {
       return switch (match[1]) {
         '%f%' => path.url
             .joinAll(path.split(path.relative(sourceFileName, from: root))),
@@ -125,5 +146,10 @@ class SourceLinker {
         _ => ''
       };
     });
+    if (!isSafeHttpUrl(href)) {
+      onInvalidUrl?.call(href);
+      return '';
+    }
+    return href;
   }
 }

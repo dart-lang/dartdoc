@@ -24,6 +24,7 @@ import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/type_utils.dart';
+import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show Context;
@@ -479,7 +480,10 @@ abstract class ModelElement
 
   bool get hasSourceHref => sourceHref.isNotEmpty;
 
-  late final String sourceHref = SourceLinker.fromElement(this).href();
+  /// The URL of this element's source, escaped for an HTML attribute (see
+  /// `_source_link.html`), or the empty string if there is none.
+  late final String sourceHref =
+      htmlAttributeEscape.convert(SourceLinker.fromElement(this).href());
 
   Library get canonicalLibraryOrThrow {
     final canonicalLibrary = this.canonicalLibrary;
