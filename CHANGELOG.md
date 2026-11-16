@@ -1,4 +1,6 @@
 ## 9.1.0-wip
+* Lazy-load `index.json` on search interaction with an in-flight loading
+  indicator instead of fetching it on every page load.
 * Support standalone AOT compilation (`dart install` / `dart compile exe`) by resolving the Dart SDK via `package:cli_util` and embedding `lib/resources/` in `html_resources.g.dart`.
 * Import `package:analyzer/dart/ast/ast.dart` with explicit `show` names, so
   that new analyzer AST classes (such as `TopLevelVariable`) do not conflict

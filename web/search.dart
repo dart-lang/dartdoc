@@ -2,13 +2,21 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
 
 import 'package:dartdoc/src/search.dart';
+import 'package:meta/meta.dart';
 import 'package:web/web.dart';
 
-final String _htmlBase = () {
+const _searchPlaceholder = 'Search API Docs';
+const _loadingStatusMessage = 'Loading search index\u2026';
+const _failedStatusMessage =
+    'Failed to load search index. Type or refocus to retry.';
+const _failedPlaceholder = 'Failed to initialize search';
+
+String get _htmlBase {
   final body = document.body;
   if (body == null) return '';
 
@@ -17,60 +25,497 @@ final String _htmlBase = () {
   if (body.getAttribute('data-using-base-href') == 'false') {
     // Dartdoc stores the htmlBase in 'body[data-base-href]'.
     return body.getAttribute('data-base-href') ?? '';
-  } else {
-    return '';
   }
-}();
+  return '';
+}
 
-void init() {
+enum _LoadState { idle, loading, failed, loaded }
+
+JSFunction? _slashKeydownListener;
+Timer? _liveAnnouncementDebounce;
+
+/// Initializes lazy search index loading and UI bindings on search inputs.
+///
+/// [fetchIndexText] and [navigateTo] may be overridden in browser tests.
+void init({
+  @visibleForTesting Future<String?> Function()? fetchIndexText,
+  @visibleForTesting void Function(String url)? navigateTo,
+}) {
+  if (_slashKeydownListener case var previousListener?) {
+    document.removeEventListener('keydown', previousListener);
+    _slashKeydownListener = null;
+  }
+  _liveAnnouncementDebounce?.cancel();
+  _liveAnnouncementDebounce = null;
+
   var searchBox = document.getElementById('search-box') as HTMLInputElement?;
   var searchBody = document.getElementById('search-body') as HTMLInputElement?;
   var searchSidebar =
       document.getElementById('search-sidebar') as HTMLInputElement?;
+  var inputs = [searchBox, searchBody, searchSidebar].nonNulls.toList();
+  var slashCandidates =
+      [searchBox, searchSidebar, searchBody].nonNulls.toList();
 
-  void disableSearch() {
-    print('Could not activate search functionality.');
-
-    searchBox?.placeholder = 'Failed to initialize search';
-    searchBody?.placeholder = 'Failed to initialize search';
-    searchSidebar?.placeholder = 'Failed to initialize search';
+  if (inputs.isEmpty &&
+      !_shouldLoadIndexEagerly(Uri.parse(window.location.toString()), inputs)) {
+    return;
   }
 
-  window
-      .fetch('${_htmlBase}index.json'.toJS)
-      .toDart
-      .then((fetchResponse) async {
-    if (fetchResponse.status != HttpStatus.ok) {
-      disableSearch();
+  _ensureLiveStatusElement();
+  var loader = _LazySearchLoader(
+    inputs: inputs,
+    slashCandidates: slashCandidates,
+    fetchIndexText: fetchIndexText ?? _defaultFetchIndexText,
+    navigateTo: navigateTo ?? _defaultNavigateTo,
+  );
+  loader.bind();
+}
+
+void _defaultNavigateTo(String url) {
+  window.location.assign(url);
+}
+
+Future<String?> _defaultFetchIndexText() async {
+  try {
+    var response = await window.fetch('${_htmlBase}index.json'.toJS).toDart;
+    if (response.status != HttpStatus.ok) {
+      return null;
+    }
+    return (await response.text().toDart).toDart;
+  } catch (_) {
+    return null;
+  }
+}
+
+HTMLElement? _ensureLiveStatusElement() {
+  final body = document.body;
+  if (body == null) return null;
+  if (document.getElementById('dartdoc-search-status')
+      case HTMLElement existing) {
+    existing.textContent = '';
+    return existing;
+  }
+  final status = HTMLDivElement()
+    ..id = 'dartdoc-search-status'
+    ..setAttribute('role', 'status')
+    ..setAttribute('aria-live', 'polite')
+    ..setAttribute('aria-atomic', 'true');
+  status.style
+    ..position = 'absolute'
+    ..width = '1px'
+    ..height = '1px'
+    ..padding = '0'
+    ..margin = '-1px'
+    ..overflow = 'hidden'
+    ..setProperty('clip', 'rect(0, 0, 0, 0)')
+    ..setProperty('clip-path', 'inset(50%)')
+    ..whiteSpace = 'nowrap'
+    ..border = '0';
+  body.appendChild(status);
+  return status;
+}
+
+void _announcePolite(String message) {
+  _liveAnnouncementDebounce?.cancel();
+  _liveAnnouncementDebounce = null;
+  if (document.getElementById('dartdoc-search-status')
+      case HTMLElement status) {
+    status.textContent = message;
+  }
+}
+
+void _announcePoliteDebounced(String message) {
+  _liveAnnouncementDebounce?.cancel();
+  _liveAnnouncementDebounce = Timer(const Duration(milliseconds: 400), () {
+    _liveAnnouncementDebounce = null;
+    if (document.getElementById('dartdoc-search-status')
+        case HTMLElement status) {
+      status.textContent = message;
+    }
+  });
+}
+
+String _resultsAnnouncementText(int totalCount) => switch (totalCount) {
+      0 => 'No search results.',
+      1 => '1 search result available.',
+      _ => '$totalCount search results available.',
+    };
+
+bool _isSearchPageWithQuery(Uri url) =>
+    url.path.endsWith('search.html') && url.queryParameters.containsKey('q');
+
+bool _shouldLoadIndexEagerly(Uri url, List<HTMLInputElement> inputs) {
+  if (url.queryParameters.containsKey('search')) return true;
+  if (_isSearchPageWithQuery(url)) return true;
+  return inputs.any(
+    (input) => document.activeElement == input || input.value.isNotEmpty,
+  );
+}
+
+HTMLInputElement? _selectSlashTarget(List<HTMLInputElement> candidates) {
+  for (var input in candidates) {
+    if (input.offsetParent != null) return input;
+  }
+  return candidates.firstOrNull;
+}
+
+final class _InputHost {
+  final HTMLInputElement input;
+  final HTMLElement wrapper;
+  final HTMLDivElement statusElement;
+
+  _InputHost({
+    required this.input,
+    required this.wrapper,
+    required this.statusElement,
+  });
+
+  factory _InputHost.prepare(
+    HTMLInputElement input, {
+    required void Function(String url) navigateTo,
+    required bool Function() isIndexLoaded,
+  }) {
+    input
+      ..disabled = false
+      ..placeholder = _searchPlaceholder
+      ..setAttribute('autocomplete', 'off')
+      ..setAttribute('spellcheck', 'false')
+      ..classList.add('tt-input');
+    if (!input.hasAttribute('aria-label') &&
+        !input.hasAttribute('aria-labelledby')) {
+      input.setAttribute('aria-label', _searchPlaceholder);
+    }
+
+    final wrapper = _ensureWrapper(input);
+    _ensureChildElement(
+      wrapper,
+      selector: '.tt-search-spinner',
+      create: () => HTMLSpanElement()
+        ..classList.add('tt-search-spinner')
+        ..setAttribute('aria-hidden', 'true'),
+    );
+    final statusElement = _ensureChildElement(
+      wrapper,
+      selector: '.tt-search-status',
+      create: () => HTMLDivElement()
+        ..classList.add('tt-menu')
+        ..classList.add('tt-search-status')
+        ..setAttribute('aria-hidden', 'true')
+        ..style.display = 'none',
+    ) as HTMLDivElement;
+
+    input.form?.addEventListener(
+      'submit',
+      (Event event) {
+        event.preventDefault();
+        if (!isIndexLoaded()) {
+          var q = input.value;
+          navigateTo(
+            '${_htmlBase}search.html?q=${Uri.encodeQueryComponent(q)}',
+          );
+        }
+      }.toJS,
+    );
+
+    return _InputHost(
+      input: input,
+      wrapper: wrapper,
+      statusElement: statusElement,
+    );
+  }
+}
+
+HTMLElement _ensureWrapper(HTMLInputElement input) {
+  if (input.parentElement case HTMLElement parent
+      when parent.classList.contains('tt-wrapper')) {
+    return parent;
+  }
+  var wasFocused = document.activeElement == input;
+  var selectionStart = input.selectionStart;
+  var selectionEnd = input.selectionEnd;
+  var wrapper = HTMLDivElement()..classList.add('tt-wrapper');
+  input.replaceWith(wrapper);
+  wrapper.appendChild(input);
+  if (wasFocused) {
+    input.focus();
+    if (selectionStart != null && selectionEnd != null) {
+      input.setSelectionRange(selectionStart, selectionEnd);
+    }
+  }
+  return wrapper;
+}
+
+HTMLElement _ensureChildElement(
+  HTMLElement parent, {
+  required String selector,
+  required HTMLElement Function() create,
+}) {
+  if (parent.querySelector(selector) case HTMLElement existing) {
+    return existing;
+  }
+  final created = create();
+  parent.appendChild(created);
+  return created;
+}
+
+final class _LazySearchLoader {
+  final List<HTMLInputElement> inputs;
+  final List<HTMLInputElement> slashCandidates;
+  final Future<String?> Function() fetchIndexText;
+  final void Function(String url) navigateTo;
+  late final List<_InputHost> hosts = [
+    for (final input in inputs)
+      _InputHost.prepare(
+        input,
+        navigateTo: navigateTo,
+        isIndexLoaded: () => _state == _LoadState.loaded,
+      ),
+  ];
+
+  _LoadState _state = _LoadState.idle;
+  Future<void>? _inFlightLoad;
+
+  _LazySearchLoader({
+    required this.inputs,
+    required this.slashCandidates,
+    required this.fetchIndexText,
+    required this.navigateTo,
+  });
+
+  void bind() {
+    if (slashCandidates.isNotEmpty) {
+      final slashListener = _handleSlashKeydown.toJS;
+      _slashKeydownListener = slashListener;
+      document.addEventListener('keydown', slashListener);
+    }
+
+    for (final host in hosts) {
+      _attachPreLoadListeners(host);
+    }
+
+    if (_shouldLoadIndexEagerly(
+      Uri.parse(window.location.toString()),
+      inputs,
+    )) {
+      _ensureLoaded();
+    }
+  }
+
+  void _attachPreLoadListeners(_InputHost host) {
+    host.input.addEventListener(
+      'focus',
+      (Event _) {
+        _onInputInteraction();
+      }.toJS,
+    );
+    host.input.addEventListener(
+      'input',
+      (Event _) {
+        _onInputInteraction();
+      }.toJS,
+    );
+    host.input.addEventListener(
+      'blur',
+      (Event _) {
+        if (_state != _LoadState.loaded) {
+          _syncUi();
+        }
+      }.toJS,
+    );
+    host.input.addEventListener(
+      'keydown',
+      (Event event) {
+        if (_state != _LoadState.loaded &&
+            event.type == 'keydown' &&
+            (event as KeyboardEvent).code == 'Escape') {
+          host.statusElement.style.display = 'none';
+        }
+      }.toJS,
+    );
+  }
+
+  void _onInputInteraction() {
+    if (_state == _LoadState.idle || _state == _LoadState.failed) {
+      _ensureLoaded();
+    } else if (_state == _LoadState.loading) {
+      _syncUi();
+    }
+  }
+
+  void _handleSlashKeydown(KeyboardEvent event) {
+    if (event.key != '/') return;
+    var activeElement = document.activeElement;
+    if (activeElement != null && activeElement.acceptsInput) return;
+
+    event.preventDefault();
+    _selectSlashTarget(slashCandidates)?.focus();
+    if (_state == _LoadState.idle || _state == _LoadState.failed) {
+      _ensureLoaded();
+    }
+  }
+
+  void _ensureLoaded() {
+    if (_state == _LoadState.loaded) return;
+    _inFlightLoad ??= _load();
+  }
+
+  Future<void> _load() async {
+    _state = _LoadState.loading;
+    _syncUi();
+    final initialUrl = Uri.parse(window.location.toString());
+    if (_isSearchPageWithQuery(initialUrl)) {
+      _renderSearchPageStatus(_loadingStatusMessage);
+    }
+
+    var announcedLoading = false;
+    final loadingTimer = Timer(const Duration(milliseconds: 150), () {
+      if (_state == _LoadState.loading) {
+        announcedLoading = true;
+        _announcePolite(_loadingStatusMessage);
+      }
+    });
+
+    Index? parsedIndex;
+    try {
+      final jsonText = await fetchIndexText();
+      if (jsonText != null) {
+        parsedIndex = Index.fromJson(jsonText);
+      }
+    } catch (_) {
+      parsedIndex = null;
+    } finally {
+      loadingTimer.cancel();
+      _inFlightLoad = null;
+    }
+
+    if (parsedIndex == null) {
+      _handleLoadFailure(initialUrl);
       return;
     }
 
-    final text = (await fetchResponse.text().toDart).toDart;
-    final index = Index.fromJson(text);
+    _handleLoadSuccess(parsedIndex, announcedLoading: announcedLoading);
+  }
 
-    // Navigate to the first result from the 'search' query parameter
-    // if specified and found.
+  void _handleLoadFailure(Uri initialUrl) {
+    print('Could not activate search functionality.');
+    _state = _LoadState.failed;
+    _syncUi();
+    if (_isSearchPageWithQuery(initialUrl)) {
+      _renderSearchPageStatus('Failed to load search index.');
+    }
+    _announcePolite('Failed to load search index.');
+  }
+
+  void _handleLoadSuccess(Index index, {required bool announcedLoading}) {
+    _state = _LoadState.loaded;
+    _syncUi();
+
     final url = Uri.parse(window.location.toString());
-    final searchQuery = url.queryParameters['search'];
-    if (searchQuery != null) {
+    if (url.queryParameters['search'] case var searchQuery?) {
       final href = index.find(searchQuery).firstOrNull?.href;
       if (href != null) {
-        window.location.assign('$_htmlBase$href');
+        navigateTo('$_htmlBase$href');
         return;
       }
     }
 
-    // Initialize all three search fields.
-    if (searchBox != null) {
-      _Search(index).initialize(searchBox);
+    for (final host in hosts) {
+      _Search(index, navigateTo: navigateTo).initialize(host.input);
     }
-    if (searchBody != null) {
-      _Search(index).initialize(searchBody);
+
+    final hasActiveQuery = _isSearchPageWithQuery(url) ||
+        hosts.any(
+          (h) => document.activeElement == h.input && h.input.value.isNotEmpty,
+        );
+    if (hasActiveQuery) {
+      _announcePolite(_resultsAnnouncementText(_suggestionLength));
+    } else if (announcedLoading) {
+      _announcePolite('Search index ready.');
     }
-    if (searchSidebar != null) {
-      _Search(index).initialize(searchSidebar);
+  }
+
+  void _syncUi() {
+    switch (_state) {
+      case _LoadState.idle:
+        return;
+      case _LoadState.loading:
+        _syncLoadingUi();
+      case _LoadState.failed:
+        _syncFailedUi();
+      case _LoadState.loaded:
+        _syncLoadedUi();
     }
-  });
+  }
+
+  void _syncLoadingUi() {
+    final primaryInput =
+        _selectSlashTarget(slashCandidates) ?? inputs.firstOrNull;
+    final anyActive = hosts.any(
+      (h) => document.activeElement == h.input || h.input.value.isNotEmpty,
+    );
+    for (final host in hosts) {
+      final isFocused = document.activeElement == host.input;
+      final showSpinner = anyActive
+          ? (isFocused || host.input.value.isNotEmpty)
+          : host.input == primaryInput;
+      host.input
+        ..setAttribute('aria-busy', 'true')
+        ..placeholder = _searchPlaceholder;
+      host.wrapper.classList.toggle('is-loading', showSpinner);
+      if (isFocused && host.input.value.trim().isNotEmpty) {
+        host.statusElement
+          ..textContent = _loadingStatusMessage
+          ..classList.remove('is-error')
+          ..style.display = 'block';
+      } else {
+        host.statusElement.style.display = 'none';
+      }
+    }
+  }
+
+  void _syncFailedUi() {
+    for (final host in hosts) {
+      host.input
+        ..removeAttribute('aria-busy')
+        ..placeholder = _failedPlaceholder;
+      host.wrapper.classList.remove('is-loading');
+      if (document.activeElement == host.input) {
+        host.statusElement
+          ..textContent = _failedStatusMessage
+          ..classList.add('is-error')
+          ..style.display = 'block';
+      } else {
+        host.statusElement.style.display = 'none';
+      }
+    }
+  }
+
+  void _syncLoadedUi() {
+    for (final host in hosts) {
+      host.input
+        ..removeAttribute('aria-busy')
+        ..placeholder = _searchPlaceholder;
+      host.wrapper.classList.remove('is-loading');
+      host.statusElement
+        ..textContent = ''
+        ..classList.remove('is-error')
+        ..style.display = 'none';
+    }
+  }
+
+  void _renderSearchPageStatus(String message) {
+    final mainContent = document.getElementById('dartdoc-main-content');
+    if (mainContent == null) return;
+    mainContent
+      ..textContent = ''
+      ..appendChild(HTMLElement.section()..classList.add('search-summary'))
+      ..appendChild(HTMLHeadingElement.h2()..textContent = 'Search Results')
+      ..appendChild(
+        HTMLDivElement()
+          ..classList.add('search-summary')
+          ..textContent = message,
+      );
+  }
 }
 
 int _suggestionLimit = 10;
@@ -88,6 +533,7 @@ final _containerMap = <String, Element>{};
 class _Search {
   final Index index;
   final Uri uri;
+  final void Function(String url) navigateTo;
 
   late final listBox = HTMLDivElement()
     ..setAttribute('role', 'listbox')
@@ -112,54 +558,43 @@ class _Search {
   List<IndexItem> suggestionsInfo = <IndexItem>[];
   int selectedElement = -1;
 
-  _Search(this.index) : uri = Uri.parse(window.location.href);
+  _Search(this.index, {required this.navigateTo})
+      : uri = Uri.parse(window.location.href);
 
   void initialize(HTMLInputElement inputElement) {
-    inputElement.disabled = false;
-    inputElement.setAttribute('placeholder', 'Search API Docs');
-    // Handle grabbing focus when the user types '/' outside of the input.
-    document.addEventListener(
-      'keydown',
-      (KeyboardEvent event) {
-        if (event.key != '/') {
-          return;
-        }
-
-        var activeElement = document.activeElement;
-        if (activeElement == null || !activeElement.acceptsInput) {
-          event.preventDefault();
-          inputElement.focus();
-        }
-      }.toJS,
-    );
-
-    // Prepare elements.
-    var wrapper = HTMLDivElement()..classList.add('tt-wrapper');
     inputElement
-      ..replaceWith(wrapper)
+      ..disabled = false
+      ..setAttribute('placeholder', _searchPlaceholder)
       ..setAttribute('autocomplete', 'off')
       ..setAttribute('spellcheck', 'false')
       ..classList.add('tt-input');
 
-    wrapper
-      ..appendChild(inputElement)
-      ..appendChild(listBox);
+    // Reuse an existing `.tt-wrapper` so focused inputs are not detached.
+    final wrapper = _ensureWrapper(inputElement);
+    wrapper.appendChild(listBox);
 
     setEventListeners(inputElement);
 
     // Display the search results in the main body, if we're rendering the
     // search page.
-    if (window.location.href.contains('search.html')) {
+    var isSearchPage = false;
+    if (_isSearchPageWithQuery(uri)) {
       var query = uri.queryParameters['q'];
-      if (query == null) {
-        return;
+      if (query != null) {
+        isSearchPage = true;
+        query = _htmlEscape.convert(query);
+        _suggestionLimit = _suggestionLength;
+        handleSearch(query, isSearchPage: true);
+        showSearchResultPage(query);
+        hideSuggestions();
+        _suggestionLimit = 10;
       }
-      query = _htmlEscape.convert(query);
-      _suggestionLimit = _suggestionLength;
-      handleSearch(query, isSearchPage: true);
-      showSearchResultPage(query);
-      hideSuggestions();
-      _suggestionLimit = 10;
+    }
+
+    if (!isSearchPage &&
+        inputElement.value.isNotEmpty &&
+        document.activeElement == inputElement) {
+      handleSearch(inputElement.value, forceUpdate: true);
     }
   }
 
@@ -242,7 +677,9 @@ class _Search {
     }
 
     for (final suggestion in suggestions) {
-      suggestionElements.add(_createSuggestion(query, suggestion));
+      suggestionElements.add(
+        _createSuggestion(query, suggestion, navigateTo: navigateTo),
+      );
     }
 
     var suggestionSource =
@@ -266,7 +703,12 @@ class _Search {
     }
 
     if (searchText == null || searchText.isEmpty) {
+      actualValue = '';
+      _suggestionLength = 0;
       updateSuggestions('', []);
+      if (!isSearchPage && !forceUpdate) {
+        _announcePolite('');
+      }
       return;
     }
 
@@ -278,6 +720,9 @@ class _Search {
 
     actualValue = searchText;
     updateSuggestions(searchText, suggestions, isSearchPage: isSearchPage);
+    if (!isSearchPage && !forceUpdate) {
+      _announcePoliteDebounced(_resultsAnnouncementText(_suggestionLength));
+    }
   }
 
   /// Clears the search box and suggestions.
@@ -326,7 +771,7 @@ class _Search {
           if (!selectedElement.isBlurred) {
             if (suggestionElements[selectedElement].getAttribute('data-href')
                 case var href?) {
-              window.location.assign('$_htmlBase$href');
+              navigateTo('$_htmlBase$href');
             }
             return;
           } else {
@@ -335,7 +780,7 @@ class _Search {
             var query = _htmlEscape.convert(actualValue);
             var searchPath = Uri.parse('${_htmlBase}search.html')
                 .replace(queryParameters: {'q': query});
-            window.location.assign(searchPath.toString());
+            navigateTo(searchPath.toString());
             return;
           }
         }
@@ -410,7 +855,11 @@ class _Search {
   void removeSelectedElement() => selectedElement = -1;
 }
 
-HTMLElement _createSuggestion(String query, IndexItem match) {
+HTMLElement _createSuggestion(
+  String query,
+  IndexItem match, {
+  required void Function(String url) navigateTo,
+}) {
   final suggestion = HTMLDivElement()
     ..setAttribute('data-href', match.href ?? '')
     ..classList.add('tt-suggestion');
@@ -449,7 +898,7 @@ HTMLElement _createSuggestion(String query, IndexItem match) {
     'click',
     (Event event) {
       if (match.href case var matchHref?) {
-        window.location.assign('$_htmlBase$matchHref');
+        navigateTo('$_htmlBase$matchHref');
         event.preventDefault();
       }
     }.toJS,

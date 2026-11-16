@@ -11,14 +11,15 @@
     <div>
       If you were looking for something specific, try searching:
       <form class="search-body" role="search">
-        <input
+        <div class="tt-wrapper"><input
           type="text"
           id="search-body"
           autocomplete="off"
-          disabled
-          class="form-control typeahead"
-          placeholder="Loading search..."
-        />
+          class="form-control typeahead tt-input"
+          placeholder="Search API Docs"
+          aria-label="Search API Docs"
+          spellcheck="false"
+        /></div>
       </form>
     </div>
   </section>
