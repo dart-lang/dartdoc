@@ -14,31 +14,31 @@ import 'src/utils.dart';
 
 void main() {
   defineReflectiveSuite(() {
-    defineReflectiveTests(UntrustedOptionUrlsTest);
+    defineReflectiveTests(OptionUrlsTest);
   });
 }
 
-/// Tests that URLs from `dartdoc_options.yaml`, which may belong to a
-/// dependency rather than to the package being documented, cannot inject HTML
-/// into the generated documentation.
+/// Tests that URLs from `dartdoc_options.yaml` which are not plain http(s)
+/// URLs, including those of a dependency, produce no link and are never
+/// written into the generated HTML unescaped.
 @reflectiveTest
-class UntrustedOptionUrlsTest extends DartdocTestBase {
+class OptionUrlsTest extends DartdocTestBase {
   /// Breaks out of an `href="..."` attribute if written into HTML unescaped.
-  static const breakoutPayload = 'x"><img src=x onerror=alert(1)><a x="';
+  static const attributeBreakingUrl = 'x"><img src=x onerror=alert(1)><a x="';
 
   @override
   String get libraryName => 'victim';
 
   @override
   Map<String, String> get pubDependencyPaths =>
-      const {'evil_dep': './vendor/evil_dep'};
+      const {'other_dep': './vendor/other_dep'};
 
-  /// Boots the package being documented with a dependency `evil_dep` whose
+  /// Boots the package being documented with a dependency `other_dep` whose
   /// `dartdoc_options.yaml` is [depDartdocOptions].
   ///
-  /// `evil_dep` has one library, `lib/evil.dart`, declaring `EvilType` with a
-  /// method `evilMethod`.
-  Future<PackageGraph> bootPackageWithEvilDependency({
+  /// `other_dep` has one library, `lib/other.dart`, declaring `OtherType` with
+  /// a method `otherMethod`.
+  Future<PackageGraph> bootPackageWithDependency({
     required String depDartdocOptions,
     required String libraryContent,
     String? dartdocOptions,
@@ -49,17 +49,17 @@ class UntrustedOptionUrlsTest extends DartdocTestBase {
         d.file('dartdoc_options.yaml', dartdocOptions),
       d.dir(
         ResourceProviderExtension(resourceProvider)
-            .convertPath('vendor/evil_dep'),
+            .convertPath('vendor/other_dep'),
         [
           d.file('pubspec.yaml', '''
-name: evil_dep
+name: other_dep
 version: 0.0.1
 '''),
           d.file('dartdoc_options.yaml', depDartdocOptions),
           d.dir('lib', [
-            d.file('evil.dart', '''
-class EvilType {
-  void evilMethod() {}
+            d.file('other.dart', '''
+class OtherType {
+  void otherMethod() {}
 }
 '''),
           ]),
@@ -78,7 +78,7 @@ class EvilType {
   // link of its elements re-exported by the package being documented.
 
   void test_linkToSource_dependency_validUrl_isLinked() async {
-    var graph = await bootPackageWithEvilDependency(
+    var graph = await bootPackageWithDependency(
       depDartdocOptions: '''
 dartdoc:
   linkToSource:
@@ -86,41 +86,41 @@ dartdoc:
     uriTemplate: 'https://example.com/src/%f%#L%l%'
 ''',
       libraryContent: '''
-export 'package:evil_dep/evil.dart';
+export 'package:other_dep/other.dart';
 ''',
     );
-    var evilType = graph.libraries.named('victim').classes.named('EvilType');
+    var otherType = graph.libraries.named('victim').classes.named('OtherType');
 
-    expect(evilType.sourceHref, 'https://example.com/src/lib/evil.dart#L1');
+    expect(otherType.sourceHref, 'https://example.com/src/lib/other.dart#L1');
     expect(graph.packageWarningCounter.hasWarnings, isFalse);
   }
 
   void test_linkToSource_dependency_attributeBreakout_isNotLinked() async {
-    var graph = await bootPackageWithEvilDependency(
+    var graph = await bootPackageWithDependency(
       depDartdocOptions: '''
 dartdoc:
   linkToSource:
     root: '.'
-    uriTemplate: '$breakoutPayload%f%'
+    uriTemplate: '$attributeBreakingUrl%f%'
 ''',
       libraryContent: '''
-export 'package:evil_dep/evil.dart';
+export 'package:other_dep/other.dart';
 ''',
     );
-    var evilType = graph.libraries.named('victim').classes.named('EvilType');
+    var otherType = graph.libraries.named('victim').classes.named('OtherType');
 
-    expect(evilType.sourceHref, isEmpty);
-    expect(evilType.hasSourceHref, isFalse);
-    expect(evilType.instanceMethods.named('evilMethod').sourceHref, isEmpty);
+    expect(otherType.sourceHref, isEmpty);
+    expect(otherType.hasSourceHref, isFalse);
+    expect(otherType.instanceMethods.named('otherMethod').sourceHref, isEmpty);
     expect(
         graph,
         hasInvalidUrlWarning(
-            graph, "linkToSource.uriTemplate '$breakoutPayload%f%'"));
-    expect(graph, hasInvalidUrlWarning(graph, 'in package:evil_dep'));
+            graph, "linkToSource.uriTemplate '$attributeBreakingUrl%f%'"));
+    expect(graph, hasInvalidUrlWarning(graph, 'in package:other_dep'));
   }
 
   void test_linkToSource_dependency_javascriptScheme_isNotLinked() async {
-    var graph = await bootPackageWithEvilDependency(
+    var graph = await bootPackageWithDependency(
       depDartdocOptions: '''
 dartdoc:
   linkToSource:
@@ -128,12 +128,12 @@ dartdoc:
     uriTemplate: 'javascript:alert(1)//%f%'
 ''',
       libraryContent: '''
-export 'package:evil_dep/evil.dart';
+export 'package:other_dep/other.dart';
 ''',
     );
-    var evilType = graph.libraries.named('victim').classes.named('EvilType');
+    var otherType = graph.libraries.named('victim').classes.named('OtherType');
 
-    expect(evilType.sourceHref, isEmpty);
+    expect(otherType.sourceHref, isEmpty);
     expect(
         graph,
         hasInvalidUrlWarning(
@@ -143,30 +143,30 @@ export 'package:evil_dep/evil.dart';
   // The package's own options are validated too.
 
   void test_linkToSource_ownPackage_attributeBreakout_isNotLinked() async {
-    var graph = await bootPackageWithEvilDependency(
+    var graph = await bootPackageWithDependency(
       depDartdocOptions: '',
       dartdocOptions: '''
 dartdoc:
   linkToSource:
     root: '.'
-    uriTemplate: '$breakoutPayload%f%'
+    uriTemplate: '$attributeBreakingUrl%f%'
 ''',
       libraryContent: '''
-class Victim {}
+class C {}
 ''',
     );
-    var victim = graph.libraries.named('victim').classes.named('Victim');
+    var c = graph.libraries.named('victim').classes.named('C');
 
-    expect(victim.sourceHref, isEmpty);
+    expect(c.sourceHref, isEmpty);
     expect(
         graph,
         hasInvalidUrlWarning(
-            graph, "linkToSource.uriTemplate '$breakoutPayload%f%'"));
+            graph, "linkToSource.uriTemplate '$attributeBreakingUrl%f%'"));
     expect(graph, hasInvalidUrlWarning(graph, 'in package:test_package'));
   }
 
   void test_linkToSource_ownPackage_validUrl_isEscapedForAttribute() async {
-    var graph = await bootPackageWithEvilDependency(
+    var graph = await bootPackageWithDependency(
       depDartdocOptions: '',
       dartdocOptions: '''
 dartdoc:
@@ -175,12 +175,11 @@ dartdoc:
     uriTemplate: 'https://example.com/src?f=%f%&l=%l%'
 ''',
       libraryContent: '''
-class Victim {}
+class C {}
 ''',
     );
-    var victim = graph.libraries.named('victim').classes.named('Victim');
+    var c = graph.libraries.named('victim').classes.named('C');
 
-    expect(
-        victim.sourceHref, 'https://example.com/src?f=lib/victim.dart&amp;l=1');
+    expect(c.sourceHref, 'https://example.com/src?f=lib/victim.dart&amp;l=1');
   }
 }

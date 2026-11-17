@@ -16,13 +16,13 @@ const HtmlEscape htmlAttributeEscape = HtmlEscape(HtmlEscapeMode.attribute);
 /// whitespace and control characters are not valid in a URL.
 final RegExp _unsafeUrlCharacters = RegExp(r'''["'<>`\s\x00-\x1f\x7f]''');
 
-/// Whether [url] is an `http(s)` URL which is safe to write into an `href`
-/// attribute.
+/// Whether [url] is an `http(s)` URL which can be written into an `href`
+/// attribute as is.
 ///
-/// URLs from `dartdoc_options.yaml` are untrusted: the file can belong to any
-/// package in the dependency graph. Requiring an `http(s)` scheme rules out
-/// `javascript:` and friends; rejecting [_unsafeUrlCharacters] rules out
-/// breaking out of the attribute, which `Uri.tryParse` does not catch.
+/// Requiring an `http(s)` scheme with a host rules out relative URLs and
+/// non-web schemes such as `javascript:`; rejecting [_unsafeUrlCharacters]
+/// rules out values which would break out of the attribute, which
+/// `Uri.tryParse` does not catch.
 bool isSafeHttpUrl(String url) {
   final uri = Uri.tryParse(url);
   if (uri == null) return false;

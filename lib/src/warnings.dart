@@ -338,9 +338,9 @@ enum PackageWarning implements Comparable<PackageWarning> {
     'ignoring a URL which is not a plain http(s) URL: {0}',
     shortHelp: 'A URL from `dartdoc_options.yaml` was not a plain http(s) URL '
         'and was ignored.',
-    longHelp: 'URLs from `dartdoc_options.yaml` are written into the generated '
-        'HTML, and the file can belong to any package in the dependency graph. '
-        'Only plain http(s) URLs are accepted; anything else is not linked to.',
+    longHelp: 'The URL is written into the generated HTML as the target of a '
+        'link. Only plain http(s) URLs are accepted; anything else is not '
+        'linked to.',
   ),
   deprecated(
     'deprecated',

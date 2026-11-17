@@ -123,9 +123,8 @@ class SourceLinker {
   /// The URL of the source of [sourceFileName] at [lineNumber], or the empty
   /// string if there is none.
   ///
-  /// [uriTemplate] comes from a `dartdoc_options.yaml`, possibly a dependency's,
-  /// and the result is written into an `href` attribute, so anything that is
-  /// not a plain http(s) URL is rejected (see [isSafeHttpUrl]).
+  /// The result is written into an `href` attribute, so anything that is not a
+  /// plain http(s) URL is rejected (see [isSafeHttpUrl]).
   String href() {
     var root = this.root;
     var uriTemplate = this.uriTemplate;
