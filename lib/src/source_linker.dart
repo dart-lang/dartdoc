@@ -112,11 +112,16 @@ class SourceLinker {
       // non-local packages are hidden by default, but this one affects the
       // output of the package being documented. Leaving the element out of the
       // message deduplicates the warning to once per package.
-      onInvalidUrl: (url) =>
-          element.packageGraph.defaultPackage.warn(PackageWarning.invalidUrl,
-              message: 'linkToSource.uriTemplate '
-                  "'${config.linkToSourceUriTemplate}' "
-                  'in package:${element.package.name}'),
+      onInvalidUrl: (_) {
+        var template = config.linkToSourceUriTemplate;
+        var revision = config.linkToSourceRevision;
+        var revisionNote = template != null && template.contains('%r%')
+            ? " with revision '$revision'"
+            : '';
+        element.packageGraph.defaultPackage.warn(PackageWarning.invalidUrl,
+            message: "linkToSource.uriTemplate '$template'$revisionNote "
+                'in package:${element.package.name}');
+      },
     );
   }
 
@@ -138,8 +143,11 @@ class SourceLinker {
     }
     var href = uriTemplate.replaceAllMapped(_uriTemplateRegExp, (match) {
       return switch (match[1]) {
-        '%f%' => path.url
-            .joinAll(path.split(path.relative(sourceFileName, from: root))),
+        // Percent-encode each segment, so that e.g. a space in a file name
+        // yields a valid URL rather than one rejected below.
+        '%f%' => path.url.joinAll(path
+            .split(path.relative(sourceFileName, from: root))
+            .map(Uri.encodeComponent)),
         '%r%' => revision!,
         '%l%' => lineNumber.toString(),
         _ => ''

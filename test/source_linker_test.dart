@@ -93,6 +93,33 @@ void main() {
           equals('https://github.com/base/blob/main/to/file.dart#L14'));
     });
 
+    test('Percent-encode the file path', () {
+      String sourceLinkerHref() => SourceLinker(
+              excludes: [],
+              lineNumber: 14,
+              root: 'path',
+              sourceFileName: 'path/to/my file.dart',
+              uriTemplate: 'https://github.com/base/blob/main/%f%#L%l%')
+          .href();
+      expect(sourceLinkerHref(),
+          equals('https://github.com/base/blob/main/to/my%20file.dart#L14'));
+    });
+
+    test('Ignore a revision which breaks out of an HTML attribute', () {
+      var invalidUrls = <String>[];
+      String sourceLinkerHref() => SourceLinker(
+              excludes: [],
+              lineNumber: 14,
+              root: 'path',
+              sourceFileName: 'path/to/file.dart',
+              revision: 'x"><img src=x onerror=alert(1)><a x="',
+              uriTemplate: 'https://github.com/base/blob/%r%/%f%',
+              onInvalidUrl: invalidUrls.add)
+          .href();
+      expect(sourceLinkerHref(), equals(''));
+      expect(invalidUrls, hasLength(1));
+    });
+
     test('Ignore a template which breaks out of an HTML attribute', () {
       var invalidUrls = <String>[];
       String sourceLinkerHref() => SourceLinker(

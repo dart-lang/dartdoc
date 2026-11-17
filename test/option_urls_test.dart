@@ -42,8 +42,9 @@ class OptionUrlsTest extends DartdocTestBase {
     required String depDartdocOptions,
     required String libraryContent,
     String? dartdocOptions,
+    List<String> additionalArguments = const [],
   }) {
-    return bootPackageFromFiles([
+    return bootPackageFromFiles(additionalArguments: additionalArguments, [
       d.file('lib/victim.dart', libraryContent),
       if (dartdocOptions != null)
         d.file('dartdoc_options.yaml', dartdocOptions),
@@ -181,5 +182,30 @@ class C {}
     var c = graph.libraries.named('victim').classes.named('C');
 
     expect(c.sourceHref, 'https://example.com/src?f=lib/victim.dart&amp;l=1');
+  }
+
+  void test_linkToSource_ownPackage_invalidRevision_isNamedInWarning() async {
+    var graph = await bootPackageWithDependency(
+      depDartdocOptions: '',
+      dartdocOptions: '''
+dartdoc:
+  linkToSource:
+    root: '.'
+    uriTemplate: 'https://example.com/src/%r%/%f%'
+''',
+      libraryContent: '''
+class C {}
+''',
+      additionalArguments: ['--link-to-source-revision', attributeBreakingUrl],
+    );
+    var c = graph.libraries.named('victim').classes.named('C');
+
+    expect(c.sourceHref, isEmpty);
+    expect(
+        graph,
+        hasInvalidUrlWarning(
+            graph,
+            "linkToSource.uriTemplate 'https://example.com/src/%r%/%f%' "
+            "with revision '$attributeBreakingUrl' in package:test_package"));
   }
 }
