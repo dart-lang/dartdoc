@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer_testing/utilities/extensions/resource_provider.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
@@ -37,7 +38,7 @@ class OptionUrlsTest extends DartdocTestBase {
   /// `dartdoc_options.yaml` is [depDartdocOptions].
   ///
   /// `other_dep` has one library, `lib/other.dart`, declaring `OtherType` with
-  /// a method `otherMethod`.
+  /// a method `otherMethod`, and `OtherEnum` with values `a` and `b`.
   Future<PackageGraph> bootPackageWithDependency({
     required String depDartdocOptions,
     required String libraryContent,
@@ -62,6 +63,8 @@ version: 0.0.1
 class OtherType {
   void otherMethod() {}
 }
+
+enum OtherEnum { a, b }
 '''),
           ]),
         ],
@@ -148,6 +151,28 @@ OtherType makeOther() => OtherType();
     expect(makeOther.modelType.returnType.linkedName, 'OtherType');
     expect(graph,
         hasInvalidUrlWarning(graph, "linkTo.url 'javascript:alert(1)//'"));
+  }
+
+  void
+      test_linkToUrl_dependency_attributeBreakout_enumValueIsNotLinked() async {
+    var graph = await bootPackageWithDependency(
+      depDartdocOptions: '''
+dartdoc:
+  linkTo:
+    url: '$attributeBreakingUrl'
+''',
+      libraryContent: '''
+import 'package:other_dep/other.dart';
+OtherEnum pick() => OtherEnum.a;
+''',
+    );
+    var pick = graph.libraries.named('victim').functions.named('pick');
+    var otherEnum =
+        (pick.modelType.returnType as DefinedElementType).modelElement as Enum;
+    var a = otherEnum.publicEnumValues.named('a');
+
+    expect(a.href, isNull);
+    expect(a.linkedName, 'a');
   }
 
   void

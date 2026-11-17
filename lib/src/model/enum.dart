@@ -114,9 +114,13 @@ class EnumField extends Field {
 
   @override
   String get linkedName {
+    final href = this.href;
+    // No canonical location to link to; fall back to the plain name, as
+    // `ModelElement.linkedNameParts` does for any other element.
+    if (href == null) return linkedNameParts.text;
     var cssClass = isDeprecated ? ' class="deprecated"' : '';
-    var href = htmlAttributeEscape.convert('${this.href}#$htmlId');
-    return '<a$cssClass href="$href">$name</a>';
+    var escapedHref = htmlAttributeEscape.convert('$href#$htmlId');
+    return '<a$cssClass href="$escapedHref">$name</a>';
   }
 
   @override
