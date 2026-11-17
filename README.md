@@ -180,6 +180,10 @@ Unrecognized options will be ignored.  Supported options:
         No branch is considered to be "stable".
       * `%n%`: The name of this package, as defined in `pubspec.yaml`.
       * `%v%`: The version of this package as defined in `pubspec.yaml`.
+
+      The resulting URL must be a plain `http:` or `https:` URL; anything else (a relative URL,
+      a `javascript:` URL, a value containing quotes or angle brackets, ...) is ignored with an
+      `invalid-url` warning, and no links to the package are generated.
   * **linkToSource**: Generate links to a source code repository based on given templates and
     revision information.
     * **excludes**: A list of directories to exclude from processing source links.

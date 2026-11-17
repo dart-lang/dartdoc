@@ -820,7 +820,9 @@ abstract class ModelElement
 
     var cssClass = isDeprecated ? ' class="deprecated"' : '';
     return (
-      tag: '<a$cssClass href="$href">',
+      // [href] is validated where it is built (`Package.documentedWhere`);
+      // escape it anyway, as it is written into an HTML attribute.
+      tag: '<a$cssClass href="${htmlAttributeEscape.convert(href)}">',
       text: displayName,
       endTag: '</a>'
     );

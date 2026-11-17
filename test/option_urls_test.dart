@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer_testing/utilities/extensions/resource_provider.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
@@ -37,7 +38,7 @@ class OptionUrlsTest extends DartdocTestBase {
   /// `dartdoc_options.yaml` is [depDartdocOptions].
   ///
   /// `other_dep` has one library, `lib/other.dart`, declaring `OtherType` with
-  /// a method `otherMethod`.
+  /// a method `otherMethod`, and `OtherEnum` with values `a` and `b`.
   Future<PackageGraph> bootPackageWithDependency({
     required String depDartdocOptions,
     required String libraryContent,
@@ -62,6 +63,8 @@ version: 0.0.1
 class OtherType {
   void otherMethod() {}
 }
+
+enum OtherEnum { a, b }
 '''),
           ]),
         ],
@@ -74,6 +77,124 @@ class OtherType {
           (_) => graph.packageWarningCounter.hasWarning(
               graph.defaultPackage, PackageWarning.invalidUrl, messageFragment),
           "has an 'invalid-url' warning containing '$messageFragment'");
+
+  // A dependency's `linkTo.url` is the prefix of every link to its elements
+  // from the package being documented.
+
+  void test_linkToUrl_dependency_validUrl_isLinked() async {
+    var graph = await bootPackageWithDependency(
+      depDartdocOptions: '''
+dartdoc:
+  linkTo:
+    url: 'https://docs.example.com/%n%/%v%'
+''',
+      libraryContent: '''
+import 'package:other_dep/other.dart';
+OtherType makeOther() => OtherType();
+''',
+    );
+    var makeOther =
+        graph.libraries.named('victim').functions.named('makeOther');
+
+    expect(graph.packageMap['other_dep']!.documentedWhere,
+        DocumentLocation.remote);
+    expect(
+      makeOther.modelType.returnType.linkedName,
+      '<a href="https://docs.example.com/other_dep/0.0.1/other/OtherType-class.html">'
+      'OtherType</a>',
+    );
+    expect(graph.packageWarningCounter.hasWarnings, isFalse);
+  }
+
+  void test_linkToUrl_dependency_attributeBreakout_isNotLinked() async {
+    var graph = await bootPackageWithDependency(
+      depDartdocOptions: '''
+dartdoc:
+  linkTo:
+    url: '$attributeBreakingUrl'
+''',
+      libraryContent: '''
+import 'package:other_dep/other.dart';
+OtherType makeOther() => OtherType();
+''',
+    );
+    var makeOther =
+        graph.libraries.named('victim').functions.named('makeOther');
+
+    expect(graph.packageMap['other_dep']!.documentedWhere,
+        DocumentLocation.missing);
+    expect(makeOther.modelType.returnType.linkedName, 'OtherType');
+    expect(
+        makeOther.modelType.returnType.linkedName, isNot(contains('onerror')));
+    expect(graph,
+        hasInvalidUrlWarning(graph, "linkTo.url '$attributeBreakingUrl'"));
+    expect(graph, hasInvalidUrlWarning(graph, 'in package:other_dep'));
+  }
+
+  void test_linkToUrl_dependency_javascriptScheme_isNotLinked() async {
+    var graph = await bootPackageWithDependency(
+      depDartdocOptions: '''
+dartdoc:
+  linkTo:
+    url: 'javascript:alert(1)//'
+''',
+      libraryContent: '''
+import 'package:other_dep/other.dart';
+OtherType makeOther() => OtherType();
+''',
+    );
+    var makeOther =
+        graph.libraries.named('victim').functions.named('makeOther');
+
+    expect(graph.packageMap['other_dep']!.documentedWhere,
+        DocumentLocation.missing);
+    expect(makeOther.modelType.returnType.linkedName, 'OtherType');
+    expect(graph,
+        hasInvalidUrlWarning(graph, "linkTo.url 'javascript:alert(1)//'"));
+  }
+
+  void
+      test_linkToUrl_dependency_attributeBreakout_enumValueIsNotLinked() async {
+    var graph = await bootPackageWithDependency(
+      depDartdocOptions: '''
+dartdoc:
+  linkTo:
+    url: '$attributeBreakingUrl'
+''',
+      libraryContent: '''
+import 'package:other_dep/other.dart';
+OtherEnum pick() => OtherEnum.a;
+''',
+    );
+    var pick = graph.libraries.named('victim').functions.named('pick');
+    var otherEnum =
+        (pick.modelType.returnType as DefinedElementType).modelElement as Enum;
+    var a = otherEnum.publicEnumValues.named('a');
+
+    expect(a.href, isNull);
+    expect(a.linkedName, 'a');
+  }
+
+  void
+      test_linkToUrl_dependency_attributeBreakout_docReferenceIsNotLinked() async {
+    var graph = await bootPackageWithDependency(
+      depDartdocOptions: '''
+dartdoc:
+  linkTo:
+    url: '$attributeBreakingUrl'
+''',
+      libraryContent: '''
+import 'package:other_dep/other.dart';
+/// Returns an [OtherType].
+OtherType makeOther() => OtherType();
+''',
+    );
+    var makeOther =
+        graph.libraries.named('victim').functions.named('makeOther');
+
+    expect(makeOther.documentationAsHtml, isNot(contains('onerror')));
+    expect(makeOther.documentationAsHtml, isNot(contains('<a ')));
+  }
 
   // A dependency's `linkToSource.uriTemplate` is used for the "view source"
   // link of its elements re-exported by the package being documented.

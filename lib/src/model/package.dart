@@ -9,6 +9,7 @@ import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p show Context;
@@ -162,7 +163,17 @@ final class Package extends LibraryContainer
         config.linkToUrl.isNotEmpty &&
         isPublic &&
         !packageGraph.config.isPackageExcluded(name)) {
-      return DocumentLocation.remote;
+      // `linkTo.url` ends up in `href` attributes throughout the generated
+      // documentation. Anything that is not a plain http(s) URL makes the
+      // package `missing`, so that no links to it are generated at all.
+      if (isSafeHttpUrl(_remoteBaseHref)) {
+        return DocumentLocation.remote;
+      }
+      // Warn on the default package: warnings on non-local packages are
+      // hidden by default, but this one affects the output of the package
+      // being documented.
+      packageGraph.defaultPackage.warn(PackageWarning.invalidUrl,
+          message: "linkTo.url '${config.linkToUrl}' in package:$name");
     }
     return DocumentLocation.missing;
   }();
