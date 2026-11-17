@@ -496,6 +496,7 @@ class PackageGraph with Referable {
       PackageWarning.typeAsHtml ||
       PackageWarning.invalidParameter ||
       PackageWarning.toolError ||
+      PackageWarning.invalidUrl ||
       PackageWarning.deprecated =>
         kind.messageFor([message])
     };

@@ -2,7 +2,34 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:convert';
+
 final RegExp leadingWhiteSpace = RegExp(r'^([ \t]*)[^ ]');
+
+/// Escapes text for a double-quoted HTML attribute value, such as `href="..."`.
+///
+/// Unlike [htmlEscape], this leaves `/` alone, keeping URLs readable.
+const HtmlEscape htmlAttributeEscape = HtmlEscape(HtmlEscapeMode.attribute);
+
+/// Characters which must never appear in a URL written into HTML: quotes,
+/// angle brackets and backticks can terminate an attribute or a tag, and
+/// whitespace and control characters are not valid in a URL.
+final RegExp _unsafeUrlCharacters = RegExp(r'''["'<>`\s\x00-\x1f\x7f]''');
+
+/// Whether [url] is an `http(s)` URL which can be written into an `href`
+/// attribute as is.
+///
+/// Requiring an `http(s)` scheme with a host rules out relative URLs and
+/// non-web schemes such as `javascript:`; rejecting [_unsafeUrlCharacters]
+/// rules out values which would break out of the attribute, which
+/// `Uri.tryParse` does not catch.
+bool isSafeHttpUrl(String url) {
+  final uri = Uri.tryParse(url);
+  if (uri == null) return false;
+  if (uri.scheme != 'http' && uri.scheme != 'https') return false;
+  if (uri.host.isEmpty) return false;
+  return !_unsafeUrlCharacters.hasMatch(url);
+}
 
 Iterable<String> stripCommonWhitespace(String str) sync* {
   if (str.isEmpty) return;

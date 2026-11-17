@@ -333,6 +333,15 @@ enum PackageWarning implements Comparable<PackageWarning> {
     shortHelp: 'Unable to execute external tool.',
     defaultWarningMode: PackageWarningMode.error,
   ),
+  invalidUrl(
+    'invalid-url',
+    'ignoring a URL which is not a plain http(s) URL: {0}',
+    shortHelp: 'A URL from `dartdoc_options.yaml` was not a plain http(s) URL '
+        'and was ignored.',
+    longHelp: 'The URL is written into the generated HTML as the target of a '
+        'link. Only plain http(s) URLs are accepted; anything else is not '
+        'linked to.',
+  ),
   deprecated(
     'deprecated',
     'deprecated dartdoc usage: {0}',
