@@ -571,6 +571,7 @@ class _Search {
 
     // Reuse an existing `.tt-wrapper` so focused inputs are not detached.
     final wrapper = _ensureWrapper(inputElement);
+    wrapper.querySelector('.tt-menu[role="listbox"]')?.remove();
     wrapper.appendChild(listBox);
 
     setEventListeners(inputElement);

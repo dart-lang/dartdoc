@@ -263,4 +263,29 @@ void main() {
     );
     expect(navigatedUrls, ['search.html?q=Future%3Cint%3E']);
   });
+
+  test('re-running init does not append duplicate listbox menus', () async {
+    hostContainer.innerHtml = '''
+<form class="search navbar-right" role="search">
+  <div class="tt-wrapper">
+    <input type="text" id="search-box" class="form-control typeahead tt-input" placeholder="Search API Docs">
+  </div>
+</form>
+''';
+
+    var input = document.getElementById('search-box')! as HTMLInputElement;
+    var wrapper = input.parentElement! as HTMLElement;
+
+    search.init(fetchIndexText: () async => _sampleIndexJson);
+    input.focus();
+    input.dispatchEvent(FocusEvent('focus'));
+    await Future<void>.delayed(Duration.zero);
+    expect(wrapper.querySelectorAll('.tt-menu[role="listbox"]').length, 1);
+
+    // Re-initializing against an already-hydrated input replaces the prior
+    // listbox instead of stacking duplicate menus.
+    search.init(fetchIndexText: () async => _sampleIndexJson);
+    await Future<void>.delayed(Duration.zero);
+    expect(wrapper.querySelectorAll('.tt-menu[role="listbox"]').length, 1);
+  });
 }
