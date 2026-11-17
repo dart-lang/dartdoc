@@ -181,14 +181,27 @@ Future<int> fetchCount() async => 0;
         for (var el in libDoc.querySelectorAll('.material-symbols-outlined'))
           el.text.trim(),
       };
+      var alertIconPattern = RegExp(
+        r'''markdown-alert-title::?before\s*\{[^}]*?\bcontent\s*:\s*["']([^"']+)["']''',
+      );
       var cssAlertIcons = {
-        for (var m in RegExp(
-          r'markdown-alert-title::?before\{content:"([^"]+)"\}',
-        ).allMatches(stylesCss))
-          m.group(1)!,
+        for (var m in alertIconPattern.allMatches(stylesCss)) m.group(1)!,
       };
-      expect(cssAlertIcons, isNotEmpty);
+      expect(cssAlertIcons.length, greaterThanOrEqualTo(5));
       expect(iconNames, containsAll({...templateIcons, ...cssAlertIcons}));
+
+      // Verify the alert-icon extractor tolerates unminified formatting,
+      // trailing semicolons, single quotes, and sibling CSS declarations.
+      const unminifiedSample = '''
+.markdown-alert-note .markdown-alert-title::before {
+  color: inherit;
+  content: 'info';
+}
+''';
+      expect(
+        alertIconPattern.firstMatch(unminifiedSample)?.group(1),
+        'info',
+      );
     });
   });
 }
