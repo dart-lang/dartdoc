@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:convert';
-
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer_testing/utilities/extensions/resource_provider.dart';
@@ -142,10 +140,6 @@ Future<int> fetchCount() async => 0;
             .getFile(pathContext.join(outputPath, 'a', 'fetchCount.html'))
             .readAsStringSync(),
       );
-      var stylesCss = utf8.decode(
-        base64
-            .decode(bundledResourcesBase64['styles.css']!.replaceAll('\n', '')),
-      );
 
       // Default remote Dart SDK links point to unversioned https://api.dart.dev.
       var sdkHrefs = libDoc
@@ -166,8 +160,9 @@ Future<int> fetchCount() async => 0;
       expect(firstBodyChild.text, contains('try{'));
       expect(firstBodyChild.text, contains('colorTheme'));
 
-      // Material Symbols stylesheet query parameters stay alphabetically sorted
-      // (required by Google Fonts) and cover every template & CSS alert icon.
+      // Generated pages emit the subsetted Material Symbols stylesheet with
+      // display=block and alphabetically sorted icon_names (full cross-repo
+      // drift coverage lives in test/material_symbols_subset_test.dart).
       var symbolsHref = libDoc
           .querySelectorAll('link[rel="stylesheet"]')
           .map((l) => l.attributes['href'] ?? '')
@@ -175,33 +170,8 @@ Future<int> fetchCount() async => 0;
       var symbolsUri = Uri.parse(symbolsHref);
       expect(symbolsUri.queryParameters['display'], 'block');
       var iconNames = symbolsUri.queryParameters['icon_names']!.split(',');
+      expect(iconNames, isNotEmpty);
       expect(iconNames, orderedEquals([...iconNames]..sort()));
-
-      var templateIcons = {
-        for (var el in libDoc.querySelectorAll('.material-symbols-outlined'))
-          el.text.trim(),
-      };
-      var alertIconPattern = RegExp(
-        r'''markdown-alert-title::?before\s*\{[^}]*?\bcontent\s*:\s*["']([^"']+)["']''',
-      );
-      var cssAlertIcons = {
-        for (var m in alertIconPattern.allMatches(stylesCss)) m.group(1)!,
-      };
-      expect(cssAlertIcons.length, greaterThanOrEqualTo(5));
-      expect(iconNames, containsAll({...templateIcons, ...cssAlertIcons}));
-
-      // Verify the alert-icon extractor tolerates unminified formatting,
-      // trailing semicolons, single quotes, and sibling CSS declarations.
-      const unminifiedSample = '''
-.markdown-alert-note .markdown-alert-title::before {
-  color: inherit;
-  content: 'info';
-}
-''';
-      expect(
-        alertIconPattern.firstMatch(unminifiedSample)?.group(1),
-        'info',
-      );
     });
   });
 }

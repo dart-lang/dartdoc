@@ -6,6 +6,8 @@ import 'dart:js_interop';
 
 import 'package:web/web.dart';
 
+import 'icons.dart';
+
 void init() {
   final blocks = document.querySelectorAll('pre:has(> code)');
   for (var i = 0; i < blocks.length; i++) {
@@ -16,8 +18,8 @@ void init() {
     button.className = 'copy-button';
 
     final iconSpan = document.createElement('span') as HTMLSpanElement;
-    iconSpan.className = 'material-symbols-outlined';
-    iconSpan.textContent = 'content_copy';
+    iconSpan.className = materialSymbolsClass;
+    iconSpan.textContent = WebMaterialSymbol.contentCopy.ligature;
     button.appendChild(iconSpan);
 
     int? timeoutId;
@@ -30,7 +32,7 @@ void init() {
 
           window.navigator.clipboard.writeText(text);
 
-          iconSpan.textContent = 'check';
+          iconSpan.textContent = WebMaterialSymbol.check.ligature;
           button.classList.add('copied');
 
           if (timeoutId != null) {
@@ -39,7 +41,7 @@ void init() {
 
           timeoutId = window.setTimeout(
               () {
-                iconSpan.textContent = 'content_copy';
+                iconSpan.textContent = WebMaterialSymbol.contentCopy.ligature;
                 button.classList.remove('copied');
                 timeoutId = null;
               }.toJS,
