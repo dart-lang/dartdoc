@@ -117,7 +117,7 @@ final class Category extends LibraryContainer
   String get categoryLabel {
     final buffer = StringBuffer('<span class="category ');
     buffer.write(
-        htmlAttributeEscape.convert(name.toLowerCase().split(' ').join('-')));
+        htmlAttributeEscape.convert(name.toLowerCase().replaceAll(' ', '-')));
     buffer.write(' cp-');
     buffer.write(categoryIndex);
 

@@ -37,11 +37,16 @@ class HighlightMatchesTest {
   }
 
   void test_matchesQueryLiterally() {
-    // `.` and `(` are regular expression metacharacters.
+    // `.`, `(`, `[` and `+` are regular expression metacharacters; the last two
+    // are also how Dart operators are searched for.
     expect(highlightMatches('a.b', '.'),
         "a<strong class='tt-highlight'>.</strong>b");
     expect(highlightMatches('f(x)', '('),
         "f<strong class='tt-highlight'>(</strong>x)");
+    expect(highlightMatches('operator []=', '[]'),
+        "operator <strong class='tt-highlight'>[]</strong>=");
+    expect(highlightMatches('operator +', '+'),
+        "operator <strong class='tt-highlight'>+</strong>");
   }
 
   void test_emptyQuery() {
