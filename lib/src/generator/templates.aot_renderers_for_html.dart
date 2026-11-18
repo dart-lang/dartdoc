@@ -564,14 +564,14 @@ String renderError(PackageTemplateData context0) {
     <div>
       If you were looking for something specific, try searching:
       <form class="search-body" role="search">
-        <input
+        <div class="tt-wrapper"><input
           type="text"
           id="search-body"
           autocomplete="off"
-          disabled
-          class="form-control typeahead"
-          placeholder="Loading search..."
-        />
+          class="form-control typeahead tt-input"
+          placeholder="Search API Docs"
+          spellcheck="false"
+        /></div>
       </form>
     </div>
   </section>
@@ -2363,7 +2363,7 @@ String _deduplicated__head(TemplateDataBase context0) {
   buffer.writeEscaped(context0.self.name);
   buffer.write('''</div>
   <form class="search navbar-right" role="search">
-    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+    <div class="tt-wrapper"><input type="text" id="search-box" autocomplete="off" class="form-control typeahead tt-input" placeholder="Search API Docs" spellcheck="false"></div>
   </form>
   <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
     <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
@@ -2581,7 +2581,7 @@ String _deduplicated__search_sidebar(TemplateDataBase context0) {
       '''<!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
 <header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
-    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+    <div class="tt-wrapper"><input type="text" id="search-sidebar" autocomplete="off" class="form-control typeahead tt-input" placeholder="Search API Docs" spellcheck="false"></div>
   </form>
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">''');

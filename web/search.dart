@@ -2,13 +2,18 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
 
 import 'package:dartdoc/src/search.dart';
+import 'package:meta/meta.dart';
 import 'package:web/web.dart';
 
-final String _htmlBase = () {
+const _searchPlaceholder = 'Search API Docs';
+const _failedPlaceholder = 'Failed to initialize search';
+
+String get _htmlBase {
   final body = document.body;
   if (body == null) return '';
 
@@ -17,60 +22,247 @@ final String _htmlBase = () {
   if (body.getAttribute('data-using-base-href') == 'false') {
     // Dartdoc stores the htmlBase in 'body[data-base-href]'.
     return body.getAttribute('data-base-href') ?? '';
-  } else {
-    return '';
   }
-}();
+  return '';
+}
 
-void init() {
+_LazySearchLoader? _activeLoader;
+
+/// Initializes lazy search index loading and UI bindings on search inputs.
+///
+/// [fetchIndexText] and [navigateTo] may be overridden in browser tests.
+void init({
+  @visibleForTesting Future<String?> Function()? fetchIndexText,
+  @visibleForTesting void Function(String url)? navigateTo,
+}) {
+  _activeLoader?.dispose();
+  _activeLoader = null;
+
   var searchBox = document.getElementById('search-box') as HTMLInputElement?;
   var searchBody = document.getElementById('search-body') as HTMLInputElement?;
   var searchSidebar =
       document.getElementById('search-sidebar') as HTMLInputElement?;
+  var inputs = [searchBox, searchBody, searchSidebar].nonNulls.toList();
+  var slashCandidates =
+      [searchBox, searchSidebar, searchBody].nonNulls.toList();
 
-  void disableSearch() {
-    print('Could not activate search functionality.');
-
-    searchBox?.placeholder = 'Failed to initialize search';
-    searchBody?.placeholder = 'Failed to initialize search';
-    searchSidebar?.placeholder = 'Failed to initialize search';
+  if (inputs.isEmpty &&
+      !_shouldLoadIndexEagerly(Uri.parse(window.location.toString()), inputs)) {
+    return;
   }
 
-  window
-      .fetch('${_htmlBase}index.json'.toJS)
-      .toDart
-      .then((fetchResponse) async {
-    if (fetchResponse.status != HttpStatus.ok) {
-      disableSearch();
+  _activeLoader = _LazySearchLoader(
+    inputs: inputs,
+    slashCandidates: slashCandidates,
+    fetchIndexText: fetchIndexText ?? _defaultFetchIndexText,
+    navigateTo: navigateTo ?? _defaultNavigateTo,
+  )..bind();
+}
+
+void _defaultNavigateTo(String url) {
+  window.location.assign(url);
+}
+
+Future<String?> _defaultFetchIndexText() async {
+  try {
+    var response = await window.fetch('${_htmlBase}index.json'.toJS).toDart;
+    if (response.status != HttpStatus.ok) {
+      return null;
+    }
+    return (await response.text().toDart).toDart;
+  } catch (_) {
+    return null;
+  }
+}
+
+bool _isSearchPageWithQuery(Uri url) =>
+    url.path.endsWith('search.html') && url.queryParameters.containsKey('q');
+
+bool _shouldLoadIndexEagerly(Uri url, List<HTMLInputElement> inputs) {
+  if (url.queryParameters.containsKey('search')) return true;
+  if (_isSearchPageWithQuery(url)) return true;
+  return inputs.any(
+    (input) => document.activeElement == input || input.value.isNotEmpty,
+  );
+}
+
+HTMLInputElement? _selectSlashTarget(List<HTMLInputElement> candidates) {
+  for (var input in candidates) {
+    if (input.offsetParent != null) return input;
+  }
+  return candidates.firstOrNull;
+}
+
+HTMLElement _ensureWrapper(HTMLInputElement input) {
+  if (input.parentElement case HTMLElement parent
+      when parent.classList.contains('tt-wrapper')) {
+    return parent;
+  }
+  var wasFocused = document.activeElement == input;
+  var selectionStart = input.selectionStart;
+  var selectionEnd = input.selectionEnd;
+  var wrapper = HTMLDivElement()..classList.add('tt-wrapper');
+  input.replaceWith(wrapper);
+  wrapper.appendChild(input);
+  if (wasFocused) {
+    input.focus();
+    if (selectionStart != null && selectionEnd != null) {
+      input.setSelectionRange(selectionStart, selectionEnd);
+    }
+  }
+  return wrapper;
+}
+
+final class _LazySearchLoader {
+  final List<HTMLInputElement> inputs;
+  final List<HTMLInputElement> slashCandidates;
+  final Future<String?> Function() fetchIndexText;
+  final void Function(String url) navigateTo;
+
+  Future<void>? _loadFuture;
+  JSFunction? _onFirstInteraction;
+  bool _isIndexLoaded = false;
+  bool _isDisposed = false;
+  final _removeListeners = <void Function()>[];
+
+  _LazySearchLoader({
+    required this.inputs,
+    required this.slashCandidates,
+    required this.fetchIndexText,
+    required this.navigateTo,
+  });
+
+  /// Adds [listener] to [target] and records it for removal in [dispose].
+  void _listen(EventTarget target, String type, JSFunction listener) {
+    target.addEventListener(type, listener);
+    _removeListeners.add(() => target.removeEventListener(type, listener));
+  }
+
+  /// Removes every listener this loader added and abandons any load in flight,
+  /// so that a later call to [init] starts from a clean page.
+  void dispose() {
+    _isDisposed = true;
+    for (final removeListener in _removeListeners) {
+      removeListener();
+    }
+    _removeListeners.clear();
+  }
+
+  void bind() {
+    for (final input in inputs) {
+      _prepareSearchInput(input);
+    }
+
+    if (slashCandidates.isNotEmpty) {
+      _listen(document, 'keydown', _handleSlashKeydown.toJS);
+    }
+
+    if (_shouldLoadIndexEagerly(
+      Uri.parse(window.location.toString()),
+      inputs,
+    )) {
+      _ensureIndexLoaded();
+    } else if (inputs.isNotEmpty) {
+      final listener = (Event _) {
+        _ensureIndexLoaded();
+      }.toJS;
+      _onFirstInteraction = listener;
+      for (final input in inputs) {
+        _listen(input, 'focus', listener);
+        _listen(input, 'input', listener);
+      }
+    }
+  }
+
+  void _prepareSearchInput(HTMLInputElement input) {
+    input
+      ..disabled = false
+      ..placeholder = _searchPlaceholder
+      ..setAttribute('autocomplete', 'off')
+      ..setAttribute('spellcheck', 'false')
+      ..classList.add('tt-input');
+
+    _ensureWrapper(input);
+
+    final form = input.form;
+    if (form == null) return;
+    _listen(
+      form,
+      'submit',
+      (Event event) {
+        event.preventDefault();
+        if (!_isIndexLoaded) {
+          var q = input.value;
+          navigateTo(
+            '${_htmlBase}search.html?q=${Uri.encodeQueryComponent(q)}',
+          );
+        }
+      }.toJS,
+    );
+  }
+
+  void _handleSlashKeydown(KeyboardEvent event) {
+    if (event.key != '/') return;
+    var activeElement = document.activeElement;
+    if (activeElement != null && activeElement.acceptsInput) return;
+
+    event.preventDefault();
+    _selectSlashTarget(slashCandidates)?.focus();
+    _ensureIndexLoaded();
+  }
+
+  void _ensureIndexLoaded() {
+    if (_onFirstInteraction case var listener?) {
+      _onFirstInteraction = null;
+      for (final input in inputs) {
+        input.removeEventListener('focus', listener);
+        input.removeEventListener('input', listener);
+      }
+    }
+    _loadFuture ??= _loadSearchIndex();
+  }
+
+  Future<void> _loadSearchIndex() async {
+    Index? index;
+    try {
+      final jsonText = await fetchIndexText();
+      if (jsonText != null) {
+        index = Index.fromJson(jsonText);
+      }
+    } catch (_) {
+      index = null;
+    }
+
+    // A later call to `init` replaced this loader while the fetch was in
+    // flight.
+    if (_isDisposed) return;
+
+    if (index == null) {
+      print('Could not activate search functionality.');
+      for (final input in inputs) {
+        input.placeholder = _failedPlaceholder;
+      }
       return;
     }
 
-    final text = (await fetchResponse.text().toDart).toDart;
-    final index = Index.fromJson(text);
+    _isIndexLoaded = true;
 
     // Navigate to the first result from the 'search' query parameter
     // if specified and found.
     final url = Uri.parse(window.location.toString());
-    final searchQuery = url.queryParameters['search'];
-    if (searchQuery != null) {
+    if (url.queryParameters['search'] case var searchQuery?) {
       final href = index.find(searchQuery).firstOrNull?.href;
       if (href != null) {
-        window.location.assign('$_htmlBase$href');
+        navigateTo('$_htmlBase$href');
         return;
       }
     }
 
-    // Initialize all three search fields.
-    if (searchBox != null) {
-      _Search(index).initialize(searchBox);
+    // Initialize all available search fields.
+    for (final input in inputs) {
+      _Search(index, navigateTo: navigateTo).initialize(input);
     }
-    if (searchBody != null) {
-      _Search(index).initialize(searchBody);
-    }
-    if (searchSidebar != null) {
-      _Search(index).initialize(searchSidebar);
-    }
-  });
+  }
 }
 
 int _suggestionLimit = 10;
@@ -88,6 +280,7 @@ final _containerMap = <String, Element>{};
 class _Search {
   final Index index;
   final Uri uri;
+  final void Function(String url) navigateTo;
 
   late final listBox = HTMLDivElement()
     ..setAttribute('role', 'listbox')
@@ -112,54 +305,44 @@ class _Search {
   List<IndexItem> suggestionsInfo = <IndexItem>[];
   int selectedElement = -1;
 
-  _Search(this.index) : uri = Uri.parse(window.location.href);
+  _Search(this.index, {required this.navigateTo})
+      : uri = Uri.parse(window.location.href);
 
   void initialize(HTMLInputElement inputElement) {
-    inputElement.disabled = false;
-    inputElement.setAttribute('placeholder', 'Search API Docs');
-    // Handle grabbing focus when the user types '/' outside of the input.
-    document.addEventListener(
-      'keydown',
-      (KeyboardEvent event) {
-        if (event.key != '/') {
-          return;
-        }
-
-        var activeElement = document.activeElement;
-        if (activeElement == null || !activeElement.acceptsInput) {
-          event.preventDefault();
-          inputElement.focus();
-        }
-      }.toJS,
-    );
-
-    // Prepare elements.
-    var wrapper = HTMLDivElement()..classList.add('tt-wrapper');
     inputElement
-      ..replaceWith(wrapper)
+      ..disabled = false
+      ..setAttribute('placeholder', _searchPlaceholder)
       ..setAttribute('autocomplete', 'off')
       ..setAttribute('spellcheck', 'false')
       ..classList.add('tt-input');
 
-    wrapper
-      ..appendChild(inputElement)
-      ..appendChild(listBox);
+    // Reuse an existing `.tt-wrapper` so focused inputs are not detached.
+    final wrapper = _ensureWrapper(inputElement);
+    wrapper.querySelector('.tt-menu[role="listbox"]')?.remove();
+    wrapper.appendChild(listBox);
 
     setEventListeners(inputElement);
 
     // Display the search results in the main body, if we're rendering the
     // search page.
-    if (window.location.href.contains('search.html')) {
+    var isSearchPage = false;
+    if (_isSearchPageWithQuery(uri)) {
       var query = uri.queryParameters['q'];
-      if (query == null) {
-        return;
+      if (query != null) {
+        isSearchPage = true;
+        query = _htmlEscape.convert(query);
+        _suggestionLimit = _suggestionLength;
+        handleSearch(query, isSearchPage: true);
+        showSearchResultPage(query);
+        hideSuggestions();
+        _suggestionLimit = 10;
       }
-      query = _htmlEscape.convert(query);
-      _suggestionLimit = _suggestionLength;
-      handleSearch(query, isSearchPage: true);
-      showSearchResultPage(query);
-      hideSuggestions();
-      _suggestionLimit = 10;
+    }
+
+    if (!isSearchPage &&
+        inputElement.value.isNotEmpty &&
+        document.activeElement == inputElement) {
+      handleSearch(inputElement.value, forceUpdate: true);
     }
   }
 
@@ -242,7 +425,9 @@ class _Search {
     }
 
     for (final suggestion in suggestions) {
-      suggestionElements.add(_createSuggestion(query, suggestion));
+      suggestionElements.add(
+        _createSuggestion(query, suggestion, navigateTo: navigateTo),
+      );
     }
 
     var suggestionSource =
@@ -266,6 +451,8 @@ class _Search {
     }
 
     if (searchText == null || searchText.isEmpty) {
+      actualValue = '';
+      _suggestionLength = 0;
       updateSuggestions('', []);
       return;
     }
@@ -326,7 +513,7 @@ class _Search {
           if (!selectedElement.isBlurred) {
             if (suggestionElements[selectedElement].getAttribute('data-href')
                 case var href?) {
-              window.location.assign('$_htmlBase$href');
+              navigateTo('$_htmlBase$href');
             }
             return;
           } else {
@@ -335,7 +522,7 @@ class _Search {
             var query = _htmlEscape.convert(actualValue);
             var searchPath = Uri.parse('${_htmlBase}search.html')
                 .replace(queryParameters: {'q': query});
-            window.location.assign(searchPath.toString());
+            navigateTo(searchPath.toString());
             return;
           }
         }
@@ -410,7 +597,11 @@ class _Search {
   void removeSelectedElement() => selectedElement = -1;
 }
 
-HTMLElement _createSuggestion(String query, IndexItem match) {
+HTMLElement _createSuggestion(
+  String query,
+  IndexItem match, {
+  required void Function(String url) navigateTo,
+}) {
   final suggestion = HTMLDivElement()
     ..setAttribute('data-href', match.href ?? '')
     ..classList.add('tt-suggestion');
@@ -449,7 +640,7 @@ HTMLElement _createSuggestion(String query, IndexItem match) {
     'click',
     (Event event) {
       if (match.href case var matchHref?) {
-        window.location.assign('$_htmlBase$matchHref');
+        navigateTo('$_htmlBase$matchHref');
         event.preventDefault();
       }
     }.toJS,
