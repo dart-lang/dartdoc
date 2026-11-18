@@ -15,6 +15,7 @@ import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/library.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:html/parser.dart' as html_parser;
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
@@ -113,6 +114,37 @@ void main() {
           packageGraph.localPublicLibraries,
           anyElement((Library l) => packageGraph.packageWarningCounter
               .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
+    });
+
+    test('generated pages defer scripts and apply the saved theme inline',
+        onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')},
+        () async {
+      getConvertedFile('$projectPath/lib/a.dart').writeAsStringSync('''
+library a;
+
+/// Returns [Future] of [int].
+Future<int> fetchCount() async => 0;
+''');
+      var packageGraph =
+          await utils.bootBasicPackage(projectPath, packageMetaProvider);
+      await generator.generate(packageGraph);
+
+      var outputPath = projectRoot.getFolder('doc').path;
+      var libDoc = html_parser.parse(
+        resourceProvider
+            .getFile(pathContext.join(outputPath, 'a', 'fetchCount.html'))
+            .readAsStringSync(),
+      );
+
+      var externalScripts = libDoc.querySelectorAll('script[src]');
+      expect(externalScripts, isNotEmpty);
+      for (var script in externalScripts) {
+        expect(script.attributes.containsKey('defer'), isTrue);
+      }
+      var firstBodyChild = libDoc.body!.children.first;
+      expect(firstBodyChild.localName, 'script');
+      expect(firstBodyChild.text, contains('colorTheme'));
+      expect(firstBodyChild.text, contains('dark-theme'));
     });
   });
 }

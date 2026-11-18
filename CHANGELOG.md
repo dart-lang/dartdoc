@@ -1,4 +1,6 @@
 ## 9.1.0-wip
+* Defer page scripts, applying the saved dark theme inline so pages no longer
+  flash the light theme while loading.
 * The URL produced by `linkTo.url` must now be a plain `http(s)` URL, and is
   HTML-escaped when written into links to a package's elements. An invalid URL
   is ignored with an `invalid-url` warning, and no links to the package are

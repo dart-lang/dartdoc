@@ -2233,12 +2233,12 @@ String _deduplicated__footer(TemplateDataBase context0) {
   if (!context0.useBaseHref) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/highlight.pack.js?v1"></script>
+  buffer.write('''static-assets/highlight.pack.js?v1" defer></script>
 <script src="''');
   if (!context0.useBaseHref) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/docs.dart.js"></script>
+  buffer.write('''static-assets/docs.dart.js" defer></script>
 ''');
   buffer.write(context0.customFooter);
   buffer.writeln();
@@ -2316,6 +2316,7 @@ String _deduplicated__head(TemplateDataBase context0) {
   buffer.write('''" data-using-base-href="''');
   buffer.write(context0.useBaseHref.toString());
   buffer.write('''" class="light-theme">
+<script>try{if(localStorage.getItem(\'colorTheme\')===\'true\')document.body.classList.replace(\'light-theme\',\'dark-theme\');}catch(_){}</script>
 <div id="overlay-under-drawer"></div>
 <header id="title">
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
