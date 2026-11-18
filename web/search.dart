@@ -11,6 +11,9 @@ import 'package:meta/meta.dart';
 import 'package:web/web.dart';
 
 const _searchPlaceholder = 'Search API Docs';
+const _loadingStatusMessage = 'Loading search index\u2026';
+const _failedStatusMessage =
+    'Failed to load search index. Type or refocus to retry.';
 const _failedPlaceholder = 'Failed to initialize search';
 
 String get _htmlBase {
@@ -26,7 +29,10 @@ String get _htmlBase {
   return '';
 }
 
+enum _LoadState { idle, loading, failed, loaded }
+
 _LazySearchLoader? _activeLoader;
+Timer? _liveAnnouncementDebounce;
 
 /// Initializes lazy search index loading and UI bindings on search inputs.
 ///
@@ -37,6 +43,8 @@ void init({
 }) {
   _activeLoader?.dispose();
   _activeLoader = null;
+  _liveAnnouncementDebounce?.cancel();
+  _liveAnnouncementDebounce = null;
 
   var searchBox = document.getElementById('search-box') as HTMLInputElement?;
   var searchBody = document.getElementById('search-body') as HTMLInputElement?;
@@ -51,6 +59,7 @@ void init({
     return;
   }
 
+  _ensureLiveStatusElement();
   _activeLoader = _LazySearchLoader(
     inputs: inputs,
     slashCandidates: slashCandidates,
@@ -75,6 +84,60 @@ Future<String?> _defaultFetchIndexText() async {
   }
 }
 
+HTMLElement? _ensureLiveStatusElement() {
+  final body = document.body;
+  if (body == null) return null;
+  if (document.getElementById('dartdoc-search-status')
+      case HTMLElement existing) {
+    existing.textContent = '';
+    return existing;
+  }
+  final status = HTMLDivElement()
+    ..id = 'dartdoc-search-status'
+    ..setAttribute('role', 'status')
+    ..setAttribute('aria-live', 'polite')
+    ..setAttribute('aria-atomic', 'true');
+  status.style
+    ..position = 'absolute'
+    ..width = '1px'
+    ..height = '1px'
+    ..padding = '0'
+    ..margin = '-1px'
+    ..overflow = 'hidden'
+    ..setProperty('clip', 'rect(0, 0, 0, 0)')
+    ..setProperty('clip-path', 'inset(50%)')
+    ..whiteSpace = 'nowrap'
+    ..border = '0';
+  body.appendChild(status);
+  return status;
+}
+
+void _announcePolite(String message) {
+  _liveAnnouncementDebounce?.cancel();
+  _liveAnnouncementDebounce = null;
+  if (document.getElementById('dartdoc-search-status')
+      case HTMLElement status) {
+    status.textContent = message;
+  }
+}
+
+void _announcePoliteDebounced(String message) {
+  _liveAnnouncementDebounce?.cancel();
+  _liveAnnouncementDebounce = Timer(const Duration(milliseconds: 400), () {
+    _liveAnnouncementDebounce = null;
+    if (document.getElementById('dartdoc-search-status')
+        case HTMLElement status) {
+      status.textContent = message;
+    }
+  });
+}
+
+String _resultsAnnouncementText(int totalCount) => switch (totalCount) {
+      0 => 'No search results.',
+      1 => '1 search result available.',
+      _ => '$totalCount search results available.',
+    };
+
 bool _isSearchPageWithQuery(Uri url) =>
     url.path.endsWith('search.html') && url.queryParameters.containsKey('q');
 
@@ -91,6 +154,55 @@ HTMLInputElement? _selectSlashTarget(List<HTMLInputElement> candidates) {
     if (input.offsetParent != null) return input;
   }
   return candidates.firstOrNull;
+}
+
+final class _InputHost {
+  final HTMLInputElement input;
+  final HTMLElement wrapper;
+  final HTMLDivElement statusElement;
+
+  _InputHost({
+    required this.input,
+    required this.wrapper,
+    required this.statusElement,
+  });
+
+  factory _InputHost.prepare(HTMLInputElement input) {
+    input
+      ..disabled = false
+      ..placeholder = _searchPlaceholder
+      ..setAttribute('autocomplete', 'off')
+      ..setAttribute('spellcheck', 'false')
+      ..classList.add('tt-input');
+    if (!input.hasAttribute('aria-label') &&
+        !input.hasAttribute('aria-labelledby')) {
+      input.setAttribute('aria-label', _searchPlaceholder);
+    }
+
+    final wrapper = _ensureWrapper(input);
+    _ensureChildElement(
+      wrapper,
+      selector: '.tt-search-spinner',
+      create: () => HTMLSpanElement()
+        ..classList.add('tt-search-spinner')
+        ..setAttribute('aria-hidden', 'true'),
+    );
+    final statusElement = _ensureChildElement(
+      wrapper,
+      selector: '.tt-search-status',
+      create: () => HTMLDivElement()
+        ..classList.add('tt-menu')
+        ..classList.add('tt-search-status')
+        ..setAttribute('aria-hidden', 'true')
+        ..style.display = 'none',
+    ) as HTMLDivElement;
+
+    return _InputHost(
+      input: input,
+      wrapper: wrapper,
+      statusElement: statusElement,
+    );
+  }
 }
 
 HTMLElement _ensureWrapper(HTMLInputElement input) {
@@ -113,15 +225,30 @@ HTMLElement _ensureWrapper(HTMLInputElement input) {
   return wrapper;
 }
 
+HTMLElement _ensureChildElement(
+  HTMLElement parent, {
+  required String selector,
+  required HTMLElement Function() create,
+}) {
+  if (parent.querySelector(selector) case HTMLElement existing) {
+    return existing;
+  }
+  final created = create();
+  parent.appendChild(created);
+  return created;
+}
+
 final class _LazySearchLoader {
   final List<HTMLInputElement> inputs;
   final List<HTMLInputElement> slashCandidates;
   final Future<String?> Function() fetchIndexText;
   final void Function(String url) navigateTo;
+  late final List<_InputHost> hosts = [
+    for (final input in inputs) _InputHost.prepare(input),
+  ];
 
-  Future<void>? _loadFuture;
-  JSFunction? _onFirstInteraction;
-  bool _isIndexLoaded = false;
+  _LoadState _state = _LoadState.idle;
+  Future<void>? _inFlightLoad;
   bool _isDisposed = false;
   final _removeListeners = <void Function()>[];
 
@@ -149,56 +276,81 @@ final class _LazySearchLoader {
   }
 
   void bind() {
-    for (final input in inputs) {
-      _prepareSearchInput(input);
-    }
-
     if (slashCandidates.isNotEmpty) {
       _listen(document, 'keydown', _handleSlashKeydown.toJS);
+    }
+
+    for (final host in hosts) {
+      _attachPreLoadListeners(host);
     }
 
     if (_shouldLoadIndexEagerly(
       Uri.parse(window.location.toString()),
       inputs,
     )) {
-      _ensureIndexLoaded();
-    } else if (inputs.isNotEmpty) {
-      final listener = (Event _) {
-        _ensureIndexLoaded();
-      }.toJS;
-      _onFirstInteraction = listener;
-      for (final input in inputs) {
-        _listen(input, 'focus', listener);
-        _listen(input, 'input', listener);
-      }
+      _ensureLoaded();
     }
   }
 
-  void _prepareSearchInput(HTMLInputElement input) {
-    input
-      ..disabled = false
-      ..placeholder = _searchPlaceholder
-      ..setAttribute('autocomplete', 'off')
-      ..setAttribute('spellcheck', 'false')
-      ..classList.add('tt-input');
-
-    _ensureWrapper(input);
-
-    final form = input.form;
-    if (form == null) return;
+  void _attachPreLoadListeners(_InputHost host) {
+    final input = host.input;
+    if (input.form case var form?) {
+      _listen(
+        form,
+        'submit',
+        (Event event) {
+          event.preventDefault();
+          if (_state != _LoadState.loaded) {
+            var q = input.value;
+            navigateTo(
+              '${_htmlBase}search.html?q=${Uri.encodeQueryComponent(q)}',
+            );
+          }
+        }.toJS,
+      );
+    }
     _listen(
-      form,
-      'submit',
-      (Event event) {
-        event.preventDefault();
-        if (!_isIndexLoaded) {
-          var q = input.value;
-          navigateTo(
-            '${_htmlBase}search.html?q=${Uri.encodeQueryComponent(q)}',
-          );
+      input,
+      'focus',
+      (Event _) {
+        _onInputInteraction();
+      }.toJS,
+    );
+    _listen(
+      input,
+      'input',
+      (Event _) {
+        _onInputInteraction();
+      }.toJS,
+    );
+    _listen(
+      input,
+      'blur',
+      (Event _) {
+        if (_state != _LoadState.loaded) {
+          _syncUi();
         }
       }.toJS,
     );
+    _listen(
+      input,
+      'keydown',
+      (Event event) {
+        if (_state != _LoadState.loaded &&
+            event.type == 'keydown' &&
+            (event as KeyboardEvent).code == 'Escape') {
+          host.statusElement.style.display = 'none';
+        }
+      }.toJS,
+    );
+  }
+
+  void _onInputInteraction() {
+    if (_state == _LoadState.idle || _state == _LoadState.failed) {
+      _ensureLoaded();
+    } else if (_state == _LoadState.loading) {
+      _syncUi();
+    }
   }
 
   void _handleSlashKeydown(KeyboardEvent event) {
@@ -208,47 +360,71 @@ final class _LazySearchLoader {
 
     event.preventDefault();
     _selectSlashTarget(slashCandidates)?.focus();
-    _ensureIndexLoaded();
-  }
-
-  void _ensureIndexLoaded() {
-    if (_onFirstInteraction case var listener?) {
-      _onFirstInteraction = null;
-      for (final input in inputs) {
-        input.removeEventListener('focus', listener);
-        input.removeEventListener('input', listener);
-      }
+    if (_state == _LoadState.idle || _state == _LoadState.failed) {
+      _ensureLoaded();
     }
-    _loadFuture ??= _loadSearchIndex();
   }
 
-  Future<void> _loadSearchIndex() async {
-    Index? index;
+  void _ensureLoaded() {
+    if (_state == _LoadState.loaded) return;
+    _inFlightLoad ??= _load();
+  }
+
+  Future<void> _load() async {
+    _state = _LoadState.loading;
+    _syncUi();
+    final initialUrl = Uri.parse(window.location.toString());
+    if (_isSearchPageWithQuery(initialUrl)) {
+      _renderSearchPageStatus(_loadingStatusMessage);
+    }
+
+    var announcedLoading = false;
+    final loadingTimer = Timer(const Duration(milliseconds: 150), () {
+      if (_state == _LoadState.loading && !_isDisposed) {
+        announcedLoading = true;
+        _announcePolite(_loadingStatusMessage);
+      }
+    });
+
+    Index? parsedIndex;
     try {
       final jsonText = await fetchIndexText();
       if (jsonText != null) {
-        index = Index.fromJson(jsonText);
+        parsedIndex = Index.fromJson(jsonText);
       }
     } catch (_) {
-      index = null;
+      parsedIndex = null;
+    } finally {
+      loadingTimer.cancel();
+      _inFlightLoad = null;
     }
 
     // A later call to `init` replaced this loader while the fetch was in
     // flight.
     if (_isDisposed) return;
 
-    if (index == null) {
-      print('Could not activate search functionality.');
-      for (final input in inputs) {
-        input.placeholder = _failedPlaceholder;
-      }
+    if (parsedIndex == null) {
+      _handleLoadFailure(initialUrl);
       return;
     }
 
-    _isIndexLoaded = true;
+    _handleLoadSuccess(parsedIndex, announcedLoading: announcedLoading);
+  }
 
-    // Navigate to the first result from the 'search' query parameter
-    // if specified and found.
+  void _handleLoadFailure(Uri initialUrl) {
+    print('Could not activate search functionality.');
+    _state = _LoadState.failed;
+    _syncUi();
+    if (_isSearchPageWithQuery(initialUrl)) {
+      _renderSearchPageStatus('Failed to load search index.');
+    }
+    _announcePolite('Failed to load search index.');
+  }
+
+  void _handleLoadSuccess(Index index, {required bool announcedLoading}) {
+    _state = _LoadState.loaded;
+    _syncUi();
+
     final url = Uri.parse(window.location.toString());
     if (url.queryParameters['search'] case var searchQuery?) {
       final href = index.find(searchQuery).firstOrNull?.href;
@@ -258,10 +434,102 @@ final class _LazySearchLoader {
       }
     }
 
-    // Initialize all available search fields.
-    for (final input in inputs) {
-      _Search(index, navigateTo: navigateTo).initialize(input);
+    for (final host in hosts) {
+      _Search(index, navigateTo: navigateTo).initialize(host.input);
     }
+
+    final hasActiveQuery = _isSearchPageWithQuery(url) ||
+        hosts.any(
+          (h) => document.activeElement == h.input && h.input.value.isNotEmpty,
+        );
+    if (hasActiveQuery) {
+      _announcePolite(_resultsAnnouncementText(_suggestionLength));
+    } else if (announcedLoading) {
+      _announcePolite('Search index ready.');
+    }
+  }
+
+  void _syncUi() {
+    switch (_state) {
+      case _LoadState.idle:
+        return;
+      case _LoadState.loading:
+        _syncLoadingUi();
+      case _LoadState.failed:
+        _syncFailedUi();
+      case _LoadState.loaded:
+        _syncLoadedUi();
+    }
+  }
+
+  void _syncLoadingUi() {
+    final primaryInput =
+        _selectSlashTarget(slashCandidates) ?? inputs.firstOrNull;
+    final anyActive = hosts.any(
+      (h) => document.activeElement == h.input || h.input.value.isNotEmpty,
+    );
+    for (final host in hosts) {
+      final isFocused = document.activeElement == host.input;
+      final showSpinner = anyActive
+          ? (isFocused || host.input.value.isNotEmpty)
+          : host.input == primaryInput;
+      host.input
+        ..setAttribute('aria-busy', 'true')
+        ..placeholder = _searchPlaceholder;
+      host.wrapper.classList.toggle('is-loading', showSpinner);
+      if (isFocused && host.input.value.trim().isNotEmpty) {
+        host.statusElement
+          ..textContent = _loadingStatusMessage
+          ..classList.remove('is-error')
+          ..style.display = 'block';
+      } else {
+        host.statusElement.style.display = 'none';
+      }
+    }
+  }
+
+  void _syncFailedUi() {
+    for (final host in hosts) {
+      host.input
+        ..removeAttribute('aria-busy')
+        ..placeholder = _failedPlaceholder;
+      host.wrapper.classList.remove('is-loading');
+      if (document.activeElement == host.input) {
+        host.statusElement
+          ..textContent = _failedStatusMessage
+          ..classList.add('is-error')
+          ..style.display = 'block';
+      } else {
+        host.statusElement.style.display = 'none';
+      }
+    }
+  }
+
+  void _syncLoadedUi() {
+    for (final host in hosts) {
+      host.input
+        ..removeAttribute('aria-busy')
+        ..placeholder = _searchPlaceholder;
+      host.wrapper.classList.remove('is-loading');
+      host.statusElement
+        ..textContent = ''
+        ..classList.remove('is-error')
+        ..style.display = 'none';
+    }
+  }
+
+  void _renderSearchPageStatus(String message) {
+    final mainContent = document.getElementById('dartdoc-main-content');
+    if (mainContent == null) return;
+    mainContent
+      ..textContent = ''
+      ..appendChild(HTMLElement.section()..classList.add('search-summary'))
+      ..appendChild(HTMLHeadingElement.h2()..textContent = 'Search Results')
+      ..appendChild(
+        HTMLDivElement()
+          ..classList.add('search-summary')
+          ..textContent = message,
+      );
   }
 }
 
@@ -454,6 +722,9 @@ class _Search {
       actualValue = '';
       _suggestionLength = 0;
       updateSuggestions('', []);
+      if (!isSearchPage && !forceUpdate) {
+        _announcePolite('');
+      }
       return;
     }
 
@@ -465,6 +736,9 @@ class _Search {
 
     actualValue = searchText;
     updateSuggestions(searchText, suggestions, isSearchPage: isSearchPage);
+    if (!isSearchPage && !forceUpdate) {
+      _announcePoliteDebounced(_resultsAnnouncementText(_suggestionLength));
+    }
   }
 
   /// Clears the search box and suggestions.
