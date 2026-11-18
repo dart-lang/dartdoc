@@ -36,19 +36,11 @@ final _pathContext = _resourceProvider.pathContext;
 final String platformVersionString = Platform.version.split(' ').first;
 final Version platformVersion = Version.parse(platformVersionString);
 
-/// The URL prefix of the links dartdoc generates into the SDK API docs, given
-/// the mock SDK's version.
+/// The URL prefix of the links dartdoc generates into the SDK API docs.
 ///
-/// This mirrors how [Package] expands `%b%/%v%` in the SDK's default
-/// [DartdocOptionContext.linkToUrl]: `stable` for a release, otherwise the
-/// prerelease tag, such as `dev`, then the version. If that rule changes, this
-/// must change with it.
-final String sdkDocsUrlPrefix = () {
-  var tag = platformVersion.isPreRelease
-      ? platformVersion.preRelease.whereType<String>().first
-      : 'stable';
-  return 'https://api.dart.dev/$tag/$platformVersionString';
-}();
+/// This mirrors the `'Dart'` entry in [createDartdocOptions]'s default `sdks`
+/// map. If that rule changes, this must change with it.
+const String sdkDocsUrlPrefix = 'https://api.dart.dev';
 
 final Folder testPackageToolError = _resourceProvider.getFolder(_pathContext
     .absolute(_pathContext.normalize('testing/test_package_tool_error')));
