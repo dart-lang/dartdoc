@@ -1,4 +1,6 @@
 ## 9.1.0-wip
+* Link Dart SDK API references to unversioned `https://api.dart.dev` URLs by
+  default.
 * The URL produced by `linkTo.url` must now be a plain `http(s)` URL, and is
   HTML-escaped when written into links to a package's elements. An invalid URL
   is ignored with an `invalid-url` warning, and no links to the package are
