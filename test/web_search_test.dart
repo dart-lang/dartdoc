@@ -288,4 +288,62 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     expect(wrapper.querySelectorAll('.tt-menu[role="listbox"]').length, 1);
   });
+
+  test('re-running init before load navigates once on form submit', () async {
+    hostContainer.innerHtml = '''
+<form class="search navbar-right" role="search">
+  <div class="tt-wrapper">
+    <input type="text" id="search-box" class="form-control typeahead tt-input" placeholder="Search API Docs">
+  </div>
+</form>
+''';
+
+    final navigatedUrls = <String>[];
+    search.init(
+      fetchIndexText: () => Completer<String?>().future,
+      navigateTo: navigatedUrls.add,
+    );
+    search.init(
+      fetchIndexText: () => Completer<String?>().future,
+      navigateTo: navigatedUrls.add,
+    );
+
+    var input = document.getElementById('search-box')! as HTMLInputElement;
+    input.value = 'Future';
+    input.form!.dispatchEvent(
+      SubmitEvent('submit', SubmitEventInit(cancelable: true)),
+    );
+    expect(navigatedUrls, ['search.html?q=Future']);
+  });
+
+  test('re-running init stops the previous loader from retrying', () async {
+    hostContainer.innerHtml = '''
+<form class="search navbar-right" role="search">
+  <div class="tt-wrapper">
+    <input type="text" id="search-box" class="form-control typeahead tt-input" placeholder="Search API Docs">
+  </div>
+</form>
+''';
+
+    var firstLoaderFetches = 0;
+    search.init(
+      fetchIndexText: () async {
+        firstLoaderFetches++;
+        return null;
+      },
+    );
+
+    var input = document.getElementById('search-box')! as HTMLInputElement;
+    input.focus();
+    input.dispatchEvent(FocusEvent('focus'));
+    await Future<void>.delayed(Duration.zero);
+    expect(firstLoaderFetches, 1);
+
+    // The first loader failed, so it would retry on the next interaction if it
+    // were still listening.
+    search.init(fetchIndexText: () => Completer<String?>().future);
+    input.dispatchEvent(Event('input'));
+    await Future<void>.delayed(Duration.zero);
+    expect(firstLoaderFetches, 1);
+  });
 }

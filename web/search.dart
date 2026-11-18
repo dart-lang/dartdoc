@@ -31,7 +31,7 @@ String get _htmlBase {
 
 enum _LoadState { idle, loading, failed, loaded }
 
-JSFunction? _slashKeydownListener;
+_LazySearchLoader? _activeLoader;
 Timer? _liveAnnouncementDebounce;
 
 /// Initializes lazy search index loading and UI bindings on search inputs.
@@ -41,10 +41,8 @@ void init({
   @visibleForTesting Future<String?> Function()? fetchIndexText,
   @visibleForTesting void Function(String url)? navigateTo,
 }) {
-  if (_slashKeydownListener case var previousListener?) {
-    document.removeEventListener('keydown', previousListener);
-    _slashKeydownListener = null;
-  }
+  _activeLoader?.dispose();
+  _activeLoader = null;
   _liveAnnouncementDebounce?.cancel();
   _liveAnnouncementDebounce = null;
 
@@ -62,13 +60,12 @@ void init({
   }
 
   _ensureLiveStatusElement();
-  var loader = _LazySearchLoader(
+  _activeLoader = _LazySearchLoader(
     inputs: inputs,
     slashCandidates: slashCandidates,
     fetchIndexText: fetchIndexText ?? _defaultFetchIndexText,
     navigateTo: navigateTo ?? _defaultNavigateTo,
-  );
-  loader.bind();
+  )..bind();
 }
 
 void _defaultNavigateTo(String url) {
@@ -170,11 +167,7 @@ final class _InputHost {
     required this.statusElement,
   });
 
-  factory _InputHost.prepare(
-    HTMLInputElement input, {
-    required void Function(String url) navigateTo,
-    required bool Function() isIndexLoaded,
-  }) {
+  factory _InputHost.prepare(HTMLInputElement input) {
     input
       ..disabled = false
       ..placeholder = _searchPlaceholder
@@ -203,19 +196,6 @@ final class _InputHost {
         ..setAttribute('aria-hidden', 'true')
         ..style.display = 'none',
     ) as HTMLDivElement;
-
-    input.form?.addEventListener(
-      'submit',
-      (Event event) {
-        event.preventDefault();
-        if (!isIndexLoaded()) {
-          var q = input.value;
-          navigateTo(
-            '${_htmlBase}search.html?q=${Uri.encodeQueryComponent(q)}',
-          );
-        }
-      }.toJS,
-    );
 
     return _InputHost(
       input: input,
@@ -264,16 +244,13 @@ final class _LazySearchLoader {
   final Future<String?> Function() fetchIndexText;
   final void Function(String url) navigateTo;
   late final List<_InputHost> hosts = [
-    for (final input in inputs)
-      _InputHost.prepare(
-        input,
-        navigateTo: navigateTo,
-        isIndexLoaded: () => _state == _LoadState.loaded,
-      ),
+    for (final input in inputs) _InputHost.prepare(input),
   ];
 
   _LoadState _state = _LoadState.idle;
   Future<void>? _inFlightLoad;
+  bool _isDisposed = false;
+  final _removeListeners = <void Function()>[];
 
   _LazySearchLoader({
     required this.inputs,
@@ -282,11 +259,25 @@ final class _LazySearchLoader {
     required this.navigateTo,
   });
 
+  /// Adds [listener] to [target] and records it for removal in [dispose].
+  void _listen(EventTarget target, String type, JSFunction listener) {
+    target.addEventListener(type, listener);
+    _removeListeners.add(() => target.removeEventListener(type, listener));
+  }
+
+  /// Removes every listener this loader added and abandons any load in flight,
+  /// so that a later call to [init] starts from a clean page.
+  void dispose() {
+    _isDisposed = true;
+    for (final removeListener in _removeListeners) {
+      removeListener();
+    }
+    _removeListeners.clear();
+  }
+
   void bind() {
     if (slashCandidates.isNotEmpty) {
-      final slashListener = _handleSlashKeydown.toJS;
-      _slashKeydownListener = slashListener;
-      document.addEventListener('keydown', slashListener);
+      _listen(document, 'keydown', _handleSlashKeydown.toJS);
     }
 
     for (final host in hosts) {
@@ -302,19 +293,38 @@ final class _LazySearchLoader {
   }
 
   void _attachPreLoadListeners(_InputHost host) {
-    host.input.addEventListener(
+    final input = host.input;
+    if (input.form case var form?) {
+      _listen(
+        form,
+        'submit',
+        (Event event) {
+          event.preventDefault();
+          if (_state != _LoadState.loaded) {
+            var q = input.value;
+            navigateTo(
+              '${_htmlBase}search.html?q=${Uri.encodeQueryComponent(q)}',
+            );
+          }
+        }.toJS,
+      );
+    }
+    _listen(
+      input,
       'focus',
       (Event _) {
         _onInputInteraction();
       }.toJS,
     );
-    host.input.addEventListener(
+    _listen(
+      input,
       'input',
       (Event _) {
         _onInputInteraction();
       }.toJS,
     );
-    host.input.addEventListener(
+    _listen(
+      input,
       'blur',
       (Event _) {
         if (_state != _LoadState.loaded) {
@@ -322,7 +332,8 @@ final class _LazySearchLoader {
         }
       }.toJS,
     );
-    host.input.addEventListener(
+    _listen(
+      input,
       'keydown',
       (Event event) {
         if (_state != _LoadState.loaded &&
@@ -369,7 +380,7 @@ final class _LazySearchLoader {
 
     var announcedLoading = false;
     final loadingTimer = Timer(const Duration(milliseconds: 150), () {
-      if (_state == _LoadState.loading) {
+      if (_state == _LoadState.loading && !_isDisposed) {
         announcedLoading = true;
         _announcePolite(_loadingStatusMessage);
       }
@@ -387,6 +398,10 @@ final class _LazySearchLoader {
       loadingTimer.cancel();
       _inFlightLoad = null;
     }
+
+    // A later call to `init` replaced this loader while the fetch was in
+    // flight.
+    if (_isDisposed) return;
 
     if (parsedIndex == null) {
       _handleLoadFailure(initialUrl);
