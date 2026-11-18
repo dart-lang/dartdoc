@@ -14,6 +14,7 @@ import 'package:dartdoc/src/matching_link_result.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/prefix.dart';
 import 'package:dartdoc/src/runtime_stats.dart';
+import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:meta/meta.dart';
@@ -344,7 +345,9 @@ class MarkdownDocument extends md.Document {
         if (linkedElement is ModelElement && linkedElement.isDeprecated) {
           anchor.attributes['class'] = 'deprecated';
         }
-        anchor.attributes['href'] = href;
+        // `package:markdown` writes attribute values verbatim, so they must be
+        // escaped here.
+        anchor.attributes['href'] = htmlAttributeEscape.convert(href);
         return anchor;
       } else {
         // Otherwise this would be `linkedElement.linkedName`, but link bodies

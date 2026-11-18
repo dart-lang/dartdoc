@@ -1,6 +1,13 @@
 ## 9.1.0-wip
 * Lazy-load `index.json` on search interaction with an in-flight loading
   indicator instead of fetching it on every page load.
+* The URL produced by `linkTo.url` must now be a plain `http(s)` URL, and is
+  HTML-escaped when written into links to a package's elements. An invalid URL
+  is ignored with an `invalid-url` warning, and no links to the package are
+  generated.
+* The URL produced by `linkToSource.uriTemplate` must now be a plain `http(s)`
+  URL, and is HTML-escaped when written into the "view source" link. An invalid
+  URL is ignored with a new `invalid-url` warning.
 * Support standalone AOT compilation (`dart install` / `dart compile exe`) by resolving the Dart SDK via `package:cli_util` and embedding `lib/resources/` in `html_resources.g.dart`.
 * Import `package:analyzer/dart/ast/ast.dart` with explicit `show` names, so
   that new analyzer AST classes (such as `TopLevelVariable`) do not conflict

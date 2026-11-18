@@ -80,5 +80,81 @@ void main() {
           equals(
               'http://github.com/base/01234abcd/not/under/exclusion/file.dart/L14'));
     });
+
+    test('Allow a fragment in the template', () {
+      String sourceLinkerHref() => SourceLinker(
+              excludes: [],
+              lineNumber: 14,
+              root: 'path',
+              sourceFileName: 'path/to/file.dart',
+              uriTemplate: 'https://github.com/base/blob/main/%f%#L%l%')
+          .href();
+      expect(sourceLinkerHref(),
+          equals('https://github.com/base/blob/main/to/file.dart#L14'));
+    });
+
+    test('Percent-encode the file path', () {
+      String sourceLinkerHref() => SourceLinker(
+              excludes: [],
+              lineNumber: 14,
+              root: 'path',
+              sourceFileName: 'path/to/my file.dart',
+              uriTemplate: 'https://github.com/base/blob/main/%f%#L%l%')
+          .href();
+      expect(sourceLinkerHref(),
+          equals('https://github.com/base/blob/main/to/my%20file.dart#L14'));
+    });
+
+    test('Ignore a revision which breaks out of an HTML attribute', () {
+      var invalidUrls = <String>[];
+      String sourceLinkerHref() => SourceLinker(
+              excludes: [],
+              lineNumber: 14,
+              root: 'path',
+              sourceFileName: 'path/to/file.dart',
+              revision: 'x"><img src=x onerror=alert(1)><a x="',
+              uriTemplate: 'https://github.com/base/blob/%r%/%f%',
+              onInvalidUrl: invalidUrls.add)
+          .href();
+      expect(sourceLinkerHref(), equals(''));
+      expect(invalidUrls, hasLength(1));
+    });
+
+    test('Ignore a template which breaks out of an HTML attribute', () {
+      var invalidUrls = <String>[];
+      String sourceLinkerHref() => SourceLinker(
+              excludes: [],
+              lineNumber: 14,
+              root: 'path',
+              sourceFileName: 'path/to/file.dart',
+              uriTemplate: 'x"><img src=x onerror=alert(1)><a x="%f%',
+              onInvalidUrl: invalidUrls.add)
+          .href();
+      expect(sourceLinkerHref(), equals(''));
+      expect(invalidUrls,
+          equals(['x"><img src=x onerror=alert(1)><a x="to/file.dart']));
+    });
+
+    test('Ignore a template with a non-http(s) scheme', () {
+      String sourceLinkerHref() => SourceLinker(
+              excludes: [],
+              lineNumber: 14,
+              root: 'path',
+              sourceFileName: 'path/to/file.dart',
+              uriTemplate: 'javascript:alert(1)//%f%')
+          .href();
+      expect(sourceLinkerHref(), equals(''));
+    });
+
+    test('Ignore a template with a relative URL', () {
+      String sourceLinkerHref() => SourceLinker(
+              excludes: [],
+              lineNumber: 14,
+              root: 'path',
+              sourceFileName: 'path/to/file.dart',
+              uriTemplate: '../src/%f%')
+          .href();
+      expect(sourceLinkerHref(), equals(''));
+    });
   });
 }
