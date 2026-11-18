@@ -26,7 +26,7 @@ String get _htmlBase {
   return '';
 }
 
-JSFunction? _slashKeydownListener;
+_LazySearchLoader? _activeLoader;
 
 /// Initializes lazy search index loading and UI bindings on search inputs.
 ///
@@ -35,10 +35,8 @@ void init({
   @visibleForTesting Future<String?> Function()? fetchIndexText,
   @visibleForTesting void Function(String url)? navigateTo,
 }) {
-  if (_slashKeydownListener case var previousListener?) {
-    document.removeEventListener('keydown', previousListener);
-    _slashKeydownListener = null;
-  }
+  _activeLoader?.dispose();
+  _activeLoader = null;
 
   var searchBox = document.getElementById('search-box') as HTMLInputElement?;
   var searchBody = document.getElementById('search-body') as HTMLInputElement?;
@@ -53,12 +51,12 @@ void init({
     return;
   }
 
-  _LazySearchLoader(
+  _activeLoader = _LazySearchLoader(
     inputs: inputs,
     slashCandidates: slashCandidates,
     fetchIndexText: fetchIndexText ?? _defaultFetchIndexText,
     navigateTo: navigateTo ?? _defaultNavigateTo,
-  ).bind();
+  )..bind();
 }
 
 void _defaultNavigateTo(String url) {
@@ -124,6 +122,8 @@ final class _LazySearchLoader {
   Future<void>? _loadFuture;
   JSFunction? _onFirstInteraction;
   bool _isIndexLoaded = false;
+  bool _isDisposed = false;
+  final _removeListeners = <void Function()>[];
 
   _LazySearchLoader({
     required this.inputs,
@@ -132,15 +132,29 @@ final class _LazySearchLoader {
     required this.navigateTo,
   });
 
+  /// Adds [listener] to [target] and records it for removal in [dispose].
+  void _listen(EventTarget target, String type, JSFunction listener) {
+    target.addEventListener(type, listener);
+    _removeListeners.add(() => target.removeEventListener(type, listener));
+  }
+
+  /// Removes every listener this loader added and abandons any load in flight,
+  /// so that a later call to [init] starts from a clean page.
+  void dispose() {
+    _isDisposed = true;
+    for (final removeListener in _removeListeners) {
+      removeListener();
+    }
+    _removeListeners.clear();
+  }
+
   void bind() {
     for (final input in inputs) {
       _prepareSearchInput(input);
     }
 
     if (slashCandidates.isNotEmpty) {
-      final slashListener = _handleSlashKeydown.toJS;
-      _slashKeydownListener = slashListener;
-      document.addEventListener('keydown', slashListener);
+      _listen(document, 'keydown', _handleSlashKeydown.toJS);
     }
 
     if (_shouldLoadIndexEagerly(
@@ -154,8 +168,8 @@ final class _LazySearchLoader {
       }.toJS;
       _onFirstInteraction = listener;
       for (final input in inputs) {
-        input.addEventListener('focus', listener);
-        input.addEventListener('input', listener);
+        _listen(input, 'focus', listener);
+        _listen(input, 'input', listener);
       }
     }
   }
@@ -170,7 +184,10 @@ final class _LazySearchLoader {
 
     _ensureWrapper(input);
 
-    input.form?.addEventListener(
+    final form = input.form;
+    if (form == null) return;
+    _listen(
+      form,
       'submit',
       (Event event) {
         event.preventDefault();
@@ -215,6 +232,10 @@ final class _LazySearchLoader {
     } catch (_) {
       index = null;
     }
+
+    // A later call to `init` replaced this loader while the fetch was in
+    // flight.
+    if (_isDisposed) return;
 
     if (index == null) {
       print('Could not activate search functionality.');
