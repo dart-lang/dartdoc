@@ -29,6 +29,35 @@
   position: relative;
   display: inline-block;
 
+  &.is-loading {
+    .typeahead {
+      padding-right: 36px;
+    }
+
+    .tt-search-spinner {
+      display: block;
+      opacity: 0;
+      animation:
+        tt-search-fade-in 0s linear 120ms forwards,
+        tt-search-spin 0.75s linear infinite;
+
+      @media (prefers-reduced-motion: reduce) {
+        opacity: 1;
+        animation: none;
+      }
+    }
+
+    .tt-search-status {
+      opacity: 0;
+      animation: tt-search-fade-in 0s linear 120ms forwards;
+
+      @media (prefers-reduced-motion: reduce) {
+        opacity: 1;
+        animation: none;
+      }
+    }
+  }
+
   .tt-input {
     position: relative;
     vertical-align: top;
@@ -57,6 +86,29 @@
     }
   }
 
+  .tt-search-spinner {
+    display: none;
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 16px;
+    height: 16px;
+    margin-top: -8px;
+    border: 2px solid var(--main-inset-borderColor, rgba(127, 127, 127, 0.35));
+    border-top-color: var(--main-hyperlinks-color, #0175c2);
+    border-radius: 50%;
+    pointer-events: none;
+
+    @media screen and (max-width: 840px) {
+      right: 20px;
+    }
+
+    @media (forced-colors: active) {
+      border-color: GrayText;
+      border-top-color: Highlight;
+    }
+  }
+
   .tt-menu {
     position: absolute;
     top: 100%;
@@ -67,6 +119,42 @@
     background-color: var(--main-bg-color);
     border: 1px solid var(--main-header-color);
     box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+
+    &.tt-search-status {
+      left: 0 !important;
+      right: 0;
+      width: auto;
+      overflow: hidden;
+      padding: 8px 12px;
+      color: var(--main-text-color, #111);
+      border-color: var(--main-inset-borderColor, var(--main-header-color));
+
+      &.is-error {
+        color: var(--alert-error-fgColor, #c43131);
+      }
+
+      @media screen and (max-width: 840px) {
+        top: calc(100% - 10px);
+        left: 9px !important;
+        right: 10px;
+      }
+
+      @media (forced-colors: active) {
+        border-color: CanvasText;
+      }
+    }
+  }
+}
+
+@keyframes tt-search-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes tt-search-fade-in {
+  to {
+    opacity: 1;
   }
 }
 
