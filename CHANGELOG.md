@@ -1,6 +1,6 @@
 ## 9.1.0-wip
-* Lazy-load `index.json` on search interaction with an in-flight loading
-  indicator instead of fetching it on every page load.
+* Lazy-load `index.json` on search interaction instead of fetching it on every
+  page load.
 * The URL produced by `linkTo.url` must now be a plain `http(s)` URL, and is
   HTML-escaped when written into links to a package's elements. An invalid URL
   is ignored with an `invalid-url` warning, and no links to the package are

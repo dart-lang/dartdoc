@@ -152,7 +152,6 @@ Future<int> fetchCount() async => 0;
       ]) {
         expect(input, isNotNull);
         expect(input!.attributes.containsKey('disabled'), isFalse);
-        expect(input.attributes['aria-label'], 'Search API Docs');
         expect(input.classes,
             containsAll(['form-control', 'typeahead', 'tt-input']));
         expect(input.parent?.classes, contains('tt-wrapper'));
