@@ -1458,7 +1458,7 @@ List<DartdocOption> createDartdocOptions(
         DartdocOptionArgOnly<Map<String, String>>(
           'sdks',
           {
-            'Dart': 'https://api.dart.dev',
+            'Dart': 'https://api.dart.dev/%b%/%v%',
             'Flutter': 'https://api.flutter.dev/flutter',
           },
           resourceProvider,

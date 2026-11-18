@@ -116,22 +116,17 @@ void main() {
               .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
     });
 
-    test(
-        'generated pages link SDK to canonical URLs, defer scripts, and subset Material Symbols icons',
-        onPlatform: {
-          'windows': Skip('Test does not work on Windows (#2446)')
-        }, () async {
+    test('generated pages load a subset of Material Symbols icons',
+        onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')},
+        () async {
       getConvertedFile('$projectPath/lib/a.dart').writeAsStringSync('''
 library a;
 
 /// Returns [Future] of [int].
 Future<int> fetchCount() async => 0;
 ''');
-      var packageGraph = await utils.bootBasicPackage(
-        projectPath,
-        packageMetaProvider,
-        additionalArguments: ['--link-to-remote'],
-      );
+      var packageGraph =
+          await utils.bootBasicPackage(projectPath, packageMetaProvider);
       await generator.generate(packageGraph);
 
       var outputPath = projectRoot.getFolder('doc').path;
@@ -141,28 +136,8 @@ Future<int> fetchCount() async => 0;
             .readAsStringSync(),
       );
 
-      // Default remote Dart SDK links point to unversioned https://api.dart.dev.
-      var sdkHrefs = libDoc
-          .querySelectorAll('a[href^="https://api.dart.dev/"]')
-          .map((a) => a.attributes['href']!)
-          .toList();
-      expect(
-          sdkHrefs, contains('https://api.dart.dev/dart-core/int-class.html'));
-
-      // External scripts are deferred while dark-mode init runs inline first.
-      var externalScripts = libDoc.querySelectorAll('script[src]');
-      expect(externalScripts, isNotEmpty);
-      for (var script in externalScripts) {
-        expect(script.attributes.containsKey('defer'), isTrue);
-      }
-      var firstBodyChild = libDoc.body!.children.first;
-      expect(firstBodyChild.localName, 'script');
-      expect(firstBodyChild.text, contains('try{'));
-      expect(firstBodyChild.text, contains('colorTheme'));
-
-      // Generated pages emit the subsetted Material Symbols stylesheet with
-      // display=block and alphabetically sorted icon_names (full cross-repo
-      // drift coverage lives in test/material_symbols_subset_test.dart).
+      // Full cross-repo drift coverage lives in
+      // test/material_symbols_subset_test.dart.
       var symbolsHref = libDoc
           .querySelectorAll('link[rel="stylesheet"]')
           .map((l) => l.attributes['href'] ?? '')

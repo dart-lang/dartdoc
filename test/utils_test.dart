@@ -208,4 +208,68 @@ void main() {
       expect(stripCommonWhitespace(input).join('\n'), equals(output));
     });
   });
+
+  group('isSafeHttpUrl', () {
+    test('accepts plain http(s) URLs', () {
+      for (var url in [
+        'http://example.com',
+        'https://example.com/',
+        'https://pub.dev/documentation/foo/1.0.0/',
+        'https://api.dart.dev/stable/3.0.0/',
+        'https://github.com/org/repo/blob/main/lib/a.dart#L12',
+        'https://example.com/a?b=1&c=2',
+        'HTTPS://EXAMPLE.COM/A',
+        // Unsubstituted template placeholders are odd, but harmless.
+        'https://example.com/%x%/',
+      ]) {
+        expect(isSafeHttpUrl(url), isTrue, reason: url);
+      }
+    });
+
+    test('rejects URLs which can break out of an HTML attribute', () {
+      for (var url in [
+        'x"><img src=x onerror=alert(1)><a x="',
+        "https://example.com/'onmouseover=alert(1)",
+        'https://example.com/<script>',
+        'https://example.com/`',
+        'https://example.com/a b',
+        'https://example.com/a\tb',
+        'https://example.com/a\nb',
+        'https://example.com/a\x00b',
+      ]) {
+        expect(isSafeHttpUrl(url), isFalse, reason: url);
+      }
+    });
+
+    test('rejects non-http(s) and relative URLs', () {
+      for (var url in [
+        '',
+        'javascript:alert(1)',
+        ' javascript:alert(1)',
+        'JavaScript:alert(1)',
+        'data:text/html,<script>alert(1)</script>',
+        'vbscript:msgbox(1)',
+        'file:///etc/passwd',
+        'ftp://example.com/',
+        '//example.com/',
+        '/docs/',
+        '../docs/',
+        'docs/',
+        'https:',
+        'https://',
+        'https:///path',
+      ]) {
+        expect(isSafeHttpUrl(url), isFalse, reason: url);
+      }
+    });
+  });
+
+  group('htmlAttributeEscape', () {
+    test('escapes attribute delimiters but not slashes', () {
+      expect(htmlAttributeEscape.convert('https://example.com/a?b=1&c=2'),
+          equals('https://example.com/a?b=1&amp;c=2'));
+      expect(htmlAttributeEscape.convert('x"><img src=x onerror=alert(1)>'),
+          equals('x&quot;&gt;&lt;img src=x onerror=alert(1)&gt;'));
+    });
+  });
 }
