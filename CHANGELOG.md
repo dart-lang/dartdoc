@@ -1,4 +1,7 @@
 ## 9.1.0-wip
+* dartdoc now refuses to write a file outside of the output directory, which a
+  `{@category}` name containing `..` could previously cause, or through a
+  symbolic link.
 * Category display names are now HTML-escaped in category labels and in search
   suggestions. When highlighting search matches, the query is now matched as
   literal text; it was previously interpreted as a regular expression, so that
