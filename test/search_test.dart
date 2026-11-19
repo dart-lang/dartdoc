@@ -10,7 +10,48 @@ import 'package:test_reflective_loader/test_reflective_loader.dart';
 void main() {
   defineReflectiveSuite(() {
     defineReflectiveTests(SearchTest);
+    defineReflectiveTests(HighlightMatchesTest);
   });
+}
+
+@reflectiveTest
+class HighlightMatchesTest {
+  void test_wrapsMatches() {
+    expect(highlightMatches('FooBarBaz', 'bar'),
+        "Foo<strong class='tt-highlight'>Bar</strong>Baz");
+  }
+
+  void test_wrapsEveryMatch() {
+    expect(highlightMatches('ab.ab', 'ab'),
+        "<strong class='tt-highlight'>ab</strong>.<strong class='tt-highlight'>ab</strong>");
+  }
+
+  void test_escapesText() {
+    expect(highlightMatches('List<int>', 'x'), 'List&lt;int&gt;');
+    expect(highlightMatches('a & b', 'x'), 'a &amp; b');
+  }
+
+  void test_escapesMatchedText() {
+    expect(highlightMatches('<img src=x onerror=alert(1)>', 'img'),
+        "&lt;<strong class='tt-highlight'>img</strong> src=x onerror=alert(1)&gt;");
+  }
+
+  void test_matchesQueryLiterally() {
+    // `.`, `(`, `[` and `+` are regular expression metacharacters; the last two
+    // are also how Dart operators are searched for.
+    expect(highlightMatches('a.b', '.'),
+        "a<strong class='tt-highlight'>.</strong>b");
+    expect(highlightMatches('f(x)', '('),
+        "f<strong class='tt-highlight'>(</strong>x)");
+    expect(highlightMatches('operator []=', '[]'),
+        "operator <strong class='tt-highlight'>[]</strong>=");
+    expect(highlightMatches('operator +', '+'),
+        "operator <strong class='tt-highlight'>+</strong>");
+  }
+
+  void test_emptyQuery() {
+    expect(highlightMatches('List<int>', ''), 'List&lt;int&gt;');
+  }
 }
 
 @reflectiveTest

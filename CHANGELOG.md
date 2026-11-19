@@ -1,4 +1,8 @@
 ## 9.1.0-wip
+* Category display names are now HTML-escaped in category labels and in search
+  suggestions. When highlighting search matches, the query is now matched as
+  literal text; it was previously interpreted as a regular expression, so that
+  a query such as `(` broke the suggestions.
 * The URL produced by `linkTo.url` must now be a plain `http(s)` URL, and is
   HTML-escaped when written into links to a package's elements. An invalid URL
   is ignored with an `invalid-url` warning, and no links to the package are
