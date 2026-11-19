@@ -1,4 +1,8 @@
 ## 9.1.0-wip
+* Breaking change: the `markdown` file of a category is now confined to the
+  directory of the `dartdoc_options.yaml` file that defines it: `..` segments
+  and absolute paths cannot leave that directory, and a symbolic link to a file
+  outside of it is an error.
 * Category display names are now HTML-escaped in category labels and in search
   suggestions. When highlighting search matches, the query is now matched as
   literal text; it was previously interpreted as a regular expression, so that
