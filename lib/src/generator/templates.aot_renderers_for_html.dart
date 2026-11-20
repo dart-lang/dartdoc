@@ -2285,9 +2285,10 @@ String _deduplicated__head(TemplateDataBase context0) {
   }
   buffer.write('\n\n  ');
   buffer.writeln();
-  buffer.write('''  <link rel="preconnect" href="https://fonts.gstatic.com">
+  buffer.write('''  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=check,content_copy,dark_mode,description,feedback,info,light_mode,lightbulb,menu,open_in_new,report,warning&display=block" rel="stylesheet">
   ''');
   buffer.writeln();
   buffer.write('''  <link rel="stylesheet" href="''');
