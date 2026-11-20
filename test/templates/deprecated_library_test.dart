@@ -186,4 +186,22 @@ class C {}
       ),
     );
   }
+
+  void test_deprecatedMetaDescription_appendsPeriodWhenMissing() async {
+    await createPackageWithLibrary('''
+library;
+
+@Deprecated('Use D instead')
+class C {}
+''');
+
+    var classHtml = readLines(['lib', 'C-class.html']).join('\n');
+    expect(
+      classHtml,
+      contains(
+        '<meta name="description" content="Deprecated. Use D instead. '
+        'API docs for the C class',
+      ),
+    );
+  }
 }

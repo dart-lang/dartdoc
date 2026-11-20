@@ -138,9 +138,14 @@ abstract class TemplateData<T extends Documentable> extends TemplateDataBase {
       return baseDescription;
     }
     var message = element.deprecationMessage ?? library.deprecationMessage;
-    return message != null
-        ? 'Deprecated. $message $baseDescription'
-        : 'Deprecated. $baseDescription';
+    if (message == null) {
+      return 'Deprecated. $baseDescription';
+    }
+    var separator =
+        message.endsWith('.') || message.endsWith('!') || message.endsWith('?')
+            ? ' '
+            : '. ';
+    return 'Deprecated. $message$separator$baseDescription';
   }
 }
 
