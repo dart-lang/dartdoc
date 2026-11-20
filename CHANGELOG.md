@@ -1,4 +1,8 @@
 ## 9.1.0-wip
+* Display a deprecation warning banner on member pages of `@Deprecated`
+  libraries, mark deprecated libraries and members in page `<title>` and
+  `<meta name="description">` metadata, and demote deprecated elements and
+  libraries in search index rankings.
 * Breaking change: the `markdown` file of a category is now confined to the
   directory of the `dartdoc_options.yaml` file that defines it: `..` segments
   and absolute paths cannot leave that directory, and a symbolic link to a file

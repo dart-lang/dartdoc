@@ -779,6 +779,45 @@ abstract class ModelElement
     return element.isDeprecatedWithKind('use');
   }
 
+  /// The custom message from a `@Deprecated('...')` annotation on this element,
+  /// or `null` if the element is not deprecated or uses the default
+  /// `@deprecated` message (`'next release'`).
+  late final String? deprecationMessage = () {
+    Iterable<ElementAnnotation> annotationsToCheck =
+        element.metadata.annotations;
+    if (element case PropertyInducingElement property
+        when annotationsToCheck.isEmpty) {
+      annotationsToCheck = [
+        ...?property.getter?.metadata.annotations,
+        ...?property.setter?.metadata.annotations,
+      ];
+    }
+    for (var annotation in annotationsToCheck) {
+      if (annotation.deprecationKind != 'use') continue;
+      if (annotation.element case GetterElement(name: 'deprecated')) {
+        continue;
+      }
+      var raw = annotation
+          .computeConstantValue()
+          ?.getField('message')
+          ?.toStringValue();
+      if (raw == null) continue;
+      var normalized = raw.replaceAll(_whitespacePattern, ' ').trim();
+      if (normalized.isEmpty || normalized == 'next release') continue;
+      return normalized;
+    }
+    return null;
+  }();
+
+  bool get hasDeprecationMessage => deprecationMessage != null;
+
+  /// [deprecationMessage] formatted as HTML with `http(s)` URLs linkified.
+  String get deprecationMessageHtml {
+    var message = deprecationMessage;
+    if (message == null) return '';
+    return _linkifyHtml(message);
+  }
+
   @override
   bool get isDocumented => isCanonical && isPublic;
 
@@ -954,6 +993,33 @@ extension ElementAnnotationExtension on ElementAnnotation {
         // For SDKs where the `Deprecated` class does not have a deprecation kind.
         'use';
   }
+}
+
+final _whitespacePattern = RegExp(r'\s+');
+final _urlPattern = RegExp(r'https?://\S+');
+final _trailingUrlPunctuation = RegExp(r'[.,;:!?)\]]+$');
+
+String _linkifyHtml(String text) {
+  const escape = HtmlEscape(HtmlEscapeMode.attribute);
+  var buffer = StringBuffer();
+  var lastEnd = 0;
+  for (var match in _urlPattern.allMatches(text)) {
+    buffer.write(escape.convert(text.substring(lastEnd, match.start)));
+    var rawUrl = match.group(0)!;
+    var trailing = _trailingUrlPunctuation.firstMatch(rawUrl)?.group(0) ?? '';
+    var url = rawUrl.substring(0, rawUrl.length - trailing.length);
+    var escapedUrl = escape.convert(url);
+    buffer
+      ..write('<a href="')
+      ..write(escapedUrl)
+      ..write('">')
+      ..write(escapedUrl)
+      ..write('</a>')
+      ..write(escape.convert(trailing));
+    lastEnd = match.end;
+  }
+  buffer.write(escape.convert(text.substring(lastEnd)));
+  return buffer.toString();
 }
 
 /// Mixin for [ModelElement]s with a non-`null` [ModelElement.library].

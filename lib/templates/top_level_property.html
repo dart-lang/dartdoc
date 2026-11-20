@@ -7,6 +7,7 @@
       data-below-sidebar="{{ belowSidebarPath }}">
     {{ #self }}
       <div>{{ >source_link }}<h1><span class="kind-top-level-property">{{{ name }}}</span> {{ kind }} {{ >tags }} {{ >categorization }}</h1></div>
+      {{ >deprecated_library_banner }}
 
       {{ ^hasGetterOrSetter }}
         <section class="multi-line-signature">
