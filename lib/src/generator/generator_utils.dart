@@ -86,16 +86,23 @@ String generateSearchIndexJson(Iterable<Documentable> indexedElements,
   return encoder.convert(indexItems);
 }
 
+const _deprecatedRankPenalty = 1000;
+
 /// The "package rank" of [element], given a [packageOrder].
 ///
 /// Briefly, this is 10 times the element's package's position in the
 /// [packageOrder], or 10 times the length of [packageOrder] if the element's
-/// package is not listed in [packageOrder].
+/// package is not listed in [packageOrder]. Deprecated elements and elements in
+/// deprecated libraries receive an additional penalty so active APIs rank
+/// higher in search results.
 int _packageRank(List<String> packageOrder, ModelElement element) {
-  if (packageOrder.isEmpty) return 0;
+  final isDeprecated =
+      element.isDeprecated || (element.library?.isDeprecated ?? false);
+  final deprecationPenalty = isDeprecated ? _deprecatedRankPenalty : 0;
+  if (packageOrder.isEmpty) return deprecationPenalty;
   var packageName = element.package.name;
   var index = packageOrder.indexOf(packageName);
-  if (index == -1) return packageOrder.length * 10;
+  if (index == -1) return packageOrder.length * 10 + deprecationPenalty;
   if (packageName == 'Dart' &&
       !_dartCoreLibraries.contains(element.library!.name)) {
     // Non-"core" Dart SDK libraries should be ranked slightly lower than "core"
@@ -104,9 +111,9 @@ int _packageRank(List<String> packageOrder, ModelElement element) {
     // environments.
     // Note we choose integers throughout this function (as opposed to adding
     // 0.5 here) in order to facilitate a proper [Comparable] comparison.
-    return index * 10 + 5;
+    return index * 10 + 5 + deprecationPenalty;
   }
-  return index * 10;
+  return index * 10 + deprecationPenalty;
 }
 
 /// The set of "core" Dart libraries, used to rank contained items above items

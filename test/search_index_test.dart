@@ -40,9 +40,11 @@ class SearchIndexTest extends DartdocTestBase {
   Future<List<Map<String, dynamic>>> jsonIndexForPackageWithLibrary(
     String libraryContent, {
     bool actAsFlutter = false,
+    String libraryPreamble = '',
   }) async {
     var library = await bootPackageWithLibrary(
       libraryContent,
+      libraryPreamble: libraryPreamble,
       additionalArguments:
           actAsFlutter ? const ['--auto-include-dependencies'] : const [],
     );
@@ -176,6 +178,28 @@ library;
 
     expect(classItem['kind'], equals(Kind.class_.index));
     expect(classItem['packageRank'], equals(15));
+  }
+
+  void test_deprecatedElement_packageRank() async {
+    var jsonIndex = await jsonIndexForPackageWithLibrary('''
+class Active {}
+
+@Deprecated('Use Active instead.')
+class Old {}
+''');
+    expect(jsonIndex.named('index_json.Active')['packageRank'], equals(0));
+    expect(jsonIndex.named('index_json.Old')['packageRank'], equals(1000));
+  }
+
+  void test_deprecatedLibraryMember_packageRank() async {
+    var jsonIndex = await jsonIndexForPackageWithLibrary(
+      libraryPreamble: "@Deprecated('Use another library.')",
+      '''
+class Member {}
+''',
+    );
+    expect(jsonIndex.named('index_json')['packageRank'], equals(1000));
+    expect(jsonIndex.named('index_json.Member')['packageRank'], equals(1000));
   }
 }
 
