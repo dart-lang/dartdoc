@@ -3334,9 +3334,11 @@ String _renderClass_partial_deprecated_library_banner_4(
     buffer.writeln();
     buffer.write('''<div class="markdown-alert markdown-alert-warning">
   <p class="markdown-alert-title">Deprecated</p>
-  <p>The ''');
-    buffer.write(context1.library.linkedName);
-    buffer.write(''' library is deprecated.''');
+  <p>The <a href="''');
+    buffer.write(context1.library.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context1.library.displayName);
+    buffer.write('''</a> library is deprecated.''');
     var context2 = context1.library;
     if (context2.hasDeprecationMessage) {
       buffer.write(' ');
@@ -3428,9 +3430,11 @@ String _renderConstructor_partial_deprecated_library_banner_3(
     buffer.writeln();
     buffer.write('''<div class="markdown-alert markdown-alert-warning">
   <p class="markdown-alert-title">Deprecated</p>
-  <p>The ''');
-    buffer.write(context1.library.linkedName);
-    buffer.write(''' library is deprecated.''');
+  <p>The <a href="''');
+    buffer.write(context1.library.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context1.library.displayName);
+    buffer.write('''</a> library is deprecated.''');
     var context2 = context1.library;
     if (context2.hasDeprecationMessage) {
       buffer.write(' ');
@@ -3482,9 +3486,11 @@ String _renderEnum_partial_deprecated_library_banner_4(
     buffer.writeln();
     buffer.write('''<div class="markdown-alert markdown-alert-warning">
   <p class="markdown-alert-title">Deprecated</p>
-  <p>The ''');
-    buffer.write(context1.library.linkedName);
-    buffer.write(''' library is deprecated.''');
+  <p>The <a href="''');
+    buffer.write(context1.library.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context1.library.displayName);
+    buffer.write('''</a> library is deprecated.''');
     var context2 = context1.library;
     if (context2.hasDeprecationMessage) {
       buffer.write(' ');
@@ -3597,9 +3603,11 @@ String _renderExtensionType_partial_deprecated_library_banner_4<
     buffer.writeln();
     buffer.write('''<div class="markdown-alert markdown-alert-warning">
   <p class="markdown-alert-title">Deprecated</p>
-  <p>The ''');
-    buffer.write(context1.library.linkedName);
-    buffer.write(''' library is deprecated.''');
+  <p>The <a href="''');
+    buffer.write(context1.library.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context1.library.displayName);
+    buffer.write('''</a> library is deprecated.''');
     var context2 = context1.library;
     if (context2.hasDeprecationMessage) {
       buffer.write(' ');
@@ -3680,9 +3688,11 @@ String
     buffer.writeln();
     buffer.write('''<div class="markdown-alert markdown-alert-warning">
   <p class="markdown-alert-title">Deprecated</p>
-  <p>The ''');
-    buffer.write(context1.library.linkedName);
-    buffer.write(''' library is deprecated.''');
+  <p>The <a href="''');
+    buffer.write(context1.library.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context1.library.displayName);
+    buffer.write('''</a> library is deprecated.''');
     var context2 = context1.library;
     if (context2.hasDeprecationMessage) {
       buffer.write(' ');
@@ -3775,9 +3785,11 @@ String _renderFunction_partial_deprecated_library_banner_4(
     buffer.writeln();
     buffer.write('''<div class="markdown-alert markdown-alert-warning">
   <p class="markdown-alert-title">Deprecated</p>
-  <p>The ''');
-    buffer.write(context1.library.linkedName);
-    buffer.write(''' library is deprecated.''');
+  <p>The <a href="''');
+    buffer.write(context1.library.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context1.library.displayName);
+    buffer.write('''</a> library is deprecated.''');
     var context2 = context1.library;
     if (context2.hasDeprecationMessage) {
       buffer.write(' ');
@@ -3900,9 +3912,11 @@ String _renderMethod_partial_deprecated_library_banner_3(
     buffer.writeln();
     buffer.write('''<div class="markdown-alert markdown-alert-warning">
   <p class="markdown-alert-title">Deprecated</p>
-  <p>The ''');
-    buffer.write(context1.library.linkedName);
-    buffer.write(''' library is deprecated.''');
+  <p>The <a href="''');
+    buffer.write(context1.library.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context1.library.displayName);
+    buffer.write('''</a> library is deprecated.''');
     var context2 = context1.library;
     if (context2.hasDeprecationMessage) {
       buffer.write(' ');
@@ -3952,9 +3966,11 @@ String _renderMixin_partial_deprecated_library_banner_4(
     buffer.writeln();
     buffer.write('''<div class="markdown-alert markdown-alert-warning">
   <p class="markdown-alert-title">Deprecated</p>
-  <p>The ''');
-    buffer.write(context1.library.linkedName);
-    buffer.write(''' library is deprecated.''');
+  <p>The <a href="''');
+    buffer.write(context1.library.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context1.library.displayName);
+    buffer.write('''</a> library is deprecated.''');
     var context2 = context1.library;
     if (context2.hasDeprecationMessage) {
       buffer.write(' ');
@@ -4123,9 +4139,11 @@ String _renderProperty_partial_deprecated_library_banner_3(
     buffer.writeln();
     buffer.write('''<div class="markdown-alert markdown-alert-warning">
   <p class="markdown-alert-title">Deprecated</p>
-  <p>The ''');
-    buffer.write(context1.library.linkedName);
-    buffer.write(''' library is deprecated.''');
+  <p>The <a href="''');
+    buffer.write(context1.library.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context1.library.displayName);
+    buffer.write('''</a> library is deprecated.''');
     var context2 = context1.library;
     if (context2.hasDeprecationMessage) {
       buffer.write(' ');
@@ -4344,9 +4362,11 @@ String _renderTopLevelProperty_partial_deprecated_library_banner_4(
     buffer.writeln();
     buffer.write('''<div class="markdown-alert markdown-alert-warning">
   <p class="markdown-alert-title">Deprecated</p>
-  <p>The ''');
-    buffer.write(context2.library.linkedName);
-    buffer.write(''' library is deprecated.''');
+  <p>The <a href="''');
+    buffer.write(context2.library.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context2.library.displayName);
+    buffer.write('''</a> library is deprecated.''');
     var context3 = context2.library;
     if (context3.hasDeprecationMessage) {
       buffer.write(' ');
@@ -4407,9 +4427,11 @@ String _renderTypedef_partial_deprecated_library_banner_4(
     buffer.writeln();
     buffer.write('''<div class="markdown-alert markdown-alert-warning">
   <p class="markdown-alert-title">Deprecated</p>
-  <p>The ''');
-    buffer.write(context1.library.linkedName);
-    buffer.write(''' library is deprecated.''');
+  <p>The <a href="''');
+    buffer.write(context1.library.href);
+    buffer.write('''">''');
+    buffer.writeEscaped(context1.library.displayName);
+    buffer.write('''</a> library is deprecated.''');
     var context2 = context1.library;
     if (context2.hasDeprecationMessage) {
       buffer.write(' ');

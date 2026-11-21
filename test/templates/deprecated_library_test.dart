@@ -118,9 +118,9 @@ class C {}
     );
     expect(
       classHtml,
-      contains(
-          'The <a class="deprecated" href="../lib/">lib</a> library is deprecated.</p>'),
+      contains('The <a href="../lib/">lib</a> library is deprecated.</p>'),
     );
+    expect(classHtml, isNot(contains('<a class="deprecated" href="../lib/">')));
     expect(classHtml, isNot(contains('next release')));
     expect(
       classHtml,
