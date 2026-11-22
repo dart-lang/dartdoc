@@ -33,6 +33,29 @@ Future<TestProcess> runDartdoc(
     );
 
 void main() {
+  test('--help prints usage', () async {
+    final process =
+        await runDartdoc(['--help'], workingDirectory: Directory.current.path);
+    expect(
+        await process.stdout.rest.toList(),
+        containsAll([
+          'Generate HTML documentation for Dart libraries.',
+          matches(r'^-h, --help +Show command help\.'),
+        ]));
+    expect(await process.stderr.rest.toList(), isEmpty);
+    await process.shouldExit(0);
+  });
+
+  test('--version prints the version', () async {
+    final process = await runDartdoc(['--version'],
+        workingDirectory: Directory.current.path);
+    expect(await process.stdout.rest.toList(), [
+      matches(r'^dartdoc version: \d+\.\d+\.\d+'),
+    ]);
+    expect(await process.stderr.rest.toList(), isEmpty);
+    await process.shouldExit(0);
+  });
+
   test('with tool errors cause non-zero exit when warnings are off', () async {
     // TODO(srawlins): Remove test_package_tool_error and generate afresh.
     var packagePath = await d.createPackage('test_package');

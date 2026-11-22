@@ -1,4 +1,6 @@
 ## 9.1.0-wip
+* Fix missing output from the standalone dartdoc executable for `--help` and
+  `--version`.
 * Breaking change: the `markdown` file of a category is now confined to the
   directory of the `dartdoc_options.yaml` file that defines it: `..` segments
   and absolute paths cannot leave that directory, and a symbolic link to a file
