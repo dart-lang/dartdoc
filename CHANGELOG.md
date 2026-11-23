@@ -1,4 +1,15 @@
 ## 9.1.0-wip
+* Breaking change: the `markdown` file of a category is now confined to the
+  directory of the `dartdoc_options.yaml` file that defines it: `..` segments
+  and absolute paths cannot leave that directory, and a symbolic link to a file
+  outside of it is an error.
+* dartdoc now refuses to write a file outside of the output directory, which a
+  `{@category}` name containing `..` could previously cause, or through a
+  symbolic link.
+* Category display names are now HTML-escaped in category labels and in search
+  suggestions. When highlighting search matches, the query is now matched as
+  literal text; it was previously interpreted as a regular expression, so that
+  a query such as `(` broke the suggestions.
 * Defer page scripts, applying the saved dark theme inline so pages no longer
   flash the light theme while loading.
 * The URL produced by `linkTo.url` must now be a plain `http(s)` URL, and is

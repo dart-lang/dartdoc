@@ -2,11 +2,14 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/kind.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 /// A subcategory of a package, containing elements tagged with `{@category}`.
@@ -113,7 +116,8 @@ final class Category extends LibraryContainer
 
   String get categoryLabel {
     final buffer = StringBuffer('<span class="category ');
-    buffer.writeAll(name.toLowerCase().split(' '), '-');
+    buffer.write(
+        htmlAttributeEscape.convert(name.toLowerCase().replaceAll(' ', '-')));
     buffer.write(' cp-');
     buffer.write(categoryIndex);
 
@@ -123,7 +127,7 @@ final class Category extends LibraryContainer
 
     buffer.write('"'); // Wrap up the class list and begin title
     buffer.write(' title="This is part of the ');
-    buffer.write(name);
+    buffer.write(htmlAttributeEscape.convert(name));
     buffer.write(' ');
     buffer.write(kind);
     buffer.write('.">'); // Wrap up the title
@@ -135,14 +139,14 @@ final class Category extends LibraryContainer
   }
 
   String get linkedName {
-    final unbrokenName = name.replaceAll(' ', '&nbsp;');
+    final unbrokenName = htmlEscape.convert(name).replaceAll(' ', '&nbsp;');
     if (isDocumented) {
       final href = this.href;
       if (href == null) {
         throw StateError("Requesting the 'linkedName' of a non-canonical "
             "category: '$name'");
       }
-      return '<a href="$href">$unbrokenName</a>';
+      return '<a href="${htmlAttributeEscape.convert(href)}">$unbrokenName</a>';
     } else {
       return unbrokenName;
     }

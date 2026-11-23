@@ -7,6 +7,7 @@ import 'package:analyzer/file_system/memory_file_system.dart';
 import 'package:analyzer_testing/utilities/extensions/resource_provider.dart';
 import 'package:dartdoc/src/dartdoc.dart' show DartdocFileWriter;
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/failure.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_backend.dart';
 import 'package:dartdoc/src/generator/html_generator_backend.dart';
@@ -114,6 +115,33 @@ void main() {
           packageGraph.localPublicLibraries,
           anyElement((Library l) => packageGraph.packageWarningCounter
               .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
+    });
+
+    test('a category name cannot write outside of the output directory',
+        onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')},
+        () async {
+      getConvertedFile('$projectPath/dartdoc_options.yaml')
+          .writeAsStringSync('''
+dartdoc:
+  categories:
+    "../../escaped":
+      markdown: doc/escaped.md
+''');
+      getConvertedFile('$projectPath/doc/escaped.md')
+          .writeAsStringSync('# Escaped');
+      getConvertedFile('$projectPath/lib/a.dart').writeAsStringSync('''
+/// {@category ../../escaped}
+class A {}
+''');
+      var packageGraph =
+          await utils.bootBasicPackage(projectPath, packageMetaProvider);
+
+      await expectLater(
+          generator.generate(packageGraph),
+          throwsA(const TypeMatcher<DartdocFailure>().having((e) => e.message,
+              'message', contains('outside of the output directory'))));
+      expect(
+          getConvertedFile('$projectPath/escaped-topic.html').exists, isFalse);
     });
 
     test('generated pages defer scripts and apply the saved theme inline',
