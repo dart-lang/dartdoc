@@ -10,6 +10,8 @@
   suggestions. When highlighting search matches, the query is now matched as
   literal text; it was previously interpreted as a regular expression, so that
   a query such as `(` broke the suggestions.
+* Link Dart SDK API references to unversioned `https://api.dart.dev` URLs by
+  default.
 * Defer page scripts, applying the saved dark theme inline so pages no longer
   flash the light theme while loading.
 * The URL produced by `linkTo.url` must now be a plain `http(s)` URL, and is
