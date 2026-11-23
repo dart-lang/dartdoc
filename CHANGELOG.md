@@ -10,6 +10,8 @@
   suggestions. When highlighting search matches, the query is now matched as
   literal text; it was previously interpreted as a regular expression, so that
   a query such as `(` broke the suggestions.
+* Link Dart SDK API references to unversioned `https://api.dart.dev` URLs by
+  default.
 * The URL produced by `linkTo.url` must now be a plain `http(s)` URL, and is
   HTML-escaped when written into links to a package's elements. An invalid URL
   is ignored with an `invalid-url` warning, and no links to the package are

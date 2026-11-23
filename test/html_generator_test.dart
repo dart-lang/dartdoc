@@ -142,6 +142,30 @@ class A {}
       expect(
           getConvertedFile('$projectPath/escaped-topic.html').exists, isFalse);
     });
+
+    test('generated pages link the Dart SDK to unversioned canonical URLs',
+        onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')},
+        () async {
+      getConvertedFile('$projectPath/lib/a.dart').writeAsStringSync('''
+library a;
+
+/// Returns [Future] of [int].
+Future<int> fetchCount() async => 0;
+''');
+      var packageGraph = await utils.bootBasicPackage(
+        projectPath,
+        packageMetaProvider,
+        additionalArguments: ['--link-to-remote'],
+      );
+      await generator.generate(packageGraph);
+
+      var outputPath = projectRoot.getFolder('doc').path;
+      var content = resourceProvider
+          .getFile(pathContext.join(outputPath, 'a', 'fetchCount.html'))
+          .readAsStringSync();
+      expect(content,
+          contains('href="https://api.dart.dev/dart-core/int-class.html"'));
+    });
   });
 }
 
