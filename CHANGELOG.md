@@ -12,6 +12,8 @@
   a query such as `(` broke the suggestions.
 * Link Dart SDK API references to unversioned `https://api.dart.dev` URLs by
   default.
+* Defer page scripts, applying the saved dark theme inline so pages no longer
+  flash the light theme while loading.
 * The URL produced by `linkTo.url` must now be a plain `http(s)` URL, and is
   HTML-escaped when written into links to a package's elements. An invalid URL
   is ignored with an `invalid-url` warning, and no links to the package are

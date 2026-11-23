@@ -31,6 +31,7 @@
 
 {{! We don't use <base href>, but we do lookup the htmlBase from javascript. }}
 <body data-base-href="{{{htmlBase}}}" data-using-base-href="{{{useBaseHref}}}" class="light-theme">
+<script>try{if(localStorage.getItem('colorTheme')==='true')document.body.classList.replace('light-theme','dark-theme');}catch(_){}</script>
 
 <div id="overlay-under-drawer"></div>
 
