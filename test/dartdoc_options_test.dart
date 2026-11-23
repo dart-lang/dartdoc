@@ -4,6 +4,7 @@
 
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
+import 'package:analyzer_testing/utilities/extensions/resource_provider.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -784,6 +785,90 @@ CategoryOne:
       final item = definition.externalItems.first;
       expect(item.name, 'package:web');
       expect(item.url, 'https://pub.dev/documentation/web/latest/');
+    });
+
+    group('markdown path', () {
+      late MemoryResourceProvider resourceProvider;
+      late String packageDir;
+
+      String p(String posixPath) =>
+          ResourceProviderExtension(resourceProvider).convertPath(posixPath);
+
+      String? markdownPathFor(String markdown) {
+        final yamlMap = loadYaml('''
+Topic:
+  markdown: $markdown
+''') as YamlMap;
+        return CategoryConfiguration.fromYamlMap(
+                yamlMap, packageDir, resourceProvider)
+            .categoryDefinitions['Topic']!
+            .documentationMarkdown;
+      }
+
+      Matcher throwsMissing(String path) =>
+          throwsA(const TypeMatcher<DartdocFileMissing>()
+              .having((e) => e.message, 'message', contains(path)));
+
+      Matcher throwsOptionError(String fragment) =>
+          throwsA(const TypeMatcher<DartdocOptionError>()
+              .having((e) => e.message, 'message', contains(fragment)));
+
+      setUp(() {
+        resourceProvider = MemoryResourceProvider();
+        packageDir = p('/pkg');
+        resourceProvider.newFile(p('/pkg/doc/topic.md'), '# Topic');
+        resourceProvider.newFile(p('/outside/secret.md'), 'secret');
+        resourceProvider.newLink(
+            p('/pkg/doc/link.md'), p('/outside/secret.md'));
+        resourceProvider.newLink(p('/pkg/linked_doc'), p('/outside'));
+      });
+
+      test('is resolved relative to the options file', () {
+        expect(markdownPathFor('doc/topic.md'), p('/pkg/doc/topic.md'));
+        expect(
+            markdownPathFor('./doc/../doc/topic.md'), p('/pkg/doc/topic.md'));
+      });
+
+      test('cannot climb above the options directory', () {
+        expect(
+            markdownPathFor('../../../doc/topic.md'), p('/pkg/doc/topic.md'));
+      });
+
+      test('is taken relative to the options directory when absolute', () {
+        expect(markdownPathFor('/doc/topic.md'), p('/pkg/doc/topic.md'));
+      });
+
+      test('never refers to a file outside the options directory', () {
+        // `/outside/secret.md` exists, but neither path refers to it.
+        expect(() => markdownPathFor('../outside/secret.md'),
+            throwsMissing(p('/pkg/outside/secret.md')));
+        expect(() => markdownPathFor('/outside/secret.md'),
+            throwsMissing(p('/pkg/outside/secret.md')));
+      });
+
+      test('must exist', () {
+        expect(() => markdownPathFor('doc/missing.md'),
+            throwsMissing(p('/pkg/doc/missing.md')));
+      });
+
+      test('may not have a scheme or an authority', () {
+        expect(() => markdownPathFor('file:///outside/secret.md'),
+            throwsOptionError('must be a local file path'));
+        expect(() => markdownPathFor('//outside/secret.md'),
+            throwsOptionError('must be a local file path'));
+      });
+
+      test('may not link to a file outside the options directory', () {
+        expect(() => markdownPathFor('doc/link.md'),
+            throwsOptionError('which links to'));
+      });
+
+      test(
+          'may not be inside a directory linking outside the options directory',
+          () {
+        expect(() => markdownPathFor('linked_doc/secret.md'),
+            throwsOptionError('which links to'));
+      });
     });
   });
 }

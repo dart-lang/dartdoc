@@ -146,7 +146,9 @@ Unrecognized options will be ignored.  Supported options:
   * **categories**: A map from _category names_ to _category definitions_.
     The _category definition_ consists of a `markdown:` property and an optional `displayName:` property.
     For topics you'd like to document, specify a _markdown file_ to be rendered on the category page,
-    using the `markdown:` property.
+    using the `markdown:` property.  The path is resolved relative to the directory of the
+    `dartdoc_options.yaml` file and cannot leave it: `..` segments and absolute paths are confined
+    to that directory, and a symbolic link to a file outside of it is an error.
     Optionally, you may specify a `displayName:` to be used in the rendered HTML, instead of the _category name_.
     Categories are referenced in documentation comments using the `{@category <category name>}` tag.
     Categories with no matching _category name_ defined in `dartdoc_options.yaml` will be invisible.

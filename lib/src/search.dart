@@ -195,3 +195,27 @@ class EnclosedBy {
   // ["enclosedBy":{"name":"Accessor","kind":"class","href":"link"}]
   EnclosedBy._({required this.name, required this.kind, required this.href});
 }
+
+const _htmlEscape = HtmlEscape(HtmlEscapeMode.element);
+
+/// Returns [text] as HTML, with each case-insensitive occurrence of [query]
+/// wrapped in a `<strong class='tt-highlight'>` tag.
+///
+/// [text] is plain text (for example a name from `index.json`) and is
+/// HTML-escaped; [query] is matched literally, not as a regular expression.
+String highlightMatches(String text, String query) {
+  if (query.isEmpty) return _htmlEscape.convert(text);
+  var buffer = StringBuffer();
+  var previousEnd = 0;
+  var pattern = RegExp(RegExp.escape(query), caseSensitive: false);
+  for (var match in pattern.allMatches(text)) {
+    buffer
+      ..write(_htmlEscape.convert(text.substring(previousEnd, match.start)))
+      ..write("<strong class='tt-highlight'>")
+      ..write(_htmlEscape.convert(match[0]!))
+      ..write('</strong>');
+    previousEnd = match.end;
+  }
+  buffer.write(_htmlEscape.convert(text.substring(previousEnd)));
+  return buffer.toString();
+}
