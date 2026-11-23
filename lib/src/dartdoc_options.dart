@@ -103,14 +103,8 @@ class CategoryConfiguration {
         var displayName = categoryMap['displayName']?.toString();
         var documentationMarkdown = categoryMap['markdown']?.toString();
         if (documentationMarkdown != null) {
-          documentationMarkdown = resourceProvider.pathContext.canonicalize(
-              resourceProvider.pathContext
-                  .join(canonicalYamlPath, documentationMarkdown));
-          if (!resourceProvider.getFile(documentationMarkdown).exists) {
-            throw DartdocFileMissing(
-                'In categories definition for $name, "markdown" resolves to '
-                'the missing file $documentationMarkdown');
-          }
+          documentationMarkdown = _resolveMarkdownPath(
+              name, documentationMarkdown, canonicalYamlPath, resourceProvider);
         }
         final externalItems = <ExternalItem>[];
         var items = categoryMap['external'] as List?;
@@ -148,6 +142,65 @@ class CategoryConfiguration {
       }
     }
     return CategoryConfiguration._(newCategoryDefinitions);
+  }
+
+  /// Resolves the [markdown] path of the category [name] against the directory
+  /// of the options file, [canonicalYamlPath], and checks that it exists.
+  ///
+  /// The path is resolved as a URI reference with [canonicalYamlPath] as the
+  /// root, so it cannot refer to a file outside of that directory: `..`
+  /// segments cannot climb above the root, and an absolute path is taken
+  /// relative to it. A symbolic link to a file outside of it is an error.
+  /// (`{@example}` paths are resolved the same way, against the package root.)
+  static String _resolveMarkdownPath(String name, String markdown,
+      String canonicalYamlPath, ResourceProvider resourceProvider) {
+    var pathContext = resourceProvider.pathContext;
+    Uri markdownUri;
+    try {
+      markdownUri = Uri.parse(markdown);
+    } on FormatException catch (e) {
+      throw DartdocOptionError(
+          'In categories definition for $name, "markdown" is not a valid '
+          'path: ${e.message}');
+    }
+    if (markdownUri.hasScheme || markdownUri.hasAuthority) {
+      throw DartdocOptionError(
+          'In categories definition for $name, "markdown" must be a local '
+          'file path: $markdown');
+    }
+    // Resolve against the file system root, then re-root the result in
+    // `canonicalYamlPath`. Taking the path relative to the separator strips
+    // any root prefix or drive letter which `fromUri` may add.
+    var rootUri = pathContext.toUri(pathContext.separator);
+    var relativeToRoot = pathContext.relative(
+        pathContext.fromUri(rootUri.resolveUri(markdownUri)),
+        from: pathContext.separator);
+    var resolved = pathContext
+        .normalize(pathContext.join(canonicalYamlPath, relativeToRoot));
+    // Unreachable in theory, thanks to the URI resolution above. Keeping as a
+    // safeguard against future refactoring.
+    if (!pathContext.isWithin(canonicalYamlPath, resolved)) {
+      throw DartdocOptionError(
+          'In categories definition for $name, "markdown" resolves to '
+          '$resolved, which is not inside of $canonicalYamlPath');
+    }
+    var file = resourceProvider.getFile(resolved);
+    if (!file.exists) {
+      throw DartdocFileMissing(
+          'In categories definition for $name, "markdown" resolves to '
+          'the missing file $resolved');
+    }
+    var realPath = file.resolveSymbolicLinksSync().path;
+    var realYamlPath = resourceProvider
+        .getFolder(canonicalYamlPath)
+        .resolveSymbolicLinksSync()
+        .path;
+    if (!pathContext.isWithin(realYamlPath, realPath)) {
+      throw DartdocOptionError(
+          'In categories definition for $name, "markdown" resolves to '
+          '$resolved, which links to $realPath, outside of $realYamlPath');
+    }
+    return resolved;
   }
 }
 
