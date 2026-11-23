@@ -57,6 +57,16 @@ class DartdocFileWriter implements FileWriter {
   int _fileCount = 0;
   int _totalSize = 0;
 
+  /// Directories already verified to resolve to a location within the output
+  /// directory.
+  final Set<String> _verifiedFolders = {};
+
+  /// The output directory with symbolic links resolved.
+  ///
+  /// Initialized on first use, by which time the directory exists.
+  late final String _realOutputDir =
+      _resourceProvider.getFolder(_outputDir).resolveSymbolicLinksSync().path;
+
   DartdocFileWriter(
     this._outputDir,
     this._resourceProvider, {
@@ -130,12 +140,40 @@ class DartdocFileWriter implements FileWriter {
 
   /// Returns the file at [outFile] relative to [_outputDir], creating the
   /// parent directory if necessary.
+  ///
+  /// [outFile] may be derived from documentation content, such as a
+  /// `{@category}` name, so it is not trusted. Throws a [DartdocFailure] if:
+  ///
+  /// * the path, once normalized, is outside of [_outputDir].
+  /// * its parent directory resolves, through symbolic links, to a location
+  ///   outside of the output directory.
+  /// * the file itself is a symbolic link.
   File _getFile(String outFile) {
-    var file = _resourceProvider
-        .getFile(_resourceProvider.pathContext.join(_outputDir, outFile));
+    var pathContext = _resourceProvider.pathContext;
+    var filePath = pathContext.normalize(pathContext.join(_outputDir, outFile));
+    if (!pathContext.isWithin(_outputDir, filePath)) {
+      throw DartdocFailure(
+          'Refusing to write outside of the output directory ($_outputDir): '
+          '$outFile resolves to $filePath');
+    }
+    var file = _resourceProvider.getFile(filePath);
     var parent = file.parent;
     if (!parent.exists) {
       parent.create();
+    }
+    if (!_verifiedFolders.contains(parent.path)) {
+      var realParent = parent.resolveSymbolicLinksSync().path;
+      if (!pathContext.equals(_realOutputDir, realParent) &&
+          !pathContext.isWithin(_realOutputDir, realParent)) {
+        throw DartdocFailure(
+            'Refusing to write outside of the output directory ($_outputDir): '
+            '$outFile links to $realParent');
+      }
+      _verifiedFolders.add(parent.path);
+    }
+    if (_resourceProvider.getLink(filePath).exists) {
+      throw DartdocFailure(
+          'Refusing to write through a symbolic link: $outFile');
     }
     return file;
   }
