@@ -6,6 +6,14 @@ import 'dart:js_interop';
 
 import 'package:web/web.dart';
 
+const _svgNamespace = 'http://www.w3.org/2000/svg';
+
+// Path data for the Material Symbols "content_copy" and "check" icons
+// (Apache-2.0: https://github.com/google/material-design-icons).
+const _contentCopyPath =
+    'M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z';
+const _checkPath = 'M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z';
+
 void init() {
   final blocks = document.querySelectorAll('pre:has(> code)');
   for (var i = 0; i < blocks.length; i++) {
@@ -15,10 +23,17 @@ void init() {
     final button = document.createElement('button') as HTMLButtonElement;
     button.className = 'copy-button';
 
-    final iconSpan = document.createElement('span') as HTMLSpanElement;
-    iconSpan.className = 'material-symbols-outlined';
-    iconSpan.textContent = 'content_copy';
-    button.appendChild(iconSpan);
+    final icon = document.createElementNS(_svgNamespace, 'svg')
+      ..setAttribute('class', 'dartdoc-icon')
+      ..setAttribute('viewBox', '0 -960 960 960')
+      ..setAttribute('width', '1em')
+      ..setAttribute('height', '1em')
+      ..setAttribute('fill', 'currentColor')
+      ..setAttribute('aria-hidden', 'true');
+    final iconPath = document.createElementNS(_svgNamespace, 'path')
+      ..setAttribute('d', _contentCopyPath);
+    icon.appendChild(iconPath);
+    button.appendChild(icon);
 
     int? timeoutId;
 
@@ -30,7 +45,7 @@ void init() {
 
           window.navigator.clipboard.writeText(text);
 
-          iconSpan.textContent = 'check';
+          iconPath.setAttribute('d', _checkPath);
           button.classList.add('copied');
 
           if (timeoutId != null) {
@@ -39,7 +54,7 @@ void init() {
 
           timeoutId = window.setTimeout(
               () {
-                iconSpan.textContent = 'content_copy';
+                iconPath.setAttribute('d', _contentCopyPath);
                 button.classList.remove('copied');
                 timeoutId = null;
               }.toJS,

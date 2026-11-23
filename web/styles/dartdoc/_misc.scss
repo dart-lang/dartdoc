@@ -35,11 +35,21 @@
   }
 }
 
-li .material-symbols-outlined, dt .material-symbols-outlined {
-  font-size: 1em;
+// Inline SVG icons (Material Symbols, Apache-2.0:
+// https://github.com/google/material-design-icons). They size with the font
+// size of their context and take their color from `currentColor`.
+.dartdoc-icon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+li .dartdoc-icon, dt .dartdoc-icon {
   vertical-align: text-bottom;
 }
 
-dt .material-symbols-outlined {
-  text-indent: 0;
+.source-link .dartdoc-icon {
+  font-size: 24px;
 }

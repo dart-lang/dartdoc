@@ -1,4 +1,7 @@
 ## 9.1.0-wip
+* Render icons as inline SVGs instead of loading the Material Symbols web font
+  from `fonts.googleapis.com`, so icons also work offline. Custom templates
+  that still use `.material-symbols-outlined` must load the font themselves.
 * Breaking change: the `markdown` file of a category is now confined to the
   directory of the `dartdoc_options.yaml` file that defines it: `..` segments
   and absolute paths cannot leave that directory, and a symbolic link to a file

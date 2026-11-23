@@ -64,6 +64,10 @@
   user-select: none;
   cursor: pointer;
 
+  .dartdoc-icon {
+    display: block;
+  }
+
   &:hover {
     color: var(--main-hyperlinks-color);
   }

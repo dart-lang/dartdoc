@@ -177,7 +177,7 @@ dartdoc:
         containsAllInOrder([
           matches('<a title="View source code" class="source-link" '
               'href="https://github.com/dart-lang/TEST_PKG/lib/lib.dart#L5">'
-              '<span class="material-symbols-outlined">description</span></a>'),
+              '<svg class="dartdoc-icon" '),
         ]),
       );
     });
