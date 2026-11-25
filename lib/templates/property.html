@@ -8,6 +8,7 @@
   {{ #self }}
     <div>{{ >source_link }}<h1><span class="kind-property">{{ name }}</span> {{ kind }} {{ >tags }}</h1></div>
   {{ /self }}
+  {{ >deprecated_library_banner }}
 
   {{ #self }}
     {{!-- If the property has neither an explicit getter nor an explicit setter,

@@ -1,0 +1,6 @@
+{{ #library.isDeprecated }}
+<div class="markdown-alert markdown-alert-warning">
+  <p class="markdown-alert-title">Deprecated</p>
+  <p>The <a href="{{{ library.href }}}">{{ library.displayName }}</a> library is deprecated.{{ #library.hasDeprecationMessage }} {{{ library.deprecationMessageHtml }}}{{ /library.hasDeprecationMessage }}</p>
+</div>
+{{ /library.isDeprecated }}
