@@ -22,6 +22,7 @@ void init() {
 
     final button = document.createElement('button') as HTMLButtonElement;
     button.className = 'copy-button';
+    button.setAttribute('aria-label', 'Copy to clipboard');
 
     final icon = document.createElementNS(_svgNamespace, 'svg')
       ..setAttribute('class', 'dartdoc-icon')

@@ -31,15 +31,31 @@
     color: var(--alert-title-color, inherit);
 
     // The icon (see _icons.scss) is applied as a mask so it takes the title
-    // color in both themes.
+    // color in both themes. Only the alert types below set `content`, so an
+    // alert without a known type shows no icon.
     &::before {
-      content: '';
       flex-shrink: 0;
       width: 22px;
       height: 22px;
       background-color: currentColor;
       -webkit-mask: var(--alert-icon) center / contain no-repeat;
       mask: var(--alert-icon) center / contain no-repeat;
+
+      @media (forced-colors: active) {
+        // Keep the mask visible; forced colors would otherwise drop the
+        // background color that draws it.
+        forced-color-adjust: none;
+      }
+    }
+  }
+
+  &.markdown-alert-note,
+  &.markdown-alert-tip,
+  &.markdown-alert-important,
+  &.markdown-alert-warning,
+  &.markdown-alert-caution {
+    .markdown-alert-title::before {
+      content: '';
     }
   }
 

@@ -2299,7 +2299,7 @@ String _deduplicated__head(TemplateDataBase context0) {
   if (!context0.useBaseHref) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
   }
-  buffer.write('''static-assets/styles.css?v1">
+  buffer.write('''static-assets/styles.css?v2">
   <link rel="icon" href="''');
   if (!context0.useBaseHref) {
     buffer.write('''%%__HTMLBASE_dartdoc_internal__%%''');
