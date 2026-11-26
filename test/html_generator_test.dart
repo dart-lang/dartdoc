@@ -117,6 +117,25 @@ void main() {
               .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
     });
 
+    test('generated pages use inline SVG icons, not the Material Symbols font',
+        onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')},
+        () async {
+      getConvertedFile('$projectPath/lib/a.dart')
+          .writeAsStringSync('library a;');
+      var packageGraph =
+          await utils.bootBasicPackage(projectPath, packageMetaProvider);
+      await generator.generate(packageGraph);
+
+      var content = resourceProvider
+          .getFile(pathContext.join(
+              projectRoot.getFolder('doc').path, 'a', 'index.html'))
+          .readAsStringSync();
+      expect(content, isNot(contains('Material+Symbols')));
+      expect(content, isNot(contains('material-symbols-outlined')));
+      expect(content,
+          contains('<svg class="dartdoc-icon" id="dark-theme-button"'));
+    });
+
     test('a category name cannot write outside of the output directory',
         onPlatform: {'windows': Skip('Test does not work on Windows (#2446)')},
         () async {

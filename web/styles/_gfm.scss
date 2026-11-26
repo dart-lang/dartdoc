@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@use "icons";
+
 /// Alert/admonition styles used by GFM, but styled to match other Dart sites.
 .markdown-alert {
   margin-top: 1rem;
@@ -28,49 +30,57 @@
     -webkit-font-smoothing: antialiased;
     color: var(--alert-title-color, inherit);
 
+    // The icon (see _icons.scss) is applied as a mask so it takes the title
+    // color in both themes. Only the alert types below set `content`, so an
+    // alert without a known type shows no icon.
     &::before {
-      font: 22px / 1 'Material Symbols Outlined';
-      user-select: none;
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      background-color: currentColor;
+      -webkit-mask: var(--alert-icon) center / contain no-repeat;
+      mask: var(--alert-icon) center / contain no-repeat;
+
+      @media (forced-colors: active) {
+        // Keep the mask visible; forced colors would otherwise drop the
+        // background color that draws it.
+        forced-color-adjust: none;
+      }
+    }
+  }
+
+  &.markdown-alert-note,
+  &.markdown-alert-tip,
+  &.markdown-alert-important,
+  &.markdown-alert-warning,
+  &.markdown-alert-caution {
+    .markdown-alert-title::before {
+      content: '';
     }
   }
 
   &.markdown-alert-note {
     --alert-title-color: var(--alert-info-fgColor);
-
-    .markdown-alert-title::before {
-      content: 'info';
-    }
+    --alert-icon: #{icons.$info};
   }
 
   &.markdown-alert-tip {
     --alert-title-color: var(--alert-tip-fgColor);
-
-    .markdown-alert-title::before {
-      content: 'lightbulb';
-    }
+    --alert-icon: #{icons.$lightbulb};
   }
 
   &.markdown-alert-important {
     --alert-title-color: var(--alert-important-fgColor);
-
-    .markdown-alert-title::before {
-      content: 'feedback';
-    }
+    --alert-icon: #{icons.$feedback};
   }
 
   &.markdown-alert-warning {
     --alert-title-color: var(--alert-warning-fgColor);
-
-    .markdown-alert-title::before {
-      content: 'warning';
-    }
+    --alert-icon: #{icons.$warning};
   }
 
   &.markdown-alert-caution {
     --alert-title-color: var(--alert-error-fgColor);
-
-    .markdown-alert-title::before {
-      content: 'report';
-    }
+    --alert-icon: #{icons.$report};
   }
 }

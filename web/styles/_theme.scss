@@ -136,6 +136,8 @@
   padding: 4px;
 
   color: var(--main-icon-color);
+  // Icon size; the inline SVGs are 1em.
+  font-size: 24px;
 
   &:hover {
     color: var(--main-hyperlinks-color);
