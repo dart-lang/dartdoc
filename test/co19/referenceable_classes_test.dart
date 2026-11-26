@@ -97,16 +97,25 @@ typedef T1 = C;
 typedef T2 = void Function(int);
 
 /// Reference to [C].
-typedef void T3(int x);
-
-/// Reference to [C].
-typedef T4 = (int, {String s});
+typedef T3 = (int, {String s});
 ''');
     var expected = '<p>Reference to $_linkToC.</p>';
     expect(library.typedefs.named('T1').documentationAsHtml, expected);
     expect(library.typedefs.named('T2').documentationAsHtml, expected);
     expect(library.typedefs.named('T3').documentationAsHtml, expected);
-    expect(library.typedefs.named('T4').documentationAsHtml, expected);
+  }
+
+  /// Check that a class can be referenced from the doc comment of an old-style
+  /// function type alias.
+  void test_fromOldStyleTypedef() async {
+    var library = await bootPackageWithLibrary('''
+class C {}
+
+/// Reference to [C].
+typedef void T(int x);
+''', libraryPreamble: '// @dart=3.15');
+    expect(library.typedefs.named('T').documentationAsHtml,
+        '<p>Reference to $_linkToC.</p>');
   }
 
   /// Check that a class can be referenced from the doc comments of top-level
@@ -246,6 +255,78 @@ extension type ET(int _) {
     var et = library.extensionTypes.named('ET');
     expect(et.constructors.named('ET.named').documentationAsHtml, expected);
     expect(et.instanceMethods.named('m').documentationAsHtml, expected);
+  }
+
+  /// Check that a class can be referenced from the doc comments of body parts
+  /// of primary constructors of a class, a mixin class, an enum and an
+  /// extension type.
+  void test_fromPrimaryConstructorBody() async {
+    var library = await bootPackageWithLibrary('''
+class C {}
+
+class A(int x) {
+  /// Reference to [C].
+  this;
+}
+
+class B.named(int x) {
+  /// Reference to [C].
+  this : assert(x > 0);
+}
+
+mixin class D() {
+  /// Reference to [C].
+  this;
+}
+
+enum E(final int x) {
+  e0(1);
+
+  /// Reference to [C].
+  this;
+}
+
+extension type ET(int x) {
+  /// Reference to [C].
+  this;
+}
+''');
+    var expected = '<p>Reference to $_linkToC.</p>';
+    expect(
+        library.classes
+            .named('A')
+            .constructors
+            .named('A.new')
+            .documentationAsHtml,
+        expected);
+    expect(
+        library.classes
+            .named('B')
+            .constructors
+            .named('B.named')
+            .documentationAsHtml,
+        expected);
+    expect(
+        library.classes
+            .named('D')
+            .constructors
+            .named('D.new')
+            .documentationAsHtml,
+        expected);
+    expect(
+        library.enums
+            .named('E')
+            .constructors
+            .named('E.new')
+            .documentationAsHtml,
+        expected);
+    expect(
+        library.extensionTypes
+            .named('ET')
+            .constructors
+            .named('ET.new')
+            .documentationAsHtml,
+        expected);
   }
 
   /// Check that a class can be referenced before its declaration in the
