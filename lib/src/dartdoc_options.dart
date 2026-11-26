@@ -1388,14 +1388,14 @@ DartdocProgramOptionContext? parseOptions(
     return null;
   }
   if (optionRoot['help'].valueAtCurrent() as bool) {
-    stdout.writeln('dartdoc version: $dartdocVersion');
-    stdout.writeln('Generate HTML documentation for Dart libraries.\n');
-    stdout.writeln(optionRoot.argParser.usage);
+    print('dartdoc version: $dartdocVersion');
+    print('Generate HTML documentation for Dart libraries.\n');
+    print(optionRoot.argParser.usage);
     exitCode = 0;
     return null;
   }
   if (optionRoot['version'].valueAtCurrent() as bool) {
-    stdout.writeln('dartdoc version: $dartdocVersion');
+    print('dartdoc version: $dartdocVersion');
     exitCode = 0;
     return null;
   }

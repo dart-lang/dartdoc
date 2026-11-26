@@ -426,6 +426,16 @@ class C1 {}
     );
   }
 
+  void test_helpOption_resultsInPrintedHelp() async {
+    expect(
+      () => parseOptions(packageMetaProvider, ['--help']),
+      prints(allOf(
+        contains('Generate HTML documentation for Dart libraries.'),
+        matches(RegExp(r'^-h, --help[ ]+Show command help\.', multiLine: true)),
+      )),
+    );
+  }
+
   void test_quietOption_resultsInNoProgressOrOtherLogging() async {
     await createPackage(
       libFiles: [
@@ -600,5 +610,12 @@ class Foo {
     final dartdoc =
         buildDartdoc(additionalArguments: ['--max-total-size', '15000000']);
     await dartdoc.generateDocs();
+  }
+
+  void test_versionOption_resultsInPrintedVersion() async {
+    expect(
+      () => parseOptions(packageMetaProvider, ['--version']),
+      prints(matches(r'dartdoc version: \d+.\d+.\d+')),
+    );
   }
 }
