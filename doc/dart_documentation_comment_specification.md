@@ -300,7 +300,7 @@ class MyClass<T> {
 
 ```
 
-A doc comment on a primary constructor body part (the `this` block) is a doc comment on the constructor. Its starting scope is the Formal Parameter Scope of that constructor, whose parameters are written in the class header. As for any other constructor, the name of a parameter resolves to the parameter. This includes declaring parameters.
+A doc comment on a primary constructor body part (the `this` block) is a doc comment on the constructor. Its starting scope is the Formal Parameter Scope of that constructor, whose parameters are written in the declaration header. As for any other constructor, the name of a parameter resolves to the parameter. This includes declaring parameters.
 
 **Example**
 ```dart
@@ -316,7 +316,7 @@ class Point(var int x, int scale) {
 
 #### **5.3.2. Fields**
 
-This applies to doc comments on fields within a class, enum, or mixin. Since fields have no parameters, the search starts at the member level, but otherwise follows the same route as instance methods.
+This applies to doc comments on fields within a class, enum, mixin, or extension type. Since fields have no parameters, the search starts at the member level, but otherwise follows the same route as instance methods.
 
 * **Starting Scope**: Class Member Scope
 
@@ -382,7 +382,7 @@ class MyClass<T> {
 }
 ```
 
-The parameters of a primary constructor are not in scope for the doc comment on the enclosing declaration. A reference to a parameter name resolves only if the class has a member with that name. For a declaring parameter (marked `var` or `final`), that member is the field the parameter induces, found through the Class Member Scope.
+The parameters of a primary constructor are not in scope for the doc comment on the enclosing declaration. A reference to a parameter name resolves only if the enclosing declaration has a member with that name. For a declaring parameter (marked `var` or `final`), that member is the field the parameter induces, found through the Class Member Scope.
 
 **Example**
 ```dart
@@ -586,11 +586,11 @@ The one exception is a declaring parameter of a primary constructor, whose prece
 
 A primary constructor is introduced by a parameter list in the header of a class, mixin class, enum, or extension type declaration (e.g., `class Point(var int x, var int y);`). It can optionally have a body part (the `this` block) inside the body of the declaration. Parameters of a primary constructor with the `var` or `final` modifier, called *declaring parameters*, implicitly induce a field. The single parameter of an extension type's primary constructor is always a declaring parameter, even if the modifier is omitted.
 
-A declaration with a primary constructor has up to three kinds of documentable elements in its header: the declaration itself, the constructor itself, and one induced field for each declaring parameter. Each has its own doc comment placement.
+A declaration with a primary constructor introduces up to three kinds of documentable elements: the declaration itself, the constructor, and one induced field for each declaring parameter. Each has its own doc comment placement.
 
 * **The declaration:** The doc comment preceding the declaration documents the class, mixin class, enum, or extension type only. It is not documentation for the constructor.
 
-* **Fields induced by declaring parameters:** A doc comment placed directly before a declaring parameter documents the field that the parameter induces. A comment before any other parameter of a primary constructor (a plain parameter `int x`, an initializing formal `this.x`, or a super parameter `super.x`) is not a doc comment, as for the parameters of any other function.
+* **Fields induced by declaring parameters:** A doc comment placed directly before a declaring parameter documents the field that the parameter induces. A comment before any other parameter of a primary constructor (a plain parameter `int x`, an initializing formal `this.x`, or a super parameter `super.x`) is not a doc comment, the same as for the parameters of any other function.
 
 * **The constructor:** The header has no position for a constructor doc comment. To document the constructor, a body part must be added, and the doc comment placed directly before `this`. If no initializer list or body block is needed, an empty body part (`this;`) is sufficient. A primary constructor without a documented body part has no documentation.
 
@@ -610,7 +610,7 @@ class Point(
 }
 ```
 
-In this example the first comment documents the class `Point`, the two parameter comments document the fields `x` and `y`, and the comment before `this` documents the constructor `Point.new`.
+In this example, the first comment documents the class `Point`, the two parameter comments document the fields `x` and `y`, and the comment before `this` documents the constructor `Point.new`.
 
 The same rules apply to enums and extension types:
 
